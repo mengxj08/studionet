@@ -89,6 +89,10 @@ var graph_style = {
               'edge-text-rotation': 'autorotate',
               'target-arrow-color': 'data(faveColor)'
             })
+          .selector('edge')
+            .style({
+                'content': 'data(label)'
+            })
             
           
           .selector('.faded')
@@ -169,6 +173,7 @@ var createGraphEdge = function(edge){
     edge.strength = EDGE_DEFAULT_STRENGTH;
     edge.faveColor = EDGE_DEFAULT_COLOR;
     edge.weigth = EDGE_DEFAULT_WEIGHT;
+    edge.label = edge.target;
 
     return { data: edge };
 

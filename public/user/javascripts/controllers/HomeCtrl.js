@@ -11,9 +11,11 @@ angular.module('studionet')
 		return res || curr.role==='Admin';
 	}, false); 
 
-  $scope.min = 3;
-  $scope.max = 12;
-  $scope.value = 6;
+  $scope.ratingMin = 0;
+  $scope.ratingMax = 10;
+  $scope.depthVal = 10;
+  
+
 
   $scope.showDetailsModal = function(data) {
 
@@ -47,15 +49,33 @@ angular.module('studionet')
         //alert($scope.selectedItem2);
         var selectedFilters = $scope.selectedItem2;
         var grp=[];
-        for(var j=0;j<selectedFilters.length;j++){
-          grp.push(selectedFilters[j].id);
+        var urlString = '/api/contribution_graph?g=[';
+        for(var j=0;j<selectedFilters.length-1;j++){
+          urlString=urlString+selectedFilters[j].id+',';
         }
+        urlString=urlString+selectedFilters[selectedFilters.length-1].id+']';
+        urlString = urlString+'&tags=[';
+
+
         var selectedFilters2 = $scope.selectedItem3;
         
-        for(var j=0;j<selectedFilters2.length;j++){
-          grp.push(selectedFilters2[j].id);
+        for(var j=0;j<selectedFilters2.length-1;j++){
+         urlString = urlString + selectedFilters2[j].id + ',';
         }
-        alert(grp);
+        urlString = urlString + selectedFilters2[selectedFilters2.length-1].id + ']&rating=[';
+
+        var rating = [];
+        rating[0] = $scope.ratingMin;
+        rating[1] = $scope.ratingMax;
+        var depth = $scope.depthVal;
+
+        urlString = urlString + rating[0] +','+rating[1] +']&depth=' + depth;
+
+        
+
+        alert(urlString);
+        
+
 
     };
 
@@ -84,14 +104,39 @@ $(document).ready(function() {
         $scope.dataTags= angular.copy(tags);
       });
       
-      $http.get('/api/groups/').success(function(data){
-        
       
+      $http.get('/api/groups/').success(function(data){
+        var users = [];
+      $http.get('/api/users/').success(function(data1){
+
+        users = data1;
+       
         $scope.filterData=data;
         var list=data;
         var groups = [];
         var mainGrps = [];
         var numGrp=0;
+
+        var userObj = {
+            name: 'Users',
+            id: 4567,
+            parentId: null,
+            isExpanded: false,
+            children:[]
+        }
+
+        for(var i=0;i<users.length;i++){
+             var obj = {
+              name: users[i].name,
+              id: users[i].id,
+              parentId: 4567,
+              isExpanded: false,
+              children:[]
+          }
+          userObj.children.push(obj);
+        }
+        
+
         for(var i=0;i<list.length;i++){
           
           var obj = {
@@ -144,8 +189,13 @@ $(document).ready(function() {
             j--;
           }
         }
+        mainGrps.push(userObj);
         $scope.data = angular.copy(mainGrps);
         $scope.datas = angular.copy(mainGrps);  
+        
+
+      });
+
         
       }); 
 
