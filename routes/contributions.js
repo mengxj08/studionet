@@ -33,6 +33,14 @@ router.route('/')
 	/*
 	 * Creates a new contribution linked to the current user.
 	 *
+	 * req.author : profile.user.id;
+	 * req.title : Contribution's Title
+	 * req.body : Contribution's Content
+	 * req.tags : Array - Contribution's tags
+	 * To-do: Once a new tag is specified for the created contribution, this new tag should be sent to DB as well
+	 * 
+	 * req.ref : the being created contribution's parent (reply to ... )  
+	 * 
 	 * Links created:
 	 * Reference link -  Might link itself to another contribution if ref != -1
 	 * Tag link - Links itself to the tags specified in the req body, creating them if necessary. 
