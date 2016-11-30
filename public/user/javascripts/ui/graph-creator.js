@@ -7,13 +7,13 @@ var CONTRIBUTION_SHAPE = "ellipse"
 
 var MODULE_WIDTH = 15, MODULE_HEIGHT = 15;
 var USER_WIDTH = 20, USER_HEIGHT = 20; 
-var CONTRIBUTION_WIDTH = 8, CONTRIBUTION_HEIGHT = 8;
+var CONTRIBUTION_WIDTH = 15, CONTRIBUTION_HEIGHT = 15;
 
 var MODULE_COLOR = "#FB95AF";
 var USER_COLOR = "#DE9BF9";
 var CONTRIBUTION_COLOR = "#D02F2F";
 
-var EDGE_DEFAULT_COLOR = "#222";
+var EDGE_DEFAULT_COLOR = "#B7B6B6";
 var EDGE_SELECTED_COLOR = "blue";
 var EDGE_DEFAULT_STRENGTH = 3;
 var EDGE_DEFAULT_WEIGHT = 3;
@@ -173,7 +173,7 @@ var createGraphEdge = function(edge){
     edge.strength = EDGE_DEFAULT_STRENGTH;
     edge.faveColor = EDGE_DEFAULT_COLOR;
     edge.weigth = EDGE_DEFAULT_WEIGHT;
-    edge.label = edge.target;
+    edge.label = edge.type;
 
     return { data: edge };
 

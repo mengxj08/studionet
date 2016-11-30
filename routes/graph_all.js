@@ -36,8 +36,9 @@ router.route('/')
     		});
 		    links = links.concat(row.graph.relationships.map(function(r) {
 		        return {
-		            target: idIndex(nodes, r.startNode).id,	// should not be a case where start or end is null. // inverted source and target - to be discussed further <!>
-		            source: idIndex(nodes, r.endNode).id
+		            target: r.endNode,//idIndex(nodes, r.startNode).id,	// should not be a case where start or end is null. // inverted source and target - to be discussed further <!>
+		            source: r.startNode,//idIndex(nodes, r.endNode).id,
+		            type: r.type
 		        };
 		    }));
 			});
@@ -88,8 +89,8 @@ router.route('/me')
 		    links = links.concat(row.graph.relationships.map(function(r) {
 		        return {
 		            source: idIndex(nodes, r.startNode).id, 	// should not be a case where start or end is null.
-		            target: idIndex(nodes, r.endNode).id,
-		            name: r.type
+		            target: idIndex(nodes, r.endNode).id//,
+		            //type: r
 		        };
 		    }));
 			});
