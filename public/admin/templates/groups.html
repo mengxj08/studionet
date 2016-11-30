@@ -2,46 +2,25 @@
 	<div class="col-xs-12 col-sm-12">
 		<div class="card card-mini">
 		  <div class="card-header">
-		    <div class="card-title"><h3>All Groups</h3></div>
-	      	<nav>
-	            <ul class="pagination">
-	              <li>
-	                <a href="#" aria-label="Previous">
-	                  <span aria-hidden="true">&laquo;</span>
-	                </a>
-	              </li>
-	              <li><a href="#">1</a></li>
-	              <li class="active"><a href="#">2</a></li>
-	              <li><a href="#">3</a></li>
-	              <li><a href="#">4</a></li>
-	              <li><a href="#">5</a></li>
-	              <li>
-	                <a href="#" aria-label="Next">
-	                  <span aria-hidden="true">&raquo;</span>
-	                </a>
-	              </li>
-	            </ul>
-	        </nav>
+		    <div class="card-title"><span>Groups ({{groups.length}})</span></div>
 		  </div>
-		  <div class="card-body no-padding table-responsive">
+		  <div class="card-body no-padding table-responsive height-700">
 
 		    <table class="table card-table table-hover">
 				<thead>
 					<tr>
-						<th>#</th>
-						<th>Group Name</th>
-						<th>Description</th>
-						<th>Restricted</th>
 						<th>DB ID</th>
+						<th>Restricted</th>
+						<th>Group Name</th>						
+						<th>Description</th>
 					</tr>
 				</thead>
-				<tbody ng-repeat="group in groups">
-					<tr>
-						<th>{{$index + 1}}</th>
+				<tbody ng-repeat="group in groups |  orderBy : '-id' ">
+					<tr ng-click='showDetails()'>
+						<th>{{group.id}}</th>
+						<th>{{group.restricted}}</th>
 						<th>{{group.name}}</th>
 						<th>{{group.description}}</th>
-						<th>{{group.restricted}}</th>
-						<th>{{group.id}}</th>
 					</tr>
 				</tbody>
 		    </table>

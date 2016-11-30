@@ -43,7 +43,7 @@
                       <h5>By Rating </h5>  
                       <a href="#" data-toggle="modal" data-target="#AccountManagerTreeModal"></a>
                     </div>
-                    <angular-ranger min="0" max="20" step="1" min-value="value.min" max-value="value.max" style="display:none"></angular-ranger>
+                    <angular-ranger min="0" max="20" step="1" min-value=min max-value=max></angular-ranger>
                 </div>
 
                 <!-- By Depth -->
@@ -52,7 +52,7 @@
                       <h5>By Depth </h5>  
                       <a href="#" data-toggle="modal" data-target="#AccountManagerTreeModal"></a>
                     </div>
-                    <angular-ranger min="0" max="20" step="1" value="value.max" style="display:none"></angular-ranger>
+                    <angular-ranger min="0" max="20" step="1" value="value.max" style="display:none" ng-model=number></angular-ranger>
                 </div>
 
                 <!-- By Date Range -->

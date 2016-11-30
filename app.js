@@ -20,6 +20,8 @@ var graph_all = require('./routes/graph_all');
 var graph_med = require('./routes/graph_med');
 var contributions = require('./routes/contributions');
 
+var logs = require('./routes/logs');
+
 
 var app = express();
 
@@ -63,6 +65,8 @@ app.use('/api/moderators', moderators);
 app.use('/api/relationships', relationships);
 app.use('/api/contributions', contributions);
 app.use('/uploads', uploads);
+
+app.use('/api/logs', logs);
 
 
 // catch 404 and forward to error handler

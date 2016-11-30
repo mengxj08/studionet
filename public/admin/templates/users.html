@@ -3,54 +3,32 @@
 	<div class="col-xs-12 col-sm-12">
 		<div class="card card-mini">
 		  <div class="card-header">
-		    <div class="card-title"><h3>All Users</h3></div>
-		      <nav>
-		            <ul class="pagination">
-		              <li>
-		                <a href="#" aria-label="Previous">
-		                  <span aria-hidden="true">&laquo;</span>
-		                </a>
-		              </li>
-		              <li><a href="#">1</a></li>
-		              <li class="active"><a href="#">2</a></li>
-		              <li><a href="#">3</a></li>
-		              <li><a href="#">4</a></li>
-		              <li><a href="#">5</a></li>
-		              <li>
-		                <a href="#" aria-label="Next">
-		                  <span aria-hidden="true">&raquo;</span>
-		                </a>
-		              </li>
-		            </ul>
-		        </nav>
+		    <div class="card-title"><span>Users ({{users.length}})</span></div>
 		  </div>
 		  <div class="card-body no-padding table-responsive">
 
 		    <table class="table card-table table-hover">
 				<thead>
 					<tr>
-						<th>#</th>
 						<th>NUS OpenID</th>
 						<th>Name</th>
-						<th>Last Logged In</th>
+						<!-- <th>Last Logged In</th> -->
 						<th>Is Super Admin?</th>
 						<th>DB ID</th>
 					</tr>
 				</thead>
-				<tbody ng-repeat="user in users | filter: search | orderBy: direction+sort">
+				<tbody ng-repeat="user in users | orderBy: '-id'">
 					<tr>
-						<th>{{$index + 1}}</th>
 						<th>{{user.nusOpenId}}</th>
 						<th>{{user.name}}</th>
-						<th>{{user.lastLoggedIn | date: 'medium'}}</th>
+						<!-- <th>{{user.lastLoggedIn}}</th> -->
 						<th>{{user.superAdmin}}</th>
 						<th>{{user.id}}</th>
 					</tr>
 				</tbody>
 		    </table>
-		  </div>
 
-		  
+		  </div>
 		</div>
 	</div>
 </div>

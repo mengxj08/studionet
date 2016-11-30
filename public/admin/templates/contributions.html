@@ -4,53 +4,25 @@
   <div class="col-xs-12 col-sm-12">
 	<div class="card card-mini">
 	  <div class="card-header">
-	    <div class="card-title"><h3>Recent Activity</h3></div>
-<!-- 	    <ul class="card-action">
-	      <li>
-	        <a href="/admin">
-	          <i class="fa fa-refresh"></i>
-	        </a>
-	      </li>
-	    </ul> -->
-      <nav>
-            <ul class="pagination">
-              <li>
-                <a href="#" aria-label="Previous">
-                  <span aria-hidden="true">&laquo;</span>
-                </a>
-              </li>
-              <li><a href="#">1</a></li>
-              <li class="active"><a href="#">2</a></li>
-              <li><a href="#">3</a></li>
-              <li><a href="#">4</a></li>
-              <li><a href="#">5</a></li>
-              <li>
-                <a href="#" aria-label="Next">
-                  <span aria-hidden="true">&raquo;</span>
-                </a>
-              </li>
-            </ul>
-        </nav>
+	    <div class="card-title"><span>Contributions ({{ contributions.length }})</span></div>
 	  </div>
-	  <div class="card-body no-padding table-responsive">
+	  <div class="card-body no-padding table-responsive height-700">
 
         <table class="table card-table table-hover">
             <thead>
               <tr>
-                <th>#</th>
-                <th>Title</th>
-                <th>Author</th>
                 <th>Created On</th>
                 <th>DB ID</th>
+                <th>Author</th>
+                <th>Title</th>
               </tr>
             </thead>
-            <tbody ng-repeat="contribution in contributions">
+            <tbody ng-repeat="contribution in contributions | orderBy : '-id' ">
               <tr>
-                <th>{{$index + 1}}</th>
-                <th>{{contribution.title}}</th>
-                <th>{{contribution.createdBy}}</th>
-                <th>{{contribution.dateCreated}}</th>
+                <th>{{ getDateString(contribution.dateCreated) }}</th>
                 <th>{{contribution.id}}</th>
+                <th>{{contribution.createdBy}}</th>
+                <th>{{contribution.title}}</th>
               </tr>
             </tbody>
         </table>
@@ -61,3 +33,4 @@
   </div>
 
 </div>
+

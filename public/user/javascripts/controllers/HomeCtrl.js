@@ -11,6 +11,10 @@ angular.module('studionet')
 		return res || curr.role==='Admin';
 	}, false); 
 
+  $scope.min = 3;
+  $scope.max = 12;
+  $scope.value = 6;
+
   $scope.showDetailsModal = function(data) {
 
       ModalService.showModal({

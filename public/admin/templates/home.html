@@ -15,7 +15,9 @@
         </ul>
       </div>
       <div class="card-body">
-        <div class="ct-chart-sale"></div>
+        <div class="ct-activity-chart">
+            <svg width="960" height="500"></svg>
+        </div>
       </div>
     </div>
   </div>
@@ -80,3 +82,20 @@
 <!-- To create graph -->
 <script type="text/javascript" src="../../assets/js/vendor.js"></script>
 <script type="text/javascript" src="../../assets/js/app.js"></script>
+
+
+
+<style>
+
+.axis--x path {
+  display: none;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+</style>
+

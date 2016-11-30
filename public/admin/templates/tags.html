@@ -11,33 +11,13 @@
 	<div class="col-xs-12 col-sm-12">
 		<div class="card card-mini">
 		  <div class="card-header">
-		    <div class="card-title"><h3>All Tags</h3></div>
-		    <nav>
-		            <ul class="pagination">
-		              <li>
-		                <a href="#" aria-label="Previous">
-		                  <span aria-hidden="true">&laquo;</span>
-		                </a>
-		              </li>
-		              <li><a href="#">1</a></li>
-		              <li class="active"><a href="#">2</a></li>
-		              <li><a href="#">3</a></li>
-		              <li><a href="#">4</a></li>
-		              <li><a href="#">5</a></li>
-		              <li>
-		                <a href="#" aria-label="Next">
-		                  <span aria-hidden="true">&raquo;</span>
-		                </a>
-		              </li>
-		            </ul>
-		    </nav>
+		    <div class="card-title"><span>Tags ({{tags.length}})</span></div>
 		  </div>
-		  <div class="card-body no-padding table-responsive">
+		  <div class="card-body no-padding table-responsive height-700">
 
 		    <table class="table card-table table-hover">
 						<thead>
 							<tr>
-								<th>#</th>
 								<th>Tag</th>
 								<th>CreatedBy</th>
 								<th>Contribution Count</th>
@@ -46,7 +26,6 @@
 						</thead>
 						<tbody ng-repeat="tag in tags">
 							<tr>
-								<th>{{$index + 1}}</th>
 								<th>{{tag.name}}</th>
 								<th>{{tag.createdBy}}</th>
 								<th>{{tag.contributionCount}}</th>
