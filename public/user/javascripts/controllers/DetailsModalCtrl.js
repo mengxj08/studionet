@@ -1,11 +1,18 @@
 angular.module('studionet')
 
-.controller('DetailsModalCtrl', ['$scope', 'profile',  function($scope, profile){
-	$scope.name = "Jane Doe";
-  $scope.age = 12;
+.controller('DetailsModalCtrl', ['$scope', '$http', 'profile',  function($scope, $http, profile){
+	// $scope.name = "Jane Doe";
+  // $scope.age = 12;
   
   $scope.data = [];
+  $scope.tags = [];
 
+  $scope.refresh = function(){
+      $http.get('/api/tags/').success(function(data){
+			  $scope.tags = data;
+        console.log('refreshing tages');
+	    });
+  }
 
   $scope.setData = function(data){
       $scope.data = data;
@@ -44,6 +51,21 @@ angular.module('studionet')
   
   };
 
+  $scope.createContribution = function(createContribution){
+    console.log(profile.user);
+    createContribution.author = profile.user.id;
+    console.log(createContribution);
+    $http({
+      method  : 'POST',
+      url     : '/api/contributions/',
+      data    : createContribution,  // pass in data as strings
+      headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
+      })
+    .success(function(data) {
+      alert("Contribution Created");  
+      $scope.refresh();  
+    })
+   };
 
-
+  $scope.refresh();
 }]);
