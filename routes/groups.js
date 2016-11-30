@@ -130,7 +130,7 @@ router.route('/')
 		if(auth.ensureSuperAdmin && req.body.author && req.body.createdAt){
 
 			params.userIdParam = parseInt(req.body.author);		// remove in production
-			params.dateCreatedParam = Date(req.body.createdAt);
+			params.dateCreatedParam = new Date(req.body.createdAt).getTime();
 		}
 
 		/*

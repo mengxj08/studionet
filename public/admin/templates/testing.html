@@ -163,3 +163,67 @@ select.tag-list{
 	</div>
 </div>
 
+<!-- Add a user -->
+<div class='row'>
+	<div class="col-xs-12 col-sm-12">
+		<div class="card card-mini">
+			<div class="card-header">
+		    	Add a user
+		    </div>
+		    <div class="card-body">
+		    	<p>
+			    		<div class='row'>
+							<div class='col-sm-4'>
+								<label for="singleSelect"> Who's adding? </label>
+							    <select name="singleSelect" id="singleSelect" ng-model="userData.addedBy">
+							      <option ng-repeat="user in users" value={{user.id}}>{{user.name}}</option>
+							    </select>
+
+							    <br><br>
+
+							    <label for="singleSelect"> Name of New User</label>
+							    <input value='Title' ng-model="userData.name"></input>
+
+							    <br><br>
+
+								<label for="singleSelect"> NUSNET OpenID of New User</label>
+							    <input value='Title' ng-model="userData.nusOpenId" ></input>
+
+							    <br><br>
+
+
+							    <label for="Date"> Date and Time </label>
+								<br>
+						    	<input type="datetime-local" name="time" ng-model="userData.addedOn"></input>
+
+						    </div>
+
+						    <div class='col-sm-8'>
+								<label for="Title"> Alternative Way: (user-json) </label>
+								<br>
+						    	<textarea class='wide' rows="10" cols="70" ng-model="userDataJSON" ></textarea>
+
+						    	<br><br>
+
+							</div>
+						</div>
+
+						<!-- Request sent -->
+						<div class='row'>
+						    <div class="col-sm-12">
+						    	<br><br><br>
+								
+								<span><b> Request Data:  </b></span> 
+								<span>{{ userData }}</span>
+
+								<br><br>
+								<button type="button" class="btn btn-primary pull-right" ng-click='createNewUser()'>Create User</button>
+							</div>
+						</div>
+
+			    	</div>
+				</p>
+		    </div>
+		</div>
+	</div>
+</div>

@@ -99,8 +99,8 @@ router.route('/')
 		if(auth.ensureSuperAdmin && req.body.author && req.body.createdAt){
 
 			params.createdByParam = parseInt(req.body.author);		// remove in production
-			params.dateCreatedParam = Date(req.body.createdAt);
-			params.lastUpdatedParam = Date(req.body.createdAt);
+			params.dateCreatedParam = new Date(req.body.createdAt).getTime();
+			params.lastUpdatedParam = new Date(req.body.createdAt).getTime();
 		}
 
 		

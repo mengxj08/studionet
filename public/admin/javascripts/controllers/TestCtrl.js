@@ -109,6 +109,67 @@ angular.module('studionetAdmin').controller('TestCtrl', ['$scope', '$http', func
 
 	}
 
+
+	/*
+     *
+     *	Create new user
+     *
+     * 
+	 */
+	$scope.userDataJSON = "";
+	$scope.userData = { 
+		    name: "",
+			nusOpenId: "",
+			addedBy: "",
+			addedOn: ""
+	};
+
+	$scope.createNewUser = function(){
+
+		if($scope.userDataJSON){
+			// different post requests for each user
+			if( eval($scope.userDataJSON) ){
+				var users =  eval($scope.userDataJSON);
+				for(var i=0; i < users.length; i++){
+
+					var user = users[i];
+					var userData = {
+						name :  user.name, 
+						nusOpenId: user.nusOpenId, 
+						addedBy: $scope.userData.addedBy,
+						addedOn: $scope.userData.addedOn
+					}
+					postUser(userData);
+
+				}
+			}
+			else{
+				alert("Invalid data");
+			}
+			
+		}
+		else{
+
+			postUser($scope.userData);
+			
+		}
+
+		function postUser(user){
+			$http({
+					  method  : 'POST',
+					  url     : '/api/users/',
+					  data    : user,  
+					  headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
+					 })
+					.success(function(data) {
+					    
+						alert("User Created");  
+						refresh();  
+
+					})
+		}
+
+	}
 	
 
 

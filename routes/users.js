@@ -43,21 +43,42 @@ router.route('/')
 	})
 
 	// add a new user
-	.post(auth.ensureAuthenticated, auth.ensureSuperAdmin, function(req, res){
+	.post(auth.ensureAuthenticated, function(req, res){
+
+		// TODO: check if openID exists
 		
 		var query = [
-			'CREATE (u:user {name: {nameParam}, nusOpenId: {nusOpenIdParam}, canEdit: {canEditParam}, year: {yearParam}, lastLoggedIn: {lastLoggedInParam}, superAdmin: {superAdminParam}})',
+			'CREATE (u:user {name: {nameParam}, nusOpenId: {nusOpenIdParam},' + 
+			'canEdit: {canEditParam},' + /*year: {yearParam},*/ 
+			'addedBy: {addedByParam}, addedOn: {addedOnParam},' +
+			'lastLoggedIn: {lastLoggedInParam}, superAdmin: {superAdminParam}})',
 			'RETURN u'
 		].join('\n');
 
 		var params = {
 			nameParam: req.body.name,
 			nusOpenIdParam: req.body.nusOpenId,
-			canEditParam: req.body.canEdit,
-			yearParam: req.body.year,
-			lastLoggedInParam: Date.now(),
-			superAdminParam: false
+			canEditParam: true,//req.body.canEdit,
+			//yearParam: req.body.year,
+			lastLoggedInParam: 0,//Date.now(),
+			superAdminParam: false, 
+			addedByParam: req.user.id,
+			addedOnParam: Date.now()
 		};
+
+		/*
+		 *
+		 *	Only for testing and creating synthetic data; 
+		 *	Remove in production
+		 *
+		 * 
+		 */
+		if(auth.ensureSuperAdmin && req.body.addedBy && req.body.addedOn){
+
+			params.addedByParam = parseInt(req.body.addedBy);
+			params.addedOnParam = new Date(req.body.addedOn).getTime();
+
+		}
 
 		db.query(query, params, function(error, result){
 			if (error)
