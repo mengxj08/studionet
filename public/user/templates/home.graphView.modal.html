@@ -7,7 +7,7 @@
     <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" ng-click="close()" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h3 class='content-modal'>{{contribution.db_data.name}}</h3> 
+          <h3 class='content-modal'>{{contribution.db_data.title}}</h3> 
         </div>
         <div class="modal-body">
           <div class='row'>
@@ -15,35 +15,56 @@
               <div>
                 <div id='second-cy'></div>
                 <hr>
-                <button type="button" ng-click="answer()" class="btn btn-primary" id="btn-contribute" data-dismiss="modal">
-                  +
-                </button>
+                <button type="button" ng-hide='hideReplyButton' ng-click="showCreateContribution=true; hideReplyButton=true; contributionData={};contributionData.tags=[]" class="btn btn-primary">Reply to...</button>
+                <button type="button" ng-show='hideReplyButton' ng-click="showCreateContribution=false; hideReplyButton=false" class="btn btn-primary">Cancle</button>
               </div>
             </div>
             <div class='col-sm-8'>
               <div class='row'>
                 <ul class="nav nav-tabs pull-right">
-                  <li class="active"><a data-target="#content" data-toggle="tab">Content</a></li>
-                  <li><a data-target="#statistics" data-toggle="tab">Statistics</a></li>
+                  <li class="active"><a data-target="{{ '#content' + contribution.db_data.id}}" data-toggle="tab">Content</a></li>
+                  <li><a data-target="{{ '#statistics' + contribution.db_data.id}}"  data-toggle="tab">Statistics</a></li>
                 </ul>
               </div>
               <div class="tab-content">
-                <div class='tab-pane fade in active' id='content'>
+                <div class='tab-pane fade in active' id="{{ 'content' + contribution.db_data.id}}">
                   <b>Contribution's id: </b>{{contribution.id}}
                   <br><br>
                   <b>Contribution's type: </b>{{contribution.type}}
                   <br><br>
+                  <b>Contribution's title: </b>{{contribution.db_data.title}} 
+                  <br><br>
                   <b>Contribution's content: </b>{{contribution.db_data.body}} 
                   <br><br>
-                  <b>Contribution's description: </b>{{contribution.db_data.description}} 
-                  <br><br>
                 </div>
-                <div class='tab-pane fade' id='statistics'>
+                <div class='tab-pane fade' id="{{ 'statistics' + contribution.db_data.id}}">
                     <h3>This is the column for contributions' statistics.</h3>
                 </div>
                 <button type="button" ng-click="close()" class="btn btn-primary btn-block" data-dismiss="modal">Close</button>
                 </div>
             </div>
+          </div>
+          <div class='editor' ng-show='showCreateContribution'>
+                <br>
+                <label for="Title"> Contribution Title: </label>
+                <br>
+                <input class='wide' value='Title' ng-model="contributionData.title"></input>
+                <br><br>
+                <label for="Title"> Contribution Content: </label>
+                <br>
+                <textarea class='wide' rows="10" cols="70" ng-model="contributionData.body"></textarea>
+                <br><br>
+                <label for="singleSelect"> Tags: </label><br>
+                <select class='tag-list' rows="10" ng-model="contributionData.tags" multiple>
+                  <option ng-repeat="tag in tags" value="{{tag.name}}">{{tag.name}}</option>
+                </select>
+                <input class="addTag" ng-model="tag"></input><button ng-click="contributionData.tags.push(tag)">Add a Tag</button>
+                <br>
+                <span><b> Selected tag names:  </b></span> 
+						    <span>{{ contributionData.tags }}</span>
+                <br>
+                <button type="button" ng-click="contributionData.ref=contribution.db_data.id;
+                createContribution(contributionData); showCreateContribution=false; hideReplyButton=false" class="btn btn-primary">Submit</button>
           </div>
         </div>
     </div>
