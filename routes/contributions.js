@@ -62,7 +62,7 @@ router.route('/')
 		// reference type: REPLYTO, 
 		if (parseInt(req.body.ref) !== -1){
 			query.push('MATCH (c1:contribution) where id(c1)={contributionRefParam}')
-			query.push('CREATE (c)-[r1:' + req.body.refType +']->(c1) WITH c')
+			query.push('CREATE (c)-[r1:' + ( req.body.refType || "RELATED_TO" ) +']->(c1) WITH c')
 		}
 
 		// This is where the tag links are created, if necessary.
@@ -85,6 +85,8 @@ router.route('/')
 
 		var date = Date.now();
 
+		console.log("relationship", req.body.refType);
+
 		var params = {
 			createdByParam: parseInt(req.user.id),
 			tagsParam: req.body.tags,
@@ -95,7 +97,9 @@ router.route('/')
 			dateCreatedParam: date,
 			refTypeParam: req.body.refType, 
 			edittedParam: false,
-			};
+		};
+
+
 
 
 		/*
@@ -116,7 +120,6 @@ router.route('/')
 			if (error)
 				console.log('Error creating new post for user : ', error);
 			else{
-				console.log(result[0]);
 				res.send(result[0]);
 			}
 		}); 
