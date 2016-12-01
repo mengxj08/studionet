@@ -9,72 +9,8 @@
 <!--Top Nav Bar -->
 <ng-include src="'templates/top-navbar.html'"></ng-include>
 
-<!-- Side Nav -->
-<aside class="app-sidebar" id="sidebar">
-  <div class="sidebar-menu">
-    <ul class="sidebar-nav">
-          <div id='filters'>
-               
-               <!-- By Author Filter -->
-               <div class="filter-panel panel badge-success" id='author-filter'>
-                    <div class="filter-heading"> 
-                      <h5>By Author</h5> 
-                      <a href="#" data-toggle="modal" data-target="#AccountManagerTreeModal"></a>
-                    </div>
-                    <multiselect-searchtree data-input-model="data" multi-select="true"
-                                  data-output-model="selectedItem2" data-callback="CustomCallback(item, selectedItems)"
-                                  data-select-only-leafs="false" extra-buttons="false" class="filter1" style="display:none"></multiselect-searchtree>
-                </div>
-
-                <!-- By Tags Filter -->
-                <div class="filter-panel panel badge-success" >
-                    <div class="filter-heading">  
-                      <h5>By Tags </h5>  
-                      <a href="#" data-toggle="modal" data-target="#AccountManagerTreeModal"></a>
-                    </div>
-                    <multiselect-searchtree data-input-model="dataTags" multi-select="true"
-                                  data-output-model="selectedItem3" data-callback="CustomCallback(item, selectedItems)"
-                                  data-select-only-leafs="false" extra-buttons="false" class="filter1" style="display:none"></multiselect-searchtree>
-                </div>
-                
-                <!-- By Rating -->
-                <div class='filter-panel panel'>
-                    <div class="filter-heading">  
-                      <h5>By Rating </h5>  
-                      <a href="#" data-toggle="modal" data-target="#AccountManagerTreeModal"></a>
-                    </div>
-                    <angular-ranger min="0" max="20" step="1" min-value=ratingMin max-value=ratingMax style="display:none"></angular-ranger>
-                </div>
-
-                <!-- By Depth -->
-                <div class='filter-panel panel'>
-                    <div class="filter-heading">  
-                      <h5>By Depth </h5>  
-                      <a href="#" data-toggle="modal" data-target="#AccountManagerTreeModal"></a>
-                    </div>
-                    <angular-ranger min="0" max="20" step="1" value=depthVal style="display:none"></angular-ranger>
-                </div>
-
-                <!-- By Date Range -->
-                <div class='filter-panel panel'>
-                    <div class="filter-heading">  
-                      <h5>By Time </h5>  
-                      <a href="#" data-toggle="modal" data-target="#AccountManagerTreeModal"></a>
-                    </div>
-                    <angular-ranger min="0" max="20" step="1" value="value.max" style="display:none"></angular-ranger>
-                </div>
-
-                <!-- Final Filter Button -->
-                <div class='filter-panel panel'>
-                  <div class="filter-heading" id='filter-btn' ng-click="filterRequest()"> 
-                    <h5>Filter</h5>  
-                  </div>
-                </div>
-                              
-          </div>
-    </ul>
-  </div>
-</aside>
+<!--Side Nav Bar with Filters-->
+<ng-include src="'templates/filters.html'"></ng-include>
 
 <!-- div to host the information panel on hover -->
 <div id='content-block-hover'></div>
