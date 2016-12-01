@@ -22,8 +22,8 @@ var GRID_GRAPH_LAYOUT = { name : 'grid' };
 var DAGRE_GRAPH_LAYOUT = { name : 'dagre' };
 var CIRCLE_GRAPH_LAYOUT = { name : 'circle' };
 var COSE_GRAPH_LAYOUT = { name: 'cose',
-                          padding: 10,
-                          randomize: true };
+                          padding: 15, 
+                          randomize: true};
 
 var CONCENTRIC_GRAPH_LAYOUT = {  name: 'concentric', 
         concentric: function( node ){
@@ -84,7 +84,7 @@ var graph_style = {
               'line-color': 'data(faveColor)',
               'source-arrow-color': 'data(faveColor)',
               'content' : 'data(label)',
-              'font-size':'15%',
+              'font-size':'10%',
               'color': '#222',
               'edge-text-rotation': 'autorotate',
               'target-arrow-color': 'data(faveColor)'
@@ -105,7 +105,18 @@ var graph_style = {
             .css({
               'line-color': 'green',
               'target-arrow-color':'green',
-              'background-color': 'data(faveColor)'
+              'background-color': 'blue'
+            })
+
+          .selector('.searched')
+            .css({
+              'line-color': 'blue',
+              'target-arrow-color':'black',
+              'background-color': 'blue',
+              'border-width': 0.5,
+              'border-color': '#333',
+              'width': 'data(width) + 10', 
+              'height': 'data(height) + 10'              
             })
 
 }
@@ -314,7 +325,6 @@ var makeGraph = function(dNodes, dEdges){
 
     cy.on('tap', 'node', function(evt){
 
-
       cy.elements().removeClass('highlighted');
       var node = evt.cyTarget;
       var data = node.data();
@@ -326,8 +336,6 @@ var makeGraph = function(dNodes, dEdges){
       var x = evt.cyPosition.x;
       var y = evt.cyPosition.y;
 
-
-      // display modal only if node is a contribution
       if(data.type == 'contribution'){
            var predecessors = node.predecessors();
            var successors = node.successors();
@@ -386,6 +394,7 @@ var refreshGraph = function(){
     })
 
 }
+
 
 
 // On document ready

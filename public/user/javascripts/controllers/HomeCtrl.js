@@ -14,7 +14,33 @@ angular.module('studionet')
   $scope.ratingMin = 0;
   $scope.ratingMax = 10;
   $scope.depthVal = 10;
-  
+
+  $scope.textFilter = "";
+  $scope.searchActive = false;
+
+  $scope.textSearchFilter = function(searchText){
+
+      if(searchText ==  "")
+        return; 
+
+      cy.nodes().forEach(function( ele ){
+          
+          if( (ele.data().name).toLowerCase().includes( searchText.toLowerCase() )){
+            console.log( ele.data().name );
+            ele.addClass('searched');
+            ele.connectedEdges().addClass('highlighted');
+            $scope.searchActive = true;
+          }
+         
+      });
+  }
+
+  $scope.clearSearch = function(){
+    $scope.textFilter = "";
+    $scope.searchActive = false;
+    cy.elements().removeClass('highlighted')
+    cy.elements().removeClass('searched')
+  }
 
 
   $scope.showDetailsModal = function(data) {
