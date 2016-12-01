@@ -263,7 +263,8 @@ router.route('/:contributionId')
 		var incomingRelsCount = 1;
 
 		var params = {
-			contributionIdParam: req.params.contributionId,
+			contributionIdParam: parseInt(req.params.contributionId),
+			userIdParam: parseaInt(req.user.id)
 		};
 
 		// First count incoming relationships (excluding tagged, created)
@@ -320,8 +321,8 @@ router.route('/:contributionId')
 			].join('\n');
 
 			var notLeafParams = { 
-				contributionIdParam: req.params.contributionId,
-				userIdParam: req.user.id,
+				contributionIdParam: parseInt(req.params.contributionId),
+				userIdParam: parseInt(req.user.id),
 				contributionTitleParam: 'Deleted',
 				contributionBodyParam: 'Contribution Deleted',
 				lastUpdatedParam: Date.now(),
@@ -358,8 +359,6 @@ router.route('/:contributionId')
 		}
 	
 	});
-
-
 
 
 router.route('/:contributionId/connections');

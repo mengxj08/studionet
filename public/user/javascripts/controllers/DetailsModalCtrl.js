@@ -6,12 +6,17 @@ angular.module('studionet')
   
   $scope.data = [];
   $scope.tags = [];
+  $scope.relationships= [];
 
   $scope.refresh = function(){
       $http.get('/api/tags/').success(function(data){
 			  $scope.tags = data;
         console.log('refreshing tages');
 	    });
+
+      $http.get('/api/relationships/').success(function(data){
+			  $scope.relationships = data;
+		  });	
   }
 
   $scope.setData = function(data){
@@ -23,7 +28,6 @@ angular.module('studionet')
   //  This close function doesn't need to use jQuery or bootstrap, because
   //  the button has the 'data-dismiss' attribute.
   $scope.close = function() {
- 	  
     close({
       name: $scope.user,
       age: $scope.modules
@@ -37,7 +41,6 @@ angular.module('studionet')
   //  This cancel function must use the bootstrap, 'modal' function because
   //  the doesn't have the 'data-dismiss' attribute.
   $scope.cancel = function() {
-
     //  Manually hide the modal.
     //$element.modal('hide');
     // $('body').removeClass('modal-open');
@@ -67,5 +70,23 @@ angular.module('studionet')
     })
    };
 
+  $scope.deleteContribution = function(contributionId){
+
+    $http({
+      method  : 'delete',
+      url     : '/api/contributions/'+contributionId,
+      data    : {},  // pass in data as strings
+      headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
+      })
+    .success(function(data) {
+      alert("Contribution id:" + contributionId + " deleted");  
+      $scope.refresh();  
+    })
+  }
+
+  $scope.updateContribution = function(){
+
+  }
+  
   $scope.refresh();
 }]);
