@@ -99,9 +99,6 @@ router.route('/')
 			edittedParam: false,
 		};
 
-
-
-
 		/*
 		 *	Only to allow creationg of synthetic data; 
 		 *	Changes creating user from actual user to user specified;
@@ -263,25 +260,103 @@ router.route('/:contributionId')
 		// TODO:
 		// check if i own the contribution before deleting it
 
-		var query = [
-			'MATCH (c:contribution) WHERE ID(c)= {contributionIdParam}',
-			'MATCH (u:user) WHERE ID(u)={userIdParam}',
-			'MATCH (u)-[r:CREATED]->(c)',
-			'DELETE r',
-			'DELETE c'
-		].join('\n');
+		var incomingRelsCount = 1;
 
 		var params = {
 			contributionIdParam: req.params.contributionId,
-			userIdParam: req.user.id
 		};
 
-		db.query(query, params, function(error, result){
+		// First count incoming relationships (excluding tagged, created)
+		var countQuery = [
+			'MATCH (c:contribution)<-[r]-()',
+			'WHERE ID(c)={contributionIdParam} AND NOT (c)<-[r:TAGGED]-(:tag) AND NOT (c)<-[r:CREATED]-(:user)',
+			'RETURN {count: count(r)}'
+		].join('\n');
+
+		db.query(countQuery, params, function(error, result) {
 			if (error)
-				console.log('Error deleting contribution id for this user. Check if this contribution is created by this user.');
+				console.log('Error in counting the number of incoming relationships of contribution ' + contributionIdParam);
 			else
-				res.send('success');
+				incomingRelsCount = result[0].count;
 		});
+
+		// No matter what, we need to delete the relationship between contribution and tag, and contribution and user (creator)
+		var commonQuery = [
+			'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
+			'MATCH (c)<-[r]-(s) WHERE s:tag OR s:user',
+			'DELETE r'
+		].join('\n');
+
+		db.query(commonQuery, params, function(error, result){
+			if (error)
+				console.log('Error deleting the relationship between contribution and tag, and contribution and user');
+			else
+				console.log('Succeeded deleting relationship between contribution and tag, and contribution and user');
+		})
+
+		if (incomingRelsCount > 0) {
+			// this is not a leaf
+			// mark as deleted
+
+			/**
+			 * Updates the following fields:
+			 * 1. contributionTitleParam
+			 * 2. tagsParam (delete association to tags as ABOVE)
+			 * 3. contributionBodyParam
+			 * 4. lastUpdatedParam
+			 * 5. edittedParam
+			 */
+
+			 // todo: delete tags, delete association to user but not to child or parent contrs
+			var query = [
+				'MATCH (c:contribution) WHERE ID(c)= {contributionIdParam}',
+				'MATCH (u:user) WHERE ID(u)={userIdParam}',
+				'MATCH (u)-[r:CREATED]->(c)',
+				'SET c.title = {contributionTitleParam}',
+				'SET c.body = {contributionBodyParam}',
+				'SET c.lastUpdated = {lastUpdatedParam}',
+				'SET c.editted = {edittedParam}',
+				'WITH r,c',
+			].join('\n');
+
+			var notLeafParams = { 
+				contributionIdParam: req.params.contributionId,
+				userIdParam: req.user.id,
+				contributionTitleParam: 'Deleted',
+				contributionBodyParam: 'Contribution Deleted',
+				lastUpdatedParam: Date.now(),
+				edittedParam: true
+			}
+
+			db.query(query, notLeafParams, function(error, result) {
+				if (error)
+					console.log('Error deleting a leaf contribution ' + contributionIdParam);
+				else
+					console.log('success');
+			})
+
+		} else {
+			// this is a leaf
+			// remove it
+
+			var query = [
+				'MATCH (c:contribution) WHERE ID(c)= {contributionIdParam}',
+				'MATCH (u:user) WHERE ID(u)={userIdParam}',
+				'MATCH (u)-[r:CREATED]->(c)',
+				'MATCH (c)-[r1]->()',
+				'DELETE r',
+				'DELETE r1',
+				'DELETE c'
+			].join('\n');
+
+			db.query(query, params, function(error, result){
+				if (error)
+					console.log('Error deleting contribution id for this user. Check if this contribution is created by this user.');
+				else
+					res.send('success');
+			});
+		}
+	
 	});
 
 
