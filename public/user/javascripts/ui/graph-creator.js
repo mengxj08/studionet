@@ -19,7 +19,7 @@ var EDGE_DEFAULT_STRENGTH = 3;
 var EDGE_DEFAULT_WEIGHT = 3;
 
 
-var COLA_GRAPH_LAYOUT = { name : 'cola' };
+var COLA_GRAPH_LAYOUT = { name : 'cola', padding: 10 };
 
 var GRID_GRAPH_LAYOUT = { name : 'grid' };
 var DAGRE_GRAPH_LAYOUT = { name : 'dagre' };
@@ -70,12 +70,12 @@ var graph_style = {
               //'background-height': 'data(height)'
             })
            
-          .selector(':selected')
+          .selector('.selected')
             .css({
-              'border-width': 0.5,
+              'border-width': 3.5,
               'border-color': '#333',
-              'width': 'data(width) + 10', 
-              'height': 'data(height) + 10',
+              'width': 20, 
+              'height': 20,
               'font-size': '15%'
             })
           
@@ -86,15 +86,16 @@ var graph_style = {
               'target-arrow-shape': 'triangle',
               'line-color': 'data(faveColor)',
               'source-arrow-color': 'data(faveColor)',
-              'content' : 'data(label)',
+              //'content' : 'data(label)',
               'font-size':'10%',
               'color': '#222',
               'edge-text-rotation': 'autorotate',
               'target-arrow-color': 'data(faveColor)'
             })
+
           .selector('edge')
             .style({
-                'content': 'data(label)'
+
             })
             
           
@@ -108,7 +109,11 @@ var graph_style = {
             .css({
               'line-color': 'green',
               'target-arrow-color':'green',
-              'background-color': 'blue'
+              'background-color': 'blue',
+              
+            })
+            .style({
+              'content': 'data(label)'
             })
 
           .selector('.searched')
@@ -278,7 +283,7 @@ var makeGraph = function(dNodes, dEdges){
       var node = evt.cyTarget;
       var data = node.data();
       var directlyConnected = node.neighborhood();
-      node.addClass('highlighted');
+      node.addClass('selected');
       directlyConnected.nodes().addClass('highlighted');
       node.connectedEdges().addClass('highlighted');
 
@@ -317,6 +322,7 @@ var makeGraph = function(dNodes, dEdges){
 
       cy.elements().css({ content: " " });
       cy.elements().removeClass('highlighted');
+      cy.elements().removeClass('selected');
 
       if(cy.$('node:selected')){
         $('#content-block-hover').html("");
@@ -332,7 +338,7 @@ var makeGraph = function(dNodes, dEdges){
       var node = evt.cyTarget;
       var data = node.data();
       var directlyConnected = node.neighborhood();
-      node.addClass('highlighted');
+      node.addClass('selected');
       directlyConnected.nodes().addClass('highlighted');
       node.connectedEdges().addClass('highlighted');
 
