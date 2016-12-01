@@ -272,10 +272,11 @@ router.route('/:contributionId')
 		].join('\n');
 
 		var params = {
-			contributionIdParam: req.params.contributionId,
-			userIdParam: req.user.id
+			contributionIdParam: parseInt(req.params.contributionId),
+			userIdParam: parseInt(req.user.id)
 		};
 
+		console.log(params);
 		db.query(query, params, function(error, result){
 			if (error)
 				console.log('Error deleting contribution id for this user. Check if this contribution is created by this user.');
@@ -283,8 +284,6 @@ router.route('/:contributionId')
 				res.send('success');
 		});
 	});
-
-
 
 
 router.route('/:contributionId/connections');
