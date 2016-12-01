@@ -282,46 +282,7 @@ router.route('/:contributionId')
 
 				console.log(incomingRelsCount);
 
-				if (incomingRelsCount > 0) {
-					// this is not a leaf
-					// mark as deleted
-
-					/**
-					 * Updates the following fields:
-					 * 1. contributionTitleParam
-					 * 2. tagsParam (delete association to tags as ABOVE)
-					 * 3. contributionBodyParam
-					 * 4. lastUpdatedParam
-					 * 5. edittedParam
-					 */
-
-					var query = [
-						'MATCH (c:contribution) WHERE ID(c)= {contributionIdParam}',
-						'MATCH (u:user) WHERE ID(u)={userIdParam}',
-						'OPTIONAL MATCH (u)-[r:CREATED]->(c)',
-						'SET c.title = {contributionTitleParam},',
-						'c.body = {contributionBodyParam},',
-						'c.lastUpdated = {lastUpdatedParam},',
-						'c.editted = {edittedParam}'
-					].join('\n');
-
-					var notLeafParams = { 
-						contributionIdParam: parseInt(req.params.contributionId),
-						userIdParam: req.user.id,
-						contributionTitleParam: 'Deleted',
-						contributionBodyParam: 'Contribution Deleted',
-						lastUpdatedParam: Date.now(),
-						edittedParam: true
-					}
-
-					db.query(query, notLeafParams, function(error, result) {
-						if (error)
-							console.log('Error deleting a non leaf contribution ' + req.params.contributionId);
-						else
-							console.log('success');
-					})
-
-				} else {
+				if (incomingRelsCount === 0) {
 					// this is a leaf
 					// remove it
 
@@ -341,21 +302,23 @@ router.route('/:contributionId')
 						else
 							console.log('success');
 					});
+
+					// We need to delete the relationship between contribution and tag, and contribution and user (creator)
+					var commonQuery = [
+						'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
+						'MATCH (c)<-[r]-(s) WHERE s:tag OR s:user',
+						'DELETE r'
+					].join('\n');
+
+					db.query(commonQuery, params, function(error, result){
+						if (error)
+							console.log('Error deleting the relationship between contribution and tag, and contribution and user');
+						else
+							res.send('Succeeded deleting relationship between contribution and tag, and contribution and user');
+					});
 				}
-
-				// No matter what, we need to delete the relationship between contribution and tag, and contribution and user (creator)
-				var commonQuery = [
-					'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
-					'MATCH (c)<-[r]-(s) WHERE s:tag OR s:user',
-					'DELETE r'
-				].join('\n');
-
-				db.query(commonQuery, params, function(error, result){
-					if (error)
-						console.log('Error deleting the relationship between contribution and tag, and contribution and user');
-					else
-						res.send('Succeeded deleting relationship between contribution and tag, and contribution and user');
-				})
+				else
+					res.send('Cannot delete non-leaf');
 
 			}
 		});
