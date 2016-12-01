@@ -18,6 +18,9 @@ var EDGE_SELECTED_COLOR = "blue";
 var EDGE_DEFAULT_STRENGTH = 3;
 var EDGE_DEFAULT_WEIGHT = 3;
 
+
+var COLA_GRAPH_LAYOUT = { name : 'cola' };
+
 var GRID_GRAPH_LAYOUT = { name : 'grid' };
 var DAGRE_GRAPH_LAYOUT = { name : 'dagre' };
 var CIRCLE_GRAPH_LAYOUT = { name : 'circle' };
@@ -46,7 +49,7 @@ var graph_style = {
                           //giddy up
                         },
       
-      layout: CONCENTRIC_GRAPH_LAYOUT,
+      layout: COLA_GRAPH_LAYOUT,
       
       hideLabelsOnViewport: false,
       
@@ -245,7 +248,7 @@ var makeGraph = function(dNodes, dEdges){
     }
 
     //graph_style.layout = eval($("input[name='layout-radio']:checked").val());
-    graph_style.layout = COSE_GRAPH_LAYOUT;
+    graph_style.layout = COLA_GRAPH_LAYOUT;
 
     cy = cytoscape( graph_style );
 
