@@ -15,10 +15,9 @@ router.route('/')
 	 */
 	.get(function(req, res){
 
-		console.log(Object.keys(req.query).length);
-
 		var numKeys = Object.keys(req.query).length;
 		var hasParams = (numKeys > 0) ? true : false;
+		var NUM_QUERY_KEYS_CONTRIBUTION = 6;
 
 		if (!hasParams) {
 			var query = [
@@ -37,15 +36,47 @@ router.route('/')
 
 		}
 
-		if (numKeys !== 5) {
-			console.log('Error, must send all 5 query params');
-			res.send('must send all 5 query params');
+		if (numKeys !== NUM_QUERY_KEYS_CONTRIBUTION) {
+			console.log('Error, must send all 6 query params');
+			res.send('must send all 6 query params');
+			return;
 		}
 
-		// has exactly 5 query params
+		// has exactly 6 query params
+		// check if the 6 query params are the ones that i need
 
-		
+		// 1 Number query param (depth)
+		if (!('d' in req.query)){
+			console.log('No depth query provided');
+			res.send('No depth query provided');
+			return;
+		}
 
+		if (req.query['d'].length <= 0 || isNaN(parseInt(req.query['d']))) {
+			console.log('Depth query provided is not a number');
+			res.send('Depth query provided is not a number');
+			return;
+		}
+
+		// 5 array query params
+		var requiredKeysWithoutDepth = ['g', 'u', 'r', 't', 'tg'].sort();
+		var queryKeys = Object.keys(req.query).sort();
+		queryKeys.splice(queryKeys.indexOf('d'), 1);
+
+		var correctParams = requiredKeysWithoutDepth.reduce(function(acc, val, idx){
+			return acc 
+				&& (val == queryKeys[idx]) 
+				&& (req.query[val].length > 0) // must not be blank queries for JSON.parse()
+				&& (JSON.parse(req.query[val]) instanceof Array); // must be an array
+		}, true);
+
+		if (!correctParams) {
+			res.send('Please send the correct 6 params');
+			return;
+		}
+
+		console.log(correctParams);
+		res.send('Ok good params');
 
 	})
 
