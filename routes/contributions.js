@@ -7,6 +7,7 @@ var db = require('seraph')({
 	user: process.env.DB_USER,
 	pass: process.env.DB_PASS
 });
+var _ = require('underscore');
 
 // route: /api/contributions
 router.route('/')
@@ -105,21 +106,73 @@ router.route('/')
 				}
 			});
 		});
-/*
+
 		usersInGroupsPromise
 		.then(function(result){
 			var specifiedUserIds = JSON.parse(req.query['u']).map(x => parseInt(x));
-			var combinedUserIds = specified.
+			var dateArray = JSON.parse(req.query['t']).map(x=>parseInt(x));
+			var params = {
+				userIdsParam: _.union(specifiedUserIds, result),
+				dateLowerParam: dateArray[0],
+				dateUpperParam: dateArray[1],
+				tagIdsParam: JSON.parse(req.query['tg']).map(x => parseInt(x)),
+				depthParam: parseInt(req.query['d'])
+			};
+
+			var query = [
+				'MATCH (u:user) WHERE ID(u) IN [' + params.userIdsParam + ']',
+				'WITH u',
+				'MATCH (c:contribution)<-[r:CREATED]-(u)',
+				'WHERE toInt(c.dateCreated) >= toInt(' + params.dateLowerParam + ')',
+				'AND toInt(c.dateCreated) <= toInt('+ params.dateUpperParam +')',
+				'WITH c',
+				'MATCH (c)-[r:TAGGED]->(t:tag) WHERE ID(t) IN [' + params.tagIdsParam + ']',
+				'WITH c',
+				'MATCH (c)-[*' + params.depthParam + ']-(c2:contribution)',
+				'WITH collect(c)+collect(c2) as combinedContributionsCollection',
+				'UNWIND combinedContributionsCollection AS combinedContribution',
+				'UNWIND combinedContributionsCollection AS combinedContribution2',
+				'MATCH p=(combinedContribution)-[*0..1]-(combinedContribution2)',
+				'WITH combinedContribution, p',
+				'MATCH q=(combinedContribution)-[]->(:contribution {superNode: true})',
+				'RETURN p,q'
+			].join('\n');
+
+			console.log(query);
+
+			apiCall(query, function(data) {
+				var nodes = [], links = [];
+      
+	      data.forEach(function(row){
+	        // for each graph
+
+	        row.graph.nodes.forEach(function(n) {
+	          if (idIndex(nodes, n.id) == null)
+	              nodes.push({
+	                  id: n.id,
+	                  type: n.labels[0],
+	                  name: setName(n),
+	              });
+	        });
+	        links = links.concat(row.graph.relationships.map(function(r) {
+	            return {
+	                source: idIndex(nodes, r.startNode).id,   // should not be a case where start or end is null.
+	                target: idIndex(nodes, r.endNode).id,
+	                name: r.type
+	            };
+	        }));
+	      });
+
+	      res.send({nodes: nodes, links: links});
+			});
 
 
-			var query = 
-		}, function(reason){
+		})
+		.catch(function(reason){
 			console.log(reason);
 			res.send(reason);
-		})
+		});
 
-		console.log(usersInGroups);
-*/
 
 		// Combine users to get all users required
 
@@ -427,6 +480,20 @@ router.route('/:contributionId/connections');
 
 router.route('/:contributionId/connections/:connectionId');
 
+function idIndex(a, id){
+  for (var i =0; i<a.length; i++)
+    if (a[i].id == id) 
+      return a[i];
+  return null;
+};
+
+function setName(n) {
+    if (n.labels[0] === "contribution" || n.labels[0]==='post') {
+        return n.properties.title;
+    } else {
+        return n.properties.name;
+    }
+};
 
 
 module.exports = router;
