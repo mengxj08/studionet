@@ -64,6 +64,7 @@ router.route('/')
 		queryKeys.splice(queryKeys.indexOf('d'), 1);
 
 		var correctParams = requiredKeysWithoutDepth.reduce(function(acc, val, idx){
+			console.log(JSON.parse(req.query[val]));
 			return acc 
 				&& (val == queryKeys[idx]) 
 				&& (req.query[val].length > 0) // must not be blank queries for JSON.parse()
@@ -76,8 +77,54 @@ router.route('/')
 		}
 
 		console.log(correctParams);
-		res.send('Ok good params');
+		//res.send('Ok good params');
 
+		// First get all the users matching the specified group, if present
+		var groupIds = JSON.parse(req.query['g']).map(x => parseInt(x));
+		var query = [ 
+			'MATCH (g:group) WHERE ID(g) IN {groupIdParam}',
+			'MATCH (u:user)<-[r:MEMBER]-(g)',
+			'RETURN collect(distinct id(u))'
+		].join('\n');
+
+		var groupQueryParam = {
+			groupIdParam: groupIds
+		};
+
+		console.log(groupQueryParam.groupIdParam);
+
+		var usersInGroups = [];
+		var usersInGroupsPromise = new Promise(function(resolve, reject){
+			db.query(query, groupQueryParam, function(error, result){
+				if (error) {
+					console.log('Error getting users for group ids: ' + groupIds);
+					reject('Error getting users for group ids: ' + groupIds);
+				} else {
+					console.log('Success in getting users for the group ids: ' + groupIds);
+					resolve(result[0]);
+				}
+			});
+		});
+/*
+		usersInGroupsPromise
+		.then(function(result){
+			var specifiedUserIds = JSON.parse(req.query['u']).map(x => parseInt(x));
+			var combinedUserIds = specified.
+
+
+			var query = 
+		}, function(reason){
+			console.log(reason);
+			res.send(reason);
+		})
+
+		console.log(usersInGroups);
+*/
+
+		// Combine users to get all users required
+
+		// Get contributions matched for these users under the given constraints
+		// Tag, Rating, Depth, Time
 	})
 
 	/*
