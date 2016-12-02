@@ -15,18 +15,37 @@ router.route('/')
 	 */
 	.get(function(req, res){
 
-		var query = [
-			'MATCH (c:contribution)',
-			'WITH c',
-			'RETURN ({title: c.title, createdBy: c.createdBy, dateCreated: c.dateCreated, id: id(c)})'		
-		].join('\n');
+		console.log(Object.keys(req.query).length);
 
-		db.query(query, function(error, result) {
-			if (error)
-				console.log('Error fetching all contributions in the database');
-			else
-				res.send(result);
-		})
+		var numKeys = Object.keys(req.query).length;
+		var hasParams = (numKeys > 0) ? true : false;
+
+		if (!hasParams) {
+			var query = [
+				'MATCH (c:contribution)',
+				'WITH c',
+				'RETURN ({title: c.title, createdBy: c.createdBy, dateCreated: c.dateCreated, id: id(c)})'		
+			].join('\n');
+
+			db.query(query, function(error, result) {
+				if (error)
+					console.log('Error fetching all contributions in the database');
+				else
+					res.send(result);
+			});
+			return;
+
+		}
+
+		if (numKeys !== 5) {
+			console.log('Error, must send all 5 query params');
+			res.send('must send all 5 query params');
+		}
+
+		// has exactly 5 query params
+
+		
+
 
 	})
 

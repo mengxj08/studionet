@@ -18,12 +18,15 @@ var EDGE_SELECTED_COLOR = "blue";
 var EDGE_DEFAULT_STRENGTH = 3;
 var EDGE_DEFAULT_WEIGHT = 3;
 
+
+var COLA_GRAPH_LAYOUT = { name : 'cola', padding: 10 };
+
 var GRID_GRAPH_LAYOUT = { name : 'grid' };
 var DAGRE_GRAPH_LAYOUT = { name : 'dagre' };
 var CIRCLE_GRAPH_LAYOUT = { name : 'circle' };
 var COSE_GRAPH_LAYOUT = { name: 'cose',
-                          padding: 10,
-                          randomize: true };
+                          padding: 15, 
+                          randomize: true};
 
 var CONCENTRIC_GRAPH_LAYOUT = {  name: 'concentric', 
         concentric: function( node ){
@@ -46,7 +49,7 @@ var graph_style = {
                           //giddy up
                         },
       
-      layout: CONCENTRIC_GRAPH_LAYOUT,
+      layout: COLA_GRAPH_LAYOUT,
       
       hideLabelsOnViewport: false,
       
@@ -67,12 +70,12 @@ var graph_style = {
               //'background-height': 'data(height)'
             })
            
-          .selector(':selected')
+          .selector('.selected')
             .css({
-              'border-width': 0.5,
+              'border-width': 3.5,
               'border-color': '#333',
-              'width': 'data(width) + 10', 
-              'height': 'data(height) + 10',
+              'width': 20, 
+              'height': 20,
               'font-size': '15%'
             })
           
@@ -83,15 +86,16 @@ var graph_style = {
               'target-arrow-shape': 'triangle',
               'line-color': 'data(faveColor)',
               'source-arrow-color': 'data(faveColor)',
-              'content' : 'data(label)',
-              'font-size':'15%',
+              //'content' : 'data(label)',
+              'font-size':'10%',
               'color': '#222',
               'edge-text-rotation': 'autorotate',
               'target-arrow-color': 'data(faveColor)'
             })
+
           .selector('edge')
             .style({
-                'content': 'data(label)'
+
             })
             
           
@@ -105,7 +109,22 @@ var graph_style = {
             .css({
               'line-color': 'green',
               'target-arrow-color':'green',
-              'background-color': 'data(faveColor)'
+              'background-color': 'blue',
+              
+            })
+            .style({
+              'content': 'data(label)'
+            })
+
+          .selector('.searched')
+            .css({
+              'line-color': 'blue',
+              'target-arrow-color':'black',
+              'background-color': 'blue',
+              'border-width': 0.5,
+              'border-color': '#333',
+              'width': 'data(width) + 10', 
+              'height': 'data(height) + 10'              
             })
 
 }
@@ -234,7 +253,7 @@ var makeGraph = function(dNodes, dEdges){
     }
 
     //graph_style.layout = eval($("input[name='layout-radio']:checked").val());
-    graph_style.layout = COSE_GRAPH_LAYOUT;
+    graph_style.layout = COLA_GRAPH_LAYOUT;
 
     cy = cytoscape( graph_style );
 
@@ -264,7 +283,7 @@ var makeGraph = function(dNodes, dEdges){
       var node = evt.cyTarget;
       var data = node.data();
       var directlyConnected = node.neighborhood();
-      node.addClass('highlighted');
+      node.addClass('selected');
       directlyConnected.nodes().addClass('highlighted');
       node.connectedEdges().addClass('highlighted');
 
@@ -303,6 +322,7 @@ var makeGraph = function(dNodes, dEdges){
 
       cy.elements().css({ content: " " });
       cy.elements().removeClass('highlighted');
+      cy.elements().removeClass('selected');
 
       if(cy.$('node:selected')){
         $('#content-block-hover').html("");
@@ -314,20 +334,17 @@ var makeGraph = function(dNodes, dEdges){
 
     cy.on('tap', 'node', function(evt){
 
-
       cy.elements().removeClass('highlighted');
       var node = evt.cyTarget;
       var data = node.data();
       var directlyConnected = node.neighborhood();
-      node.addClass('highlighted');
+      node.addClass('selected');
       directlyConnected.nodes().addClass('highlighted');
       node.connectedEdges().addClass('highlighted');
 
       var x = evt.cyPosition.x;
       var y = evt.cyPosition.y;
 
-
-      // display modal only if node is a contribution
       if(data.type == 'contribution'){
            var predecessors = node.predecessors();
            var successors = node.successors();
@@ -386,6 +403,7 @@ var refreshGraph = function(){
     })
 
 }
+
 
 
 // On document ready
