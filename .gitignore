@@ -1,3 +1,4 @@
+.DB_Store
 node_modules/
 uploads/
 run/
@@ -7,3 +8,8 @@ output.log
 hello-world.js
 bin/start
 bin/stop
+env.txt
+studionet.sublime-workspace
+studionet.sublime-project
+.sass-cache
+syntheticdb.mdown

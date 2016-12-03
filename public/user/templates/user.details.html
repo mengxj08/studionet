@@ -1,0 +1,108 @@
+<!--- Profile page of the user -->
+<div class="row">
+<div class="col-lg-12">
+<div class="card">
+<div class="card-body app-heading">
+  <button class='btn btn-link' data-toggle="modal" data-target="#changeAvatar"><img class="profile-img" src={{user.avatar}}></button>
+  <div class="app-title">
+    <div class="title">
+    <span class="highlight">
+        <input ng-model='user.name' style='border: none;' ng-keypress='changeName($event)'></span>
+    </div>
+    <div class="description">{{user.nusOpenId}}</div>
+  </div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="row">
+  <div class="col-xs-12">
+    <div class="card">
+     <div class="card-body">
+        <div class="row">
+          <div class="container-fluid">
+            <div class="col-xs-12">
+              <div>
+                <p><strong>Last Logged In: </strong>{{user.lastLoggedIn | date: 'medium'}}</p>
+                <p><strong>Super Admin: </strong>{{user.superAdmin}}</p>
+                <div class='row'>
+                  <div class='col-sm-6'>
+                    <p>
+                      <strong>Groups ( {{modules.length}} ) :</strong>
+                      <ul ng-repeat="module in modules">
+                        <li>{{module.name}}</li>
+                      </ul>
+                    </p>
+                  </div>
+                  <div class='col-sm-6'>
+                  <p>
+                    <strong>Contributions ( {{modules.length}} ) :</strong>
+                    <ul ng-repeat="module in modules">
+                      <li>---placeholder contribution---</li>
+                    </ul>
+                  </p>
+                  </div>
+<!--                   <div class='col-sm-4'>
+                  <p>
+                    <strong>Filters ( {{modules.length}} ) :</strong>
+                    <ul ng-repeat="module in modules">
+                      <li>---placeholder filters---</li>
+                    </ul>
+                  </p>
+                  </div> -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+     </div>
+    </div>
+  </div>
+
+
+
+<!--- Change Avatar Modal -->
+<div class="modal fade" id="changeAvatar" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h4 class="modal-title">Change your Avatar</h4>
+      </div>
+
+      <div class="modal-body">
+        <div class='row'>
+          <div class="col-xs-12">
+                  <form name="myForm">
+                    <fieldset>
+                      <legend>Upload avatar</legend>
+                      <br>Avatar:
+                      <input type="file" ngf-select ng-model="picFile" name="avatar"    
+                             accept="image/*" ngf-max-size="2MB" required
+                             ngf-model-invalid="errorFile">
+                      <i ng-show="myForm.file.$error.required">*required</i><br>
+                      <i ng-show="myForm.file.$error.maxSize">File too large 
+                          {{errorFile.size / 1000000|number:1}}MB: max 2M</i>
+                      <img ng-show="myForm.file.$valid" ngf-thumbnail="picFile" class="thumb"> <button ng-click="picFile = null" ng-show="picFile">Remove</button>
+                      <br>
+                      <button ng-disabled="!myForm.$valid" 
+                              ng-click="uploadPic(picFile)">Submit</button>
+                      <span class="progress" ng-show="picFile.progress >= 0">
+                        <div style="width:{{picFile.progress}}%" 
+                            ng-bind="picFile.progress + '%'"></div>
+                      </span>
+                      <span ng-show="picFile.result">Upload Successful</span>
+                      <span class="err" ng-show="errorMsg">{{errorMsg}}</span>
+                    </fieldset>
+                    <br>
+                  </form>
+          </div>
+        </div>
+      </div>
+     </div>
+  </div>
+</div>
+
+
+

@@ -1,29 +1,130 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>StudioNet Admin</title>
-	<link rel='stylesheet' href='/admin/stylesheets/style.css' />		
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ng-tags-input/3.1.1/ng-tags-input.min.css">
+  <title>StudioNET - A Graph Based Sharing Network</title>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Template CSS -->
+  <link rel="stylesheet" type="text/css" href="../assets/css/vendor.css">
+  <link rel="stylesheet" type="text/css" href="../assets/css/flat-admin.css">
+
+  <!-- Custom Overrides -->
+  <link rel="stylesheet" type="text/css" href="../assets/css/admin-customized.css">
+
+  <!-- Theme -->
+  <link rel="stylesheet" type="text/css" href="../assets/css/theme/blue-sky.css">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ng-tags-input/3.1.1/ng-tags-input.min.css">
+
 </head>
 <body ng-app="studionetAdmin">
-	<h1>StudioNet Admin Page</h1>
-	<a class="btn btn-default" href="/user">User Page</a>
-	<a class="btn btn-default" href="/logout">Log out</a>
-	<ui-view></ui-view>
 
-    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <div class="app app-default">
+
+        <div class="app-container">
+
+            <!-- Top Nav -->
+            <nav class="navbar navbar-default" id="navbar">
+              <div class="container-fluid">
+                <div class="navbar-collapse collapse in">
+                  <ul class="nav navbar-nav navbar-mobile">
+                    <li class="logo">
+                      <a class="navbar-brand" href="#"><span class="highlight">StudioNET</span> Admin</a>
+                    </li>
+                    <li>
+                      <button type="button" class="navbar-toggle">
+                        <i class="fa fa-bars"></i>
+                      </button>
+                    </li>
+                  </ul>
+                  <ul class="nav navbar-nav navbar-left">
+                    <a class="navbar-brand" href="#"><span class="highlight">StudioNET</span> Admin</a>
+                  </ul>
+                  <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+
+                      <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+
+                          <li>
+                            <a href="/user">
+                              User Dashboard
+                            </a>
+                          </li>
+                          <li>
+                            <a href="#tests">
+                              Testing
+                            </a>
+                          </li>
+                          <li>
+                            <a href="/logout">
+                              Logout
+                            </a>
+                          </li>
+
+                      </a>
+                      
+
+                      <div class="dropdown-menu">
+                        <div class="profile-info">
+                          <h4 class="username">Super Admin</h4>
+                        </div>
+                        <ul class="action">
+                          <li>
+                            <a href="/user">
+                              User Dashboard
+                            </a>
+                          </li>
+                          <li>
+                            <a href="#tests">
+                              Testing Interface
+                            </a>
+                          </li>
+                          <li>
+                            <a href="/logout">
+                              Logout
+                            </a>
+                          </li>
+                        </ul>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </nav>
+
+
+            <ui-view ng-controller="HomeCtrl"></ui-view>
+
+        </div>
+
+    </div>
+
+    <!-- d3.js -->
+    <script src="//d3js.org/d3.v3.js" charset="utf-8"></script>  
+    
+    <!-- template files -->
+    <script type="text/javascript" src="../assets/js/vendor.js"></script>
+    <script type="text/javascript" src="../assets/js/app.js"></script>
+
+
+    <!-- angular modules -->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-resource.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.1/angular-ui-router.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ng-tags-input/3.1.1/ng-tags-input.min.js"></script>
+
+    <!-- include admin routing -->
     <script type="text/javascript" src="/admin/javascripts/adminAngularApp.js"></script>
-    <!-- include controllers, services -->
+    
+    <!--include controllers, services -->
     <script type="text/javascript" src="/admin/javascripts/services.js"></script>
     <script type="text/javascript" src="/admin/javascripts/controllers/HomeCtrl.js"></script>
+    <script type="text/javascript" src="/admin/javascripts/controllers/TestCtrl.js"></script>
     <script type="text/javascript" src="/admin/javascripts/controllers/ModuleCtrl.js"></script>
     <script type="text/javascript" src="/admin/javascripts/controllers/ModulesCtrl.js"></script>
     <script type="text/javascript" src="/admin/javascripts/controllers/UsersCtrl.js"></script>
+
 </body>
 </html>
+

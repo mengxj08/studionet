@@ -11,12 +11,16 @@ var bodyParser = require('body-parser');
 var profile = require('./routes/profile');
 var routes = require('./routes/index');
 var users = require('./routes/users');
-var modules = require('./routes/modules');
+var groups = require('./routes/groups');
+var tags = require('./routes/tags');
 var moderators = require('./routes/moderators');
+var relationships = require('./routes/relationships');
 var uploads = require('./routes/uploads');
 var graph_all = require('./routes/graph_all');
 var graph_med = require('./routes/graph_med');
 var contributions = require('./routes/contributions');
+
+var logs = require('./routes/logs');
 
 
 var app = express();
@@ -36,7 +40,9 @@ app.use(session({
   secret: 'keyboard cat',   // some temp. secret
   cookie: {
     maxAge: 30*60*60*1000   // temp: expire in 30 hours
-  }
+  },
+  resave: true,
+  saveUninitialized: true
 }));
 // Initialize Passport!  Also use passport.session() middleware, to support
 // persistent login sessions (recommended).
@@ -53,10 +59,14 @@ app.use('/graph/all', graph_all);
 app.use('/graph/med', graph_med);
 app.use('/api/profile', profile);
 app.use('/api/users', users);
-app.use('/api/modules', modules);
+app.use('/api/groups', groups);
+app.use('/api/tags', tags);
 app.use('/api/moderators', moderators);
-app.use('/uploads', uploads);
+app.use('/api/relationships', relationships);
 app.use('/api/contributions', contributions);
+app.use('/uploads', uploads);
+
+app.use('/api/logs', logs);
 
 
 // catch 404 and forward to error handler

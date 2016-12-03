@@ -1,0 +1,46 @@
+<header>
+	<div class='logo-container'>
+		<a ui-sref='home.graphView'><div class='logo'><p>S</p>tudioNET</div></a>
+	</div>
+	<div class='user-avatar-container'>
+		<a ui-sref='home.userDetails'><img class='user-avatar' src='./img/boy.svg'/></a>
+		<img class='recent-activity-notifications' src='./img/worldwide.svg'/>
+	</div>
+</header>
+
+<div class="row">
+	<div class="container">
+		<div class="col-xs-12">
+			<h2>Admin Page for Module {{moduleInfo.code}} <button class="btn btn-default pull-right" ui-sref="admin">Back to admin panel</button></h2>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="container">
+		<div class="col-xs-12">
+			<div class="well">
+				<h4>Module Code: {{moduleInfo.code}}</button></h4>
+				<p><strong>Module Name: </strong>{{moduleInfo.name}}</p>
+				<p><strong>Module Contribution Types: </strong>{{moduleInfo.contributionTypes}}</p>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="container">
+		<div class="col-xs-12">
+			<button class="btn btn-default" ui-sref-active="active" ui-sref="moduleAdmin.addUser">Add user to module</button>
+			<button class="btn btn-default" ui-sref-active="active" ui-sref="moduleAdmin.restrictUser">Restrict user</button>
+			<button class="btn btn-default" ui-sref-active="active" ui-sref="moduleAdmin.editTypes">Edit contribution types for module</button>
+			<button class="btn btn-default" ui-sref-active="active" ui-sref="moduleAdmin.editRoles">Edit role of user</button>
+		</div>
+	</div>
+</div>
+
+<ui-view></ui-view>
+
+<!--
+<p>{{moduleUsers}}</p>
+-->

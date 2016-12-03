@@ -1,45 +1,65 @@
-<div class="container-fluid">
-	
-<!-- 	<div class='row visible-xs'>
-		<div class='col-xs-12'>Mobile Nav</div>
-	</div> -->
+<!-- Stylesheet for graph -->
+<link rel='stylesheet' href='./stylesheets/graph-style.css' />
 
-	<div class='row user-body'>
-
-		<div class="col-sm-2 side-nav-container">
-			<ul class="hidden-xs side-nav">
-			    <li class='side-nav-element' id='user-image'>
-			    	<img class='user-avatar' src={{user.avatar}}/>
-					<h3 class='side-nav-item'>{{user.name}}</h3>
-				</li>
-			    <li class='side-nav-element' ui-sref-active="active" ui-sref="home.graphView">
-			    		<span class="glyphicon glyphicon-th" aria-hidden="true"/>
-						<h3 class='side-nav-item'>Graph</h3>
-			    </li>
-			   	<li class='side-nav-element' ui-sref-active="active" ui-sref="home.userContributions">		
-			    		<span class="glyphicon glyphicon-pencil" aria-hidden="true"/>
-						<h3 class='side-nav-item'>My Creations</h3>
-			    </li>
-			    <li class='side-nav-element' ui-sref-active="active" ui-sref="home.userSavedGraphs">		
-			    		<span class="glyphicon glyphicon-bookmark" aria-hidden="true"/>
-						<h3 class='side-nav-item'>Saved Graphs</h3>
-			    </li>
-			    <li class='side-nav-element' ui-sref-active="active" ui-sref="home.userDetails">		
-					<span class="glyphicon glyphicon-user" aria-hidden="true"/>
-					<h3 class='side-nav-item'>User Profile</h3>
-			    </li>
-			</ul>
-		</div>
-
-		<div class='col-sm-10 col-xs-12 content'>
-			<ui-view></ui-view>
-		</div>
+<!-- javascript for cose-layout in graph -->
+<script src="https://cdn.rawgit.com/cpettitt/dagre/v0.7.4/dist/dagre.min.js"></script>
+<script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-dagre/1.1.2/cytoscape-dagre.js"></script>
 
 
-	</div>
+<!--Top Nav Bar -->
+<ng-include src="'templates/top-navbar.html'"></ng-include>
 
+<!--Side Nav Bar with Filters-->
+<ng-include src="'templates/filters.html'"></ng-include>
+
+<!-- div to host the information panel on hover -->
+<div id='content-block-hover'></div>
+
+
+<!-- actual graph container -->
+<div class='graph-container'>
+
+
+  
+  <div class='graph-controls'>
+    <img class='graph-nav-control zoom-extents' src='./img/expand.svg'/>
+  </div>
+
+    <div id='cy'></div>
+   
 </div>
 
-<!-- include javascript functionality -->
-<script type="text/javascript" src="/user/javascripts/ui/user-ui.js"></script>
+
+<!-- Modal -->
+<ui-view></ui-view>
+
+<!-- create a contribution -->
+<div class="btn-floating" id="help-actions">
+  <div class="btn-bg"></div>
+  <button type="button" class="btn btn-default btn-toggle" data-toggle="toggle" data-target="#help-actions">
+    <i class="icon fa fa-plus"></i>
+    <span class="help-text">Create a contribution</span>
+  </button>
+  <div class="toggle-content">
+    <ul class="actions">
+      <li><a href="#">Website</a></li>
+      <li><a href="#">Documentation</a></li>
+      <li><a href="#">Issues</a></li>
+      <li><a href="#">About</a></li>
+    </ul>
+  </div>
+</div>
+
+
+
+
+<!-- Layout files for Cytoscape -->
+<script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-cose-bilkent/1.0.5/cytoscape-cose-bilkent.js"></script>
+ 
+<!-- include graph js -->
+<script type="text/javascript" src="/user/javascripts/ui/user-ui.js"></script> 
+<script src="./javascripts/ui/graph-creator.js"></script>
+
+<link rel='stylesheet' href='./stylesheets/filter-style.css' />
+
 

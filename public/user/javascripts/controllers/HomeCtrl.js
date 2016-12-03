@@ -1,59 +1,280 @@
 angular.module('studionet')
 
-.controller('HomeCtrl', ['$scope', 'profile', 'Upload', '$timeout', 'modelsFactory',
+.controller('HomeCtrl', ['$scope', 'profile', 'Upload', '$timeout', 'modelsFactory', 'ModalService', '$http', 
 
- function($scope, profile, Upload, $timeout, modelsFactory){
+ function($scope, profile, Upload, $timeout, modelsFactory, ModalService, $http){
+
 	$scope.user = profile.user;
 	$scope.modules = profile.modules;
   $scope.userModels = modelsFactory.userModels;
-
+  
 	$scope.isAdmin = profile.modules.reduce(function(res, curr){
 		return res || curr.role==='Admin';
-	}, false);
+	}, false); 
 
-	$scope.uploadPic = function(avatar) {
-    avatar.upload = Upload.upload({
-      url: '/uploads/avatar',
-      data: {username: $scope.username, avatar: avatar},
-    });
+  /*
+   *
+   *  Search Functionality
+   * 
+   */
+  $scope.textFilter = "";
+  $scope.searchActive = false;
 
-    avatar.upload.then(function (response) {
-      $timeout(function () {
-        avatar.result = response.data;
+  $scope.textSearchFilter = function(searchText){
 
-         // force a reload for avatar
-	      var random = (new Date()).toString();
-	      profile.getUser().then(function(){
-		      $scope.user.avatar = $scope.user.avatar + "?cb=" + random;
-		    });
+      if(searchText ==  "")
+        return; 
+
+      cy.nodes().forEach(function( ele ){
+          
+          if( (ele.data().name).toLowerCase().includes( searchText.toLowerCase() )){
+            console.log( ele.data().name );
+            ele.addClass('searched');
+            ele.connectedEdges().addClass('highlighted');
+            $scope.searchActive = true;
+          }
+         
       });
-    }, function (response) {
-      if (response.status > 0)
-        $scope.errorMsg = response.status + ': ' + response.data;
-    }, function (evt) {
-      // Math.min is to fix IE which reports 200% sometimes
-      avatar.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-    });
-   }
+  }
 
-  $scope.uploadModel = function(model){
-    model.upload = Upload.upload({
-      url: '/uploads/models',
-      data: {username: $scope.username, model: model},
-    });
+  $scope.clearSearch = function(){
+    $scope.textFilter = "";
+    $scope.searchActive = false;
+    cy.elements().removeClass('highlighted')
+    cy.elements().removeClass('searched')
+  }
 
-    model.upload.then(function (response) {
-      $timeout(function () {
-        model.result = response.data;
+
+
+  /*
+   *
+   *  Contribution Details
+   *
+   * 
+   */
+
+
+  $scope.showDetailsModal = function(data) {
+
+      ModalService.showModal({
+        templateUrl: "/user/templates/home.graphView.modal.html",
+        controller: "DetailsModalCtrl",
+        inputs: {
+          title: "A More Complex Example"
+        }
+      }).then(function(modal) {
+        modal.element.modal({
+          backdrop: 'static'
+          // keyboard: false
+        });
+
+        /// set data
+        modal.scope.setData(data);
+
+/*        modal.close.then(function(result) {
+          //$scope.complexResult  = "Name: " + result.name + ", age: " + result.age;
+        });*/
+        
       });
-    }, function (response) {
-      if (response.status > 0)
-        $scope.errorMsg = response.status + ': ' + response.data;
-    }, function (evt) {
-      // Math.min is to fix IE which reports 200% sometimes
-      model.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-    });
-  };
+
+    };
+
+}])
+
+/*
+ * Controller for Filters
+ */
+.controller('FilterCtrl', ['$scope', '$http', 
+
+   function($scope, $http){
+      
+      $scope.selectedGroups = [];
+      $scope.selectedTags = [];
+      $scope.firstDate = new Date();
+      $scope.lastDate = new Date(); 
+      
+      $scope.firstDate.setDate($scope.firstDate.getDate() - 10);
+
+      $scope.ratingMin = 3;
+      $scope.ratingMax = 4;
+      $scope.depthVal = 3;
+
+      $scope.selectedFilters = {};
+      $scope.selectedItems= [];
+      $scope.selectedFilters = {};
+      $scope.selectedItem3 = [];
+
+      /*
+       *  Composes FilterURL to send to server & modifies graph
+       * 
+       */
+      $scope.filterRequest = function(data){
+
+          var urlString = '/api/contributions?'; 
+          
+          //  Create the URL String
+          urlString += "groups=[ " + $scope.selectedGroups.map( function(g){
+             return g.id; 
+          }).toString() + " ]"
+
+          + "&tags=[ " + $scope.selectedTags.map( function(g){
+             return g.id; 
+          }).toString() + " ]" 
+
+          + "&rating=[" + $scope.ratingMin + ", " + $scope.ratingMax + "]"
+
+          + "&timeg=[" + $scope.firstDate.getTime() + ", " + $scope.lastDate.getTime() + "]"
+
+          + "&depth=" + $scope.depthVal;
+
+          alert(urlString);
+          
+
+      };
+
+      $scope.CustomCallback = function (item, selectedItems) {
+          if (selectedItems !== undefined && selectedItems.length >= 80) {
+              return false;
+          } else {
+              return true;
+          }
+      };
+
+      /*
+       * Initialization of filter-headings toggle functionality
+       * TODO: find better fix
+       */
+      $scope.init = function(){
+
+        $(".filter-heading").click(function(){
+              $(this).siblings().toggle();
+        });
+
+        refresh();
+
+      }
+
+      /*
+       *  Refresh function that refreshes all lists
+       *  TODO: make these requests a service?
+       *  
+       */
+      function refresh(){
+          $http.get('/api/tags/').success(function(data){
+              console.log("tags");
+              console.log(data);
+              var tags = [];
+              var list = data;
+              for(var i=0;i<list.length;i++){
+                var obj ={
+                  name: list[i].name,
+                  id: list[i].id,
+                  
+                  isExpanded: false,
+                  children:[]
+                }
+                tags.push(obj);
+              }
+              $scope.dataTags= angular.copy(tags);
+          });
+            
+            
+          $http.get('/api/groups/').success(function(data){
+            
+            var users = [];
+            $http.get('/api/users/').success(function(data1){
+
+              users = data1;
+             
+              $scope.filterData=data;
+              var list=data;
+              var groups = [];
+              var mainGrps = [];
+              var numGrp=0;
+
+              var userObj = {
+                  name: 'Users',
+                  id: 4567,
+                  parentId: null,
+                  isExpanded: false,
+                  children:[]
+              }
+
+              for(var i=0;i<users.length;i++){
+                   var obj = {
+                    name: users[i].name,
+                    id: users[i].id,
+                    parentId: 4567,
+                    isExpanded: false,
+                    children:[]
+                }
+                userObj.children.push(obj);
+              }
+              
+
+              for(var i=0;i<list.length;i++){
+                
+                var obj = {
+                  name: list[i].name,
+                  id: list[i].id,
+                  parentId: list[i].parentId,
+                  isExpanded: false,
+                  children:[]
+                }
+                mainGrps.push(obj);
+                groups[list[i].id] = obj;
+              }
+             
+              for(var b=0;b<list.length;b++){
+                var parent = list[b].parentId;
+                if(groups[parent]!=null){
+
+                  groups[parent].children.push(list[b].id);
+
+                }
+              }
+              
+              
+              var grpList = [];
+             /* for(var j=0;j<mainGrps.length;j++){
+                if( mainGrps[j].children.length >0){
+                  for(var k=0; k < mainGrps[j].children.length; k++){
+                    mainGrps[j].children[k] = groups[mainGrps[j].children[k]];
+                  }
+                }
+              }*/
+                  //grpList[j] = groups[[j]];
+                for(var j=0;j<mainGrps.length;j++){
+                  var key = mainGrps[j].id;
+                  if(groups.hasOwnProperty(key)){
+                    for(var i=0;i<groups[key].children.length;i++){
+                      var id = groups[key].children[i];
+                      mainGrps[j].children[i] = groups[id];
+                   }
+                  }
+                }
+
+             
+              //console.log(mainGrps);
+              for(var j=0;j<mainGrps.length;j++){
+                
+                if(mainGrps[j].parentId!=null){
+                  
+                  mainGrps.splice(j,1);
+                  j--;
+                }
+              }
+              mainGrps.push(userObj);
+              $scope.data = angular.copy(mainGrps);
+              $scope.datas = angular.copy(mainGrps);  
+              
+
+            });
+
+              
+          }); 
+
+      }
 
 
 

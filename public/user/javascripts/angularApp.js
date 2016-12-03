@@ -1,10 +1,12 @@
-var app = angular.module('studionet', ['ui.router', 'ngTagsInput', 'ngFileUpload'])
-									.run(['profile', function(profile){
-										/*
-										profile.getUser();
-										profile.getModules();
-										*/
-									}]);
+var app = angular.module('studionet', ['ui.router','ui.bootstrap', 'ngTagsInput', 'ngFileUpload', 'angularModalService', 'multiselect-searchtree', 'angular-ranger'])
+									.run(function($rootScope){
+/*									    $rootScope.value = {
+									        min: 5,
+									        max: 18,
+									        value: 12
+									    };*/
+									});
+
 
 app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', function($stateProvider, $urlRouterProvider, tagsInputConfigProvider){
 
@@ -24,7 +26,77 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 
 			}
 		})
-		.state('home.graphView', {
+		.state('user', {
+			url: '/me',
+			templateUrl: '/user/templates/user.html',
+			controller: 'UserCtrl',
+			resolve: {
+				userProfile: ['profile', function(profile){
+					return profile.getUser() && profile.getModules();
+				}],
+				userModels: ['modelsFactory', 'userProfile', 'profile', function(modelsFactory, userProfile, profile){
+					return modelsFactory.getUserModels(profile.user.nusOpenId);
+				}]
+
+			}
+		})
+		.state('user.details', {
+			url: '/details',
+			templateUrl: '/user/templates/user.details.html',
+			controller: 'ProfileCtrl',
+			resolve: {
+				userProfile: ['profile', function(profile){
+					return profile.getUser() && profile.getModules();
+				}],
+				userModels: ['modelsFactory', 'userProfile', 'profile', function(modelsFactory, userProfile, profile){
+					return modelsFactory.getUserModels(profile.user.nusOpenId);
+				}]
+
+			}
+		})
+		.state('user.groups', {
+			url: '/groups',
+			templateUrl: '/user/templates/user.groups.html',
+			controller: 'GroupsCtrl',
+			resolve: {
+				userProfile: ['profile', function(profile){
+					return profile.getUser() && profile.getModules();
+				}],
+				userModels: ['modelsFactory', 'userProfile', 'profile', function(modelsFactory, userProfile, profile){
+					return modelsFactory.getUserModels(profile.user.nusOpenId);
+				}]
+
+			}
+		})
+		.state('user.createGroup', {
+			url: '/groups/create',
+			templateUrl: '/user/templates/user.createGroup.html',
+			controller: 'GroupsCtrl',
+			resolve: {
+				userProfile: ['profile', function(profile){
+					return profile.getUser() && profile.getModules();
+				}],
+				userModels: ['modelsFactory', 'userProfile', 'profile', function(modelsFactory, userProfile, profile){
+					return modelsFactory.getUserModels(profile.user.nusOpenId);
+				}]
+
+			}
+		})
+		.state('user.graph', {
+			url: '/graph',
+			templateUrl: '/user/templates/user.graph.html',
+			controller: 'UserGraphCtrl',
+			resolve: {
+				userProfile: ['profile', function(profile){
+					return profile.getUser() && profile.getModules();
+				}],
+				userModels: ['modelsFactory', 'userProfile', 'profile', function(modelsFactory, userProfile, profile){
+					return modelsFactory.getUserModels(profile.user.nusOpenId);
+				}]
+
+			}
+		})
+/*		.state('home.graphView', {
 			url: 'graph',
 			templateUrl: '/user/templates/home.graphView.html',
 			controller: 'HomeCtrl',
@@ -52,34 +124,7 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 
 			}
 		})
-		.state('home.userContributions', {
-			url: 'mycontributions',
-			templateUrl: '/user/templates/home.userContributions.html',
-			controller: 'HomeCtrl',
-			resolve: {
-				userProfile: ['profile', function(profile){
-					return profile.getUser() && profile.getModules();
-				}],
-				userModels: ['modelsFactory', 'userProfile', 'profile', function(modelsFactory, userProfile, profile){
-					return modelsFactory.getUserModels(profile.user.nusOpenId);
-				}]
-
-			}
-		})
-		.state('home.userSavedGraphs', {
-			url: 'bookmarks',
-			templateUrl: '/user/templates/home.userSavedGraphs.html',
-			controller: 'HomeCtrl',
-			resolve: {
-				userProfile: ['profile', function(profile){
-					return profile.getUser() && profile.getModules();
-				}],
-				userModels: ['modelsFactory', 'userProfile', 'profile', function(modelsFactory, userProfile, profile){
-					return modelsFactory.getUserModels(profile.user.nusOpenId);
-				}]
-
-			}
-		})
+	
 		.state('admin', {
 			// admin front
 			url: '/admin',
@@ -139,6 +184,7 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 				}]
 			}
 		})
+		
 		.state('moduleAdmin.restrictUser', {
 			url: '/restrict', 
 			templateUrl: '/user/templates/moduleAdmin.restrictUser.html'
@@ -150,7 +196,7 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 		.state('moduleAdmin.editRoles', {
 			url:'/roles',
 			templateUrl: '/user/templates/moduleAdmin.editRoles.html'
-		})
+		})*/
 
 	$urlRouterProvider.otherwise('/');
 }]);

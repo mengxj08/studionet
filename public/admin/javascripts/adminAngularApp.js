@@ -7,11 +7,30 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 		.state('home', {
 			url: '/',
 			templateUrl: '/admin/templates/home.html',
-			controller: 'HomeCtrl'
+			controller: 'HomeCtrl',
+			resolve: {
+				usersPromise: ['users', function(users){
+					return users.getAll();
+				}],
+				// get modules data before page loads
+				modulesPromise: ['modules', function(modules){
+					return modules.query();
+				}]
+			}
 		})
-		.state('modules', {
-			url: '/modules',
-			templateUrl: '/admin/templates/modules.html',
+		/*
+		 *  Should be remove in production; 
+		 *  Only for testing purposes to create synthetic data set
+		 *  Remove TestCtrl from HomeCtrl file
+		 */ 
+		.state('testing', {
+			url: '/tests',
+			templateUrl: '/admin/templates/testing.html',
+			controller: 'TestCtrl'
+		})
+		.state('groups', {
+			url: '/groups',
+			templateUrl: '/admin/templates/groups.html',
 			controller: 'ModulesCtrl',
 			resolve: {
 				usersPromise: ['users', function(users){
@@ -23,8 +42,8 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 				}]
 			}
 		})
-		.state('module', {
-			url: '/modules/:id',
+		.state('group', {
+			url: '/groups/:id',
 			templateUrl: '/admin/templates/module.html',
 			controller: 'ModuleCtrl',
 			resolve: {
@@ -38,10 +57,34 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 				}]
 			}
 		})
+		.state('contributions', {
+			url: '/contributions',
+			templateUrl: '/admin/templates/contributions.html',
+			controller: 'ModulesCtrl',
+			resolve: {
+				usersPromise: ['users', function(users){
+					return users.getAll();
+				}],
+				// get modules data before page loads
+				modulesPromise: ['modules', function(modules){
+					return modules.query();
+				}]
+			}
+		})		
 		.state('users', {
 			url: '/users',
 			templateUrl: '/admin/templates/users.html',
 			controller: 'UsersCtrl',
+			resolve: {
+				usersPromise: ['users', function(users){
+					return users.getAll();
+				}]
+			}
+		})
+		.state('tags', {
+			url: '/tags',
+			templateUrl: '/admin/templates/tags.html',
+			controller: 'HomeCtrl',
 			resolve: {
 				usersPromise: ['users', function(users){
 					return users.getAll();

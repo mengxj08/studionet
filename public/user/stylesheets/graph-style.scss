@@ -1,0 +1,188 @@
+
+/*
+ * Layouts - Experimental
+ */
+
+*{
+	margin: 0px; 
+	padding: 0px;
+}
+
+
+.layouts{
+	border: 1px solid black;
+	width: 90%;
+	height: 40px; 
+	padding: 0px 2%;
+	margin-left: 5%;
+	//margin-top: -40px;
+	line-height: 40px;
+	background-color: rbga(0,0,0,0.6);
+	//display: none;
+	z-index: 2;
+}
+/* 
+#filter:hover + .layouts{
+	display: block;
+	animation-name: dropdown;
+	animation-duration: 1s;
+} */
+
+@keyframes dropdown {
+    0%   {margin-top: -30px}
+    25%  {margin-top: -20px}
+    50%  {margin-top: -10px}
+    100% {margin-top: 0px}
+
+}
+
+/* .layouts:hover{
+	-webkit-transform: translate(0,40px);
+	   -moz-transform: translate(0,40px);
+	    -ms-transform: translate(0,40px);
+	     -o-transform: translate(0,40px);
+	        transform: translate(0,40px);
+	display: block;
+} */
+
+button{
+	color: #000000;
+}
+
+input{
+	color: #000000;
+	margin: 0px; 
+}
+
+#cy{
+	position: absolute;
+	height: 100% ;
+	width: 100% ;
+	z-index: 5 ;
+	width: 90%;
+	left: 5%;
+}
+
+
+#content-block-hover{
+
+	display: none;
+	position: absolute;
+	top: 60px;
+	color: #D9CCCC;
+
+	border-radius: 5px;
+	font-size: 12px;
+	padding: 0px !important;
+
+	border: 1px solid #000000;
+	font-size: 14px;
+	background-color: rgba(0, 0, 0, 0.7);
+	z-index: 10;
+	padding: 20px;
+	
+	//width: 200px;
+
+	.user{
+
+		width: 200px;
+
+		.heading{
+			font-size: 16px;
+			border-bottom: 1px solid #000000;
+			text-decoration: uppercase;	
+			text-align: center;		
+		}
+
+		.stats-container{
+
+			width: 100%; 
+			text-align: center;
+			
+
+			.stats{
+				width: 40%; 
+				//height: 25px;
+				margin: 10px;
+				border: 1px solid black; 
+
+				display: inline-block;
+			}
+
+		}
+
+	}
+
+	.module{
+
+		.heading{
+			font-size: 14px;
+			font-weight: bold;
+			line-height: 20px;
+			text-align: center;
+			text-transform: uppercase;
+			margin: 0px;
+			padding: 0px;		
+		}
+
+		.module-image{
+			position: absolute;
+			height: 100%; 
+			width: 100%; 
+			background-image: url('http://placehold.it/100x100');
+		}
+
+		.stats-container{
+
+			width: 100%; 
+			text-align: center;
+			
+
+			.stats{
+				width: 100px; 
+				//height: 25px;
+				margin: 10px;
+				border: 1px solid black;
+
+				float: left; 
+			}
+
+		}
+	}
+
+	.contribution{
+
+		.stats-container{
+
+			width: 100%; 
+			text-align: center;
+			
+
+			.stats{
+				width: 25%; 
+				//height: 25px;
+				margin: 10px;
+				border: 1px solid black; 
+			}
+
+		}
+	}
+
+
+	hr{
+		margin: 0px;
+	}
+}
+
+
+#btn-contribute{
+	
+	border-radius: 50%;
+
+}
+
+#second-cy{
+	border: 1px solid black;
+	height: 500px; 
+	
+}

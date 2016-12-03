@@ -1,0 +1,36 @@
+<div class="row">
+  
+  <!-- some list -->
+  <div class="col-xs-12 col-sm-12">
+	<div class="card card-mini">
+	  <div class="card-header">
+	    <div class="card-title"><span>Contributions ({{ contributions.length }})</span></div>
+	  </div>
+	  <div class="card-body no-padding table-responsive height-700">
+
+        <table class="table card-table table-hover">
+            <thead>
+              <tr>
+                <th>Created On</th>
+                <th>DB ID</th>
+                <th>Author</th>
+                <th>Title</th>
+              </tr>
+            </thead>
+            <tbody ng-repeat="contribution in contributions | orderBy : '-id' ">
+              <tr>
+                <th>{{ getDateString(contribution.dateCreated) }}</th>
+                <th>{{contribution.id}}</th>
+                <th>{{contribution.createdBy}}</th>
+                <th>{{contribution.title}}</th>
+              </tr>
+            </tbody>
+        </table>
+	  </div>
+
+
+	</div>
+  </div>
+
+</div>
+

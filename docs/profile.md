@@ -2,7 +2,7 @@
 |          Endpoint          |                             Description                            |  Access Rights  |
 |----------------------------|--------------------------------------------------------------------|-----------------|
 |       GET /api/profile     |    Retrieves the current user's profile and modules information    |      User       |
-|      PUT /api/profile      |              Update information about the current user             |      User       |
+|      _PUT /api/profile_      |              _Update information about the current user_             |      _User_       |
 |    GET /api/profile/user   |          Retrieves the current user's profile information          |      User       |
 |  GET /api/profile/modules  |            Retrieves all modules the current user is in            |      User       |
 
@@ -48,6 +48,7 @@ User
 
 ## `PUT /api/profile`
 Update information about the current user.
+**`This route is currently under reevaluation and is not under use`**
 
 ### Access Rights
 User

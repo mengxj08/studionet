@@ -18,6 +18,12 @@ angular.module('studionet')
 		});
 	};
 
+	o.getModules = function(){
+		return $http.get('/api/profile/modules').success(function(data){
+			angular.copy(data, o.modules);
+		});
+	};
+
 	return o;
 }])
 
@@ -25,7 +31,8 @@ angular.module('studionet')
 
 	var o = {
 		module: {},
-		users: []
+		users: [],
+		relation: {}
 	};
 
 	o.getModuleInfo = function(id){
@@ -37,6 +44,23 @@ angular.module('studionet')
 	o.getModuleUsers = function(id){
 		return $http.get('/api/modules/' + id + '/users').success(function(data){
 			angular.copy(data, o.users);
+		});
+	};
+
+	o.updateContribution = function(moduleDetails){
+		return $http.put('/api/modules/'+moduleDetails.moduleId, moduleDetails).success(function(){
+			$("#successMsg").show();
+			
+		});
+	};
+
+	o.addStudent = function(linkDetails){
+		
+		return $http.post('/api/modules/' + linkDetails.moduleId + '/users',linkDetails).success(function(data){
+			
+			$("#successMsg").show();
+
+			angular.copy(data, o.relation);
 		});
 	};
 	return o;
