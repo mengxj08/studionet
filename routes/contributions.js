@@ -132,7 +132,7 @@ router.route('/')
 				tagIdsParam: JSON.parse(req.query[QUERY_PARAM_TAGS_KEYWORD]).map(x => parseInt(x)),
 				depthParam: parseInt(req.query[QUERY_PARAM_DEPTH_KEYWORD])
 			};
-
+/*
 			var query = [
 				'MATCH (u:user) WHERE ID(u) IN [' + params.userIdsParam + ']',
 				'WITH u',
@@ -142,7 +142,7 @@ router.route('/')
 				'WITH c',
 				'MATCH (c)-[r:TAGGED]->(t:tag) WHERE ID(t) IN [' + params.tagIdsParam + ']',
 				'WITH c',
-				'MATCH (c)-[*' + params.depthParam + ']-(c2:contribution)',
+				'MATCH (c)-[*0..' + params.depthParam + ']-(c2:contribution)',
 				'WITH collect(c)+collect(c2) as combinedContributionsCollection',
 				'UNWIND combinedContributionsCollection AS combinedContribution',
 				'UNWIND combinedContributionsCollection AS combinedContribution2',
@@ -151,6 +151,26 @@ router.route('/')
 				'MATCH q=(combinedContribution)-[]->(:contribution {superNode: true})',
 				'RETURN distinct (collect(p) + collect(q))'
 			].join('\n');
+*/
+			
+			var query = [
+				'MATCH (t:tag)<-[:TAGGED]-(c:contribution)<-[:CREATED]-(u:user)',
+				'WHERE ID(u) IN [' + params.userIdsParam + ']',
+				'AND ID(t) IN [' + params.tagIdsParam + ']',
+				'AND toInt(c.dateCreated) >= toInt(' + params.dateLowerParam + ')',
+				'AND toInt(c.dateCreated) <= toInt(' + params.dateUpperParam + ')',
+				'WITH c',
+				'MATCH (c)-[*]->(c2:contribution) WITH c, c2',
+				'MATCH (c)<-[*0..' + params.depthParam + ']-(c3:contribution)',
+				'WITH distinct (collect(c) + collect(c2) + collect(c3)) as combinedContributionsCollection',
+				'UNWIND combinedContributionsCollection AS combinedContribution',
+				'UNWIND combinedContributionsCollection AS combinedContribution2',
+				'MATCH p=(combinedContribution)-[*0..1]-(combinedContribution2)',
+				'WITH combinedContribution, p',
+				'MATCH q=(combinedContribution)-[*1]->(:contribution {superNode: true})',
+				'RETURN distinct (collect(p) + collect(q))'
+			].join('\n');
+
 
 			apiCall(query, function(data) {
 	      res.send(data);
