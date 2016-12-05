@@ -20,6 +20,13 @@ router.route('/')
 		var hasParams = (numKeys > 0) ? true : false;
 		var NUM_QUERY_KEYS_CONTRIBUTION = 6;
 
+		var QUERY_PARAM_DEPTH_KEYWORD = 'd';
+		var QUERY_PARAM_GROUPS_KEYWORD = 'g';
+		var QUERY_PARAM_RATING_KEYWORD = 'r';
+		var QUERY_PARAM_USERS_KEYWORD = 'u';
+		var QUERY_PARAM_TIME_KEYWORD = 't';
+		var QUERY_PARAM_TAGS_KEYWORD = 'tg';
+
 		if (!hasParams) {
 			var query = [
 				'MATCH (c:contribution)',
@@ -28,17 +35,18 @@ router.route('/')
 			].join('\n');
 
 			db.query(query, function(error, result) {
-				if (error)
-					console.log('Error fetching all contributions in the database');
-				else
+				if (error){
+					console.log('[ERROR] Attempt to fetch all contributions by /api/contributions failed.');
+				}
+				else{
 					res.send(result);
+				}		
 			});
 			return;
-
 		}
 
 		if (numKeys !== NUM_QUERY_KEYS_CONTRIBUTION) {
-			console.log('Error, must send all 6 query params');
+			console.log('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Expected 6 query parameters but only received ' + numKeys + '.');
 			res.send('must send all 6 query params');
 			return;
 		}
@@ -47,41 +55,49 @@ router.route('/')
 		// check if the 6 query params are the ones that i need
 
 		// 1 Number query param (depth)
-		if (!('d' in req.query)){
-			console.log('No depth query provided');
+		if (!(QUERY_PARAM_DEPTH_KEYWORD in req.query)){
+			console.log('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Expected a depth param but did not receive any.');
 			res.send('No depth query provided');
 			return;
 		}
 
-		if (req.query['d'].length <= 0 || isNaN(parseInt(req.query['d']))) {
-			console.log('Depth query provided is not a number');
+		var QUERY_PARAM_DEPTH_STRING = req.query[QUERY_PARAM_DEPTH_KEYWORD];
+		var isDepthParamEmpty = QUERY_PARAM_DEPTH_STRING.length <= 0;
+		var isDepthParamNumber = !isNaN(parseInt(QUERY_PARAM_DEPTH_STRING));
+
+		if (isDepthParamEmpty || !isDepthParamNumber) {
+			console.log('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Expected depth param to be a Number but did not receive a Number.');
 			res.send('Depth query provided is not a number');
 			return;
 		}
 
 		// 5 array query params
-		var requiredKeysWithoutDepth = ['g', 'u', 'r', 't', 'tg'].sort();
-		var queryKeys = Object.keys(req.query).sort();
-		queryKeys.splice(queryKeys.indexOf('d'), 1);
+		var requiredKeysWithoutDepth = [
+																		QUERY_PARAM_GROUPS_KEYWORD,
+																		QUERY_PARAM_USERS_KEYWORD,
+																		QUERY_PARAM_RATING_KEYWORD,
+																		QUERY_PARAM_TIME_KEYWORD,
+																		QUERY_PARAM_TAGS_KEYWORD
+																	 ].sort();
+
+		var sortedQueryKeys = Object.keys(req.query).sort();
+		sortedQueryKeys.splice(sortedQueryKeys.indexOf(QUERY_PARAM_DEPTH_KEYWORD), 1); // remove the depth param
 
 		var correctParams = requiredKeysWithoutDepth.reduce(function(acc, val, idx){
-			console.log(JSON.parse(req.query[val]));
 			return acc 
-				&& (val == queryKeys[idx]) 
+				&& (val == sortedQueryKeys[idx]) 
 				&& (req.query[val].length > 0) // must not be blank queries for JSON.parse()
 				&& (JSON.parse(req.query[val]) instanceof Array); // must be an array
 		}, true);
 
 		if (!correctParams) {
+			console.log('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Did not receive the exact expected params.');
 			res.send('Please send the correct 6 params');
 			return;
-		}
-
-		console.log(correctParams);
-		//res.send('Ok good params');
+		};
 
 		// First get all the users matching the specified group, if present
-		var groupIds = JSON.parse(req.query['g']).map(x => parseInt(x));
+		var groupIds = JSON.parse(req.query[QUERY_PARAM_GROUPS_KEYWORD]).map(x => parseInt(x));
 		var query = [ 
 			'MATCH (g:group) WHERE ID(g) IN {groupIdParam}',
 			'MATCH (u:user)<-[r:MEMBER]-(g)',
@@ -91,8 +107,6 @@ router.route('/')
 		var groupQueryParam = {
 			groupIdParam: groupIds
 		};
-
-		console.log(groupQueryParam.groupIdParam);
 
 		var usersInGroups = [];
 		var usersInGroupsPromise = new Promise(function(resolve, reject){
@@ -109,14 +123,14 @@ router.route('/')
 
 		usersInGroupsPromise
 		.then(function(result){
-			var specifiedUserIds = JSON.parse(req.query['u']).map(x => parseInt(x));
-			var dateArray = JSON.parse(req.query['t']).map(x=>parseInt(x));
+			var specifiedUserIds = JSON.parse(req.query[QUERY_PARAM_USERS_KEYWORD]).map(x => parseInt(x));
+			var dateArray = JSON.parse(req.query[QUERY_PARAM_TIME_KEYWORD]).map(x => parseInt(x));
 			var params = {
 				userIdsParam: _.union(specifiedUserIds, result),
 				dateLowerParam: dateArray[0],
 				dateUpperParam: dateArray[1],
-				tagIdsParam: JSON.parse(req.query['tg']).map(x => parseInt(x)),
-				depthParam: parseInt(req.query['d'])
+				tagIdsParam: JSON.parse(req.query[QUERY_PARAM_TAGS_KEYWORD]).map(x => parseInt(x)),
+				depthParam: parseInt(req.query[QUERY_PARAM_DEPTH_KEYWORD])
 			};
 
 			var query = [
@@ -138,34 +152,9 @@ router.route('/')
 				'RETURN distinct (collect(p) + collect(q))'
 			].join('\n');
 
-			console.log(query);
-
 			apiCall(query, function(data) {
-				var nodes = [], links = [];
-      
-	      data.forEach(function(row){
-	        // for each graph
-
-	        row.graph.nodes.forEach(function(n) {
-	          if (idIndex(nodes, n.id) == null)
-	              nodes.push({
-	                  id: n.id,
-	                  type: n.labels[0],
-	                  name: setName(n),
-	              });
-	        });
-	        links = links.concat(row.graph.relationships.map(function(r) {
-	            return {
-	                source: idIndex(nodes, r.startNode).id,   // should not be a case where start or end is null.
-	                target: idIndex(nodes, r.endNode).id,
-	                name: r.type
-	            };
-	        }));
-	      });
-
-	      res.send({nodes: nodes, links: links});
+	      res.send(data);
 			});
-
 
 		})
 		.catch(function(reason){
@@ -173,11 +162,6 @@ router.route('/')
 			res.send(reason);
 		});
 
-
-		// Combine users to get all users required
-
-		// Get contributions matched for these users under the given constraints
-		// Tag, Rating, Depth, Time
 	})
 
 	/*
@@ -479,21 +463,5 @@ router.route('/:contributionId')
 router.route('/:contributionId/connections');
 
 router.route('/:contributionId/connections/:connectionId');
-
-function idIndex(a, id){
-  for (var i =0; i<a.length; i++)
-    if (a[i].id == id) 
-      return a[i];
-  return null;
-};
-
-function setName(n) {
-    if (n.labels[0] === "contribution" || n.labels[0]==='post') {
-        return n.properties.title;
-    } else {
-        return n.properties.name;
-    }
-};
-
 
 module.exports = router;
