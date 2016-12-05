@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "pre-build": "echo I run before the build script",
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "test": "mocha --timeout 2000"
   },
   "dependencies": {
     "body-parser": "~1.15.1",

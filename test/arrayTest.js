@@ -1,3 +1,5 @@
+
+/*
 var assert = chai.assert;
 
 describe('Array', function() {
@@ -7,3 +9,4 @@ describe('Array', function() {
     assert.equal(arr.length, 0);
   });
 });
+*/
