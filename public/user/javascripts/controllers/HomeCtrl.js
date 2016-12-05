@@ -44,6 +44,18 @@ angular.module('studionet')
     cy.elements().removeClass('searched')
   }
 
+  /*
+   *  List of all users
+   * 
+   */
+  $scope.users = {};
+  $http.get('/api/users/').success(function(user_data){
+
+      user_data.map( function(u){
+          $scope.users[ u.id ] = u;
+      })
+
+  });
 
 
   /*
@@ -81,31 +93,33 @@ angular.module('studionet')
 
 }])
 
+
+
 /*
  * Controller for Filters
  */
 .controller('FilterCtrl', ['$scope', '$http', 
 
-   function($scope, $http){
+   function($scope, $http){ 
+
+      // Lists populating filters
+      $scope.tags = [];
+      $scope.authors = [];
       
-      $scope.selectedGroups = [];
-      $scope.selectedTags = [];
+      // Items selected in filters
+      $scope.selectedAuthors = [];
+      $scope.selectedTags = [1, 2, 3];
       $scope.firstDate = new Date();
       $scope.lastDate = new Date(); 
-      
       $scope.firstDate.setDate($scope.firstDate.getDate() - 10);
-
       $scope.ratingMin = 3;
       $scope.ratingMax = 4;
       $scope.depthVal = 3;
 
-      $scope.selectedFilters = {};
-      $scope.selectedItems= [];
-      $scope.selectedFilters = {};
-      $scope.selectedItem3 = [];
 
       /*
        *  Composes FilterURL to send to server & modifies graph
+       *  d, g, r, u, t , tg
        * 
        */
       $scope.filterRequest = function(data){
@@ -113,24 +127,43 @@ angular.module('studionet')
           var urlString = '/api/contributions?'; 
           
           //  Create the URL String
-          urlString += "groups=[ " + $scope.selectedGroups.map( function(g){
+        
+          urlString +=  "g=[" + $scope.selectedAuthors.filter( function(g){ return (g.type == "group") }).map( function(u){ return u.id } ).toString() + "]"   // users
+
+          + "&u=[" + $scope.selectedAuthors.filter( function(g){ return (g.type == "user") }).map( function(u){ return u.id } ).toString() + "]"   // users
+
+          + "&tg=[" + $scope.selectedTags.map( function(g){
              return g.id; 
-          }).toString() + " ]"
+          }).toString() + "]"    // tags
 
-          + "&tags=[ " + $scope.selectedTags.map( function(g){
-             return g.id; 
-          }).toString() + " ]" 
+          + "&r=[" + $scope.ratingMin + "," + $scope.ratingMax + "]"    // rating
 
-          + "&rating=[" + $scope.ratingMin + ", " + $scope.ratingMax + "]"
+          + "&t=[" + $scope.firstDate.getTime() + "," + $scope.lastDate.getTime() + "]"   // time
 
-          + "&timeg=[" + $scope.firstDate.getTime() + ", " + $scope.lastDate.getTime() + "]"
+          + "&d=" + $scope.depthVal;   // depth
 
-          + "&depth=" + $scope.depthVal;
+          console.log(urlString);
 
-          alert(urlString);
-          
+          $http.get(urlString).success(function(data){
+              
+              console.log(urlString);
+              console.log("results", data);
+              refreshGraph(data);
+
+          });
 
       };
+
+      $scope.toggle = function( array ){
+
+          if($scope["selected" + array].length == 0){
+              $scope["selected" + array] = $scope[array.toLowerCase()];
+          }
+          else{
+              $scope["selected" + array] = [];
+          }
+
+      }
 
       $scope.CustomCallback = function (item, selectedItems) {
           if (selectedItems !== undefined && selectedItems.length >= 80) {
@@ -160,119 +193,106 @@ angular.module('studionet')
        *  
        */
       function refresh(){
-          $http.get('/api/tags/').success(function(data){
-              console.log("tags");
-              console.log(data);
-              var tags = [];
-              var list = data;
-              for(var i=0;i<list.length;i++){
-                var obj ={
-                  name: list[i].name,
-                  id: list[i].id,
+
+          /*
+           * Get list of tags to populate tags filter
+           */
+          $http.get('/api/tags/').success(function(tag_data){
+
+              $scope.tags = tag_data.map( function(tag){
+
+                  // add properties required for tree-view plugin
+                  tag.parentId = null;
+                  tag.isExpanded = false; 
+                  tag.children = [];
                   
-                  isExpanded: false,
-                  children:[]
-                }
-                tags.push(obj);
-              }
-              $scope.dataTags= angular.copy(tags);
+                  // default 
+                  tag.selected = true;
+
+                  return tag;
+
+              });
+
+              // set default value for filter - all tags
+              //$scope.selectedTags =  $scope.tags;
+              // console.log($rootScope.selectedTags, "tags");
+
           });
             
-            
-          $http.get('/api/groups/').success(function(data){
-            
-            var users = [];
-            $http.get('/api/users/').success(function(data1){
+          /*
+           *  Get groups to populate By Author Filter
+           * 
+           */
+          $http.get('/api/groups/').success(function(group_data){
 
-              users = data1;
-             
-              $scope.filterData=data;
-              var list=data;
-              var groups = [];
-              var mainGrps = [];
-              var numGrp=0;
+            /*
+             * Groups preprocessing
+             */
 
-              var userObj = {
-                  name: 'Users',
-                  id: 4567,
-                  parentId: null,
-                  isExpanded: false,
-                  children:[]
-              }
+            var group_hash = {}; 
 
-              for(var i=0;i<users.length;i++){
-                   var obj = {
-                    name: users[i].name,
-                    id: users[i].id,
-                    parentId: 4567,
-                    isExpanded: false,
-                    children:[]
-                }
-                userObj.children.push(obj);
-              }
+            // create hash for group_data
+            for(var i=0; i < group_data.length; i++){
               
+                group_data[i].children = [];
+                group_data[i].type = "group";
 
-              for(var i=0;i<list.length;i++){
-                
-                var obj = {
-                  name: list[i].name,
-                  id: list[i].id,
-                  parentId: list[i].parentId,
-                  isExpanded: false,
-                  children:[]
-                }
-                mainGrps.push(obj);
-                groups[list[i].id] = obj;
+                // default
+                // group_data[i].selected = true;
+
+                group_hash[ group_data[i].id ] = group_data[i];
+
+            }
+
+            // if group has parentId, add group to that parent's children array
+            for(var i=0; i < group_data.length; i++){
+
+              var group = group_data[i];
+
+              if(group.parentId){
+
+                  var parentGroup = group_hash[ group.parentId ];
+                  parentGroup.children.push( group ); 
+
               }
-             
-              for(var b=0;b<list.length;b++){
-                var parent = list[b].parentId;
-                if(groups[parent]!=null){
 
-                  groups[parent].children.push(list[b].id);
+            }
 
-                }
-              }
-              
-              
-              var grpList = [];
-             /* for(var j=0;j<mainGrps.length;j++){
-                if( mainGrps[j].children.length >0){
-                  for(var k=0; k < mainGrps[j].children.length; k++){
-                    mainGrps[j].children[k] = groups[mainGrps[j].children[k]];
-                  }
-                }
-              }*/
-                  //grpList[j] = groups[[j]];
-                for(var j=0;j<mainGrps.length;j++){
-                  var key = mainGrps[j].id;
-                  if(groups.hasOwnProperty(key)){
-                    for(var i=0;i<groups[key].children.length;i++){
-                      var id = groups[key].children[i];
-                      mainGrps[j].children[i] = groups[id];
-                   }
-                  }
-                }
-
-             
-              //console.log(mainGrps);
-              for(var j=0;j<mainGrps.length;j++){
-                
-                if(mainGrps[j].parentId!=null){
+            // append authors to final array - only those at highest level
+            $scope.authors = $scope.authors.concat( group_data.filter( function(group){
                   
-                  mainGrps.splice(j,1);
-                  j--;
-                }
-              }
-              mainGrps.push(userObj);
-              $scope.data = angular.copy(mainGrps);
-              $scope.datas = angular.copy(mainGrps);  
-              
+                  // only highest level groups
+                  group.isExpanded = false; 
 
-            });
+                  return (group.parentId == null)
 
+            }) );
               
           }); 
+
+
+          /*
+           *  Get users to populate By Author filter
+           */
+          $http.get('/api/users/').success(function(user_data){
+
+
+              $scope.authors = $scope.authors.concat( user_data.map( function(user){
+
+                  user.parentId = null; 
+                  user.isExpanded = false; 
+                  user.children = [];
+                  user.type = "user";
+
+                  // default - select self
+                  if(user.id == $scope.user.id)
+                    user.selected = true; 
+
+                  return user;
+
+              }) );
+
+          });
 
       }
 

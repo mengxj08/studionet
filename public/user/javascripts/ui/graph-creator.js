@@ -223,14 +223,16 @@ var createHoverBox = function( node, extra ){
     }
     else if(node.type == "contribution"){
 
-
-
-      var lastUpdated = $('<p></p>').html('Last Updated : ' + Date(extra.lastUpdated).substr(0, 10));
+      var author = $('<p class=\'hover-content\'></p>').html("Author: " + angular.element($('.graph-container')).scope().users[ extra.createdBy ].name);
+      var lastUpdated = $('<p></p>').html(Date(extra.lastUpdated).substr(0, 10));
       var mini_content = $('<p class=\'hover-content\'></p>').html(extra.body.substr(0, 100) + "...");
+
         
+      html_content.append(author);
       html_content.append(lastUpdated);
       html_content.append(mini_content);
     }
+
 
     return html_content;
 
@@ -388,19 +390,24 @@ var makeGraph = function(dNodes, dEdges){
 }
 
 
-var refreshGraph = function(){
+var refreshGraph = function(data){
 
-    // check which layout is selected   
-    
-    // API Request for Entire Graph
-    $.get( "/graph/all", function( data ) {
+    if(arguments[0]){
+      console.log("Filtered graph")
+      makeGraph(data.nodes, data.links);
+    }    
+    else{
+        console.log("Default graph")
+        // API Request for Entire Graph - default
+        $.get( "/graph/all", function( data ) {
 
-        makeGraph( 
-            data.nodes/*.map( function(node){ return createGraphNode(node) } )*/, 
-            data.links/*.map( function(edge){ return createGraphEdge(edge) } ) */           
-        );
-       
-    })
+            makeGraph( 
+                data.nodes/*.map( function(node){ return createGraphNode(node) } )*/, 
+                data.links/*.map( function(edge){ return createGraphEdge(edge) } ) */           
+            );
+
+        })
+    }
 
 }
 

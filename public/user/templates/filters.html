@@ -7,19 +7,21 @@
                <!-- By Author Filter -->
                <div class="filter-panel panel badge-success" id='author-filter'>
                     <div class="filter-heading"> 
-                      <h6>By Authors: ({{selectedGroups.length}})</h6> 
+                      <h6>By Authors: ({{selectedAuthors.length}}) <!-- <button class='pull-right' ng-click=toggle('Authors')>x</button> --></h6> 
+                      
                     </div>
-                    <multiselect-searchtree data-input-model="data" multi-select="true"
-                                  data-output-model="selectedGroups" data-callback="CustomCallback(item, selectedItems)"
+                    <multiselect-searchtree data-input-model="authors" multi-select="true"
+                                  data-output-model="selectedAuthors" data-callback="CustomCallback(item, selectedItems)"
                                   data-select-only-leafs="false" extra-buttons="false" class="filter1" style="display:none"></multiselect-searchtree>
                 </div>
 
                 <!-- By Tags Filter -->
                 <div class="filter-panel panel badge-success" >
                     <div class="filter-heading">  
-                      <h6>Containing tags: ({{selectedTags.length}})</h6>  
+                      <h6>Containing tags: ({{selectedTags.length}})<!--  <button class='pull-right' ng-click=toggle('Tags')>x</button> --></h6>
+                      
                     </div>
-                    <multiselect-searchtree data-input-model="dataTags" multi-select="true"
+                    <multiselect-searchtree data-input-model="tags" multi-select="true"
                                   data-output-model="selectedTags" data-callback="CustomCallback(item, selectedItems)"
                                   data-select-only-leafs="false" extra-buttons="false" class="filter1" style="display:none"></multiselect-searchtree>
                 </div>
