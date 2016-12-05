@@ -21,29 +21,7 @@ router.route('/')
 								].join('\n');
 
 		apiCall(query, function(data){
-			var nodes = [], links = [];
-			
-			data.forEach(function(row){
-				// for each graph
-
-				row.graph.nodes.forEach(function(n) {
-	        if (idIndex(nodes, n.id) == null)
-	            nodes.push({
-	                id: n.id,
-	                name: setName(n),  // edit: AKM
-	                type: n.labels[0]
-	            });
-    		});
-		    links = links.concat(row.graph.relationships.map(function(r) {
-		        return {
-		            source: r.endNode,//idIndex(nodes, r.startNode).id,	// should not be a case where start or end is null. // inverted source and target - to be discussed further <!>
-		            target: r.startNode,//idIndex(nodes, r.endNode).id,
-		            type: r.type
-		        };
-		    }));
-			});
-
-			res.send({nodes: nodes, links: links});
+			res.send(data);
 
 		});
 
@@ -73,59 +51,9 @@ router.route('/me')
 
 		
 		apiCall(query, function(data){
-			var nodes = [], links = [];
-			
-			data.forEach(function(row){
-				// for each graph
-
-				row.graph.nodes.forEach(function(n) {
-	        if (idIndex(nodes, n.id) == null)
-	            nodes.push({
-	                id: n.id,
-	                type: n.labels[0],
-	                name: setName(n)
-	            });
-    		});
-		    links = links.concat(row.graph.relationships.map(function(r) {
-		        return {
-		            source: idIndex(nodes, r.startNode).id, 	// should not be a case where start or end is null.
-		            target: idIndex(nodes, r.endNode).id//,
-		            //type: r
-		        };
-		    }));
-			});
-
-			res.send({nodes: nodes, links: links});
+			res.send(data);
 
 		});
-		
-
-		/*
-		db.query(query, function(error, result){
-			if (error)
-				console.log('Error for /api/all');
-			else{
-				res.send(result);
-
-				var nodes = [], links = [];
-
-				// transform data into d3 friendly json
-				
-				var i = 0;
-				result.forEach(function(curr){
-					user = curr[0];
-					things = curr[1];
-
-					nodes.append({openId: user.nusOpenId, name: user.name, label: "user"});
-					
-				})
-				
-
-				
-			}
-		});
-		*/
-
 	});
 
 	// route: /graph/users
@@ -142,35 +70,9 @@ router.route('/me')
 						].join('\n');
 		
 			apiCall(query, function(data){	
-
-				var rows = [];
-				
-				data.forEach(function(row){
-
-					rows.push(row.row);
-
-					
-				});
-
-				res.send(rows);
-
+				res.send(data);
 			});
 
 	});
-
-function idIndex(a, id){
-	for (var i =0; i<a.length; i++)
-		if (a[i].id == id) 
-			return a[i];
-	return null;
-};
-
-function setName(n) {
-    if (n.labels[0] === "contribution" || n.labels[0]==='post') {
-        return n.properties.title;
-    } else {
-        return n.properties.name;
-    }
-};
-
+		
 module.exports = router;
