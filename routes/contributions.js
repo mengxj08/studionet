@@ -135,7 +135,7 @@ router.route('/')
 				'MATCH p=(combinedContribution)-[*0..1]-(combinedContribution2)',
 				'WITH combinedContribution, p',
 				'MATCH q=(combinedContribution)-[]->(:contribution {superNode: true})',
-				'RETURN p,q'
+				'RETURN distinct (collect(p) + collect(q))'
 			].join('\n');
 
 			console.log(query);
