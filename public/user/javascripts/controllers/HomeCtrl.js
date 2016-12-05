@@ -114,7 +114,7 @@ angular.module('studionet')
       $scope.firstDate.setDate($scope.firstDate.getDate() - 10);
       $scope.ratingMin = 3;
       $scope.ratingMax = 4;
-      $scope.depthVal = 3;
+      $scope.depthVal = 1;
 
 
       /*

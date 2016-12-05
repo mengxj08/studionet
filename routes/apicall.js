@@ -49,7 +49,7 @@ function apiCall(query, callback){
                 nodes.push({
                     id: n.id,
                     type: n.labels[0],
-                    name: setName(n),
+                    name: setName(n)
                 });
           });
           links = links.concat(row.graph.relationships.map(function(r) {

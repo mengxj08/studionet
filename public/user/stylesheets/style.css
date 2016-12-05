@@ -356,3 +356,15 @@ p.hover-content img{
 	color: black;
 	cursor: pointer;
  }
+
+
+
+
+#user-graph {
+  position: absolute;
+  height: 80%;
+  width: 100%;
+  z-index: 10;
+  width: 100%;
+  left: 0; 
+}

@@ -309,7 +309,7 @@ router.route('/:groupId/users')
 	});
 
 
-// route: /api/groups/:groupId/users/:userId
+// route: /api/groups/graph
 router.route('/:groupId/users/:userId')
 	// edit the user's role in this group
 	.put(auth.ensureAuthenticated, auth.isModerator, function(req, res){
@@ -330,6 +330,9 @@ router.route('/:groupId/users/:userId')
 				res.send('success');
 		});
 	})
+
+
+
 
 
 

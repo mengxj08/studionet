@@ -68,3 +68,8 @@ div.tree-control .tree-view li{
 .ranger{
 	border-radius: 0px !important;
 }
+
+.ranger-marker{
+	width: 20px !important; 
+	height: 20px !important;
+}

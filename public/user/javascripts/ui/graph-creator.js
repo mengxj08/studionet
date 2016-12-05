@@ -415,22 +415,7 @@ var refreshGraph = function(data){
 
 // On document ready
 $(document).ready(function(){
-    /*var nusOpenId;
-     $.get( "/graph/all", function( data ) {
-
-     });
-     console.log(nusOpenId);*/
-     
     refreshGraph(); 
-
-        /*
-        $('#submit_comment').click(function(){ 
-
-
-
-        })*/
-
-
 });
 
 
