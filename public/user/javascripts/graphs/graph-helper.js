@@ -73,7 +73,8 @@ var graph_style = {
               'border-color': 'data(faveColor)',
               'content' : 'data(name)',
               'text-wrap' : 'wrap',
-              'text-max-width': '150'
+              'text-max-width': '80',
+              'text-valign': 'bottom',
               //'background-image': 'data(icon)',
               //'background-width': 'data(width)',
               //'background-height': 'data(height)'
