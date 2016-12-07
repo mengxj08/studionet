@@ -78,7 +78,7 @@
           <tbody ng-repeat="group in groups">
             <tr ng-if='group.id !== -1 && group.role != "Admin"'>
               <td><b>{{group.name}}</b> ({{group.restricted == false ? 'Open Group' : 'Closed Group'}})</td>
-              <td>{{group.description}}</td>
+              <td>{{ group.description }}</td>
               <td>{{ group.role ? 'Yes' : 'No' }}</td>
               <td>
                 <button type="button" class="btn btn-link" data-toggle="modal" data-target="#viewModal" ng-click='viewGroup(group)'>
@@ -122,8 +122,7 @@
         <!-- Body for Viewing -->
         <div class='row'>
           <div class='col-sm-3'><i class="icon fa fa-tasks fa-4x"></i></div>
-          <div class='col-sm-9'>
-            <p>{{activeGroup.description}}</p>
+          <div class='col-sm-9' ng-bind-html="activeGroup.description">
           </div>
         </div>
 
