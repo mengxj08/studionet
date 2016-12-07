@@ -57,9 +57,11 @@ angular.module('studionet')
   // };
 
   $scope.createContribution = function(createContribution){
-    console.log(profile.user);
-    createContribution.author = profile.user.id;
-    console.log(createContribution);
+
+    //createContribution.author = profile.user.id;
+    console.log(createContribution.ref);
+    createContribution.refType = "RELATED_TO";
+    
     $http({
       method  : 'POST',
       url     : '/api/contributions/',
@@ -67,9 +69,12 @@ angular.module('studionet')
       headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
       })
     .success(function(data) {
-      alert("Contribution Created");  
-      $scope.refresh();  
-    })
+        alert("Contribution Created");  
+        $scope.refresh(); 
+
+        refreshGraph();
+
+    }) 
    };
 
   $scope.deleteContribution = function(contributionId){

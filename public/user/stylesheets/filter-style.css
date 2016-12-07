@@ -30,17 +30,34 @@
 }
 
 div.tree-control{
-	height: 100%; overflow: auto; 
+	height: 100%; 
+	overflow: auto; 
 	border-radius: 0px;
 }
 
-.tree-control .tree-view li{
-	margin-left: 5px !important;
+/* */
+div.tree-control .tree-view{
+	max-height: 30vh;
+	overflow: scroll;
 }
+
+div.tree-control .tree-view ul .tree-checkbox{
+	max-width: 8px;
+}
+
+div.tree-control .tree-view li{
+	margin-left: 5px !important;
+	min-width: 350px;
+}
+
+.filter-panel input{
+	padding-left: 5px;
+	width: 100%;
+}
+/* */
 
 .tree-control .tree-view ul{
 	//max-height: 15vh;
-	
 }
 
 /*
