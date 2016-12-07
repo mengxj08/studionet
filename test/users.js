@@ -6,17 +6,18 @@ process.env.NODE_ENV = 'test';
 //Require the dev-dependencies
 var chai = require('chai');
 var chaiHttp = require('chai-http');
+chai.use(chaiHttp);
+
 var app = require('../app');
 var should = chai.should();
 var assert = chai.assert;
 var expect = chai.expect;
 var request = require('supertest');
-var agent = request.agent(app);
+var agent = chai.request.agent(app);
 
 
-chai.use(chaiHttp);
 
-describe('Profile', function() {
+describe('User', function() {
 
 	// Before each test we empty the database
 	
@@ -26,6 +27,7 @@ describe('Profile', function() {
 			.get('/auth/fake')
 			.query({id: 'E0002744'})
 			.end(function (err, res){
+				expect(res).to.have.cookie('connect.sid');
 				expect(res).to.redirectTo('/');
 				done();
 			});
@@ -51,12 +53,25 @@ describe('Profile', function() {
 	/**
 	 * GET /api/profile
 	 */
-	describe('GET /api/profile', function() {
-		it('It should get the home page', function(done){
+	describe('POST /api/user', function() {
+		it('It should allow me to add an admin', function(done){
 			
-			chai.request(app)
+			var test = 'test2';
+
+			agent
 				.get('/')
+			/*
+				.post('/api/users')
+				.send({
+					nusOpenId: test,
+					name: test,
+					isAdmin: true
+				})*/
+				//.field('nusOpenId', test)
+				//.field('name', test)
+				//.field('isAdmin', true)
 				.end(function(err, res){
+					console.log(res);
 					expect(res).to.have.status(200);
 					done();
 				});

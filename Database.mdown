@@ -1,14 +1,16 @@
 ### Core Components, Relationships and Properties
 
-#### Users Properties
+#### Users Properties (:user)
 
 - nusOpenId
 - canEdit
 - name
-- superAdmin
+- isAdmins
 - invitedBy (userID)
 - invitedOn
+- avatar (default @ /uploads/default/avatar) (avatar.png/..)
 - joinedOn
+- lastLoggedIn
 
 #### User Relationship
 

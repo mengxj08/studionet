@@ -32,7 +32,7 @@ if (process.env.NODE_ENV === 'test'){
         console.log('error in login');
       else
         return;
-    })
+    });
     if (next) {
       next();
     }
