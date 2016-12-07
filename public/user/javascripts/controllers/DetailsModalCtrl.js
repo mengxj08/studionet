@@ -1,9 +1,10 @@
 angular.module('studionet')
 
-.controller('DetailsModalCtrl', ['$scope', '$http', 'profile',  function($scope, $http, profile){
+.controller('DetailsModalCtrl', ['$scope', '$http', 'profile', '$location', '$anchorScroll', function($scope, $http, profile, $location, $anchorScroll){
 	// $scope.name = "Jane Doe";
   // $scope.age = 12;
   
+  $scope.clickedContributionId = null;
   $scope.data = [];
   $scope.tags = [];
   $scope.relationships= [];
@@ -19,8 +20,9 @@ angular.module('studionet')
 		  });	
   }
 
-  $scope.setData = function(data){
+  $scope.setData = function(data, clickedContributionId){
       $scope.data = data;
+      $scope.clickedContributionId = clickedContributionId;
       console.log('Data output from DetailsModalCtrl');
       console.log(data);
   }
@@ -28,10 +30,10 @@ angular.module('studionet')
   //  This close function doesn't need to use jQuery or bootstrap, because
   //  the button has the 'data-dismiss' attribute.
   $scope.close = function() {
-    close({
-      name: $scope.user,
-      age: $scope.modules
-    }, 500); // close, but give 500ms for bootstrap to animate
+    // close({
+    //   name: $scope.user,
+    //   age: $scope.modules
+    // }, 500); // close, but give 500ms for bootstrap to animate
 
     //$element.modal('hide');
     $('body').removeClass('modal-open');
@@ -40,19 +42,19 @@ angular.module('studionet')
 
   //  This cancel function must use the bootstrap, 'modal' function because
   //  the doesn't have the 'data-dismiss' attribute.
-  $scope.cancel = function() {
-    //  Manually hide the modal.
-    //$element.modal('hide');
-    // $('body').removeClass('modal-open');
-    // $('.modal-backdrop').remove();
+  // $scope.cancel = function() {
+  //   //  Manually hide the modal.
+  //   //$element.modal('hide');
+  //   // $('body').removeClass('modal-open');
+  //   // $('.modal-backdrop').remove();
     
-    //  Now call close, returning control to the caller.
-    close({
-      name: $scope.user,
-      age: $scope.modules
-    }, 500); // close, but give 500ms for bootstrap to animate
+  //   //  Now call close, returning control to the caller.
+  //   close({
+  //     name: $scope.user,
+  //     age: $scope.modules
+  //   }, 500); // close, but give 500ms for bootstrap to animate
   
-  };
+  // };
 
   $scope.createContribution = function(createContribution){
     console.log(profile.user);
@@ -87,6 +89,14 @@ angular.module('studionet')
   $scope.updateContribution = function(){
 
   }
-  
+
   $scope.refresh();
+
+  $scope.scrollTo = function (){
+      // set the location.hash to the id of the element you wish to scroll to.
+      $location.hash('modal' + $scope.clickedContributionId);
+
+      // call $anchorScroll()
+      $anchorScroll();
+  };
 }]);

@@ -17,7 +17,7 @@ angular.module('studionet')
   
 
 
-  $scope.showDetailsModal = function(data) {
+  $scope.showDetailsModal = function(data, clickedContributionId) {
 
       ModalService.showModal({
         templateUrl: "/user/templates/home.graphView.modal.html",
@@ -32,11 +32,11 @@ angular.module('studionet')
         });
 
         /// set data
-        modal.scope.setData(data);
-
-/*        modal.close.then(function(result) {
-          //$scope.complexResult  = "Name: " + result.name + ", age: " + result.age;
-        });*/
+        modal.scope.setData(data,clickedContributionId);
+        
+        // modal.close.then(function(result) {
+        //   //$scope.complexResult  = "Name: " + result.name + ", age: " + result.age;
+        // });
         
       });
 

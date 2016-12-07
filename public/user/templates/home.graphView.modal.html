@@ -4,7 +4,7 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
 <div class="modal fade" display='block'>
   <div class="modal-dialog modal-lg" ng-repeat='contribution in data'>
-    <div class="modal-content">
+    <div id="{{ 'modal' + contribution.db_data.id }}" class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" ng-click="close()" data-dismiss="modal" aria-hidden="true">&times;</button>
           <h3 class='content-modal'>{{contribution.db_data.title}}</h3> 
@@ -42,7 +42,7 @@
                 <div class='tab-pane fade' id="{{ 'statistics' + contribution.db_data.id}}">
                     <h3>This is the column for contributions' statistics.</h3>
                 </div>
-                <button type="button" ng-click="close()" class="btn btn-primary btn-block" data-dismiss="modal">Close</button>
+                <button type="button" ng-click="scrollTo()" class="btn btn-primary btn-block" data-dismiss="modal">Close</button>
                 </div>
             </div>
           </div>

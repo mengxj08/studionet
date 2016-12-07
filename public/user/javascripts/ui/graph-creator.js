@@ -355,7 +355,7 @@ var makeGraph = function(dNodes, dEdges){
                   //console.log("test on clicking onto a contribution");
                   nodeTree[index].db_data = result;
                   if(index == nodeTree.length - 1){
-                    angular.element($('.graph-container')).scope().showDetailsModal(nodeTree);
+                    angular.element($('.graph-container')).scope().showDetailsModal(nodeTree, data.id);
                   }
                   else{
                     RecursiveGetData(++index);
