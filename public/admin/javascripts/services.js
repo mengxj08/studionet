@@ -28,17 +28,6 @@ angular.module('studionetAdmin')
 		});
 	};
 
-	o.createModNew = function(moderator){
-		return $http.post('/api/moderators/new', moderator).success(function(data){
-			o.users.push(data);
-		});
-	};
-
-	o.createModExisting = function(moderator){
-		return $http.post('/api/moderators/existing', moderator).success(function(data){
-			o.users.push(data);
-		});
-	};
 
 	o.createNewUser = function(user){
 		return $http.post('/api/users', user).success(function(data){

@@ -5,6 +5,14 @@ angular.module('studionet')
 	/*
 	 *	Functionality for User Profile Page
 	 */
+	$scope.user = profile.user;
+	$scope.groups = profile.groups;
+	$scope.contributions = profile.contributions;
+  	
+  
+	$scope.isAdmin = profile.groups.reduce(function(res, curr){
+		return res || curr.role==='Admin';
+	}, false); 
 	
 	$scope.uploadPic = function(avatar) {
 	    avatar.upload = Upload.upload({
@@ -51,20 +59,8 @@ angular.module('studionet')
   	};
 
   	$scope.changeName = function($event){
-  		
   		if($event.keyCode==13){
-
-  			$http({
-				  method  : 'PUT',
-				  url     : '/api/profile/',
-				  data    : $scope.user,  // pass in data as strings
-				  headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
-				 })
-				.success(function(data) {
-				    
-					alert("Name updated");    
-
-				})
+  			profile.changeName($scope.user);
   		}
   	}
 	  

@@ -4,88 +4,73 @@ angular.module('studionet')
  *	Controller for Groups
  * 
  */
-.controller('GroupsCtrl', ['$scope', 'profile', '$http', function($scope, profile, $http){
+.controller('GroupsCtrl', ['$scope', 'profile', 'groups', 'users', '$http', function($scope, profile, groups, users, $http){
 
-	$http({
-		  method  : 'GET',
-		  url     : '/graph/all/groups',
-		 })
-		.success(function(data) {
-			    
-		    if (data == undefined) {
-				console.log("Error fetching Group Data")
-		    } else {
-
-		    	// makeGraph (data, container_name, graph_style (optional) )
-		    	console.log(data);
-		    	var graph = makeGraph( data,  'user-graph')
-
-		  	}
-
-	});
-
-
+	/*
+	 * Scope Variables
+	 */
 	$scope.user = profile.user;
-	$scope.modules = profile.modules;
-
-	// Initial no group
-	$scope.groups = [
-		{
-			'name': 'None',
-			'id': -1
-		}
-
-	]
-
-
-
-
-	refresh();
-	function refresh(){
-
-		$scope.groups = [		{
-			'name': 'None',
-			'id': -1
-		}];
-		$scope.users = [];
-
-		/** better solution to get data this way from server */
-		// get general list of groups
-		$http.get('/api/groups/').success(function(data){
-			$scope.groups = $scope.groups.concat(data);
-
-			// append data from user modules
-			for(var mod=0; mod < $scope.modules.length; mod++){
-				for(var g=0; g < $scope.groups.length; g++ ){
-					if($scope.modules[mod].id == $scope.groups[g].id){
-						// assign role
-						$scope.groups[g].role =  $scope.modules[mod].role;
-					}
-				}
-			}
-
-			console.log($scope.groups);
-		});
-
-		$http.get('/api/users/').success(function(data){
-			$scope.users = data;
-		});		
-	}
-
-
-	$scope.displayError = false;
-	$scope.displaySuccess = false;
-	
-	$scope.users = undefined;
-
+	$scope.groups = groups.groups;
+	$scope.users = users.users;
+	$scope.graph = {};
 	$scope.activeGroup = {
-
 			'name' : "",
 			'description' : "",
 			'restricted': false,
 			'groupParentId': "" 
+	};  // placeholder group
 
-		};
+
+	/*
+	 *  Helper Function
+	 */
+	var drawGraph = function(){
+		
+		// Function to format graph nodes
+		var createGraphNode = function(node){
+		    
+		    node.faveShape = "ellipse";
+		    console.log(node)
+		    
+		    if( node.properties.superNode != undefined ){
+		          node.faveShape = "ellipse";
+		          node.faveColor = "black";
+		          node.width = "40";
+		          node.height = "40";      
+		    }
+		    else {
+		          node.faveShape = CONTRIBUTION_SHAPE;
+		          node.faveColor = CONTRIBUTION_COLOR;
+		          node.width = CONTRIBUTION_WIDTH;
+		          node.height = CONTRIBUTION_HEIGHT;
+		    }
+
+		    return  { data: node };
+		}
+
+		
+		// creating the grpah
+		var graph = makeGraph( groups.graph, 'user-graph', createGraphNode);
+		
+		// 
+		graph.on('tap', 'node', function(evt){
+			    		
+			    		if(evt.cyTarget.data().properties.superNode == undefined){
+				    		$scope.viewGroup(evt.cyTarget.data());
+				    		$("#viewModal").modal();
+			    		}
+
+			    		//console.log(evt.cyTarget.data().properties.createdBy == profile.id);
+
+			    	})
+
+		$scope.graph = graph;
+
+	};
+
+
+	drawGraph();
+
 
 
 	/*** Viewing ***/
@@ -277,32 +262,6 @@ angular.module('studionet')
 		
 
 	}
-
-	$http({
-		  method  : 'GET',
-		  url     : '/graph/all/groups',
-		 })
-		.success(function(data) {
-			    
-		    if (data == undefined) {
-				console.log("Error fetching Group Data")
-		    } else {
-
-		    	// makeGraph (data, container_name, graph_style (optional) )
-		    	console.log(data);
-		    	var graph = makeGraph( data,  'user-graph')
-
-		    	graph.on('tap', 'node', function(evt){
-		    		
-		    		$scope.viewGroup(evt.cyTarget.data());
-		    		$("#viewModal").modal();
-
-
-		    	})
-
-		  	}
-
-	});
 
 
 

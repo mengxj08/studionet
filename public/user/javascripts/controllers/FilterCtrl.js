@@ -3,9 +3,7 @@ angular.module('studionet')
 /*
  * Controller for Filters
  */
-.controller('FilterCtrl', ['$scope', '$http', 
-
-   function($scope, $http){ 
+.controller('FilterCtrl', ['$scope', '$http', 'users', 'tags', 'groups',   function($scope, $http, users, tags, groups){ 
 
       // Lists populating filters
       $scope.tags = [];

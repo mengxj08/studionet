@@ -341,3 +341,19 @@ p.hover-content img{
   width: 100%;
   left: 0; 
 }
+
+
+
+.app-container{
+	//background-color: red;
+	width: 90%;
+	margin-left: 5%;
+	padding-left: 0px !important;
+}
+
+
+.edit-button{
+	position: absolute;
+	top: 0px;
+	right: 0px;
+}

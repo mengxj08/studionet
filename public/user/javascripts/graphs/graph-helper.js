@@ -96,8 +96,8 @@ var graph_style = {
               'target-arrow-shape': 'triangle',
               'line-color': 'data(faveColor)',
               'source-arrow-color': 'data(faveColor)',
-              //'content' : 'data(label)',
-              'font-size':'10%',
+              'content' : 'data(name)',
+              'font-size':'7%',
               'color': '#222',
               'edge-text-rotation': 'autorotate',
               'target-arrow-color': 'data(faveColor)'
@@ -209,13 +209,19 @@ var createGraphEdge = function(edge){
 /*
  * Makes the actual graph and defines functionality on the nodes and edges
  */
-var makeGraph = function(data){
+var makeGraph = function(data, graphContainer, graphFn, edgeFn){
 
     console.log("In graph-helper.js");
 
     // if cytoscape canvas is defined, assign that
     if(arguments[1] != undefined)
       graph_style.container = document.getElementById(arguments[1]);
+
+    if(arguments[2] != undefined)
+      createGraphNode = graphFn; 
+
+    if(arguments[3] != undefined)
+      createGraphEdge = edgeFn;
 
     graph_style.elements = {
         nodes: data.nodes.map( function(node){ return createGraphNode(node) } ), 

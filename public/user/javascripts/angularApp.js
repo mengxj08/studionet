@@ -1,12 +1,4 @@
 var app = angular.module('studionet', ['ui.router','ui.bootstrap', 'ngTagsInput', 'ngFileUpload', 'angularModalService', 'multiselect-searchtree', 'angular-ranger'])
-									.run(function($rootScope){
-/*									    $rootScope.value = {
-									        min: 5,
-									        max: 18,
-									        value: 12
-									    };*/
-									});
-
 
 app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', function($stateProvider, $urlRouterProvider, tagsInputConfigProvider){
 
@@ -18,12 +10,11 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 			controller: 'HomeCtrl',
 			resolve: {
 				userProfile: ['profile', function(profile){
-					return profile.getUser() && profile.getModules();
+					return profile.getUser() && profile.getGroups();
 				}],
-				userModels: ['modelsFactory', 'userProfile', 'profile', function(modelsFactory, userProfile, profile){
-					return modelsFactory.getUserModels(profile.user.nusOpenId);
+				usersPromise: ['users', function(users){ 
+					return users.getAll();
 				}]
-
 			}
 		})
 		.state('user', {
@@ -33,7 +24,7 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 			controller: 'UserCtrl',
 			resolve: {
 				userProfile: ['profile', function(profile){
-					return profile.getUser() && profile.getModules();
+					return profile.getUser() && profile.getGroups();
 				}],
 				userModels: ['modelsFactory', 'userProfile', 'profile', function(modelsFactory, userProfile, profile){
 					return modelsFactory.getUserModels(profile.user.nusOpenId);
@@ -47,12 +38,8 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 			controller: 'ProfileCtrl',
 			resolve: {
 				userProfile: ['profile', function(profile){
-					return profile.getUser() && profile.getModules();
-				}],
-				userModels: ['modelsFactory', 'userProfile', 'profile', function(modelsFactory, userProfile, profile){
-					return modelsFactory.getUserModels(profile.user.nusOpenId);
+					return profile.getUser() && profile.getGroups() && profile.getContributions();
 				}]
-
 			}
 		})
 		.state('user.groups', {
@@ -61,10 +48,13 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 			controller: 'GroupsCtrl',
 			resolve: {
 				userProfile: ['profile', function(profile){
-					return profile.getUser() && profile.getModules();
+					return profile.getUser() && profile.getGroups();
 				}],
-				userModels: ['modelsFactory', 'userProfile', 'profile', function(modelsFactory, userProfile, profile){
-					return modelsFactory.getUserModels(profile.user.nusOpenId);
+				groupsPromise: ['groups', function(groups){
+					return groups.getAll() && groups.getGraph();
+				}],
+				usersPromise: ['users', function(users){
+					return users.getAll();
 				}]
 
 			}

@@ -70,7 +70,7 @@ router.route('/')
 			descriptionParam: req.body.description,
 			restrictedParam: req.body.restricted,
 			groupParentIdParam: parseInt(req.body.groupParentId),
-			userIdParam: req.user.id,
+			userIdParam: parseInt( req.user.id ),
 			dateCreatedParam: date
 		};
 
@@ -101,7 +101,7 @@ router.route('/')
 
 		// else try to create the group (link group to its tag, and add owner as admin to group)
 		query = [
-			'CREATE (g:group {name: {nameParam}, description: {descriptionParam}, restricted: {restrictedParam}, dateCreated: {dateCreatedParam}})',
+			'CREATE (g:group {createdBy: {userIdParam}, name: {nameParam}, description: {descriptionParam}, restricted: {restrictedParam}, dateCreated: {dateCreatedParam}})',
 			'WITH g',
 			'MATCH (u:user) WHERE id(u)= {userIdParam}',
 			'CREATE UNIQUE (g)-[r:MEMBER {role: "Admin"}]->(u)',

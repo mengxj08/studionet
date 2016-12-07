@@ -4,17 +4,10 @@ angular.module('studionet')
  *  Main Contribution Graph Page
  * 
  */
-.controller('HomeCtrl', ['$scope', 'profile', 'Upload', '$timeout', 'modelsFactory', 'ModalService', '$http', 
-
- function($scope, profile, Upload, $timeout, modelsFactory, ModalService, $http){
+.controller('HomeCtrl', ['$scope', 'profile', 'users', 'Upload', '$timeout', 'ModalService', '$http', function($scope, profile, users, Upload, $timeout, ModalService, $http){
 
 	$scope.user = profile.user;
-	$scope.modules = profile.modules;
-  $scope.userModels = modelsFactory.userModels;
-  
-	$scope.isAdmin = profile.modules.reduce(function(res, curr){
-		return res || curr.role==='Admin';
-	}, false); 
+  $scope.users = users.usersById();
 
   /*
    *
@@ -49,23 +42,8 @@ angular.module('studionet')
   }
 
   $scope.resetGraph = function(){
-
     cy.reset();
   }
-
-
-  /*
-   *  List of all users
-   * 
-   */
-  $scope.users = {};
-  $http.get('/api/users/').success(function(user_data){
-
-      user_data.map( function(u){
-          $scope.users[ u.id ] = u;
-      })
-
-  });
 
 
   /*
