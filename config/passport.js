@@ -1,4 +1,5 @@
 var OpenIDStrategy = require('passport-openid').Strategy;
+
 var db = require('seraph')({
 	server: process.env.SERVER_URL || 'http://localhost:7474/', // 'http://studionetdb.design-automation.net'
 	user: process.env.DB_USER,
@@ -16,14 +17,14 @@ module.exports = function(passport){
 	//   deserialized.
 	passport.serializeUser(function(user, done) {
 		// serialize with user's openid which should be unique.
-		console.log('serializing user: ', user.nusOpenId);
+		//console.log('serializing user: ', user.nusOpenId);
 	  done(null, user.nusOpenId);
 
 	});
 
 	passport.deserializeUser(function(nusOpenId, done) {
 		// deserialize using the user's openid to retrieve user info from neo4j db.
-		console.log('deserializing user: ', nusOpenId);
+		//console.log('deserializing user: ', nusOpenId);
 
 		// cypher query to find user node by openid
 	  var query = [

@@ -6,9 +6,12 @@ process.env.NODE_ENV = 'test';
 //Require the dev-dependencies
 var chai = require('chai');
 var chaiHttp = require('chai-http');
-var server = require('../app');
+var app = require('../app');
 var should = chai.should();
 var assert = chai.assert;
+var expect = chai.expect;
+var request = require('supertest');
+var agent = request.agent(app);
 
 
 chai.use(chaiHttp);
@@ -16,9 +19,19 @@ chai.use(chaiHttp);
 describe('Profile', function() {
 
 	// Before each test we empty the database
-	/*
+	
 	beforeEach(function(done) {
+
+		agent
+			.get('/auth/fake')
+			.query({id: 'E0002744'})
+			.end(function (err, res){
+				expect(res).to.redirectTo('/');
+				done();
+			});
+			
 		
+		/*
 		var query = [ 
 			'START n=node(*)',
 			'OPTIONAL MATCH (n)-[r]-()',
@@ -30,16 +43,27 @@ describe('Profile', function() {
 				console.log('error');
 			done();
 		})
-	
+		*/	
 
 	});
-	*/
+	
 
 	/**
 	 * GET /api/profile
 	 */
+	describe('GET /api/profile', function() {
+		it('It should get the home page', function(done){
+			
+			chai.request(app)
+				.get('/')
+				.end(function(err, res){
+					expect(res).to.have.status(200);
+					done();
+				});
 
-		
+		});
+
+		/*
 		it('it should GET information about the current user', function(done) {
 			chai.request(server)
 					.get('/api/profile')
@@ -48,7 +72,7 @@ describe('Profile', function() {
 						res.body.should.be.an.Object();
 					});
 		});
-		
+		*/
 	});
 
 
