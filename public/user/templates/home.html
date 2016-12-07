@@ -1,11 +1,6 @@
 <!-- Stylesheet for graph -->
 <link rel='stylesheet' href='./stylesheets/graph-style.css' />
 
-<!-- javascript for cose-layout in graph -->
-<script src="https://cdn.rawgit.com/cpettitt/dagre/v0.7.4/dist/dagre.min.js"></script>
-<script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-dagre/1.1.2/cytoscape-dagre.js"></script>
-
-
 <!--Top Nav Bar -->
 <ng-include src="'templates/top-navbar.html'"></ng-include>
 
@@ -22,7 +17,7 @@
 
   
   <div class='graph-controls'>
-    <img class='graph-nav-control zoom-extents' src='./img/expand.svg'/>
+    <img class='graph-nav-control zoom-extents' src='./img/expand.svg' ng-click='resetGraph()'/>
   </div>
 
     <div id='cy'></div>
@@ -51,15 +46,11 @@
 </div>
 
 
-
-
-<!-- Layout files for Cytoscape -->
-<script src="https://cdn.rawgit.com/cytoscape/cytoscape.js-cose-bilkent/1.0.5/cytoscape-cose-bilkent.js"></script>
- 
 <!-- include graph js -->
-<script type="text/javascript" src="/user/javascripts/ui/user-ui.js"></script> 
-<script src="./javascripts/ui/graph-creator.js"></script>
+<script src="./javascripts/graphs/graph-creator.js"></script>
 
-<link rel='stylesheet' href='./stylesheets/filter-style.css' />
+
+
+
 
 

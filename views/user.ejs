@@ -1,27 +1,30 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>StudioNET - A Graph Based Sharing Network</title>
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <title>StudioNET - A Graph Based Sharing Network</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link rel="stylesheet" type="text/css" href="../assets/css/vendor.css">
-  <link rel="stylesheet" type="text/css" href="../assets/css/flat-admin.css">
+    <!-- Theme -->
+    <link rel="stylesheet" type="text/css" href="../assets/css/vendor.css">
+    <link rel="stylesheet" type="text/css" href="../assets/css/flat-admin.css">
+    
+    <link rel="stylesheet" type="text/css" href="../assets/css/theme/blue-sky.css">
+    <link rel="stylesheet" type="text/css" href="../assets/css/theme/blue.css">
+    <link rel="stylesheet" type="text/css" href="../assets/css/theme/red.css">
+    <link rel="stylesheet" type="text/css" href="../assets/css/theme/yellow.css">
 
-  <link rel="stylesheet" type="text/css" href="../assets/css/user-customized.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ng-tags-input/3.1.1/ng-tags-input.min.css">
 
-  <!-- Theme -->
-  <link rel="stylesheet" type="text/css" href="../assets/css/theme/blue-sky.css">
-  <link rel="stylesheet" type="text/css" href="../assets/css/theme/blue.css">
-  <link rel="stylesheet" type="text/css" href="../assets/css/theme/red.css">
-  <link rel="stylesheet" type="text/css" href="../assets/css/theme/yellow.css">
+    <!-- CSS for Filters -->
+    <link rel="stylesheet" href="/user/stylesheets/treesearch/kjvelarde-multiselect-searchtree-0.9.0.min.css">
+    <link rel="stylesheet" href="/user/stylesheets/slider/angular-ranger.css">
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ng-tags-input/3.1.1/ng-tags-input.min.css">
+    <!-- Overrides -->
+    <link rel='stylesheet' href='/user/stylesheets/style.css' />
 
-  <link rel='stylesheet' href='/user/stylesheets/style.css' />
-
-</head>
-<body ng-app="studionet">
+  </head>
+  <body ng-app="studionet">
 
     <div class="app app-default">
         
@@ -42,74 +45,64 @@
 
 
             <div class='row text-center'>
-<!--               <footer class="app-footer"> 
-                <div class="row">
-                  <div class="col-xs-12">
-                    <div class="footer-copyright">
-                      Copyright © 2016 Lorem Ipsum
-                    </div>
-                  </div>
-                </div>
-              </footer> -->
             </div>
         </div>
 
     </div>
+  </body>
+  <!-- Template JS -->  
+  <script type="text/javascript" src="../assets/js/vendor.js"></script>
+  <script type="text/javascript" src="../assets/js/app.js"></script>
+
+  <!--- JQuery -->
+  <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+  <!--- Bootstrap -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+  <!-- AngulaJS & Dependencies -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-resource.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.1/angular-ui-router.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ng-tags-input/3.1.1/ng-tags-input.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/danialfarid-angular-file-upload/12.0.4/ng-file-upload-all.min.js"></script>
+
+  <!-- Angular Bootstrap -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.3.0/ui-bootstrap-tpls.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.3.0/ui-bootstrap.min.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/danialfarid-angular-file-upload/12.0.4/ng-file-upload-all.min.js"></script>
+
+  <!--- Cytoscape -->
+  <script src="http://cytoscape.github.io/cytoscape.js/api/cytoscape.js-latest/cytoscape.min.js"></script>
+  <!-- d3.js -->
+  <script src="//d3js.org/d3.v3.js" charset="utf-8"></script>  
+  <!-- Cytoscape Cola -->
+  <script src="http://marvl.infotech.monash.edu/webcola/cola.v3.min.js"></script>
+  <script src="/user/javascripts/graphs/cytoscape-cola.js" charset="utf-8"></script>      
+
+
+  <!-- Angular Routing -->
+  <script type="text/javascript" src="/user/javascripts/angularApp.js"></script>
   
-    <!-- Template JS -->  
-    <script type="text/javascript" src="../assets/js/vendor.js"></script>
-    <script type="text/javascript" src="../assets/js/app.js"></script>
+  <!-- Controllers and Services -->
+  <script type="text/javascript" src="/user/javascripts/services.js"></script>
 
-    <!--- JQuery -->
-    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
-    <!--- Bootstrap -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="/user/javascripts/controllers/HomeCtrl.js"></script>
+  <script type="text/javascript" src="/user/javascripts/controllers/DetailsModalCtrl.js"></script>
+  <script type="text/javascript" src="/user/javascripts/controllers/FilterCtrl.js"></script> 
 
-    <!-- AngulaJS & Dependencies -->
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-resource.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.3.1/angular-ui-router.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ng-tags-input/3.1.1/ng-tags-input.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/danialfarid-angular-file-upload/12.0.4/ng-file-upload-all.min.js"></script>
+  <script type="text/javascript" src="/user/javascripts/controllers/UserCtrl.js"></script>
+  <script type="text/javascript" src="/user/javascripts/controllers/ProfileCtrl.js"></script> 
+  <script type="text/javascript" src="/user/javascripts/controllers/GroupsCtrl.js"></script> 
 
-    <!-- Angular Bootstrap -->
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.3.0/ui-bootstrap-tpls.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.3.0/ui-bootstrap.min.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/danialfarid-angular-file-upload/12.0.4/ng-file-upload-all.min.js"></script>
+  <!--Filters JS-->
+  <!-- js for multi-select tree-->
+  <!-- https://github.com/kjvelarde/angular-multiselectsearchtree -->
+  <script type="text/javascript" src="/user/javascripts/treesearch/kjvelarde-multiselect-searchtree-0.9.0.min.js"></script>
+  <script type="text/javascript" src="/user/javascripts/treesearch/kjvelarde-multiselect-searchtree-0.9.0.tpl.js"></script>
+  <!-- js for sliders -->
+  <!-- https://github.com/JustMaier/angular-ranger -->
+  <script type="text/javascript" src="/user/javascripts/slider/angular-ranger.js"></script>
 
-    <!--- Cytoscape -->
-    <script src="http://cytoscape.github.io/cytoscape.js/api/cytoscape.js-latest/cytoscape.min.js"></script>
-    <!-- d3.js -->
-    <script src="//d3js.org/d3.v3.js" charset="utf-8"></script>  
-    <!-- Cytoscape Cola -->
-    <script src="http://marvl.infotech.monash.edu/webcola/cola.v3.min.js"></script>
-    <script src="/user/javascripts/graphs/cytoscape-cola.js" charset="utf-8"></script>      
-
-
-    <!-- Angular Routing -->
-    <script type="text/javascript" src="/user/javascripts/angularApp.js"></script>
-    
-    <!-- Controllers and Services -->
-    <script type="text/javascript" src="/user/javascripts/services.js"></script>
-    <script type="text/javascript" src="/user/javascripts/controllers/HomeCtrl.js"></script>
-    <script type="text/javascript" src="/user/javascripts/controllers/UserCtrl.js"></script>
-    <script type="text/javascript" src="/user/javascripts/controllers/DetailsModalCtrl.js"></script>
-
-
-    <!--Filters -->
-    <!-- js for multi-select tree-->
-    <!-- https://github.com/kjvelarde/angular-multiselectsearchtree -->
-    <link rel="stylesheet" href="/user/stylesheets/treesearch/kjvelarde-multiselect-searchtree-0.9.0.min.css">
-    <script type="text/javascript" src="/user/javascripts/treesearch/kjvelarde-multiselect-searchtree-0.9.0.min.js"></script>
-    <script type="text/javascript" src="/user/javascripts/treesearch/kjvelarde-multiselect-searchtree-0.9.0.tpl.js"></script>
-
-    <!-- js for sliders -->
-    <!-- https://github.com/JustMaier/angular-ranger -->
-    <link rel="stylesheet" href="/user/stylesheets/slider/angular-ranger.css">
-    <script type="text/javascript" src="/user/javascripts/slider/angular-ranger.js"></script>
-  
-    <!-- Modal Service -->
-    <script type="text/javascript" src="/user/javascripts/angular-modal-service.js"></script>
-
-</body>
+  <!-- Modal Service -->
+  <script type="text/javascript" src="/user/javascripts/angular-modal-service.js"></script>
 </html>

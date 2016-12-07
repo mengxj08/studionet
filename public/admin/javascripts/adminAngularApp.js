@@ -13,11 +13,18 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 					return users.getAll();
 				}],
 				// get modules data before page loads
-				modulesPromise: ['modules', function(modules){
-					return modules.query();
-				}]
+				groupsPromise: ['groups', function(groups){
+					return groups.getAll();
+				}],
+				contributionsPromise: ['contributions', function(contributions){
+					return contributions.getAll();
+				}],
+				tagsPromise: ['tags', function(tags){
+					return tags.getAll();
+				}]				
 			}
 		})
+
 		/*
 		 *  Should be remove in production; 
 		 *  Only for testing purposes to create synthetic data set
@@ -28,46 +35,26 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 			templateUrl: '/admin/templates/testing.html',
 			controller: 'TestCtrl'
 		})
+
 		.state('groups', {
 			url: '/groups',
 			templateUrl: '/admin/templates/groups.html',
-			controller: 'ModulesCtrl',
+			controller: 'GroupsCtrl',
 			resolve: {
-				usersPromise: ['users', function(users){
-					return users.getAll();
-				}],
-				// get modules data before page loads
-				modulesPromise: ['modules', function(modules){
-					return modules.query();
-				}]
-			}
-		})
-		.state('group', {
-			url: '/groups/:id',
-			templateUrl: '/admin/templates/module.html',
-			controller: 'ModuleCtrl',
-			resolve: {
-				// get data first
-				modulePromise: ['$q', 'modules', '$stateParams', function($q, modules, $stateParams){
-					var defer = $q.defer();
-				  modules.get({id: $stateParams.id}, function(module){
-						defer.resolve(module);
-					});
-					return defer.promise;
+				// get groups data before page loads
+				groupsPromise: ['groups', function(groups){
+					return groups.getAll();
 				}]
 			}
 		})
 		.state('contributions', {
 			url: '/contributions',
 			templateUrl: '/admin/templates/contributions.html',
-			controller: 'ModulesCtrl',
+			controller: 'ContributionsCtrl',
 			resolve: {
-				usersPromise: ['users', function(users){
-					return users.getAll();
-				}],
 				// get modules data before page loads
-				modulesPromise: ['modules', function(modules){
-					return modules.query();
+				contributionsPromise: ['contributions', function(contributions){
+					return contributions.getAll();
 				}]
 			}
 		})		
@@ -84,13 +71,13 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 		.state('tags', {
 			url: '/tags',
 			templateUrl: '/admin/templates/tags.html',
-			controller: 'HomeCtrl',
+			controller: 'TagsCtrl',
 			resolve: {
-				usersPromise: ['users', function(users){
-					return users.getAll();
+				tagsPromise: ['tags', function(tags){
+					return tags.getAll();
 				}]
 			}
-		});
+		})
 
 	$urlRouterProvider.otherwise('/');
 
