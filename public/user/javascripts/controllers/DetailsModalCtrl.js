@@ -1,12 +1,14 @@
 angular.module('studionet')
 
-.controller('DetailsModalCtrl', ['$scope', '$http', 'profile',  function($scope, $http, profile){
+.controller('DetailsModalCtrl', ['$scope', '$http', 'profile', 'users',  function($scope, $http, profile, users){
 	// $scope.name = "Jane Doe";
   // $scope.age = 12;
   
   $scope.data = [];
   $scope.tags = [];
   $scope.relationships= [];
+
+  $scope.users = users.usersById();
 
   $scope.refresh = function(){
       $http.get('/api/tags/').success(function(data){

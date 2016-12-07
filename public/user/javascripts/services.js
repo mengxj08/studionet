@@ -4,7 +4,8 @@ angular.module('studionet')
 	var o ={
 		user: {},
 		groups: [],
-		contributions: []
+		contributions: [],
+		groupsById: {}
 	};
 
 	o.getUser = function(){
@@ -159,7 +160,7 @@ angular.module('studionet')
 		relation: {}
 	};
 
-	o.getModuleInfo = function(id){
+	o.getGroupInfo = function(id){
 		return $http.get('/api/groups/' + id).success(function(data){
 			angular.copy(data, o.group);
 		});
@@ -178,15 +179,25 @@ angular.module('studionet')
 		});
 	};
 
-	o.addStudent = function(linkDetails){
+	o.addGroupMember = function(data){
 		
-		return $http.post('/api/groups/' + linkDetails.moduleId + '/users',linkDetails).success(function(data){
-			
-			$("#successMsg").show();
-
-			angular.copy(data, o.relation);
+		return $http.post('/api/groups/' + o.group.id + '/users', data).success(function(data){
+			alert("Added to group")
 		});
 	};
+
+	o.removeGroupMember = function(data){
+		return $http.delete('/api/groups/' + o.group.id + '/users/' + data.userId, {params: data}).success(function(data){
+			alert("Removed from group")
+		});		
+	}
+
+	o.deleteGroup = function(){
+		return $http.delete('/api/groups/' + o.group.id ).success(function(data){
+			alert("Group Deleted");
+		});		
+	}
+
 	return o;
 }])
 

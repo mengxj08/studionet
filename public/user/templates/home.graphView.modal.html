@@ -11,39 +11,47 @@
         </div>
         <div class="modal-body">
           <div class='row'>
-            <div class='col-sm-4'>
+            <div class='col-sm-10'>
+              <div class='row'>
+                <ul class="nav nav-tabs pull-right">
+                  <li class="active"><a data-target="{{ '#content' + contribution.db_data.id}}" data-toggle="tab">Content</a></li>
+                  <li><a data-target="{{ '#statistics' + contribution.db_data.id}}"  data-toggle="tab">Statistics</a></li>
+                  <li><a data-target="{{ '#author' + contribution.db_data.id}}"  data-toggle="tab">Author</a></li><!-- Author -->
+                </ul>
+              </div>
+              <div class='row'>
+                <div class="tab-content">
+                  <div class='tab-pane fade in active' id="{{ 'content' + contribution.db_data.id}}">
+                    <b>Contribution's id: </b>{{contribution.id}}
+                    <br><br>
+                    <b>Contribution's type: </b>{{contribution.type}}
+                    <br><br>
+                    <b>Contribution's title: </b>{{contribution.db_data.title}} 
+                    <br><br>
+                    <b>Contribution's content: </b>
+                      <p ng-bind-html="contribution.db_data.body"></p>
+                    <br><br>
+                  </div>
+                  <div class='tab-pane fade' id="{{ 'statistics' + contribution.db_data.id}}">
+                      <h3>This is the column for contributions' statistics.</h3>
+                  </div>
+                  <div class='tab-pane fade' id="{{ 'author' + contribution.db_data.id}}">
+                      <h3>Author Details</h3>
+                      <p>{{ users[contribution.db_data.createdBy].name }}<p>
+                      <p>{{ users[contribution.db_data.createdBy].nusOpenId }}<p>
+                  </div>
+                  <button type="button" ng-click="close()" class="btn btn-primary btn-block" data-dismiss="modal">Close</button>
+                  </div>
+                </div>
+              </div>
+            <div class='col-sm-2'>
               <div>
-                <div id='second-cy'></div>
-                <hr>
+<!--                 <div id='second-cy'></div> -->
                 <button type="button" ng-hide='hideReplyButton' ng-click="showCreateContribution=true; hideReplyButton=true; contributionData={};contributionData.tags=[]" class="btn btn-primary">Reply to...</button>
                 <button type="button" ng-show='hideReplyButton' ng-click="showCreateContribution=false; hideReplyButton=false" class="btn btn-primary">Cancle</button>
                 <button type="button" ng-click="updateContribution()" class="btn btn-primary">Update</button>
                 <button type="button" ng-click="deleteContribution(contribution.db_data.id)" class="btn btn-primary">Delete</button>
               </div>
-            </div>
-            <div class='col-sm-8'>
-              <div class='row'>
-                <ul class="nav nav-tabs pull-right">
-                  <li class="active"><a data-target="{{ '#content' + contribution.db_data.id}}" data-toggle="tab">Content</a></li>
-                  <li><a data-target="{{ '#statistics' + contribution.db_data.id}}"  data-toggle="tab">Statistics</a></li>
-                </ul>
-              </div>
-              <div class="tab-content">
-                <div class='tab-pane fade in active' id="{{ 'content' + contribution.db_data.id}}">
-                  <b>Contribution's id: </b>{{contribution.id}}
-                  <br><br>
-                  <b>Contribution's type: </b>{{contribution.type}}
-                  <br><br>
-                  <b>Contribution's title: </b>{{contribution.db_data.title}} 
-                  <br><br>
-                  <b>Contribution's content: </b>{{contribution.db_data.body}} 
-                  <br><br>
-                </div>
-                <div class='tab-pane fade' id="{{ 'statistics' + contribution.db_data.id}}">
-                    <h3>This is the column for contributions' statistics.</h3>
-                </div>
-                <button type="button" ng-click="close()" class="btn btn-primary btn-block" data-dismiss="modal">Close</button>
-                </div>
             </div>
           </div>
           <div class='editor' ng-show='showCreateContribution'>

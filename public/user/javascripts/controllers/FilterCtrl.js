@@ -110,7 +110,7 @@ angular.module('studionet')
                   tag.children = [];
                   
                   // default 
-                  tag.selected = true;
+                  tag.selected = false;
 
                   return tag;
 
@@ -186,10 +186,11 @@ angular.module('studionet')
                   user.isExpanded = false; 
                   user.children = [];
                   user.type = "user";
+                  user.selected = true;
 
                   // default - select self
                   if(user.id == $scope.user.id)
-                    user.selected = true; 
+                    user.selected = false; 
 
                   return user;
 

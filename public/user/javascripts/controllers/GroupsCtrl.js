@@ -4,14 +4,14 @@ angular.module('studionet')
  *	Controller for Groups
  * 
  */
-.controller('GroupsCtrl', ['$scope', 'profile', 'groups', 'users', '$http', function($scope, profile, groups, users, $http){
+.controller('GroupsCtrl', ['$scope', 'profile', 'groups', 'users', 'group', '$http', function($scope, profile, groups, users, group, $http){
 
 	/*
 	 * Scope Variables
 	 */
 	$scope.user = profile.user;
 	$scope.groups = groups.groups;
-	$scope.users = users.users;
+	$scope.users = users.usersById();
 	$scope.graph = {};
 	$scope.activeGroup = {
 			'name' : "",
@@ -19,6 +19,8 @@ angular.module('studionet')
 			'restricted': false,
 			'groupParentId': "" 
 	};  // placeholder group
+	$scope.activeElement = {};
+
 
 
 	/*
@@ -30,13 +32,36 @@ angular.module('studionet')
 		var createGraphNode = function(node){
 		    
 		    node.faveShape = "ellipse";
-		    console.log(node)
 		    
 		    if( node.properties.superNode != undefined ){
 		          node.faveShape = "ellipse";
 		          node.faveColor = "black";
 		          node.width = "40";
 		          node.height = "40";      
+		    }
+		    else if( node.properties.role == "Admin" ){
+		          node.faveShape = "ellipse";
+		          node.faveColor = "blue";
+		          node.width = "20";
+		          node.height = "20";      
+		    }
+		    else if( node.properties.role ){
+		          node.faveShape = "ellipse";
+		          node.faveColor = "green";
+		          node.width = "20";
+		          node.height = "20";      
+		    }
+		    else if( node.properties.restricted){
+		          node.faveShape = "ellipse";
+		          node.faveColor = "grey";
+		          node.width = "20";
+		          node.height = "20";      
+		    }		    
+		    else if( !node.properties.restricted){
+		          node.faveShape = "ellipse";
+		          node.faveColor = "lightgreen";
+		          node.width = "20";
+		          node.height = "20";      
 		    }
 		    else {
 		          node.faveShape = CONTRIBUTION_SHAPE;
@@ -48,15 +73,39 @@ angular.module('studionet')
 		    return  { data: node };
 		}
 
-		
+		// preprocessing
+		profile.getGroups();
+	    groups.graph.nodes.map( function(node){
+	    	var created = node.properties.createdBy; 
+	    	if(node.properties.createdBy == $scope.user.id)
+	    		node.properties.role = "Admin";
+	    	else {
+	    		for(var i=0; i < profile.groups.length; i++){
+	    			if(profile.groups[i].id == node.id){ console.log("mem")
+
+	    				node.properties.role = "Member";
+	    			}
+	    		}
+	    	}
+	    })
+	
 		// creating the grpah
 		var graph = makeGraph( groups.graph, 'user-graph', createGraphNode);
 		
+		// relate with current user
+		profile.groups.map( function(group){
+			graph.getElementById(group.id).data().role = group.role;
+			graph.getElementById(group.id).data();
+		})
+
 		// 
 		graph.on('tap', 'node', function(evt){
 			    		
 			    		if(evt.cyTarget.data().properties.superNode == undefined){
-				    		$scope.viewGroup(evt.cyTarget.data());
+				    		
+				    		$scope.viewGroup(evt.cyTarget.id());
+				    		$scope.activeElement = evt.cyTarget.data();
+				    		
 				    		$("#viewModal").modal();
 			    		}
 
@@ -74,40 +123,35 @@ angular.module('studionet')
 
 
 	/*** Viewing ***/
-	$scope.viewGroup = function(group){
-		$scope.activeGroup = group;
-		
-		/*
-		 * Details of the group
-		 */
-		console.log('/api/groups/' + $scope.activeGroup.id);
-		$http({
-		  method  : 'GET',
-		  url     : '/api/groups/' + $scope.activeGroup.id,
-		 })
-		.success(function(data) {
-			    
-		    if (data == undefined) {
-				console.log("Error fetching Group Data")
-		    } else {
+	$scope.viewGroup = function(id){
+		group.getGroupInfo(id);
+		group.getGroupUsers(id);
+		$scope.activeGroup = group.group;
+		$scope.activeGroup.users = group.users;
 
-		    	//console.log(data, data);
-				// Add additional data    
-				data.role = $scope.activeGroup.role;
-				$scope.activeGroup = data;
-		    }
-
-		  })
-
-
+		group.users.map( function(user){
+			$scope.users[user.id].status = "Yes";
+		})
 	}
 
 	$scope.joinGroup = function(){
 
+		var data = {
+			'userId': $scope.user.id,
+			'groupId': $scope.activeGroup.id,
+			'groupRole': 'Member'
+		}
+
+		group.addGroupMember(data);
+
+		drawGraph();
+
 	}
 
-	$scope.editGroup = function(group){
-		$scope.activeGroup = group;
+	$scope.editGroup = function(id){
+		group.getGroupInfo(id);
+		group.getGroupUsers(id);
+		$scope.activeGroup = group.group;
 	}
 
 
@@ -156,7 +200,6 @@ angular.module('studionet')
 
 		  })	 
 
-		refresh();
 
 	}
 
@@ -261,6 +304,21 @@ angular.module('studionet')
 		}
 		
 
+	}
+
+	$scope.leaveGroup = function(){
+
+		var data = {
+			groupId: $scope.activeGroup.id,
+			userId: $scope.user.id
+		}
+
+		group.removeGroupMember(data);
+		drawGraph();
+	}
+
+	$scope.deleteGroup = function(){
+		group.deleteGroup();
 	}
 
 

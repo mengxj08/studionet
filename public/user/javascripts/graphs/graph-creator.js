@@ -224,8 +224,9 @@ var createHoverBox = function( node, extra ){
     else if(node.type == "contribution"){
 
       var author = $('<p class=\'hover-content\'></p>').html("Author: " + angular.element($('.graph-container')).scope().users[ extra.createdBy ].name);
-      var lastUpdated = $('<p></p>').html(Date(extra.lastUpdated).substr(0, 10));
-      var mini_content = $('<p class=\'hover-content\'></p>').html(extra.body.substr(0, 100) + "...");
+      var date = new Date(extra.dateCreated);
+      var lastUpdated = $('<p></p>').html( date.toString().substr(0, 10) );
+      var mini_content = $('<p class=\'hover-content\'></p>').html(extra.body.substr(0, 300) + "...");
 
         
       html_content.append(author);
