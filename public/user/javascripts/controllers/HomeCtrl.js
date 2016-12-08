@@ -1,16 +1,13 @@
 angular.module('studionet')
 
-.controller('HomeCtrl', ['$scope', 'profile', 'Upload', '$timeout', 'modelsFactory', 'ModalService', '$http', 
-
- function($scope, profile, Upload, $timeout, modelsFactory, ModalService, $http){
+/*
+ *  Main Contribution Graph Page
+ * 
+ */
+.controller('HomeCtrl', ['$scope', 'profile', 'users', 'Upload', '$timeout', 'ModalService', '$http', function($scope, profile, users, Upload, $timeout, ModalService, $http){
 
 	$scope.user = profile.user;
-	$scope.modules = profile.modules;
-  $scope.userModels = modelsFactory.userModels;
-  
-	$scope.isAdmin = profile.modules.reduce(function(res, curr){
-		return res || curr.role==='Admin';
-	}, false); 
+  $scope.users = users.usersById();
 
   /*
    *
@@ -44,6 +41,9 @@ angular.module('studionet')
     cy.elements().removeClass('searched')
   }
 
+  $scope.resetGraph = function(){
+    cy.reset();
+  }
 
 
   /*
@@ -81,201 +81,3 @@ angular.module('studionet')
 
 }])
 
-/*
- * Controller for Filters
- */
-.controller('FilterCtrl', ['$scope', '$http', 
-
-   function($scope, $http){
-      
-      $scope.selectedGroups = [];
-      $scope.selectedTags = [];
-      $scope.firstDate = new Date();
-      $scope.lastDate = new Date(); 
-      
-      $scope.firstDate.setDate($scope.firstDate.getDate() - 10);
-
-      $scope.ratingMin = 3;
-      $scope.ratingMax = 4;
-      $scope.depthVal = 3;
-
-      $scope.selectedFilters = {};
-      $scope.selectedItems= [];
-      $scope.selectedFilters = {};
-      $scope.selectedItem3 = [];
-
-      /*
-       *  Composes FilterURL to send to server & modifies graph
-       * 
-       */
-      $scope.filterRequest = function(data){
-
-          var urlString = '/api/contributions?'; 
-          
-          //  Create the URL String
-          urlString += "groups=[ " + $scope.selectedGroups.map( function(g){
-             return g.id; 
-          }).toString() + " ]"
-
-          + "&tags=[ " + $scope.selectedTags.map( function(g){
-             return g.id; 
-          }).toString() + " ]" 
-
-          + "&rating=[" + $scope.ratingMin + ", " + $scope.ratingMax + "]"
-
-          + "&timeg=[" + $scope.firstDate.getTime() + ", " + $scope.lastDate.getTime() + "]"
-
-          + "&depth=" + $scope.depthVal;
-
-          alert(urlString);
-          
-
-      };
-
-      $scope.CustomCallback = function (item, selectedItems) {
-          if (selectedItems !== undefined && selectedItems.length >= 80) {
-              return false;
-          } else {
-              return true;
-          }
-      };
-
-      /*
-       * Initialization of filter-headings toggle functionality
-       * TODO: find better fix
-       */
-      $scope.init = function(){
-
-        $(".filter-heading").click(function(){
-              $(this).siblings().toggle();
-        });
-
-        refresh();
-
-      }
-
-      /*
-       *  Refresh function that refreshes all lists
-       *  TODO: make these requests a service?
-       *  
-       */
-      function refresh(){
-          $http.get('/api/tags/').success(function(data){
-              console.log("tags");
-              console.log(data);
-              var tags = [];
-              var list = data;
-              for(var i=0;i<list.length;i++){
-                var obj ={
-                  name: list[i].name,
-                  id: list[i].id,
-                  
-                  isExpanded: false,
-                  children:[]
-                }
-                tags.push(obj);
-              }
-              $scope.dataTags= angular.copy(tags);
-          });
-            
-            
-          $http.get('/api/groups/').success(function(data){
-            
-            var users = [];
-            $http.get('/api/users/').success(function(data1){
-
-              users = data1;
-             
-              $scope.filterData=data;
-              var list=data;
-              var groups = [];
-              var mainGrps = [];
-              var numGrp=0;
-
-              var userObj = {
-                  name: 'Users',
-                  id: 4567,
-                  parentId: null,
-                  isExpanded: false,
-                  children:[]
-              }
-
-              for(var i=0;i<users.length;i++){
-                   var obj = {
-                    name: users[i].name,
-                    id: users[i].id,
-                    parentId: 4567,
-                    isExpanded: false,
-                    children:[]
-                }
-                userObj.children.push(obj);
-              }
-              
-
-              for(var i=0;i<list.length;i++){
-                
-                var obj = {
-                  name: list[i].name,
-                  id: list[i].id,
-                  parentId: list[i].parentId,
-                  isExpanded: false,
-                  children:[]
-                }
-                mainGrps.push(obj);
-                groups[list[i].id] = obj;
-              }
-             
-              for(var b=0;b<list.length;b++){
-                var parent = list[b].parentId;
-                if(groups[parent]!=null){
-
-                  groups[parent].children.push(list[b].id);
-
-                }
-              }
-              
-              
-              var grpList = [];
-             /* for(var j=0;j<mainGrps.length;j++){
-                if( mainGrps[j].children.length >0){
-                  for(var k=0; k < mainGrps[j].children.length; k++){
-                    mainGrps[j].children[k] = groups[mainGrps[j].children[k]];
-                  }
-                }
-              }*/
-                  //grpList[j] = groups[[j]];
-                for(var j=0;j<mainGrps.length;j++){
-                  var key = mainGrps[j].id;
-                  if(groups.hasOwnProperty(key)){
-                    for(var i=0;i<groups[key].children.length;i++){
-                      var id = groups[key].children[i];
-                      mainGrps[j].children[i] = groups[id];
-                   }
-                  }
-                }
-
-             
-              //console.log(mainGrps);
-              for(var j=0;j<mainGrps.length;j++){
-                
-                if(mainGrps[j].parentId!=null){
-                  
-                  mainGrps.splice(j,1);
-                  j--;
-                }
-              }
-              mainGrps.push(userObj);
-              $scope.data = angular.copy(mainGrps);
-              $scope.datas = angular.copy(mainGrps);  
-              
-
-            });
-
-              
-          }); 
-
-      }
-
-
-
-}]);

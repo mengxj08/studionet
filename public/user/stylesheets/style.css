@@ -218,7 +218,7 @@ p.hover-content img{
 
 /* ---- Graph Container ---- */
 .graph-container{
-	height: 775px;
+	height: 585px;
 	//width: 100vh; 
 
 	margin: 0px 25px 10px 25px;
@@ -330,29 +330,35 @@ p.hover-content img{
 
 
 
-/*
- *	Graph Filters 
- */
- #searchTextResults{
- 	margin-left:-50px;
- }
 
- .subgroups{
- 	margin-left: 20%;
- }
 
- .filter-panel{
- 	margin-left: 10px;
- 	margin-right: 1px;
- 	margin-bottom: 0px;
- 	font-size: 12px;
- 	width: 180px;
- 	position: relative;
- }
 
- .filter-heading{
-  	padding: 2px;	
-  	background-color: #ADD8E6;
-	color: black;
-	cursor: pointer;
- }
+#user-graph {
+  position: absolute;
+  height: 80%;
+  width: 100%;
+  z-index: 10;
+  width: 100%;
+  left: 0; 
+}
+
+
+
+.app-container{
+	//background-color: red;
+	width: 90%;
+	margin-left: 5%;
+	padding-left: 0px !important;
+}
+
+
+.edit-button{
+	position: absolute;
+	top: 0px;
+	right: 0px;
+}
+
+.height-400{
+	max-height: 400px;
+	overflow: auto;
+}

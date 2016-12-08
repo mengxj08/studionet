@@ -45,12 +45,14 @@ function apiCall(query, callback){
           // for each graph
 
           row.graph.nodes.forEach(function(n) {
+            n.type = n.labels[0];
+            n.name = setName(n);
             if (idIndex(nodes, n.id) == null)
-                nodes.push({
+                nodes.push(n/*{
                     id: n.id,
                     type: n.labels[0],
-                    name: setName(n),
-                });
+                    name: setName(n)
+                }*/);
           });
           links = links.concat(row.graph.relationships.map(function(r) {
               return {

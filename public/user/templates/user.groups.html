@@ -1,97 +1,7 @@
+<script type="text/javascript" src="../user/javascripts/graphs/graph-helper.js"></script>
 <!-- tables -->
-<div class="row">
-  
-  <!-- Message Container -->
-  <div class="col-md-6 col-sm-12" ng-if='displaySucess'>
-      <div class="alert alert-success" role="alert">
-          <strong>Group has been created!</strong> 
-      </div>
-  </div>
-  <div class="col-md-6 col-sm-12" ng-if='displayError'>
-      <div class="alert alert-danger alert-dismissible fade in" role="alert">
-          <strong>Oops!</strong> 
-      </div>
-  </div>
 
-
-  <!-- List of all groups owned by user -->
-  <div class="col-md-12">
-    <div class="card">
-      <div class="card-header">
-        My Groups
-      </div>
-      <div class="card-body no-padding">
-        <div class="table-responsive">
-        <table class="table card-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Description</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody ng-repeat="group in groups">
-            <tr ng-if='group.id !== -1 && group.role=="Admin"'>
-              <td><b>{{group.name}}</b> ({{group.restricted == 'false' ? 'Open Group' : 'Closed Group'}})</td>
-              <td>{{group.description}}</td>
-              <td>
-                  <button type="button" class="btn btn-link" data-toggle="modal" data-target="#viewModal" ng-click='viewGroup(group)'>
-                    <i class="fa fa-eye" aria-hidden="true"></i>
-                  </button>
-                  <button type="button" class="btn btn-link" data-toggle="modal" data-target="#editModal" ng-click='editGroup(group)'>
-                    <i class="fa fa-pencil" aria-hidden="true"></i>
-                  </button>
-                  <button type="button" class="btn btn-link" data-toggle="modal" data-target="#addUserModal" ng-click='addUserModal(group)'>
-                      <i class="fa fa-user-plus" aria-hidden="true"></i>
-                  </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- List of all other groups except the user's groups -->
-  <div class="col-md-12">
-    <div class="card">
-      <div class="card-header">
-        Other Groups
-      </div>
-      <div class="card-body no-padding">
-        <div class="table-responsive">
-        <table class="table card-table">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Description</th>
-              <th>Member</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody ng-repeat="group in groups">
-            <tr ng-if='group.id !== -1 && group.role != "Admin"'>
-              <td><b>{{group.name}}</b> ({{group.restricted == false ? 'Open Group' : 'Closed Group'}})</td>
-              <td>{{group.description}}</td>
-              <td>{{ group.role ? 'Yes' : 'No' }}</td>
-              <td>
-                <button type="button" class="btn btn-link" data-toggle="modal" data-target="#viewModal" ng-click='viewGroup(group)'>
-                    <i class="fa fa-eye" aria-hidden="true"></i>
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      </div>
-    </div>
-  </div>
-
-</div>
-
-
-
+<div id='user-graph'></div>
 
 <!-- create a group button -->
 <div class="btn-floating">
@@ -112,6 +22,12 @@
 
       <div class="modal-header">
         <h4 class="modal-title text-center">{{activeGroup.name}}</h4>
+
+        <!-- Admin Fn -->
+        <button class='btn btn-link pull-right edit-button' data-toggle="modal" data-target="#editModal" data-dismiss="modal" ng-if='activeElement.role=="Admin"'>
+          <i class='fa fa-pencil'></i>
+        </button>
+
       </div>
 
       <div class="modal-body">
@@ -119,8 +35,7 @@
         <!-- Body for Viewing -->
         <div class='row'>
           <div class='col-sm-3'><i class="icon fa fa-tasks fa-4x"></i></div>
-          <div class='col-sm-9'>
-            <p>{{activeGroup.description}}</p>
+          <div class='col-sm-9' ng-bind-html="activeGroup.description">
           </div>
         </div>
 
@@ -129,10 +44,17 @@
         <div class='row'>
           <div class='col-sm-3'><i class="icon fa fa-users fa-4x"></i></div>
           <div class='col-sm-9'>
-            <p><b>User Count </b> {{activeGroup.users}}</p>
-            <p><b>Created By </b>{{activeGroup.owner}}</p>
-            <p><b>Type </b>{{activeGroup.restricted == "true" ? "Closed Group" : "Open Group"}}</p>
-            <!-- <p><b>Frequently Used Tags</b> #tag1, #tag2, #tag3 </p> -->
+            <p><b>User Count: </b> {{ activeGroup.users }}
+                <!-- Admin fn -->
+                <button class='btn btn-link pull-right edit-button' data-toggle="modal" data-target="#addUserModal" data-dismiss="modal"  ng-if='activeElement.role=="Admin"'>
+              <i class='fa fa-user-plus'></i>
+            </button>
+
+            </p>
+            
+            <p><b>Created By: </b>{{ users[ activeGroup.createdBy ].name }}</p>
+            
+            <p><b>Type: </b>{{activeGroup.restricted == true ? "Closed Group" : "Open Group"}}</p>
           </div>
         </div>
 
@@ -140,12 +62,21 @@
 
       <div class='modal-footer'>
         <!-- buttons -->
-
-
+            
             <!-- Close -->
             <button type="button" class="btn btn-sm btn-default" data-dismiss="modal" 
-              ng-click = '(activeGroup.role === undefined) ?  joinGroup() : leaveGroup()' >
-             {{ activeGroup.role ? (activeGroup.role=="Admin"? "Delete Group" : "Leave Group")  : "Join Group"}} 
+              ng-click ='leaveGroup()' ng-if='activeElement.role=="Member"'>
+             Leave Group
+            </button>
+
+            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal" 
+              ng-click ='joinGroup()' ng-if='activeElement.role==undefined && activeElement.properties.restricted==false'>
+             Join Group
+            </button>
+
+            <!-- Admin Fn -->
+            <button type="button" class='btn btn-sm btn-default' data-toggle="modal" data-dismiss="modal" ng-if='activeElement.role=="Admin"' ng-click='deleteGroup()'>
+              Delete
             </button>
 
             <!-- Close -->
@@ -172,7 +103,6 @@
         <div class='row'>
           <!-- Body for Creating -->         
           <div class="section">
-              <div class='section-title'>General Information</div>
               <div class="section-body">
 
                 <div class="form-group">
@@ -211,19 +141,16 @@
       <div class="modal-footer">
 
           <!-- buttons -->
-          <div class='row'>
-            
-              <!-- Save -->
-              <button type="button" class="btn btn-sm btn-default" ng-click=saveGroupEdit()>
-                Save Changes
-              </button>
+          <!-- Save -->
+          <button type="button" class="btn btn-sm btn-default" ng-click=saveGroupEdit()>
+            Save Changes
+          </button>
 
-              <!-- Cancel -->
-              <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">
-                Close
-              </button>
+          <!-- Cancel -->
+          <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">
+            Close
+          </button>
 
-          </div>
       </div>
 
     </div>
@@ -240,7 +167,7 @@
         <h4 class="modal-title">{{activeGroup.name}} Members</h4>
       </div>
 
-      <div class="modal-body">
+      <div class="modal-body height-400">
         <div class='row'>
           <div class="col-xs-12">
             <table class="table table-bordered table-hover">
@@ -265,15 +192,10 @@
 
       <div class='modal-footer'>
         <!-- buttons -->
-        <div class='row'>
             
-            <!-- Close -->
-            <button type="button" class="btn btn-sm btn-default pull-right" data-dismiss="modal"> Close </button>
+          <!-- Close -->
+          <button type="button" class="btn btn-sm btn-default pull-right" data-dismiss="modal"> Close </button>
 
-            <!-- Save -->
-<!--             <button type="button" class="btn btn-sm btn-default pull-right" data-dismiss="modal">Save</button> -->
-
-        </div>
       </div>
 
 
@@ -358,7 +280,6 @@
       <div class="modal-footer">
 
           <!-- buttons -->
-          <div class='row'>
             
               <!-- Save -->
               <button type="button" class="btn btn-sm btn-default" ng-click=saveGroup()>
@@ -370,7 +291,6 @@
                 Cancel
               </button>
 
-          </div>
       </div>
 
     </div>

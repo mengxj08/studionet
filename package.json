@@ -8,6 +8,7 @@
     "test": "mocha --timeout 2000"
   },
   "dependencies": {
+    "angular-ui-bootstrap": "^2.3.0",
     "body-parser": "~1.15.1",
     "cookie-parser": "~1.4.3",
     "debug": "~2.2.0",
@@ -26,7 +27,8 @@
     "passport-openid": "^0.4.0",
     "request": "^2.74.0",
     "seraph": "^0.14.4",
-    "serve-favicon": "~2.3.0"
+    "serve-favicon": "~2.3.0",
+    "underscore": "^1.8.3"
   },
   "optionalDependencies": {
     "nodemon": "^1.11.0"

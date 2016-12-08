@@ -130,21 +130,47 @@ router.get('/user', auth.ensureAuthenticated, function(req, res){
 });
 
 
-// route: /api/profile/modules
-// get just the modules that this user is in
-router.get('/modules', auth.ensureAuthenticated, function(req, res){
+// route: /api/profile/groups
+// get just the groups that this user is in
+router.get('/groups', auth.ensureAuthenticated, function(req, res){
   
   var query = [
     'MATCH (u:user)',
-    'WHERE ID(u)=' + req.user.id,
+    'WHERE ID(u)={userIdParam}',
     'WITH u',
     'MATCH (m)-[r:MEMBER]->(u)',
-    'RETURN {id: id(m), code: m.code, name: m.name, contributionTypes: m.contributionTypes, role: r.role}'
-  ].join('\n');
+    'RETURN {id: id(m), name: m.name, role: r.role}'  ].join('\n');
 
-  db.query(query, function(error, result){
+  var params = {
+     userIdParam: parseInt(req.user.id)
+  }
+
+  db.query(query, params, function(error, result){
     if (error)
       console.log('Error getting current user\'s module');
+    else
+      res.send(result);
+  });
+
+})
+
+
+// route: /api/profile/contributions
+// get the contributions that this user created
+router.get('/contributions', auth.ensureAuthenticated, function(req, res){
+  
+  var query = [
+    'MATCH (u:user)-[r:CREATED]->(c:contribution)',
+    'WHERE ID(u)={userIdParam}',
+    'RETURN {id: id(c), name: c.title}'  ].join('\n');
+
+  var params = {
+     userIdParam: parseInt(req.user.id)
+  }
+
+  db.query(query, params, function(error, result){
+    if (error)
+      console.log('Error getting current user\'s contributions');
     else
       res.send(result);
   });

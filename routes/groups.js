@@ -26,7 +26,8 @@ router.route('/')
 		var query = [
 			'MATCH (g:group)',
 			'OPTIONAL MATCH (g)<-[:SUBGROUP]-(p:group)',
-			'RETURN {name: g.name, id: id(g), description: g.description, restricted: g.restricted, parentId: id(p)}'
+			'OPTIONAL MATCH (g)-[:MEMBER]->(m1:user)',
+			'RETURN {name: g.name, id: id(g), restricted: g.restricted, parentId: id(p), users: COUNT(m1), createdBy: g.createdBy}'
 		].join('\n'); 
 
 		/*
@@ -70,7 +71,7 @@ router.route('/')
 			descriptionParam: req.body.description,
 			restrictedParam: req.body.restricted,
 			groupParentIdParam: parseInt(req.body.groupParentId),
-			userIdParam: req.user.id,
+			userIdParam: parseInt( req.user.id ),
 			dateCreatedParam: date
 		};
 
@@ -101,7 +102,7 @@ router.route('/')
 
 		// else try to create the group (link group to its tag, and add owner as admin to group)
 		query = [
-			'CREATE (g:group {name: {nameParam}, description: {descriptionParam}, restricted: {restrictedParam}, dateCreated: {dateCreatedParam}})',
+			'CREATE (g:group {createdBy: {userIdParam}, name: {nameParam}, description: {descriptionParam}, restricted: {restrictedParam}, dateCreated: {dateCreatedParam}})',
 			'WITH g',
 			'MATCH (u:user) WHERE id(u)= {userIdParam}',
 			'CREATE UNIQUE (g)-[r:MEMBER {role: "Admin"}]->(u)',
@@ -154,14 +155,13 @@ router.route('/:groupId')
 	.get(auth.ensureAuthenticated, function(req, res){
 
 		var query = [
-			'MATCH (g:group) WHERE ID(g) = ' + req.params.groupId,
-			'MATCH (u:user)-[:MEMBER]-(g)' ,
-			'MATCH (admin:user)<-[:MEMBER {role:\'Admin\'}]-(g)',
-			'RETURN {name: g.name, id: id(g), description: g.description, restricted: g.restricted, users: COUNT(u), owner: admin.name}'
+			'MATCH (g:group) WHERE ID(g) = {groupIdParam}',
+			'OPTIONAL MATCH (u:user)<-[:MEMBER]-(g)' ,
+			'RETURN {name: g.name, id: id(g), description: g.description, restricted: g.restricted, createdBy: g.createdBy, users: COUNT(u)}'
 		].join('\n');
 
 		var params = {
-			groupIdParam : req.params.groupId,
+			groupIdParam : parseInt(req.params.groupId)
 		};
 		
 		db.query(query, params, function(error, result){
@@ -218,6 +218,7 @@ router.route('/:groupId')
 		var query = [
 			'MATCH (g:group)',
 			'WHERE ID(g)=' + req.params.groupId,
+			'DETACH',
 			'DELETE g'
 		].join('\n');
 
@@ -309,7 +310,8 @@ router.route('/:groupId/users')
 	});
 
 
-// route: /api/groups/:groupId/users/:userId
+
+// route: /api/groups/graph
 router.route('/:groupId/users/:userId')
 	// edit the user's role in this group
 	.put(auth.ensureAuthenticated, auth.isModerator, function(req, res){
@@ -331,6 +333,35 @@ router.route('/:groupId/users/:userId')
 		});
 	})
 
+	/*
+	 * Delete a user to the group (allow for array of users)
+	 * If group is open, anyone can add himself / herself
+	 * If group is closed, ensure admin is adding the member
+	 * If member exists, the create link
+	 * If member doesn't exist, create the member, add link and send email
+	 * 
+	 */ 
+	.delete(auth.ensureAuthenticated, function(req, res){
+
+		var query = [
+			'MATCH (u)-[m:MEMBER {role:"Member"}]->(g) WHERE ID(u)={groupIdParam} AND ID(g)={userIdParam} DELETE m'
+		].join('\n');
+
+		var params = {
+			userIdParam: parseInt(req.params.userId),
+			groupIdParam: parseInt(req.params.groupId)
+		};
+
+		console.log(req.params);
+
+		db.query(query, params, function(error, result){
+			if (error)
+				console.log('Error deleting the user to the group', error);
+			else
+				res.send('success');
+				
+		});
+	});
 
 
 module.exports = router;

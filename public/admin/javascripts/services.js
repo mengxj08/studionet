@@ -28,23 +28,64 @@ angular.module('studionetAdmin')
 		});
 	};
 
-	o.createModNew = function(moderator){
-		return $http.post('/api/moderators/new', moderator).success(function(data){
-			o.users.push(data);
-		});
-	};
-
-	o.createModExisting = function(moderator){
-		return $http.post('/api/moderators/existing', moderator).success(function(data){
-			o.users.push(data);
-		});
-	};
 
 	o.createNewUser = function(user){
 		return $http.post('/api/users', user).success(function(data){
 			o.users.push(data);
 		});
 	}
+
+	return o;
+}])
+
+.factory('groups', ['$http', function($http){
+
+	var o = {
+		groups: []
+	};
+
+	o.getAll = function(){
+		return $http.get('/api/groups').success(function(data){
+			angular.copy(data, o.groups);
+		});
+	};
+
+	o.createNewGroup = function(user){
+		return $http.post('/api/groups', user).success(function(data){
+			o.users.push(data);
+		});
+	}
+
+	return o;
+}])
+
+.factory('tags', ['$http', function($http){
+
+	var o = {
+		tags: []
+	};
+
+	o.getAll = function(){
+		return $http.get('/api/tags').success(function(data){
+			angular.copy(data, o.tags);
+		});
+	};
+
+	return o;
+}])
+
+
+.factory('contributions', ['$http', function($http){
+
+	var o = {
+		contributions: []
+	};
+
+	o.getAll = function(){
+		return $http.get('/api/contributions').success(function(data){
+			angular.copy(data, o.contributions);
+		});
+	};
 
 	return o;
 }]);

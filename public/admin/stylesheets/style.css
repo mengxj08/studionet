@@ -1,9 +1,30 @@
 body {
-  padding: 50px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
   height: 100%;
 }
 
 a {
   color: #00B7FF;
+}
+
+.app-container{
+	//background-color: red;
+	width: 90%;
+	margin-left: 5%;
+	padding-left: 0px !important;
+}
+
+.height-700{
+	//background-color: red;
+	max-height: 700px !important;
+}
+
+.axis--x path {
+  display: none;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
 }

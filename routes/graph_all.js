@@ -56,17 +56,17 @@ router.route('/me')
 		});
 	});
 
-	// route: /graph/users
-	router.route('/users')
+	// route: /graph/all/groups
+	// TODO
+	router.route('/groups')
 
 		// return whole graph
 		.get(auth.ensureAuthenticated, function(req, res){
 
-			// AKM - needs a direction or it sends double
 			var query = [
-							'MATCH (a:user)-[r*0..2]-(b:user)',
-							'WHERE NOT ID(a) =ID(b)',
-							'RETURN a.name, b.name, COUNT(r)'
+							'MATCH (g:group) WITH g',
+							'MATCH (g)-[s:SUBGROUP]->(m)',
+							'RETURN g, m, s'
 						].join('\n');
 		
 			apiCall(query, function(data){	
