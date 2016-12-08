@@ -1,0 +1,70 @@
+### Core Components, Relationships and Properties
+
+#### Users Properties (:user)
+
+- nusOpenId
+- canEdit
+- name
+- isAdmin
+- addedBy (userID)
+- addedOn
+- avatar (default @ /uploads/default/avatar) (avatar.png/..)
+- joinedOn
+- lastLoggedIn
+
+#### User Relationship
+
+- User <- Group   [:MEMBER {role: "Admin"/"User"}]
+- User <- Group   [:CREATED {on: "Date"}]
+- User -> Tag [:CREATED {createdOn : "Date"}]
+- User -> Contribution [:CREATED {createdOn : "Date"}]
+- User -> Contribution [:VIEWED {count: 0, lastViewed : "Date"}]
+- User -> Contribution [:RATED {rating: 0, lastRated : "Date"}]
+
+#### Groups Properties
+
+- restricted
+- name
+- description
+- dateCreated
+
+#### Group Relationship
+
+- User <- Group   [:MEMBER {role: "Admin"/"User", on:'Date'}]
+- Group -> Group [:SUBGROUP]
+- Group -> Tag [:TAG]
+
+#### Tag Properties
+
+- name
+- createdBy (userID)
+
+#### Tag Relationships
+
+- User -> Tag [:CREATED {createdOn : "Date"}]
+- Group -> Tag [:TAG]
+- Contribution -> Tag [:TAGGED {createdBy: user-id}]
+
+
+#### Contribution Properties
+
+- title
+- body
+- ref
+- lastUpdated
+- editted
+- content-type
+
+#### Contribution Relationships
+
+- User -> Contribution [:CREATED {createdOn : "Date"}]
+- User -> Contribution [:VIEWED {count: 0, lastViewed : "Date"}]
+- User -> Contribution [:RATED {rating: 0, lastRated : "Date"}]
+- Contribution -> Tag [:TAGGED {createdBy: user-id}]
+- Contribution -> Contribution [:QUESTION ]
+- Contribution -> Contribution [:ANSWER ]
+- Contribution -> Contribution [:COMMENT ]
+- Contribution -> Contribution [:RESOURCE {createdBy: <id>}]
+- Contribution -> Contribution [:INSPIRED {createdBy: <id>}]
+- Contribution -> Contribution [:RELATED {createdBy: <id>, note: "---description of the relationship---"}]
+

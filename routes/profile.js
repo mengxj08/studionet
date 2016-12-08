@@ -43,20 +43,24 @@ router.get('/', auth.ensureAuthenticated, function(req, res){
 });
 
 // edit the current user's information
+// TODO:
+// Considering removing this route because the moderator/admin adds users into the system anyway. All the information should be 
+// 'correct' already. Leaving this route here might lead to abuse by mischievous users.
+/*
 router.put('/', auth.ensureAuthenticated, function(req, res){
 
   var query = [
     'MATCH (u:user) WHERE ID(u)=' + req.user.id,
     'WITH u',
-    'SET u.name={nameParam}, u.nusOpenId={nusOpenIdParam}, u.canEdit={canEditParam}, u.year={yearParam}',
+    'SET u.name={nameParam}, u.nusOpenId={nusOpenIdParam}, u.year={yearParam}',
     'RETURN u'
   ].join('\n');
 
   var params = {
       nameParam: req.body.name,
-      nusOpenIdParam: req.body.nusOpenId,
-      canEditParam: req.body.canEdit,
-      yearParam: req.body.year,
+      // nusOpenIdParam: req.body.nusOpenId, // consider taking this out also, should not change his own account openID
+      // canEditParam: req.body.canEdit, // consider taking this out so that current user cannot edit his own 'can edit' property
+      //yearParam: req.body.year,
     };
 
     db.query(query, params, function(error, result){
@@ -66,16 +70,36 @@ router.put('/', auth.ensureAuthenticated, function(req, res){
         res.send(result[0]);
     });
 });
+*/
 
-// route: /api/profile/graph
-// get the profile of the current user in graph form
-router.get('/graph', auth.ensureAuthenticated, function(req, res){
-  var query = "MATCH path=(u:user)-[*0..1]-(p) WHERE id(u)=" + req.user.id +"\nRETURN path";
-  apiCall(query, function(data){
-    res.send(data);
-  })
+/*
+ * Allow only name to be changed
+ */
+router.put('/', auth.ensureAuthenticated, function(req, res){
 
+  var query = [
+    'MATCH (u:user) WHERE ID(u)=' + req.user.id,
+    'WITH u',
+    'SET u.name={nameParam}',
+    'RETURN u'
+  ].join('\n');
+
+  var params = {
+      nameParam: req.body.name,
+      // nusOpenIdParam: req.body.nusOpenId, // consider taking this out also, should not change his own account openID
+      // canEditParam: req.body.canEdit, // consider taking this out so that current user cannot edit his own 'can edit' property
+      //yearParam: req.body.year,
+    };
+
+    db.query(query, params, function(error, result){
+      if (error)
+        console.log('Error modifying user: ', error);
+      else
+        res.send(result[0]);
+    });
 });
+
+
 
 // route: /api/profile/user
 // get just the user data for this account
@@ -106,21 +130,47 @@ router.get('/user', auth.ensureAuthenticated, function(req, res){
 });
 
 
-// route: /api/profile/modules
-// get just the modules that this user is in
-router.get('/modules', auth.ensureAuthenticated, function(req, res){
+// route: /api/profile/groups
+// get just the groups that this user is in
+router.get('/groups', auth.ensureAuthenticated, function(req, res){
   
   var query = [
     'MATCH (u:user)',
-    'WHERE ID(u)=' + req.user.id,
+    'WHERE ID(u)={userIdParam}',
     'WITH u',
     'MATCH (m)-[r:MEMBER]->(u)',
-    'RETURN {id: id(m), code: m.code, name: m.name, contributionTypes: m.contributionTypes, role: r.role}'
-  ].join('\n');
+    'RETURN {id: id(m), name: m.name, role: r.role}'  ].join('\n');
 
-  db.query(query, function(error, result){
+  var params = {
+     userIdParam: parseInt(req.user.id)
+  }
+
+  db.query(query, params, function(error, result){
     if (error)
       console.log('Error getting current user\'s module');
+    else
+      res.send(result);
+  });
+
+})
+
+
+// route: /api/profile/contributions
+// get the contributions that this user created
+router.get('/contributions', auth.ensureAuthenticated, function(req, res){
+  
+  var query = [
+    'MATCH (u:user)-[r:CREATED]->(c:contribution)',
+    'WHERE ID(u)={userIdParam}',
+    'RETURN {id: id(c), name: c.title}'  ].join('\n');
+
+  var params = {
+     userIdParam: parseInt(req.user.id)
+  }
+
+  db.query(query, params, function(error, result){
+    if (error)
+      console.log('Error getting current user\'s contributions');
     else
       res.send(result);
   });

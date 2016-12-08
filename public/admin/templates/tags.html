@@ -1,0 +1,32 @@
+<div class='row'>
+	<div class="col-xs-12 col-sm-12">
+		<div class="card card-mini">
+		  <div class="card-header">
+		    <div class="card-title"><span>Tags ({{tags.length}})</span></div>
+		  </div>
+		  <div class="card-body no-padding table-responsive height-700">
+
+		    <table class="table card-table table-hover">
+						<thead>
+							<tr>
+								<th>Tag</th>
+								<th>CreatedBy</th>
+								<th>Contribution Count</th>
+								<th>DB ID</th>
+							</tr>
+						</thead>
+						<tbody ng-repeat="tag in tags">
+							<tr>
+								<th>{{tag.name}}</th>
+								<th>{{tag.createdBy}}</th>
+								<th>{{tag.contributionCount}}</th>
+								<th>{{tag.id}}</th>
+							</tr>
+						</tbody>
+		    </table>
+		  </div>
+
+		  
+		</div>
+	</div>
+</div>

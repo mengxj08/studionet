@@ -1,44 +1,131 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>StudioNet</title>
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-    
-  </head>
-  <body>
-    <div class="row">
-  		<div class="container">
-		  	<div class="col-xs-12">		
-					<h1 class="text-center">StudioNet</h1>
-				</div>
-  		</div>
-  	</div>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-  	<div class="row">
-  		<div class="container">
-  			<div class="col-xs-6 col-xs-offset-3">
-  				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-  				tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-  				quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-  				consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-  				cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-  				proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-  			</div>
-  		</div>
-  	</div>
+<!-- SEO PHP tags to go here -->
+<meta name="Keywords" content="OpenID, National University of Singapore, NUS">
+<meta name="Description" content="NUS OpenID">
+<title>NUS - National University of Singapore - StudioNET</title>
+<meta http-equiv="X-UA-Compatible" content="IE=7;FF=3;OtherUA=4;text/html;charset=utf-8">
+<!-- SEO PHP tags end -->
+<link rel="stylesheet" type="text/css" href="assets/NUS/consolidated.css">
+</head>
+<body>
+  <!-- wrapper -->
+  <div id="wrapper">
+    <!-- header -->
+    <div id="nusheader" class="nusbody">
+      <div class="nuslogodiv">
+        <a href="http://www.nus.edu.sg/"> <img class="nuslogo" src="assets/NUS/logo.gif" alt="">
+        </a>
+      </div>
+      <div id="nuspointermenu">
+        <ul>
+          <li><a href="http://exchange.nus.edu.sg/"><span style="text-transform: none">myEMAIL</span> </a></li>
+          <li><a href="https://ivle.nus.edu.sg/lms/default.aspx">ivle</a></li>
+          <li><a href="http://www.lib.nus.edu.sg/">library</a></li>
+          <li><a href="http://www.nus.edu.sg/campusmap/">maps</a></li>
+          <li><a href="https://aces01.nus.edu.sg/CoE/jsp/coeMain.jsp">calendar</a></li>     
+          <li><a href="https://openid.nus.edu.sg/about/contact">contact</a></li>
+          <li><a href="https://openid.nus.edu.sg/about/#" id="rightcorner">&nbsp;</a></li>
+        </ul>
+        <br style="clear: left">
+      </div>
+    </div>
+    <!-- /header -->
+    <div id="content">
+      <div id="title" class="title">
+        <h1>
+          <a href="https://openid.nus.edu.sg/">NUS StudioNET</a>
+        </h1>
+      </div>
+          <div id="sidebar">
+      <div id="my_menu" class="sdmenu">
+        <span class="title-fix"><a href='#' onclick='enterUser()'>LOGIN</a></span>
+        <span class="title-fix"><a href='/'>ABOUT</a></span>
+      </div>
+    </div>
+    <!--/aboutus sidebar -->
+      <div id="right-content">
+        <div id="box">
+          <div id="lb">
+            <div id="rb">
+              <div id="bb">
+                <div id="blc">
+                  <div id="brc">
+                    <div id="tb">
+                      <div id="tlc">
+                        <div id="trc">
+                          <!--- box border -->
+                          <a id="top" name="top"></a>
+                          <div id="main-content">
+                            <h1>StudioNET</h1>
+                            <p>Lorem ipsum Laboris magna cupidatat officia qui nulla aliqua in dolore minim fugiat Excepteur occaecat Duis deserunt dolor adipisicing tempor culpa nulla cupidatat eu est sunt non aliqua dolor incididunt dolore reprehenderit dolore ut aliqua consectetur in cillum Duis reprehenderit non irure officia sit non voluptate do in et eu dolore nulla aliqua enim nisi aliqua cupidatat sit dolore cupidatat laborum quis sed culpa do ullamco irure nisi dolore eu eu est dolore Ut adipisicing ad eiusmod ut exercitation velit culpa Duis dolor dolor qui ea tempor amet reprehenderit quis enim adipisicing in fugiat eu cillum pariatur nostrud in amet ea ex nostrud ut Duis enim dolore ea mollit aliqua laboris esse ex Excepteur anim minim nostrud pariatur sint commodo dolore quis quis in sunt magna occaecat minim nisi culpa et cupidatat sint in esse tempor labore nostrud consectetur minim commodo veniam amet et quis incididunt adipisicing non esse do enim quis fugiat consectetur voluptate sunt dolore pariatur occaecat aliqua labore occaecat labore reprehenderit dolor nisi esse.</p>
+                            <p>Lorem ipsum Culpa qui cillum reprehenderit commodo aliquip sint mollit aute ex et amet sit enim aliquip labore amet proident dolore ut tempor in laborum reprehenderit commodo est elit nostrud in sint fugiat fugiat reprehenderit ea consectetur ut fugiat ut sed officia.</p>
+                                                      
+                            <p>                
+                                <form action="/auth/openid" method="post" id="form_user">
+                                  <input type="hidden" id=user_id type="text" name="openid_identifier" value="https://openid.nus.edu.sg/"/><br/>         
+                                  </input>
+                                </form>
+                            </p>
 
-    <div class="row">
-			<div class="container">
-				<div class="col-xs-6 col-xs-offset-3">
-					<h3 class="text-center">StudioNet Home Page</h3>
-<!--           <a class="btn btn-block btn-success" href="/user">To User Page</a>
-          <a class="btn btn-block btn-danger" href="/admin">To Admin Page</a> -->
-					<a class="btn btn-block btn-primary" href="/login">Login</a>
-				</div>
-			</div>
-		</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>    
-  </body>
-</html>
+    <!-- footer -->
+    <div id="nusfooter" class="nusbody">
+      <div id="nusfooter_ml">
+        <div id="nusfooter_mr">
+          <div id="nusfooter_tc">
+            <div id="nusfooter_tl">
+              <div id="nusfooter_tr">
+                <div id="nusfooter_bc">
+                  <div id="nusfooter_bl">
+                    <div id="nusfooter_br">
+                      <div class="inner">
+                        <div class="left">
+                          <p>© Copyright 2001-2012 National University of
+                            Singapore. All Rights Reserved.</p>
+                          <p class="nusfooterlinks">
+                            <a href="http://www.nus.edu.sg/terms.php">Terms of Use</a>
+                            | <a href="http://www.nus.edu.sg/policy.php">Privacy</a> |
+                            <a href="http://www.nus.edu.sg/nondiscrim.php">Non-discrimination</a>
+                          </p>
+                        </div>
+                        <div class="right">
+                          <p class="copy nusfooterlinks">
+                            <a href="https://openid.nus.edu.sg/">Home</a> | 
+                            <a href="https://openid.nus.edu.sg/about/contact/">Contact</a>
+                          </p>
+                        </div>
+                        <div style="clear: both;"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<div id="window-resizer-tooltip" style="display: none;"><a href="https://openid.nus.edu.sg/about/#" title="Edit settings"></a><span class="tooltipTitle">Window size: </span><span class="tooltipWidth" id="winWidth">1343</span> x <span class="tooltipHeight" id="winHeight">1010</span><br><span class="tooltipTitle">Viewport size: </span><span class="tooltipWidth" id="vpWidth">810</span> x <span class="tooltipHeight" id="vpHeight">917</span></div></body><div></div></html>
+
+<script>
+function enterUser(){
+  document.getElementById("form_user").submit();
+}
+</script>

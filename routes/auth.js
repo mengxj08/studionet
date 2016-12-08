@@ -27,6 +27,7 @@ module.exports.isStudent = function(req, res, next){
     'RETURN sign(count(r)) as mod'
   ].join('\n');
 
+
   db.query(query, function(error, result){
     if (error)
       console.log('error!');
@@ -77,5 +78,32 @@ module.exports.ensureSuperAdmin = function(req, res, next){
     return next();
   }
   res.redirect('/denied');
+
+}
+
+
+// Group owner authentication middleware
+module.exports.ensureGroupOwner = function(req, res, next){
+  
+  var query = [
+    'MATCH (m:group)-[r:MEMBER]->(u:user) WHERE id(u)=' + req.user.id + ' AND id(m)=' + req.params.groupId +
+    ' AND (r.role="Admin")',
+    'RETURN sign(count(r)) as mod'
+  ].join('\n');
+
+  db.query(query, function(error, result){
+    if (error)
+      console.log('error!');
+    else
+      console.log(result);
+
+    if (result[0].mod === 1)
+      return next();
+    else{
+      console.log('Not a moderator of the module: ' + req.params.groupId);
+      res.redirect('/denied');
+    }
+
+  })
 
 }

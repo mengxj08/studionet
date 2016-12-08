@@ -1,12 +1,78 @@
-<div class="row">
-	<div class="container">
-		<div class="col-xs-12">
-			<h1>Dashboard</h1>
-		</div>
-		<div class="col-xs-12">
-			<h3>Actions</h3>
-			<a ui-sref="modules"><h4>View all modules / Add a module</h4></a>
-			<a ui-sref="users"><h4>View all users / Add a new user</h4></a>
-		</div>
-	</div>
+<!--Overall Statistics Page -->
+
+
+<!-- Statistics -->
+<div class='row'>
+  <div class="col-md-3 col-sm-6 col-xs-12">
+      <a class="card card-banner card-green-light" ui-sref="contributions">
+        <div class="card-body">
+          <i class="icon fa fa-file fa-4x"></i>
+          <div class="content">
+            <div class="title">Contributions</div>
+            <div class="value"><span class="sign"></span>{{contributions.length}}</div>
+          </div>
+        </div>
+      </a>
+  </div>
+
+  <div class="col-md-3 col-sm-6 col-xs-12">
+        <a class="card card-banner card-blue-light" ui-sref="groups">
+            <div class="card-body">
+              <i class="icon fa fa-thumbs-o-up fa-4x"></i>
+              <div class="content">
+                <div class="title">Groups</div>
+                <div class="value"><span class="sign"></span>{{groups.length}}</div>
+              </div>
+            </div>
+          </a>
+  </div>
+
+  <div class="col-md-3 col-sm-6 col-xs-12" >
+        <a class="card card-banner card-yellow-light" ui-sref="users">
+            <div class="card-body">
+              <i class="icon fa fa-user-plus fa-4x"></i>
+              <div class="content">
+                <div class="title">Users</div>
+                <div class="value"><span class="sign"></span>{{users.length}}</div>
+              </div>
+            </div>
+          </a>
+  </div>
+
+  <div class="col-md-3 col-sm-6 col-xs-12">
+        <a class="card card-banner card-blue-light" ui-sref="tags">
+            <div class="card-body">
+              <i class="icon fa fa-bookmark fa-4x"></i>
+              <div class="content">
+                <div class="title">Tags</div>
+                <div class="value"><span class="sign"></span>{{tags.length}}</div>
+              </div>
+            </div>
+          </a>
+  </div>
+</div>
+
+<!-- Graph -->
+<div class='row'>
+  <div class='col-xs-12'>
+    <div class="card card-banner card-chart card-green no-br">
+      <div class="card-header">
+        <div class="card-title">
+          <div class="title">Activity Graph</div>
+        </div>
+        <ul class="card-action">
+          <li>
+            <a href="/">
+              <i class="fa fa-refresh"></i>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="card-body">
+        <div class="ct-activity-chart">
+            <svg width="960" height="500"></svg>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

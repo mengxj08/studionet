@@ -1,0 +1,32 @@
+<div class='row'>
+	<div class="col-xs-12 col-sm-12">
+		<div class="card card-mini">
+		  <div class="card-header">
+		    <div class="card-title"><span>Groups ({{groups.length}})</span></div>
+		  </div>
+		  <div class="card-body no-padding table-responsive height-700">
+
+		    <table class="table card-table table-hover">
+				<thead>
+					<tr>
+						<th>DB ID</th>
+						<th>Restricted</th>
+						<th>Group Name</th>						
+						<th>Description</th>
+					</tr>
+				</thead>
+				<tbody ng-repeat="group in groups |  orderBy : '-id' ">
+					<tr ng-click='showDetails()'>
+						<th>{{group.id}}</th>
+						<th>{{group.restricted}}</th>
+						<th>{{group.name}}</th>
+						<th>{{group.description}}</th>
+					</tr>
+				</tbody>
+		    </table>
+		  </div>
+
+		  
+		</div>
+	</div>
+</div>

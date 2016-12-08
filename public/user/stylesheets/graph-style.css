@@ -1,0 +1,127 @@
+/*
+ * Layouts - Experimental
+ */
+* {
+  margin: 0px;
+  padding: 0px; }
+
+.layouts {
+  border: 1px solid black;
+  width: 100%;
+  height: 40px;
+  padding: 0px 2%;
+  margin-left: 5%;
+  line-height: 40px;
+  background-color: rbga(0, 0, 0, 0.6);
+  z-index: 2; 
+}
+
+
+/* 
+#filter:hover + .layouts{
+	display: block;
+	animation-name: dropdown;
+	animation-duration: 1s;
+} */
+@keyframes dropdown {
+  0% {
+    margin-top: -30px; }
+  25% {
+    margin-top: -20px; }
+  50% {
+    margin-top: -10px; }
+  100% {
+    margin-top: 0px; } }
+/* .layouts:hover{
+	-webkit-transform: translate(0,40px);
+	   -moz-transform: translate(0,40px);
+	    -ms-transform: translate(0,40px);
+	     -o-transform: translate(0,40px);
+	        transform: translate(0,40px);
+	display: block;
+} */
+button {
+  color: #000000; }
+
+input {
+  color: #000000;
+  margin: 0px; }
+
+#cy {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  z-index: 10;
+  width: 100%;
+  left: 0; 
+}
+
+#content-block-hover {
+  display: none;
+  position: absolute;
+  top: 60px;
+  color: #D9CCCC;
+  border-radius: 0px;
+  max-width: 200px;
+  z-index: 100;
+  font-size: 12px;
+  padding: 0px !important;
+  border: 1px solid #000000;
+  background-color: rgba(3, 3, 3, 1);
+  z-index: 200000;
+  text-align: center;
+  padding: 20px; }
+  #content-block-hover .user {
+    width: 200px; }
+    #content-block-hover .user .heading {
+      font-size: 16px;
+      border-bottom: 1px solid #000000;
+      text-decoration: uppercase;
+      text-align: center; }
+    #content-block-hover .user .stats-container {
+      width: 100%;
+      text-align: center; }
+      #content-block-hover .user .stats-container .stats {
+        width: 40%;
+        margin: 10px;
+        border: 1px solid black;
+        display: inline-block; }
+  #content-block-hover .module .heading {
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 20px;
+    text-align: center;
+    text-transform: uppercase;
+    margin: 0px;
+    padding: 0px; }
+  #content-block-hover .module .module-image {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-image: url("http://placehold.it/100x100"); }
+  #content-block-hover .module .stats-container {
+    width: 100%;
+    text-align: center; }
+    #content-block-hover .module .stats-container .stats {
+      width: 100px;
+      margin: 10px;
+      border: 1px solid black;
+      float: left; }
+  #content-block-hover .contribution .stats-container {
+    width: 100%;
+    text-align: center; }
+    #content-block-hover .contribution .stats-container .stats {
+      width: 25%;
+      margin: 10px;
+      border: 1px solid black; }
+  #content-block-hover hr {
+    margin: 0px; }
+
+#btn-contribute {
+  border-radius: 50%; }
+
+#second-cy {
+  border: 1px solid black;
+  height: 500px; }
+
+/*# sourceMappingURL=graph-style.css.map */

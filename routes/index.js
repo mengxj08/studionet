@@ -23,6 +23,17 @@ router.get('/user', auth.ensureAuthenticated, function(req, res){
 	res.render('user');
 });
 
+router.post('/auth/local', passport.authenticate('local', {failureRedirect: '/login'}),
+  function(req, res){
+    res.redirect('/');
+  });
+
+router.get('/auth/basic', passport.authenticate('basic', {failureRedirect: '/login'}),
+  function(req, res) {
+    res.redirect('/');
+  })
+
+
 //   POST /auth/openid
 //   Use passport.authenticate() as route middleware to authenticate the
 //   request.  The first step in OpenID authentication will involve redirecting

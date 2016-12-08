@@ -1,0 +1,44 @@
+.modal h3{
+
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 20px;
+    text-transform: uppercase;
+    
+    margin: 0px;
+    padding: 0px;
+
+    display: inline-block;
+}
+
+.modal span{
+
+    font-size: 12px;
+    font-style: italic;
+    line-height: 20px;
+    text-transform: none;
+}
+
+.modal-header{
+text-align: center;
+}
+
+select, input{
+	width: 300px;
+}
+
+input.wide{
+	width: 450px;
+}
+
+select.tag-list{
+	height: 250px; 
+    width: 400px;
+	/*margin-bottom: 10px;*/
+}
+
+input.addTag{
+    width: 250px; 
+    margin-left: 5px;
+    margin-right: 5px;
+}

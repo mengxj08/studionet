@@ -1,0 +1,141 @@
+.app-container{
+	//background-color: red;
+	width: 90%;
+	margin-left: 5%;
+	padding-left: 0px !important;
+	overflow-y: hidden;
+}
+
+aside.app-sidebar{
+
+	height: auto;
+	min-height: 100px;
+	max-height: 80vh;
+	overflow-y: visible;
+	
+	padding-left: 30px;
+	//padding: 0px !important; 
+
+	min-width: 200px; 
+	top: 90px;
+	left: 0;
+
+	text-align: left;
+
+
+	background-color: rgba(0,0,0,0);
+	box-shadow: none;
+}
+
+ul.sidebar-nav{
+	padding: 0px !important;
+	max-height: 600px;
+	overflow-y: visible;
+}
+
+
+/*
+ *	Graph Filters 
+ */
+ #searchTextResults{
+ 	margin-left:-50px;
+ }
+
+ .subgroups{
+ 	margin-left: 20%;
+ }
+
+ .filter-panel{
+ 	margin-left: 10px;
+ 	margin-right: 1px;
+ 	margin-bottom: 0px;
+ 	font-size: 12px;
+ 	width: 180px;
+ 	position: relative;
+ }
+
+ .filter-heading{
+  	padding: 2px;	
+  	background-color: #ADD8E6;
+	color: black;
+	cursor: pointer;
+ }
+
+
+ /*** Other Css ***/
+
+.filter-panel{
+	min-width: 210px;
+	width: auto;
+	border: none;
+	border-radius: 0px;
+	overflow-x: visible;
+}
+
+.panel{
+	border: none;
+}
+
+#filters{
+	max-width: 200px;
+	//max-height: 600px !important;
+	overflow-y: visible;
+}
+
+.filter-heading{
+	background-color: #7D7777;
+	color: white;
+	text-align: center;
+}
+
+#filter-btn{
+	background-color: #BBBBBB;
+	color: black;
+	text-transform: uppercase;
+	border: 1px solid black;
+}
+
+div.tree-control{
+	height: 100%; 
+	overflow: auto; 
+	border-radius: 0px;
+}
+
+/* */
+div.tree-control .tree-view{
+	max-height: 30vh;
+	overflow: scroll;
+}
+
+div.tree-control .tree-view ul .tree-checkbox{
+	max-width: 8px;
+}
+
+div.tree-control .tree-view li{
+	margin-left: 25px !important;
+	min-width: 350px;
+}
+
+.filter-panel input{
+	padding-left: 5px;
+	width: 100%;
+}
+/* */
+
+.tree-control .tree-view ul{
+	//max-height: 15vh;
+}
+
+/*
+ *
+ *	For the slider
+ * 
+ */
+.ranger{
+	border-radius: 0px !important;
+}
+
+.ranger-marker{
+	width: 20px !important; 
+	height: 20px !important;
+}

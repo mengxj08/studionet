@@ -22,3 +22,9 @@ or
 ```
 nodemon
 ```
+
+### Documentation
+* [API Documentation](docs/api.md)
+
+
+

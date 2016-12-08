@@ -7,37 +7,57 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 		.state('home', {
 			url: '/',
 			templateUrl: '/admin/templates/home.html',
-			controller: 'HomeCtrl'
-		})
-		.state('modules', {
-			url: '/modules',
-			templateUrl: '/admin/templates/modules.html',
-			controller: 'ModulesCtrl',
+			controller: 'HomeCtrl',
 			resolve: {
 				usersPromise: ['users', function(users){
 					return users.getAll();
 				}],
 				// get modules data before page loads
-				modulesPromise: ['modules', function(modules){
-					return modules.query();
-				}]
+				groupsPromise: ['groups', function(groups){
+					return groups.getAll();
+				}],
+				contributionsPromise: ['contributions', function(contributions){
+					return contributions.getAll();
+				}],
+				tagsPromise: ['tags', function(tags){
+					return tags.getAll();
+				}]				
 			}
 		})
-		.state('module', {
-			url: '/modules/:id',
-			templateUrl: '/admin/templates/module.html',
-			controller: 'ModuleCtrl',
+
+		/*
+		 *  Should be remove in production; 
+		 *  Only for testing purposes to create synthetic data set
+		 *  Remove TestCtrl from HomeCtrl file
+		 */ 
+		.state('testing', {
+			url: '/tests',
+			templateUrl: '/admin/templates/testing.html',
+			controller: 'TestCtrl'
+		})
+
+		.state('groups', {
+			url: '/groups',
+			templateUrl: '/admin/templates/groups.html',
+			controller: 'GroupsCtrl',
 			resolve: {
-				// get data first
-				modulePromise: ['$q', 'modules', '$stateParams', function($q, modules, $stateParams){
-					var defer = $q.defer();
-				  modules.get({id: $stateParams.id}, function(module){
-						defer.resolve(module);
-					});
-					return defer.promise;
+				// get groups data before page loads
+				groupsPromise: ['groups', function(groups){
+					return groups.getAll();
 				}]
 			}
 		})
+		.state('contributions', {
+			url: '/contributions',
+			templateUrl: '/admin/templates/contributions.html',
+			controller: 'ContributionsCtrl',
+			resolve: {
+				// get modules data before page loads
+				contributionsPromise: ['contributions', function(contributions){
+					return contributions.getAll();
+				}]
+			}
+		})		
 		.state('users', {
 			url: '/users',
 			templateUrl: '/admin/templates/users.html',
@@ -47,7 +67,17 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 					return users.getAll();
 				}]
 			}
-		});
+		})
+		.state('tags', {
+			url: '/tags',
+			templateUrl: '/admin/templates/tags.html',
+			controller: 'TagsCtrl',
+			resolve: {
+				tagsPromise: ['tags', function(tags){
+					return tags.getAll();
+				}]
+			}
+		})
 
 	$urlRouterProvider.otherwise('/');
 

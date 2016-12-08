@@ -1,4 +1,8 @@
 var OpenIDStrategy = require('passport-openid').Strategy;
+var BasicStrategy = require('passport-http').BasicStrategy;
+var LocalStrategy = require('passport-local').Strategy;
+
+
 var db = require('seraph')({
 	server: process.env.SERVER_URL || 'http://localhost:7474/', // 'http://studionetdb.design-automation.net'
 	user: process.env.DB_USER,
@@ -16,14 +20,14 @@ module.exports = function(passport){
 	//   deserialized.
 	passport.serializeUser(function(user, done) {
 		// serialize with user's openid which should be unique.
-		console.log('serializing user: ', user.nusOpenId);
+		//console.log('serializing user: ', user.nusOpenId);
 	  done(null, user.nusOpenId);
 
 	});
 
 	passport.deserializeUser(function(nusOpenId, done) {
 		// deserialize using the user's openid to retrieve user info from neo4j db.
-		console.log('deserializing user: ', nusOpenId);
+		//console.log('deserializing user: ', nusOpenId);
 
 		// cypher query to find user node by openid
 	  var query = [
@@ -78,6 +82,66 @@ module.exports = function(passport){
 	      	// no result
 	      	if (!res){
 	      		console.log('User not found with openID identifier: ', identifier);
+	      		return done(null, false);
+	      	}
+
+	      	// return the user object
+	      	return done(null, res[0]);
+	      });
+	    });
+	  }
+	));
+
+	passport.use(new BasicStrategy(
+  	function(userid, password, done) {
+    	process.nextTick(function () {
+	      var query = [
+	      	'MATCH (u:user {nusOpenId: {nusOpenIdParam}})',
+	      	'RETURN u'
+	      ].join('\n');
+
+	      var params = {
+	      	nusOpenIdParam: userid
+	      };
+
+	      db.query(query, params, function(err, res){
+	      	// error with query
+	      	if (err)
+	      		return done(err);
+
+	      	// no result
+	      	if (!res){
+	      		console.log('User not found with openID identifier: ', userid);
+	      		return done(null, false);
+	      	}
+
+	      	// return the user object
+	      	return done(null, res[0]);
+	      });
+	    });
+  	}
+	));
+
+	passport.use(new LocalStrategy(
+	  function(username, password, done) {
+	    process.nextTick(function () {
+	      var query = [
+	      	'MATCH (u:user {nusOpenId: {nusOpenIdParam}})',
+	      	'RETURN u'
+	      ].join('\n');
+
+	      var params = {
+	      	nusOpenIdParam: username
+	      };
+
+	      db.query(query, params, function(err, res){
+	      	// error with query
+	      	if (err)
+	      		return done(err);
+
+	      	// no result
+	      	if (!res){
+	      		console.log('User not found with openID identifier: ', userid);
 	      		return done(null, false);
 	      	}
 
