@@ -88,7 +88,7 @@ var graph_style = {
               'source-arrow-color': 'data(faveColor)',
               //'content' : 'data(label)',
               'font-size':'10%',
-              'color': '#222',
+              'color': 'data(faveColor)',
               'edge-text-rotation': 'autorotate',
               'target-arrow-color': 'data(faveColor)'
             })
@@ -113,7 +113,8 @@ var graph_style = {
               
             })
             .style({
-              'content': 'data(label)'
+              'content': 'data(label)',
+              'color': '#222'
             })
 
           .selector('.searched')
@@ -192,7 +193,26 @@ var createGraphEdge = function(edge){
     edge.strength = EDGE_DEFAULT_STRENGTH;
     edge.faveColor = EDGE_DEFAULT_COLOR;
     edge.weigth = EDGE_DEFAULT_WEIGHT;
-    edge.label = edge.type;
+    edge.label = edge.name;
+
+    if(edge.name == "QUESTION_FOR"){
+      edge.faveColor = "red";
+    }
+    else if(edge.name == "ANSWER_FOR"){
+      edge.faveColor = 'green';
+    }
+    else if(edge.name == "RESOURCE_FOR"){
+      edge.faveColor = 'purple';
+    }
+    else if(edge.name == "COMMENT_FOR"){
+      edge.faveColor = 'blue';
+    }
+
+    var t = edge.target; 
+    edge.target = edge.source;
+    edge.source = t;
+    // invert
+
 
     return { data: edge };
 
