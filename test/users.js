@@ -4,6 +4,12 @@ process.env.SERVER_URL = 'http://localhost:7474/'; // run tests on local db
 process.env.DB_USER = 'neo4j';
 process.env.DB_PASS = 'password';
 
+var db = require('seraph')({
+	server: process.env.SERVER_URL || 'http://localhost:7474/', // 'http://studionetdb.design-automation.net'
+	user: process.env.DB_USER,
+	pass: process.env.DB_PASS
+});
+
 // remember to load a temporary database
 
 //Require the dev-dependencies
@@ -26,8 +32,7 @@ describe('API Test: /api/users', function() {
 	// Before each test we empty the database
 	
 	beforeEach(function(done) {
-		done();
-		/*
+
 		var query = [ 
 			'START n=node(*)',
 			'OPTIONAL MATCH (n)-[r]-()',
@@ -37,9 +42,20 @@ describe('API Test: /api/users', function() {
 		db.query(query, function(error, result) {
 			if (error)
 				console.log('error');
-			done();
-		})
-		*/	
+			return;
+		});
+
+		var query = [ 
+			'START n=node(*)',
+			'OPTIONAL MATCH (n)-[r]-()',
+			'DELETE n,r'
+		].join('\n');
+
+		db.query(query, function(error, result) {
+			if (error)
+				console.log('error');
+			return;
+		});
 
 	});
 	
@@ -51,13 +67,13 @@ describe('API Test: /api/users', function() {
 		it('It should allow me to login', function(done){
 				agent
 					.get('/auth/basic')
-					.auth('E0002744', '123')	// openid of test acc, any pw
+					.auth('USER1', '123')	// openid of test acc, any pw
 					.then(function(res){
 						expect(res).to.have.status(302);
 						expect(res).to.redirectTo('/');
 						done();
 					});
-		})
+		});
 
 		/*
 		it('it should GET information about the current user', function(done) {
@@ -72,4 +88,4 @@ describe('API Test: /api/users', function() {
 	});
 
 
-})
+});

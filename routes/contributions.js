@@ -145,10 +145,9 @@ router.route('/')
 				'WITH distinct (collect(c) + collect(c2) + collect(c3)) as combinedContributionsCollection',
 				'UNWIND combinedContributionsCollection AS combinedContribution',
 				'UNWIND combinedContributionsCollection AS combinedContribution2',
-				'MATCH p=(combinedContribution)-[*0..1]-(combinedContribution2)',
+				'MATCH p=(combinedContribution)-[*1]->(combinedContribution2)',
 				'RETURN distinct (p)'
 			].join('\n');
-
 
 			apiCall(query, function(data) {
 				console.log('[SUCCESS] Sucess in fetching filtered contributions in /api/contributions.')
