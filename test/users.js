@@ -58,7 +58,6 @@ describe('API Test: /api/users', function() {
 		});
 
 	});
-	
 
 	/**
 	 * GET /api/profile
