@@ -197,15 +197,19 @@ var createGraphEdge = function(edge){
 
     if(edge.name == "QUESTION_FOR"){
       edge.faveColor = "red";
+      edge.label = "QUESTION";
     }
     else if(edge.name == "ANSWER_FOR"){
       edge.faveColor = 'green';
+      edge.label = "ANSWER"
     }
     else if(edge.name == "RESOURCE_FOR"){
       edge.faveColor = 'purple';
+      edge.label = "RESOURCE"
     }
     else if(edge.name == "COMMENT_FOR"){
       edge.faveColor = 'blue';
+      edge.label = "COMMENT"
     }
 
     var t = edge.target; 
