@@ -23,23 +23,15 @@ router.get('/user', auth.ensureAuthenticated, function(req, res){
 	res.render('user');
 });
 
-if (process.env.NODE_ENV === 'test'){
-  router.get('/auth/fake', function testingMiddleware (req, res, next) {
-    req.login({
-      nusOpenId: req.query.id
-    }, function(err){
-      if (err)
-        console.log('error in login');
-      else
-        return;
-    });
-    if (next) {
-      next();
-    }
-  }, function(req, res){
+router.post('/auth/local', passport.authenticate('local', {failureRedirect: '/login'}),
+  function(req, res){
     res.redirect('/');
   });
-}
+
+router.get('/auth/basic', passport.authenticate('basic', {failureRedirect: '/login'}),
+  function(req, res) {
+    res.redirect('/');
+  })
 
 
 //   POST /auth/openid

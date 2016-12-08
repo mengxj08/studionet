@@ -1,4 +1,7 @@
 var OpenIDStrategy = require('passport-openid').Strategy;
+var BasicStrategy = require('passport-http').BasicStrategy;
+var LocalStrategy = require('passport-local').Strategy;
+
 
 var db = require('seraph')({
 	server: process.env.SERVER_URL || 'http://localhost:7474/', // 'http://studionetdb.design-automation.net'
@@ -79,6 +82,66 @@ module.exports = function(passport){
 	      	// no result
 	      	if (!res){
 	      		console.log('User not found with openID identifier: ', identifier);
+	      		return done(null, false);
+	      	}
+
+	      	// return the user object
+	      	return done(null, res[0]);
+	      });
+	    });
+	  }
+	));
+
+	passport.use(new BasicStrategy(
+  	function(userid, password, done) {
+    	process.nextTick(function () {
+	      var query = [
+	      	'MATCH (u:user {nusOpenId: {nusOpenIdParam}})',
+	      	'RETURN u'
+	      ].join('\n');
+
+	      var params = {
+	      	nusOpenIdParam: userid
+	      };
+
+	      db.query(query, params, function(err, res){
+	      	// error with query
+	      	if (err)
+	      		return done(err);
+
+	      	// no result
+	      	if (!res){
+	      		console.log('User not found with openID identifier: ', userid);
+	      		return done(null, false);
+	      	}
+
+	      	// return the user object
+	      	return done(null, res[0]);
+	      });
+	    });
+  	}
+	));
+
+	passport.use(new LocalStrategy(
+	  function(username, password, done) {
+	    process.nextTick(function () {
+	      var query = [
+	      	'MATCH (u:user {nusOpenId: {nusOpenIdParam}})',
+	      	'RETURN u'
+	      ].join('\n');
+
+	      var params = {
+	      	nusOpenIdParam: username
+	      };
+
+	      db.query(query, params, function(err, res){
+	      	// error with query
+	      	if (err)
+	      		return done(err);
+
+	      	// no result
+	      	if (!res){
+	      		console.log('User not found with openID identifier: ', userid);
 	      		return done(null, false);
 	      	}
 

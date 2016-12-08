@@ -1,5 +1,8 @@
 //During the test the env variable is set to test
 process.env.NODE_ENV = 'test';
+process.env.SERVER_URL = 'http://localhost:7474/'; // run tests on local db
+process.env.DB_USER = 'neo4j';
+process.env.DB_PASS = 'password';
 
 // remember to load a temporary database
 
@@ -13,26 +16,17 @@ var should = chai.should();
 var assert = chai.assert;
 var expect = chai.expect;
 var request = require('supertest');
-var agent = chai.request.agent(app);
+var agent = request.agent(app);
+
+var inspect = require('eyespect').inspector();
 
 
-
-describe('User', function() {
+describe('API Test: /api/users', function() {
 
 	// Before each test we empty the database
 	
 	beforeEach(function(done) {
-
-		agent
-			.get('/auth/fake')
-			.query({id: 'E0002744'})
-			.end(function (err, res){
-				expect(res).to.have.cookie('connect.sid');
-				expect(res).to.redirectTo('/');
-				done();
-			});
-			
-		
+		done();
 		/*
 		var query = [ 
 			'START n=node(*)',
@@ -53,30 +47,17 @@ describe('User', function() {
 	/**
 	 * GET /api/profile
 	 */
-	describe('POST /api/user', function() {
-		it('It should allow me to add an admin', function(done){
-			
-			var test = 'test2';
-
-			agent
-				.get('/')
-			/*
-				.post('/api/users')
-				.send({
-					nusOpenId: test,
-					name: test,
-					isAdmin: true
-				})*/
-				//.field('nusOpenId', test)
-				//.field('name', test)
-				//.field('isAdmin', true)
-				.end(function(err, res){
-					console.log(res);
-					expect(res).to.have.status(200);
-					done();
-				});
-
-		});
+	describe('GET /api/users', function() {
+		it('It should allow me to login', function(done){
+				agent
+					.get('/auth/basic')
+					.auth('E0002744', '123')	// openid of test acc, any pw
+					.then(function(res){
+						expect(res).to.have.status(302);
+						expect(res).to.redirectTo('/');
+						done();
+					});
+		})
 
 		/*
 		it('it should GET information about the current user', function(done) {

@@ -5,9 +5,9 @@
 - nusOpenId
 - canEdit
 - name
-- isAdmins
-- invitedBy (userID)
-- invitedOn
+- isAdmin
+- addedBy (userID)
+- addedOn
 - avatar (default @ /uploads/default/avatar) (avatar.png/..)
 - joinedOn
 - lastLoggedIn
