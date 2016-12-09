@@ -133,10 +133,19 @@ router.route('/')
 				depthParam: parseInt(req.query[QUERY_PARAM_DEPTH_KEYWORD])
 			};
 
+			var queryHead;
+
+			if (params.tagIdsParam.length === 0) {
+				queryHead = 'MATCH (c:contribution)<-[:CREATED]-(u:user)'
+										+ ' WHERE ID(u) IN [' + params.userIdsParam + ']';
+			} else {
+				queryHead = 'MATCH (t:tag)<-[:TAGGED]-(c:contribution)<-[:CREATED]-(u:user)'
+										+ ' WHERE ID(u) IN [' + params.userIdsParam + ']'
+										+ ' AND ID(t) IN [' + params.tagIdsParam + ']';
+			}
+
 			var query = [
-				'MATCH (t:tag)<-[:TAGGED]-(c:contribution)<-[:CREATED]-(u:user)',
-				'WHERE ID(u) IN [' + params.userIdsParam + ']',
-				'AND ID(t) IN [' + params.tagIdsParam + ']',
+				queryHead,
 				'AND toInt(c.dateCreated) >= toInt(' + params.dateLowerParam + ')',
 				'AND toInt(c.dateCreated) <= toInt(' + params.dateUpperParam + ')',
 				'WITH c',
