@@ -1,2 +1,2 @@
-nusOpenId, canEdit, name, isAdmin, addedBy
-USER1,1,User 1,1,-1
+nusOpenId,canEdit,name,isAdmin,addedBy,addedOn,avatar,joinedOn,lastLoggedIn
+USER1,1,User 1,1,-1,1481173442985,/uploads/default/avatar,1481173456068,-1
