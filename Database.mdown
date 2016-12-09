@@ -9,7 +9,7 @@
 - addedBy (userID)
 - addedOn
 - avatar (default @ /uploads/default/avatar) (avatar.png/..)
-- joinedOn
+- joinedOn 
 - lastLoggedIn
 
 #### User Relationship
