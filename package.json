@@ -23,7 +23,8 @@
     "passport-openid": "^0.4.0",
     "request": "^2.74.0",
     "seraph": "^0.14.4",
-    "serve-favicon": "~2.3.0"
+    "serve-favicon": "~2.3.0",
+    "underscore": "^1.8.3"
   },
   "optionalDependencies": {
     "nodemon": "^1.11.0"
