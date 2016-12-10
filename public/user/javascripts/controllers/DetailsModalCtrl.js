@@ -1,6 +1,5 @@
 angular.module('studionet')
-
-.controller('DetailsModalCtrl', ['$scope', '$http', 'profile', '$location', '$anchorScroll', function($scope, $http, profile, $location, $anchorScroll){
+.controller('DetailsModalCtrl', ['$scope', '$http', 'profile', 'users', '$location', '$anchorScroll', function($scope, $http, profile, users, $location, $anchorScroll){
 	// $scope.name = "Jane Doe";
   // $scope.age = 12;
   
@@ -8,6 +7,8 @@ angular.module('studionet')
   $scope.data = [];
   $scope.tags = [];
   $scope.relationships= [];
+
+  $scope.users = users.usersById();
 
   $scope.refresh = function(){
       $http.get('/api/tags/').success(function(data){
@@ -69,11 +70,9 @@ angular.module('studionet')
       headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
       })
     .success(function(data) {
-        alert("Contribution Created");  
-        $scope.refresh(); 
-
-        refreshGraph();
-
+      alert("Contribution Created");  
+      $scope.refresh(); 
+      refreshGraph();
     }) 
    };
 
@@ -88,6 +87,7 @@ angular.module('studionet')
     .success(function(data) {
       alert("Contribution id:" + contributionId + " deleted");  
       $scope.refresh();  
+      refreshGraph();
     })
   }
 

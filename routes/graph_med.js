@@ -27,47 +27,9 @@ router.route('/')
     console.log(query);
 
     apiCall(query, function(data){
-      var nodes = [], links = [];
-      
-      data.forEach(function(row){
-        // for each graph
-
-        row.graph.nodes.forEach(function(n) {
-          if (idIndex(nodes, n.id) == null)
-              nodes.push({
-                  id: n.id,
-                  type: n.labels[0],
-                  name: setName(n),
-              });
-        });
-        links = links.concat(row.graph.relationships.map(function(r) {
-            return {
-                source: idIndex(nodes, r.startNode).id,   // should not be a case where start or end is null.
-                target: idIndex(nodes, r.endNode).id,
-                name: r.type
-            };
-        }));
-      });
-
-      res.send({nodes: nodes, links: links});
-
+      res.send(data);
     });
 
   });
-
-function idIndex(a, id){
-  for (var i =0; i<a.length; i++)
-    if (a[i].id == id) 
-      return a[i];
-  return null;
-};
-
-function setName(n) {
-    if (n.labels[0] === "contribution" || n.labels[0]==='post') {
-        return n.properties.title;
-    } else {
-        return n.properties.name;
-    }
-};
 
 module.exports = router;

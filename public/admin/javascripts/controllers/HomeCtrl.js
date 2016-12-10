@@ -1,34 +1,11 @@
 angular.module('studionetAdmin')
 
-.controller('HomeCtrl', ['$scope', '$http', function($scope, $http){
+.controller('HomeCtrl', ['$scope', '$http', 'groups', 'users', 'tags', 'contributions', function($scope, $http, groups, users, tags, contributions){
 	
-	$scope.test = 'Hello world!';
-	$scope.users = [];
-	$scope.tags = [];
-	$scope.contributions = [];
-	$scope.groups = [];
-
-
-	/*
-	 * Get basic information about all the different key components
-	 */
-	$http.get('/api/users/').success(function(data){
-		$scope.users = data;
-	});		
-
-	$http.get('/api/tags/').success(function(data){
-		$scope.tags = data;
-	});		
-
-
-	$http.get('/api/groups/').success(function(data){
-		$scope.groups = data;
-	});	
-
-
-	$http.get('/api/contributions/').success(function(data){
-		$scope.contributions = data;
-	});	
+	$scope.users = users.users;
+	$scope.tags = tags.tags;
+	$scope.contributions = contributions.contributions;
+	$scope.groups = groups.groups;
 
 	/*
      * Helper function to convert dates to human readable format
@@ -41,7 +18,7 @@ angular.module('studionetAdmin')
 		alert("Details");
 	}
 
-	$http({
+/*	$http({
 	    method: 'GET',
 	    url: '/api/logs'
 	}).then(function successCallback(logs) {
@@ -110,7 +87,7 @@ angular.module('studionetAdmin')
 	    }, function errorCallback(response) {
 	          console.log("Error fetching logs")
 		});
-
+*/
 
 }]);
 
