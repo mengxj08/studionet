@@ -355,8 +355,6 @@ var makeGraph = function(dNodes, dEdges){
         $('#content-block-hover').html("");
         $('#content-block-hover').hide();    
       }
-
-
     });
 
     cy.on('tap', 'node', function(evt){
@@ -399,7 +397,17 @@ var makeGraph = function(dNodes, dEdges){
                   //console.log("test on clicking onto a contribution");
                   nodeTree[index].db_data = result;
                   if(index == nodeTree.length - 1){
-                    angular.element($('.graph-container')).scope().showDetailsModal(nodeTree);
+                    angular.element($('.graph-container')).scope().showDetailsModal(nodeTree, data.id);
+
+                    //Mouse out the clicked node once it enters the modal page
+                    cy.elements().css({ content: " " });
+                    cy.elements().removeClass('highlighted');
+                    cy.elements().removeClass('selected');
+
+                    if(cy.$('node:selected')){
+                      $('#content-block-hover').html("");
+                      $('#content-block-hover').hide();    
+                    }
                   }
                   else{
                     RecursiveGetData(++index);
