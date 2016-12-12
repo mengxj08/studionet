@@ -112,10 +112,10 @@ router.route('/')
 		var usersInGroupsPromise = new Promise(function(resolve, reject){
 			db.query(query, groupQueryParam, function(error, result){
 				if (error) {
-					console.log('Error getting users for group ids: ' + groupIds);
-					reject('Error getting users for group ids: ' + groupIds);
+					console.log('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Failed match for group ids: ' + groupIds);
+					reject('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Failed match for group ids: ' + groupIds);
 				} else {
-					console.log('Success in getting users for the group ids: ' + groupIds);
+					console.log('[SUCCESS] Success in getting users for the group ids: ' + groupIds);
 					resolve(result[0]);
 				}
 			});
@@ -132,31 +132,20 @@ router.route('/')
 				tagIdsParam: JSON.parse(req.query[QUERY_PARAM_TAGS_KEYWORD]).map(x => parseInt(x)),
 				depthParam: parseInt(req.query[QUERY_PARAM_DEPTH_KEYWORD])
 			};
-/*
+
+			var queryHead;
+
+			if (params.tagIdsParam.length === 0) {
+				queryHead = 'MATCH (c:contribution)<-[:CREATED]-(u:user)'
+										+ ' WHERE ID(u) IN [' + params.userIdsParam + ']';
+			} else {
+				queryHead = 'MATCH (t:tag)<-[:TAGGED]-(c:contribution)<-[:CREATED]-(u:user)'
+										+ ' WHERE ID(u) IN [' + params.userIdsParam + ']'
+										+ ' AND ID(t) IN [' + params.tagIdsParam + ']';
+			}
+
 			var query = [
-				'MATCH (u:user) WHERE ID(u) IN [' + params.userIdsParam + ']',
-				'WITH u',
-				'MATCH (c:contribution)<-[r:CREATED]-(u)',
-				'WHERE toInt(c.dateCreated) >= toInt(' + params.dateLowerParam + ')',
-				'AND toInt(c.dateCreated) <= toInt('+ params.dateUpperParam +')',
-				'WITH c',
-				'MATCH (c)-[r:TAGGED]->(t:tag) WHERE ID(t) IN [' + params.tagIdsParam + ']',
-				'WITH c',
-				'MATCH (c)-[*0..' + params.depthParam + ']-(c2:contribution)',
-				'WITH collect(c)+collect(c2) as combinedContributionsCollection',
-				'UNWIND combinedContributionsCollection AS combinedContribution',
-				'UNWIND combinedContributionsCollection AS combinedContribution2',
-				'MATCH p=(combinedContribution)-[*0..1]-(combinedContribution2)',
-				'WITH combinedContribution, p',
-				'MATCH q=(combinedContribution)-[]->(:contribution {superNode: true})',
-				'RETURN distinct (collect(p) + collect(q))'
-			].join('\n');
-*/
-			
-			var query = [
-				'MATCH (t:tag)<-[:TAGGED]-(c:contribution)<-[:CREATED]-(u:user)',
-				'WHERE ID(u) IN [' + params.userIdsParam + ']',
-				'AND ID(t) IN [' + params.tagIdsParam + ']',
+				queryHead,
 				'AND toInt(c.dateCreated) >= toInt(' + params.dateLowerParam + ')',
 				'AND toInt(c.dateCreated) <= toInt(' + params.dateUpperParam + ')',
 				'WITH c',
@@ -165,14 +154,12 @@ router.route('/')
 				'WITH distinct (collect(c) + collect(c2) + collect(c3)) as combinedContributionsCollection',
 				'UNWIND combinedContributionsCollection AS combinedContribution',
 				'UNWIND combinedContributionsCollection AS combinedContribution2',
-				'MATCH p=(combinedContribution)-[*0..1]-(combinedContribution2)',
-				'WITH combinedContribution, p',
-				'MATCH q=(combinedContribution)-[*1]->(:contribution {superNode: true})',
-				'RETURN distinct (collect(p) + collect(q))'
+				'MATCH p=(combinedContribution)-[*1]->(combinedContribution2)',
+				'RETURN distinct (p)'
 			].join('\n');
 
-
 			apiCall(query, function(data) {
+				console.log('[SUCCESS] Sucess in fetching filtered contributions in /api/contributions.')
 	      res.send(data);
 			});
 
