@@ -48,12 +48,18 @@
 
 #### Contribution Properties
 
+- createdBy
 - title
 - body
+- tags
 - ref
 - lastUpdated
-- editted
-- content-type
+- dateCreated
+- edited
+- contentType
+- rating
+- rateCount
+- views
 
 #### Contribution Relationships
 

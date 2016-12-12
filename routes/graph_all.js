@@ -17,7 +17,7 @@ router.route('/')
 		// AKM - needs a direction or it sends double
 		var query = [
 									//'MATCH p=()-[]->() RETURN p'
-									'MATCH (p:contribution)-[r]->(q:contribution) RETURN p,r'
+									'MATCH p=(:contribution)-[*1]->(:contribution) RETURN p'
 								].join('\n');
 
 		apiCall(query, function(data){

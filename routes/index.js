@@ -5,7 +5,17 @@ var auth = require('./auth');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  if (!req.isAuthenticated()) {
+    res.render('index', { title: 'Express' });
+  }
+
+  if (req.user.superAdmin) {
+    res.redirect('/admin');
+  }
+  else {
+    res.redirect('/user');
+  }
+
 });
 
 // GET login page
@@ -32,7 +42,6 @@ router.get('/auth/basic', passport.authenticate('basic', {failureRedirect: '/log
   function(req, res) {
     res.redirect('/');
   })
-
 
 //   POST /auth/openid
 //   Use passport.authenticate() as route middleware to authenticate the
