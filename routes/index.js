@@ -44,12 +44,14 @@ router.get('/auth/openid/return',
   passport.authenticate('openid', { failureRedirect: '/login' }),
   function(req, res) {
     // res.redirect('/');
-    if (req.user.superAdmin)
+    //if (req.user.superAdmin)
     	// redirect to admin dashboard (super admin)
-      res.redirect('/admin');
-    else
+      //res.redirect('/admin');
+    //else
     	// redirect to user dashboard
-      res.redirect('/user');
+       
+      // Always redirect to user-page 
+      res.redirect('/user'); 
   });
 
 // GET logout
