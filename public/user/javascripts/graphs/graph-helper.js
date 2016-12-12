@@ -96,7 +96,7 @@ var graph_style = {
               'target-arrow-shape': 'triangle',
               'line-color': 'data(faveColor)',
               'source-arrow-color': 'data(faveColor)',
-              'content' : 'data(name)',
+              //'content' : 'data(name)',
               'font-size':'7%',
               'color': '#222',
               'edge-text-rotation': 'autorotate',

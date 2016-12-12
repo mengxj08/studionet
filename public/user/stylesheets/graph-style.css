@@ -25,6 +25,8 @@
   height: calc(100vh - 100px); 
   width: 100%; 
 
+  z-index: 1;
+
 }
 
 
@@ -40,7 +42,7 @@
   margin-left: calc(100vw - 75px);
   padding: 0px 0 30px 0;
 
-  z-index: 20;
+  z-index: 3;
 
 }
 
@@ -62,6 +64,8 @@
   margin: 10px 20px 10px 10px;
 
   z-index: 4;
+
+  //border: 1px solid black;
 }
 
 
@@ -106,10 +110,11 @@ input {
 
 #cy {
   position: absolute;
-  z-index: 10;
+  z-index: 2;
   width: 100%;
-  height: 100%;
+  height: calc(100vh - 100px);
   left: 0; 
+  //border: 1px solid black
 }
 
 #content-block-hover {
@@ -119,12 +124,11 @@ input {
   color: #D9CCCC;
   border-radius: 0px;
   max-width: 200px;
-  z-index: 100;
+  z-index: 3;
   font-size: 12px;
   padding: 0px !important;
   border: 1px solid #000000;
   background-color: rgba(3, 3, 3, 1);
-  z-index: 200000;
   text-align: center;
   padding: 20px; }
   #content-block-hover .user {

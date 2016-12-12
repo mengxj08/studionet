@@ -54,6 +54,11 @@
           <li>{{contribution.name}}</li>
         </ul>
     </div>
+    <div uib-accordion-group class="panel-default" heading="My Filters ({{10}})">
+        <ul ng-repeat="contribution in contributions">
+          <li>{{contribution.name}}</li>
+        </ul>
+    </div>
   </uib-accordion>
   </div>
 </div>
