@@ -165,6 +165,9 @@ angular.module('studionet')
 			'restricted': false,
 			'groupParentId': "-1",
 		};
+
+		$("#createGroupModal").modal();
+
 	}
 
 	$scope.toggleRestricted = function(){

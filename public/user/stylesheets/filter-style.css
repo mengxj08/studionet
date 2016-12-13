@@ -1,36 +1,7 @@
-.app-container{
-	//background-color: red;
-	width: 90%;
-	margin-left: 5%;
-	padding-left: 0px !important;
-	overflow-y: hidden;
-}
-
-aside.app-sidebar{
-
-	height: auto;
-	min-height: 100px;
-	max-height: 80vh;
-	overflow-y: visible;
-	
-	padding-left: 30px;
-	//padding: 0px !important; 
-
-	min-width: 200px; 
-	top: 90px;
-	left: 0;
-
-	text-align: left;
-
-
-	background-color: rgba(0,0,0,0);
-	box-shadow: none;
-}
-
-ul.sidebar-nav{
-	padding: 0px !important;
-	max-height: 600px;
-	overflow-y: visible;
+.filter-container{
+	background-color: rgba(0,0,0,0.7);
+	padding: 10px 10px 30px 10px;
+	height: 60px;
 }
 
 
@@ -45,48 +16,49 @@ ul.sidebar-nav{
  	margin-left: 20%;
  }
 
- .filter-panel{
- 	margin-left: 10px;
- 	margin-right: 1px;
- 	margin-bottom: 0px;
- 	font-size: 12px;
- 	width: 180px;
- 	position: relative;
- }
-
- .filter-heading{
-  	padding: 2px;	
-  	background-color: #ADD8E6;
-	color: black;
-	cursor: pointer;
- }
 
 
  /*** Other Css ***/
 
+#filters{
+	margin: auto auto !important;
+}
+
 .filter-panel{
-	min-width: 210px;
+	margin-left: 10px;
+ 	margin-right: 1px;
+ 	margin-bottom: 0px;
+
+ 	font-size: 12px;
+ 	position: relative;
+	//min-width: 210px;
 	width: auto;
-	border: none;
+	max-width: 150px;
 	border-radius: 0px;
 	overflow-x: visible;
+
+	display: inline-block;
+	float: left;
+
+	z-index: 100;
+
+
 }
 
 .panel{
 	border: none;
 }
 
-#filters{
-	max-width: 200px;
-	//max-height: 600px !important;
-	overflow-y: visible;
-}
-
 .filter-heading{
 	background-color: #7D7777;
 	color: white;
 	text-align: center;
+	padding: 2px 2px;	
+	color: black;
+	cursor: pointer;
+	width: 150px;
 }
+
 
 #filter-btn{
 	background-color: #BBBBBB;

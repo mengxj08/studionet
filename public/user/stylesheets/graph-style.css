@@ -11,17 +11,78 @@
   height: 40px;
   padding: 0px 2%;
   margin-left: 5%;
-  line-height: 40px;
   background-color: rbga(0, 0, 0, 0.6);
   z-index: 2; 
 }
 
 
+/* ---- Graph Container ---- */
+.graph-container{
+
+  position: absolute;
+  top: 100px;
+  left: 0px;
+  height: calc(100vh - 100px); 
+  width: 100%; 
+
+  z-index: 1;
+
+}
+
+
+.graph-controls{
+
+  position: absolute;
+
+  bottom: 0px;
+
+  width: 85px; 
+  height: auto;
+
+  margin-left: calc(100vw - 75px);
+  padding: 0px 0 30px 0;
+
+  z-index: 3;
+
+}
+
+
+.graph-nav-control{
+
+  position: relative !important;
+
+  width: 30px;
+  height: 30px;
+
+  line-height: 30px;
+  text-align: center;
+  
+  color: white;
+  background: #4A95EF;
+
+  box-shadow: 2px 2px 2px grey;
+  margin: 10px 20px 10px 10px;
+
+  z-index: 4;
+
+  //border: 1px solid black;
+}
+
+
+.graph-nav-control:hover{
+  width: 48px;
+  height: 48px;
+}
+
+
+
+
+
 /* 
 #filter:hover + .layouts{
-	display: block;
-	animation-name: dropdown;
-	animation-duration: 1s;
+  display: block;
+  animation-name: dropdown;
+  animation-duration: 1s;
 } */
 @keyframes dropdown {
   0% {
@@ -33,12 +94,12 @@
   100% {
     margin-top: 0px; } }
 /* .layouts:hover{
-	-webkit-transform: translate(0,40px);
-	   -moz-transform: translate(0,40px);
-	    -ms-transform: translate(0,40px);
-	     -o-transform: translate(0,40px);
-	        transform: translate(0,40px);
-	display: block;
+  -webkit-transform: translate(0,40px);
+     -moz-transform: translate(0,40px);
+      -ms-transform: translate(0,40px);
+       -o-transform: translate(0,40px);
+          transform: translate(0,40px);
+  display: block;
 } */
 button {
   color: #000000; }
@@ -49,11 +110,11 @@ input {
 
 #cy {
   position: absolute;
-  height: 100%;
+  z-index: 2;
   width: 100%;
-  z-index: 10;
-  width: 100%;
+  height: calc(100vh - 100px);
   left: 0; 
+  //border: 1px solid black
 }
 
 #content-block-hover {
@@ -63,12 +124,11 @@ input {
   color: #D9CCCC;
   border-radius: 0px;
   max-width: 200px;
-  z-index: 100;
+  z-index: 3;
   font-size: 12px;
   padding: 0px !important;
   border: 1px solid #000000;
   background-color: rgba(3, 3, 3, 1);
-  z-index: 200000;
   text-align: center;
   padding: 20px; }
   #content-block-hover .user {
@@ -124,4 +184,20 @@ input {
   border: 1px solid black;
   height: 500px; }
 
-/*# sourceMappingURL=graph-style.css.map */
+
+
+*:focus {
+    outline: 0 !important;
+}
+
+*:active {
+    background-color: none;
+}
+
+
+
+p.hover-content img{
+  width: 150px !important; 
+  height: 150px !important; 
+  display: block;
+}
