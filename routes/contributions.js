@@ -351,13 +351,6 @@ router.route('/:contributionId')
 			var tagsToRemove = _.difference(oldTags, newTags);
 			var tagsToAdd = _.difference(newTags, oldTags);
 
-			console.log('old tags:', oldTags);
-			console.log('new tags:', newTags);
-
-			console.log('tags to remove: ' + tagsToRemove);
-			console.log('tags to add: ' + tagsToAdd);
-
-
 			// remove old tags
 			if (tagsToRemove.length > 0) {
 				tagsRemoveQuery = [
@@ -423,65 +416,66 @@ router.route('/:contributionId')
 
 		var params = {
 			contributionIdParam: parseInt(req.params.contributionId),
-			userIdParam: parseInt(req.user.id)
 		};
 
-		// First count incoming relationships (excluding tagged)
+		// First count incoming relationships 
 		var countQuery = [
-			'MATCH (c:contribution)<-[r]-()',
-			'WHERE ID(c)={contributionIdParam} AND NOT (c)<-[r:TAGGED]-(:tag) AND NOT (c)<-[r:CREATED]-(:user)',
-			'RETURN {count: count(r)}'
+			'MATCH (c:contribution)<-[r]-(:contribution)',
+			'WHERE ID(c)={contributionIdParam}',
+			'RETURN {count: count(r), createdBy: c.createdBy}'
 		].join('\n');
 
-		db.query(countQuery, params, function(error, result) {
-			if (error){
-				console.log('[ERROR] Error in counting the number of incoming relationships of contribution ' + contributionIdParam);
-			} else{
-				incomingRelsCount = result[0].count;
+		var countPromise = new Promise(function(resolve, reject){
+			db.query(countQuery, params, function(error, result){
 
-				console.log(incomingRelsCount);
-
-				if (incomingRelsCount === 0) {
-					// this is a leaf
-					// remove it
-
-					var query = [
-						'MATCH (c:contribution) WHERE ID(c)= {contributionIdParam}',
-						'MATCH (u:user) WHERE ID(u)={userIdParam}',
-						'MATCH (u)-[r:CREATED]->(c)',
-						'MATCH (c)-[r1]->()',
-						'DELETE r',
-						'DELETE r1',
-						'DELETE c'
-					].join('\n');
-
-					db.query(query, params, function(error, result){
-						if (error)
-							console.log('Error deleting leaf with contribution id ' + req.params.contributionId + ' for this user. Check if this contribution is created by this user.');
-						else
-							console.log('success');
-					});
-
-					// We need to delete the relationship between contribution and tag, and contribution and user (creator)
-					var commonQuery = [
-						'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
-						'MATCH (c)<-[r]-(s) WHERE s:tag OR s:user',
-						'DELETE r'
-					].join('\n');
-
-					db.query(commonQuery, params, function(error, result){
-						if (error)
-							console.log('Error deleting the relationship between contribution and tag, and contribution and user');
-						else
-							res.send('Succeeded deleting relationship between contribution and tag, and contribution and user');
-					});
+				if (error){
+					console.log('[ERROR] Error in counting the number of incoming relationships of contribution ' + contributionIdParam);
+					res.send('Error counting number of incoming relationships of contribution ' + contributionIdParam);
+					reject(error);
 				}
-				else
-					res.send('Cannot delete non-leaf');
+				else {
+					resolve(result);
+				}
 
-			}
+			});
 		});
-	
+
+		countPromise
+		.then(function(result){
+
+			var incomingRelsCount = result.count;
+			var isCreator = result.createdBy === parseInt(req.user.id) ? true : false;
+
+			if (!isCreator){
+				return res.send('Cannot delete contribution that was not created by you');
+			}
+
+			if (incomingRelsCount > 0) {
+				return res.send('Cannot delete contribution that is not a leaf node');
+			}
+
+			var query = [
+				'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
+				'OPTIONAL MATCH (c)-[r:TAGGED]->(t:tag)',
+				'DETACH DELETE c',
+				'WITH t',
+				'OPTIONAL MATCH (t)<-[r1:TAGGED]-()',
+				'WITH t, CASE WHEN count(r1)>0 THEN [] ELSE [1] END as array',
+				'FOREACH (x in array | DELETE t)'
+			].join('\n');
+
+			db.query(query, params, function(error, result){
+				if (error) {
+					console.log('[ERROR] Error deleting leaf with contribution id ' + req.params.contributionId + ' for this user.');
+					res.send('Cannot delete this leaf');
+				}
+				else {
+					res.send('Successfully deleted contribution with id: ' + req.params.contributionid);
+				}
+			})
+
+		});
+
 	});
 
 // route: /api/contributions/:contributionId/view
