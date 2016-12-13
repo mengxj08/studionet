@@ -18,7 +18,7 @@
 - User <- Group   [:CREATED {on: "Date"}]
 - User -> Tag [:CREATED {createdOn : "Date"}]
 - User -> Contribution [:CREATED {createdOn : "Date"}]
-- User -> Contribution [:VIEWED {count: 0, lastViewed : "Date"}]
+- User -> Contribution [:VIEWED {views: 0, lastViewed : "Date"}]
 - User -> Contribution [:RATED {rating: 0, lastRated : "Date"}]
 
 #### Groups Properties

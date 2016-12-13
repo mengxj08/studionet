@@ -275,8 +275,6 @@ router.route('/:contributionId')
 
 	.put(auth.ensureAuthenticated, function(req, res){
 
-		// TODO:
-		// check contribution ref and also if this contribution even belongs to current user.
 		var query = [
 			'MATCH (c:contribution) WHERE ID(c)=' + req.params.contributionId,
 			'RETURN c'
@@ -303,11 +301,13 @@ router.route('/:contributionId')
 			var newRef = req.body.ref;
 
 			var oldTags = result.tags;
-			var newTags = req.body.tags;
+			var newTags = req.body.tags || [];
 
 			var createdBy = result.createdBy;
 			var changeRelationQuery = [];
 			var changeTagsQuery = [];
+			var tagsAddQuery = [];
+			var tagsRemoveQuery = [];
 
 			if (createdBy !== parseInt(req.user.id)) {
 				return res.send('Cannot edit contribution that was not created by you');
@@ -339,9 +339,6 @@ router.route('/:contributionId')
 				'SET c3.contentType = {contentTypeParam}',
 			];
 
-			console.log(oldTags instanceof Array);
-			console.log(newTags instanceof Array);
-
 			if (!(oldTags instanceof Array)) {
 				oldTags = [oldTags];
 			}
@@ -361,19 +358,24 @@ router.route('/:contributionId')
 			console.log('tags to add: ' + tagsToAdd);
 
 
-
-			if (tagsToRemove.length > 0 || tagsToAdd.length > 0) {
-				// query to delete old tags that are no longer wanted and add new tags
-				changeTagsQuery = [
+			// remove old tags
+			if (tagsToRemove.length > 0) {
+				tagsRemoveQuery = [
 					'WITH c3',
 					'UNWIND {tagsToRemoveParam} as tagToRemove',
 					'OPTIONAL MATCH (c3)-[r1:TAGGED]->(t1:tag {name: tagToRemove})',
 					'DELETE r1',
 					'WITH c3,t1',
-					'OPTIONAL MATCH (t1)-[r2]-()',
-					'WITH c3, t1, CASE count(r2) WHEN 1 THEN [] ELSE [1] END as array',
+					'OPTIONAL MATCH (t1)<-[r2:TAGGED]-()',
+					'WITH c3, t1, CASE WHEN count(r2)>0 THEN [] ELSE [1] END as array',
 					'FOREACH (x in array | DELETE t1)',
-					'WITH c3, t1',
+				];
+			}
+
+			// add new tags
+			if (tagsToAdd.length > 0) {
+				tagsAddQuery = [
+					'WITH c3',
 					'UNWIND {tagsToAddParam} as tagToAdd',
 					'MERGE (t2:tag {name: tagToAdd})',
 					'ON CREATE SET t2.createdBy = {createdByParam}',
@@ -381,15 +383,13 @@ router.route('/:contributionId')
 				];
 			}
 
-			var query = changeRelationQuery.concat(editContributionDetailsQuery, changeTagsQuery).join('\n');
-
-			//console.log(query);
+			var query = changeRelationQuery.concat(editContributionDetailsQuery, tagsRemoveQuery, tagsAddQuery).join('\n');
 
 			var params = {
 				tagsToRemoveParam: tagsToRemove,
 				tagsToAddParam: tagsToAdd,
 				contributionIdParam: parseInt(req.params.contributionId),
-				tagsParam: req.body.tags,
+				tagsParam: newTags,
 				contributionTitleParam: req.body.title,
 				contributionBodyParam: req.body.body,
 				contributionRefParam: parseInt(req.body.ref), 
@@ -434,9 +434,9 @@ router.route('/:contributionId')
 		].join('\n');
 
 		db.query(countQuery, params, function(error, result) {
-			if (error)
-				console.log('Error in counting the number of incoming relationships of contribution ' + contributionIdParam);
-			else{
+			if (error){
+				console.log('[ERROR] Error in counting the number of incoming relationships of contribution ' + contributionIdParam);
+			} else{
 				incomingRelsCount = result[0].count;
 
 				console.log(incomingRelsCount);
@@ -490,24 +490,59 @@ router.route('/:contributionId/view')
 		var query = [
 			'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
 			'MATCH (u:user) WHERE ID(u)={userIdParam}',
-			'MERGE p=(u)<-[r:VIEWED_BY]-(c)',
-			'ON CREATE SET r.count = 1',
-			'ON MATCH SET r.count=r.count + 1',
+			'MERGE p=(u)-[r:VIEWED]->(c)',
+			'ON CREATE SET r.views = 1',
+			'ON MATCH SET r.views = r.views + 1',
+			'SET c.views = c.views + 1, r.lastViewed={lastViewedParam}',
 			'RETURN p'
 		].join('\n');
 
 		var params = {
-			contributionIdParam: parseInt(req.body.contributionId),
-			userIdParam: req.user.id
+			contributionIdParam: parseInt(req.params.contributionId),
+			userIdParam: req.user.id,
+			lastViewedParam: Date.now()
 		};
 
 		db.query(query, params, function(error, result){
-			if (error)
+			if (error){
 				console.log(error);
-			else
-				res.send('')
+			}
+			else{
+				res.send('Successfully viewed contribution id: ' + req.params.contributionId);
+			}
 		});
 	});
+
+router.route('/:contributionId/rate')
+	.post(auth.ensureAuthenticated, function(req, res) {
+		var ratingGiven = req.rating;
+
+		var query = [
+			'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
+			'MATCH (u:user) WHERE ID(u)={userIdParam}',
+			'MERGE p=(u)-[r:RATED]->(c)',
+			'ON CREATE SET c.rating = (c.rating*c.rateCount + {ratingParam})/(c.rateCount+1), c.rateCount = c.rateCount+1',
+			'ON MATCH SET c.rating = (c.rating*c.rateCount - r.rating + {ratingParam})/(c.rateCount)',
+			'SET r.rating={ratingParam}, r.lastRated={lastRatedParam}',
+			'RETURN p'
+		].join('\n');
+
+		var params = {
+			contributionIdParam: req.params.contributionId,
+			ratingParam: req.body.rating,
+			lastRatedParam: Date.now()
+		};
+
+		db.query(query, params, function(error,result){
+			if (error) {
+				console.log(error);
+			}
+			else {
+				console.log('[SUCCESS] Successfully rated contribution id ' + req.params.contributionId + ' with the rating ' + req.body.rating);
+				res.send('Successfully rated contribution id ' + req.params.contributionId + ' with the rating ' + req.body.rating);
+			}
+		})
+	})
 
 
 module.exports = router;
