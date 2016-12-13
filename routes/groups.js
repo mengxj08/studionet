@@ -17,43 +17,20 @@ router.route('/')
 	// return all groups
 	.get(auth.ensureAuthenticated, function(req, res){
 		
-		/*
-		 *	TODO:
-		 *	Return name, description, id, parentId, restricted, user-count, frequently used tags (later)
-		 * 
-		 */
-		
 		var query = [
 			'MATCH (g:group)',
 			'OPTIONAL MATCH (g)<-[:SUBGROUP]-(p:group)',
 			'OPTIONAL MATCH (g)-[:MEMBER]->(m1:user)',
-			'RETURN {name: g.name, id: id(g), restricted: g.restricted, parentId: id(p), users: COUNT(m1), createdBy: g.createdBy}'
+			'RETURN {name: g.name, id: id(g), restricted: g.restricted, parentId: id(p), users: count(m1), createdBy: g.createdBy}'
 		].join('\n'); 
 
-		/*
-		var query = [
-			'MATCH (g:group) WITH g',
-			'MATCH (u:user)-[:MEMBER]-(g)' ,
-			'MATCH (admin:user)<-[:MEMBER {role:\'Admin\'}]-(g)',
-			'RETURN {name: g.name, id: id(g), description: g.description, restricted: g.restricted, users: COUNT(u), owner: admin.name}'
-		].join('\n'); */
-
-
-		/*
-		var query = [
-			'MATCH (g:group) WITH g',
-			'MATCH (g)-[r:MEMBER]->(u:user)',
-			'RETURN {' +
-								'name: g.name, description: g.description' +
-								'id: id(g), + users: collect({id: id(u), role: r.role })}'
-		].join('\n');
-		*/
-
 		db.query(query, function(error, result){
-			if (error)
+			if (error){
 				console.log('Error retrieving all groups: ', error);
-			else
+			}
+			else{
 				res.send(result);
+			}
 		});
 
 	})
@@ -62,87 +39,90 @@ router.route('/')
 	.post(auth.ensureAuthenticated, function(req, res){
 		// TODO: more details for a group?
 		// avatar, etc.
-		var date = Date.now();
-
-		var groupExists; 
 		// Param setup
 		var params = {
 			nameParam: req.body.name,
 			descriptionParam: req.body.description,
 			restrictedParam: req.body.restricted,
 			groupParentIdParam: parseInt(req.body.groupParentId),
-			userIdParam: parseInt( req.user.id ),
-			dateCreatedParam: date
+			userIdParam: parseInt(req.user.id),
+			dateCreatedParam: Date.now()
 		};
 
-		// TODO: Check for tags also
-		//
-		// Query to check if group already exists
-		var query = [
-			'MATCH (g:group {name: {nameParam}})',
-			'RETURN count(g)'
+		var countQuery = [
+			'OPTIONAL MATCH (g:group {name: {nameParam}})',
+			'OPTIONAL MATCH (t:tag {name: {nameParam}})',
+			'RETURN {count: count(g)+count(t)}'
 		].join('\n');
 
-		// actual check if group already exists
-		db.query(query, params, function(error, result){
-			if (error)
-				console.log('Error looking for the group in database: ', error);
-			else {
-				groupExists = result;
-			}
+		var countPromise = new Promise(function(resolve, reject){
+			db.query(countQuery, params, function(error, result){
+				if (error){
+					console.log('Error looking for the group in database: ', error);
+					res.send('Error looking for group in database');
+					reject();
+				}
+				else {
+					resolve(result);
+				}
+			});
 		});
 
-		// if group already exists, return
-		if (groupExists) {
-			// not sure what to feedback to the frontend for this
-			// if already exists
-			res.send("The group with name " + req.body.name + " already exists in the database!");
-			return;
-		}
+		countPromise
+		.then(function(result){
+			var invalidName = result.count > 0;
 
-		// else try to create the group (link group to its tag, and add owner as admin to group)
-		query = [
-			'CREATE (g:group {createdBy: {userIdParam}, name: {nameParam}, description: {descriptionParam}, restricted: {restrictedParam}, dateCreated: {dateCreatedParam}})',
-			'WITH g',
-			'MATCH (u:user) WHERE id(u)= {userIdParam}',
-			'CREATE UNIQUE (g)-[r:MEMBER {role: "Admin"}]->(u)',
-			'MERGE (t:tag {name: {nameParam}})',
-			'WITH g, t',
-			'CREATE UNIQUE (g)-[r1:TAG]->(t)',
-		];
+			if (invalidName){
+				return res.send('Error: This group name is invalid because a group or tag with that name already exists');
+			}
 
-		if (req.body.groupParentId != -1) {
-			// the group has a parent group
-			query.push('WITH g');
-			query.push('MATCH (g1:group) WHERE id(g1)= {groupParentIdParam}');
-			query.push('CREATE UNIQUE (g1)-[r2:SUBGROUP]->(g)');
-		}
+			var query = [
+				'CREATE (g:group {createdBy: {userIdParam}, name: {nameParam}, description: {descriptionParam}, restricted: {restrictedParam}, dateCreated: {dateCreatedParam}})',
+				'WITH g',
+				'MATCH (u:user) WHERE id(u)= {userIdParam}',
+				'CREATE UNIQUE (g)-[r:MEMBER {role: "Admin", joinedOn: ' + params.dateCreatedParam + '}]->(u)',
+				'CREATE (t:tag {name: {nameParam}, createdBy: {userIdParam}})',
+				'WITH g, t',
+				'CREATE UNIQUE (g)-[r1:TAGGED]->(t)',
+			];
 
-		query.push('RETURN g');
-		query = query.join('\n');
+			if (params.groupParentIdParam !== -1) {
+				query.push('WITH g');
+				query.push('MATCH (g1:group) WHERE id(g1)= {groupParentIdParam}');
+				query.push('CREATE UNIQUE (g1)-[r2:SUBGROUP]->(g)');
+			}
+
+			query.push('RETURN g');
+			query = query.join('\n');
 
 
-		/*
-		 *
-		 *	For testing and creating synthetic data 
-		 *	Remove in production
-		 * 
-		 */
-		if(auth.ensureSuperAdmin && req.body.author && req.body.createdAt){
+			/*
+			 *
+			 *	For testing and creating synthetic data 
+			 *	Remove in production
+			 * 
+			 */
+			if(auth.ensureSuperAdmin && req.body.author && req.body.createdAt){
 
-			params.userIdParam = parseInt(req.body.author);		// remove in production
-			params.dateCreatedParam = new Date(req.body.createdAt).getTime();
-		}
+				params.userIdParam = parseInt(req.body.author);		// remove in production
+				params.dateCreatedParam = new Date(req.body.createdAt).getTime();
+			}
 
-		/*
-		 *	Actual creating of group using above query
-		 */ 
-		db.query(query, params, function(error, result){
-			if (error)
-				console.log('Error occured while creating the group in the database: ', error);
-			else
-				// return the first item because query always returns an array but REST API expects a single object
-				res.send(result[0]);
+			/*
+			 *	Actual creating of group using above query
+			 */ 
+			db.query(query, params, function(error, result){
+				if (error){
+					console.log('Error occured while creating the group in the database: ', error);
+					res.send('Error');
+				}
+				else {
+					// return the first item because query always returns an array but REST API expects a single object
+					res.send(result[0]);
+				}
+
+			});
+
 		});
 
 	});
@@ -176,39 +156,61 @@ router.route('/:groupId')
 	})
 
 	// updates an existing group
-	.put(auth.ensureAuthenticated, auth.ensureGroupOwner, function(req, res){
-		var query = [
-			'MATCH (g:group)',
-			'WHERE ID(g)=' + req.params.groupId,
-			'WITH g',
-			'SET g.name={nameParam}, g.description={descriptionParam}, g.restricted={restrictedParam}',
-			'RETURN g'
+	.put(auth.ensureAuthenticated, auth.isGroupAdmin, function(req, res){
+
+		// ensure the new group name does not alr exist as another grp/tag name
+		var countQuery = [
+			'OPTIONAL MATCH (g:group {name: {nameParam}})',
+			'OPTIONAL MATCH (t:tag {name: {nameParam}})',
+			'RETURN {count: count(g)+count(t)}'
 		].join('\n');
 
-		/*
-		if (req.body.name)
-			query.push('SET m.name={nameParam}');
-		if (req.body.code)
-			query.push('SET m.code={codeParam}');
-		if (req.body.contributionTypes)
-			query.push('SET m.contributionTypes={typesParam}');
+		var countPromise = new Promise(function(resolve, reject){
+			db.query(countQuery, params, function(error, result){
+				if (error){
+					console.log('Error looking for the group in database: ', error);
+					res.send('Error looking for group in database');
+					reject();
+				}
+				else {
+					resolve(result);
+				}
+			});
+		});
 
-		query.push('RETURN m');
-		query.join('\n');
-		*/
+		countPromise
+		.then(function(result){
 
-		var params = {
-			nameParam: req.body.name,
-			descriptionParam: req.body.description,
-			restrictedParam: req.body.restricted
-		};
+			var invalidName = result.count > 0;
 
-		db.query(query, params, function(error, result){
-			if (error)
-				console.log('Error updating group with id ' + req.params.groupId + ' : ', error);
-			else
-				// return the first item because query always returns an array but REST API expects a single object
- 				res.send(result[0]);
+			if (invalidName){
+				return res.send('Error: This group name is invalid because a group or tag with that name already exists');
+			}
+
+			var query = [
+				'MATCH (g:group)',
+				'WHERE ID(g)={groupIdParam}',
+				'MATCH (g)-[r:TAGGED]->(t)',
+				'SET g.name={nameParam}, g.description={descriptionParam}, g.restricted={restrictedParam}, t.name={nameParam}',
+				'RETURN g'
+			].join('\n');
+
+			var params = {
+				groupIdParam: parseInt(req.params.groupId),
+				nameParam: req.body.name,
+				descriptionParam: req.body.description,
+				restrictedParam: req.body.restricted
+			};
+
+			db.query(query, params, function(error, result){
+				if (error)
+					console.log('Error updating group with id ' + req.params.groupId + ' : ', error);
+				else
+					// return the first item because query always returns an array but REST API expects a single object
+	 				res.send(result[0]);
+			});
+
+
 		});
 
 	})
@@ -217,12 +219,15 @@ router.route('/:groupId')
 	.delete(auth.ensureAuthenticated, auth.ensureSuperAdmin, function(req, res){
 		var query = [
 			'MATCH (g:group)',
-			'WHERE ID(g)=' + req.params.groupId,
-			'DETACH',
-			'DELETE g'
+			'WHERE ID(g)={groupIdParam}',
+			'DETACH DELETE g'
 		].join('\n');
 
-		db.query(query, function(error, result){
+		var params = {
+			groupIdParam: parseInt(req.params.groupId)
+		}
+
+		db.query(query, params, function(error, result){
 			if (error)
 				console.log('Error deleting group with id ' + req.params.groupId + ' : ', error);
 			else
@@ -236,17 +241,16 @@ router.route('/:groupId')
 router.route('/:groupId/users')
 	
 	// get all users for this group (all roles)
-	.get(auth.ensureAuthenticated, /*auth.isStudent, */function(req, res){
+	.get(auth.ensureAuthenticated, function(req, res){
 		
 		var query = [
-			'MATCH (g:group) WHERE ID(g) = ' + req.params.groupId,
-			'WITH g',
+			'MATCH (g:group) WHERE ID(g) = {groupIdParam}',
 			'MATCH (g)-[r:MEMBER]->(u:user)',
-			'RETURN {name: u.name, id: id(u)}'
+			'RETURN {name: u.name, nusOpenId: u.nusOpenId, id: id(u), role: r.role}'
 		].join('\n');
 
 		var params = {
-			groupIdParam: req.params.groupId
+			groupIdParam: parseInt(req.params.groupId)
 		};
 
 		db.query(query, params, function(error, result){
@@ -258,46 +262,31 @@ router.route('/:groupId/users')
 
 	})
 
-	// link the user with this module
-	/*.post(auth.ensureAuthenticated, auth.isModerator, function(req, res){
-		var query = [
-			'MATCH (u:user) WHERE ID(u)=' + req.body.userId + ' WITH u',
-			'MATCH (m:module) WHERE ID(m)=' + req.body.moduleId,
-			'CREATE UNIQUE (m)-[r:MEMBER{role: {roleParam}}]->(u)'
-		].join('\n');
-		console.log("i am here query"+query);
-		var params = {
-			roleParam: req.body.moduleRole
-		};
-
-		db.query(query, params, function(error, result){
-			if (error)
-				console.log('Error linking the user to the module');
-			else
-				res.send('success');
-		});
-	})
-*/
-	
 	/*
 	 * Add a user to the group (allow for array of users)
-	 * If group is open, anyone can add himself / herself
-	 * If group is closed, ensure admin is adding the member
-	 * If member exists, the create link
-	 * If member doesn't exist, create the member, add link and send email
-	 * 
 	 */ 
-	.post(auth.ensureAuthenticated, function(req, res){
+	.post(auth.ensureAuthenticated, auth.isGroupAdmin, function(req, res){
 
+		// req.body.users (object with id, role)
+		var members = JSON.parse(req.body.users)
+											.filter(u => u.role === "Admin")
+											.map(u => parseInt(u.id));
+
+		var admins = JSON.parse(req.body.users)
+										 .filter(u => u.role === "Member")
+										 .map(u => parseInt(u.id));
 
 		var query = [
-			'MATCH (u:user) WHERE ID(u)=' + req.body.userId + ' WITH u',
-			'MATCH (g:group) WHERE ID(g)=' + req.body.groupId,
-			'CREATE UNIQUE (g)-[r:MEMBER{role: {roleParam}}]->(u)'
+			'MATCH (u:user) WHERE ID(u)=[' + members + ']',
+			'MATCH (u1:user) WHERE ID(u1)=[' + admins + ']',
+			'MATCH (g:group) WHERE ID(g)={groupIdParam}',
+			'CREATE UNIQUE (g)-[r:MEMBER{role: "Member"}]->(u)',
+			'CREATE UNIQUE (g)-[r:MEMBER{role: "Admin"}]->(u1)',
+			'RETURN g'
 		].join('\n');
 	
 		var params = {
-			roleParam: req.body.groupRole
+			groupIdParam: parseInt(req.params.groupId)
 		};
 
 		db.query(query, params, function(error, result){
@@ -305,8 +294,37 @@ router.route('/:groupId/users')
 				console.log('Error linking the user to the group');
 			else
 				res.send('success');
-				
 		});
+	})
+
+	/*
+	 * Delete a user to the group (allow for array of users)
+	 */ 
+	.delete(auth.ensureAuthenticated, auth.isGroupAdmin, function(req, res){
+
+		var userIds = JSON.parse(req.body.userIds).map(x => parseInt(x));
+
+		var query = [
+			'MATCH (u:user) WHERE ID(u)=[' + userIds + ']',
+			'MATCH (g:group) WHERE ID(g)={groupIdParam}',
+			'MATCH (g)-[r:MEMBER]->(u)',
+			'DELETE r'
+		].join('\n');
+	
+		var params = {
+			groupIdParam: parseInt(req.params.groupId)
+		};
+
+		db.query(query, params, function(error, result){
+			if (error){
+				console.log('Error linking the user to the group');
+				res.send('Error deleting users from group');
+			}
+			else{
+				res.send('Successfully deleted users from the group');
+			}
+		});
+
 	});
 
 
@@ -314,14 +332,16 @@ router.route('/:groupId/users')
 // route: /api/groups/graph
 router.route('/:groupId/users/:userId')
 	// edit the user's role in this group
-	.put(auth.ensureAuthenticated, auth.isModerator, function(req, res){
+	.put(auth.ensureAuthenticated, auth.isGroupAdmin, function(req, res){
 		var query = [
 			'MATCH (g:group)-[r:MEMBER]->(u:user)',
-			'WHERE ID(g)=' + req.params.groupId + ' AND ID(u)=' + req.params.userId,
-			'SET r.role = {roleParam}'
+			'WHERE ID(g)={groupIdParam} AND ID(u)={userIdParam}',
+			'SET r.role ={roleParam}'
 		].join('\n');
 
 		var params = {
+			groupIdParam: parseInt(req.params.groupId),
+			userIdParam: parseInt(req.params.userId),
 			roleParam: req.body.groupRole
 		};
 
@@ -330,36 +350,6 @@ router.route('/:groupId/users/:userId')
 				console.log('Error editting role of user for this group');
 			else
 				res.send('success');
-		});
-	})
-
-	/*
-	 * Delete a user to the group (allow for array of users)
-	 * If group is open, anyone can add himself / herself
-	 * If group is closed, ensure admin is adding the member
-	 * If member exists, the create link
-	 * If member doesn't exist, create the member, add link and send email
-	 * 
-	 */ 
-	.delete(auth.ensureAuthenticated, function(req, res){
-
-		var query = [
-			'MATCH (u)-[m:MEMBER {role:"Member"}]->(g) WHERE ID(u)={groupIdParam} AND ID(g)={userIdParam} DELETE m'
-		].join('\n');
-
-		var params = {
-			userIdParam: parseInt(req.params.userId),
-			groupIdParam: parseInt(req.params.groupId)
-		};
-
-		console.log(req.params);
-
-		db.query(query, params, function(error, result){
-			if (error)
-				console.log('Error deleting the user to the group', error);
-			else
-				res.send('success');
-				
 		});
 	});
 

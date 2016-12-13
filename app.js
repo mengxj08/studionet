@@ -19,6 +19,7 @@ var uploads = require('./routes/uploads');
 var graph_all = require('./routes/graph_all');
 var graph_med = require('./routes/graph_med');
 var contributions = require('./routes/contributions');
+var supernode = require('./routes/supernode');
 
 var logs = require('./routes/logs');
 
@@ -64,6 +65,7 @@ app.use('/api/tags', tags);
 app.use('/api/moderators', moderators);
 app.use('/api/relationships', relationships);
 app.use('/api/contributions', contributions);
+app.use('/api/supernode', supernode);
 app.use('/uploads', uploads);
 
 app.use('/api/logs', logs);
