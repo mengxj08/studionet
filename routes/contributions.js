@@ -14,7 +14,7 @@ router.route('/')
 	/*
 	 * Returns all contributions, including the name, created by, created on and id of the contribution.
 	 */
-	.get(function(req, res){
+	.get(auth.ensureAuthenticated, function(req, res){
 
 		var numKeys = Object.keys(req.query).length;
 		var hasParams = (numKeys > 0) ? true : false;
@@ -409,9 +409,6 @@ router.route('/:contributionId')
 
 	.delete(auth.ensureAuthenticated, function(req, res){
 
-		// TODO:
-		// check if i own the contribution before deleting it
-
 		var incomingRelsCount = 0;
 
 		var params = {
@@ -444,7 +441,7 @@ router.route('/:contributionId')
 		.then(function(result){
 
 			var incomingRelsCount = result.count;
-			var isCreator = result.createdBy === parseInt(req.user.id) ? true : false;
+			var isCreator = result.createdBy === parseInt(req.user.id);
 
 			if (!isCreator){
 				return res.send('Cannot delete contribution that was not created by you');

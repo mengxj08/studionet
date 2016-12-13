@@ -27,10 +27,11 @@
 - name
 - description
 - dateCreated
+- createdBy
 
 #### Group Relationship
 
-- User <- Group   [:MEMBER {role: "Admin"/"User", on:'Date'}]
+- User <- Group   [:MEMBER {role: "Admin"/"User", joinedOn:'Date'}]
 - Group -> Group [:SUBGROUP]
 - Group -> Tag [:TAG]
 
