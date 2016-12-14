@@ -7,9 +7,8 @@ var db = require('seraph')({
 	user: process.env.DB_USER,
 	pass: process.env.DB_PASS
 });
+var _ = require('underscore');
 
-
-// might change routes to use a better middleware
 
 // route: /api/groups/
 router.route('/')
@@ -19,9 +18,11 @@ router.route('/')
 		
 		var query = [
 			'MATCH (g:group)',
-			'OPTIONAL MATCH (g)<-[:SUBGROUP]-(p:group)',
 			'OPTIONAL MATCH (g)-[:MEMBER]->(m1:user)',
-			'RETURN {name: g.name, id: id(g), restricted: g.restricted, parentId: id(p), users: count(m1), createdBy: g.createdBy}'
+			'WITH g, count(m1) as numUsers',
+			'OPTIONAL MATCH (g:group)<-[:SUBGROUP]-(p)',
+			'WITH g, numUsers, id(p) as parentId',
+			'RETURN {name: g.name, id: id(g), restricted: g.restricted, parentId: parentId, numUsers: numUsers, createdBy: g.createdBy}'
 		].join('\n'); 
 
 		db.query(query, function(error, result){
@@ -136,8 +137,11 @@ router.route('/:groupId')
 
 		var query = [
 			'MATCH (g:group) WHERE ID(g) = {groupIdParam}',
-			'OPTIONAL MATCH (u:user)<-[:MEMBER]-(g)' ,
-			'RETURN {name: g.name, id: id(g), description: g.description, restricted: g.restricted, createdBy: g.createdBy, users: COUNT(u)}'
+			'OPTIONAL MATCH (u:user)<-[r:MEMBER]-(g)',
+			'WITH count(u) as numUsers, collect({id: id(u), role: r.role, name: u.name}) as users, g',
+			'OPTIONAL MATCH (g:group)<-[:SUBGROUP]-(g1)',
+			'WITH numUsers, g, id(g1) as parentId, users',
+			'RETURN {name: g.name, id: id(g), description: g.description, restricted: g.restricted, createdBy: g.createdBy, users: users, numUsers: numUsers, parentId: parentId}'
 		].join('\n');
 
 		var params = {
@@ -263,38 +267,97 @@ router.route('/:groupId/users')
 	})
 
 	/*
-	 * Add a user to the group (allow for array of users)
+	 * Add users to the group (must be an admin of the group, allow for array of users)
 	 */ 
 	.post(auth.ensureAuthenticated, auth.isGroupAdmin, function(req, res){
 
-		// req.body.users (object with id, role)
-		var members = JSON.parse(req.body.users)
-											.filter(u => u.role === "Admin")
-											.map(u => parseInt(u.id));
-
-		var admins = JSON.parse(req.body.users)
-										 .filter(u => u.role === "Member")
-										 .map(u => parseInt(u.id));
-
-		var query = [
-			'MATCH (u:user) WHERE ID(u)=[' + members + ']',
-			'MATCH (u1:user) WHERE ID(u1)=[' + admins + ']',
+		// if this group is a subgroup, first check if the specified users are part of the parent group
+		// return all users of the parent group and cross check with given user ids
+		var parentQuery = [
 			'MATCH (g:group) WHERE ID(g)={groupIdParam}',
-			'CREATE UNIQUE (g)-[r:MEMBER{role: "Member"}]->(u)',
-			'CREATE UNIQUE (g)-[r:MEMBER{role: "Admin"}]->(u1)',
-			'RETURN g'
+			'OPTIONAL MATCH (g)<-[:SUBGROUP]-(g1:group)',
+			'WITH g1, CASE WHEN g1 IS NULL THEN false ELSE true END as hasParent',
+			'OPTIONAL MATCH (u:user)<-[r:MEMBER]-(g1)',
+			'RETURN {hasParent: hasParent, userIds: collect(id(u))}'
 		].join('\n');
-	
+
 		var params = {
 			groupIdParam: parseInt(req.params.groupId)
 		};
 
-		db.query(query, params, function(error, result){
-			if (error)
-				console.log('Error linking the user to the group');
-			else
-				res.send('success');
+		var parentPromise = new Promise(function(resolve, reject){
+			db.query(query, params, function(error, result){
+				if (error){
+					console.log(error);
+					res.send('Error checking if users are in the parent of this group');
+					reject(error);
+				}
+				else {
+					resolve(result);
+				}
+			});
 		});
+
+		parentPromise
+		.then(function(result){
+
+			var usersInParent = result.userIds;
+			var hasParent = result.hasParent;
+			console.log('has parent: ' + hasParent);
+			console.log('users in the parent group' + usersInParent);
+
+			var invalidUsers = [];
+
+			if (hasParent) {
+
+				var givenUserIds = JSON.parse(req.body.users)
+															 .map(u => parseInt(u.id));
+
+				var validUserIdsToAdd = _.intersection(usersInParent, givenUserIds);
+				invalidUsers = _.difference(givenUserIds, validUserIdsToAdd);
+
+				var validUsersToAdd = JSON.parse(req.body.users)
+																	.filter(u => validUserIdsToAdd.includes(u.id));
+
+				var admins = validUserIdsToAdd.filter(u => u.role === "Admin")
+																			.map(u => parseInt(u.id));
+
+				var members = validUserIdsToAdd.filter(u => u.role === "Member")
+																			 .map(u => parseInt(u.id));
+
+			} else {
+
+				// req.body.users (object with id, role)
+				var admins = JSON.parse(req.body.users)
+													.filter(u => u.role === "Admin")
+													.map(u => parseInt(u.id));
+
+				var members = JSON.parse(req.body.users)
+												  .filter(u => u.role === "Member")
+											  	.map(u => parseInt(u.id));
+			}
+
+			var query = [
+				'MATCH (u:user) WHERE ID(u)=[' + members + ']',
+				'MATCH (u1:user) WHERE ID(u1)=[' + admins + ']',
+				'MATCH (g:group) WHERE ID(g)={groupIdParam}',
+				'CREATE UNIQUE (g)-[r:MEMBER{role: "Member"}]->(u)',
+				'CREATE UNIQUE (g)-[r:MEMBER{role: "Admin"}]->(u1)',
+				'RETURN g'
+			].join('\n');
+		
+			db.query(query, params, function(error, result){
+				if (error){
+					console.log('Error linking the user to the group');
+					return res.send('Error linking users to the group');
+				}
+				else
+					return res.send('Successfully added admins: ' + admins + ', and members: ' + members + '.\
+						\nThe following users could not be added to the group as they are not members of the parent: ' + invalidUsers);
+			});
+
+		})
+
 	})
 
 	/*
@@ -302,7 +365,9 @@ router.route('/:groupId/users')
 	 */ 
 	.delete(auth.ensureAuthenticated, auth.isGroupAdmin, function(req, res){
 
-		var userIds = JSON.parse(req.body.userIds).map(x => parseInt(x));
+		// req.body.userIds (array of user ids)
+		var userIds = JSON.parse(req.body.userIds)
+											.map(x => parseInt(x));
 
 		var query = [
 			'MATCH (u:user) WHERE ID(u)=[' + userIds + ']',
@@ -327,6 +392,72 @@ router.route('/:groupId/users')
 
 	});
 
+// route: /api/groups/:groupId/join
+router.route('/:groupId/join')
+	// manually join an open (not restricted) group as a user
+	.get(auth.ensureAuthenticated, function(req, res){
+
+		// if it has a parent then user must first be a member of the parent group
+		var parentQuery = [
+			'OPTIONAL MATCH (g:group)<-[:SUBGROUP]-(g1:group) WHERE ID(g)={groupIdParam}',
+			'WITH CASE WHEN g1 is NULL THEN false ELSE true END as hasParent, g1, g.restricted as isRestricted',
+			'OPTIONAL MATCH p=(u:user)<-[:MEMBER]-(g1) WHERE ID(u)={userIdParam}',
+			'WITH hasParent, g1, CASE WHEN p IS NULL THEN false ELSE true END as isMemberOfParent, isRestricted',
+			'RETURN {hasParent: hasParent, isMemberOfParent: isMemberOfParent, isRestricted: isRestricted}'
+		].join('\n');
+
+		var params = {
+			userIdParam: req.user.id,
+			groupIdParam: parseInt(req.params.groupId)
+		};
+
+		var parentPromise = new Promise(function(resolve, reject){
+			db.query(parentQuery, params, function(error, result){
+				if (error){
+					console.log(error);
+					reject(error);
+					res.send('Error joining the group');
+				} else {
+					resolve(result);
+				}
+			});
+		});
+
+		parentPromise
+		.then(function(result){
+			var hasParent = result.hasParent;
+			var isMemberOfParent = result.isMemberOfParent;
+			var isRestricted = result.isRestricted;
+
+			if (isRestricted){
+				return res.send('Cannot join a restricted group manually.')
+			}
+
+			if (hasParent && !isMemberOfParent){
+				return res.send('Must be a member of the parent of this group to join this subgroup');
+			}
+
+			// just add the user to the group (as a member)
+			var query = [
+				'MATCH (u:user) WHERE ID(u)={userIdParam}',
+				'MATCH (g:group) WHERE ID(g)={groupIdParam}',
+				'MERGE (g)-[r:MEMBER {role: "Member", joinedOn: ' + Date.now() + '}]->(u)'
+			].join('\n');
+
+			db.query(query, params, function(error, result){
+				if (error){
+					console.log(error);
+					return res.send('Error joining the group');
+				}
+				else {
+					console.log('Successfully added user'+ req.user.id + 'to the group id: ' + req.params.groupId);
+					return res.send('Successfully joined group');
+				}
+			});
+
+		});
+
+	});
 
 
 // route: /api/groups/graph
