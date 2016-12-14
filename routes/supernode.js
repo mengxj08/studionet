@@ -9,19 +9,22 @@ var db = require('seraph')({
 });
 
 var superNodeId = {
-	id: -1
+	contributionId: -1,
+	groupId: -1
 };
 
 router.route('/')
 	.get(auth.ensureAuthenticated, function(req, res){
-		if (superNodeId.id !== -1){
+		if (superNodeId.contributionId !== -1 && superNodeId.groupId !== -1){
 			console.log('Sending cached supernode id');
 			return res.send(superNodeId);
 		}
 
 		var query = [
 			'MATCH (c:contribution {superNode: true})',
-			'RETURN {id: id(c)}'
+			'WITH c',
+			'MATCH (g:group {superNode: true})',
+			'RETURN {contributionId: id(c), groupId: id(g)}'
 		].join('\n');
 
 		db.query(query, function(error, result){
@@ -31,7 +34,8 @@ router.route('/')
 			}
 			else {
 				console.log('[SUCCESS] Successfully retrieved supernode id');
-				superNodeId.id = result[0].id;
+				superNodeId.contributionId = result[0].contributionId;
+				superNodeId.groupId = result[0].groupId;
 				return res.send(result[0]);
 			}
 		});
