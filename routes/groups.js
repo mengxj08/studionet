@@ -69,6 +69,7 @@ router.route('/')
 			db.query(countQuery, params, function(error, result){
 				if (error){
 					console.log('Error looking for the group in database: ', error);
+					res.status(500);
 					res.send('Error looking for group in database');
 					reject();
 				}
@@ -83,6 +84,7 @@ router.route('/')
 			var invalidName = result.count > 0;
 
 			if (invalidName){
+				res.status(406);
 				return res.send('Error: This group name is invalid because a group or tag with that name already exists');
 			}
 
@@ -130,11 +132,13 @@ router.route('/')
 			 */ 
 			db.query(query, params, function(error, result){
 				if (error){
+					res.status(500);
 					console.log('Error occured while creating the group in the database: ', error);
-					res.send('Error');
+					res.send('Error occured while creating the group in the database: ');
 				}
 				else {
 					// return the first item because query always returns an array but REST API expects a single object
+					res.status(200);
 					res.send(result[0]);
 				}
 

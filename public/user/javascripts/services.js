@@ -1,5 +1,22 @@
 angular.module('studionet')
 
+
+.factory('supernode', ['$http', function($http){
+	var o ={
+		group: -1, 
+		contribution: -1
+	};
+
+	o.getSupernodes = function(){
+		return $http.get('/api/supernode').success(function(data){
+			o.group = data.groupId; 
+			o.contribution = data.contributionId;
+		});
+	};
+
+	return o;
+}])
+
 .factory('profile', ['$http', function($http){
 	var o ={
 		user: {},
@@ -108,7 +125,6 @@ angular.module('studionet')
 
 	o.getGraph = function(user_context){
 
-		o.getAll();
 		return $http.get('/graph/all/groups').success(function(data){
 
 			// replace the nodes with the groups that already hold data about the user status in each group
@@ -119,9 +135,16 @@ angular.module('studionet')
 		});
 	};
 
-	o.createNewGroup = function(user){
-		return $http.post('/api/groups', user).success(function(data){
-			o.users.push(data);
+	o.createNewGroup = function(group){
+		return $http.post('/api/groups', group).then(function(data){
+			
+			console.log("new group created", data);
+			o.groups.push(data);
+		
+		}, function(error){
+			
+			console.log(error);
+			
 		});
 	}
 

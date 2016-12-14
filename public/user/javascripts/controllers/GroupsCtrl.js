@@ -238,37 +238,6 @@ angular.module('studionet')
 	}
 
 
-	/** Saving Group ***/
-	$scope.saveGroup = function(){
-
-		// Convert Group Parent Id to Integer
-		$scope.activeGroup.groupParentId = parseInt($scope.activeGroup.groupParentId);
-		console.log($scope.activeGroup);
-
-		
-		
-		$http({
-		  method  : 'POST',
-		  url     : '/api/groups/',
-		  data    : $scope.activeGroup,  // pass in data as strings
-		  headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
-		 })
-		.success(function(data) {
-		    
-		    if (!data.success) {
-		      // if not successful, bind errors to error variables
-		      //$scope.errorName = data.errors.name;
-		      //$scope.errorSuperhero = data.errors.superheroAlias;
-		    } else {
-		      // if successful, bind success message to message
-		      //$scope.message = data.message;
-		    }
-
-		  })	 
-
-
-	}
-
 	/*** Editing Group ***/
 	$scope.saveGroupEdit = function(){
 
@@ -388,5 +357,20 @@ angular.module('studionet')
 	}
 
 
+
+}])
+
+
+.controller('CreateGroupCtrl', ['$scope', 'groups', 'supernode', function($scope, groups, supernode){
+
+	$scope.group = {
+		groupParentId: supernode.group
+	};
+
+	$scope.createGroup = function(){
+
+		console.log($scope.group);
+		groups.createNewGroup($scope.group)
+	}
 
 }])

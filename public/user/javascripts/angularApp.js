@@ -47,11 +47,14 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 			templateUrl: '/user/templates/user.groups.html',
 			controller: 'GroupsCtrl',
 			resolve: {
+				supernode: ['supernode', function(supernode){
+					return supernode.getSupernodes();
+				}],
 				userProfile: ['profile', function(profile){
 					return profile.getUser() && profile.getGroups();
 				}],
 				groupsPromise: ['groups', function(groups){
-					return groups.getAll() && groups.getGraph();
+					return groups.getAll().then( function(){ return groups.getGraph() });
 				}],
 				usersPromise: ['users', function(users){
 					return users.getAll();
