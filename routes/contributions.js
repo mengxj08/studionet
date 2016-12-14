@@ -125,10 +125,13 @@ router.route('/')
 		.then(function(result){
 			var specifiedUserIds = JSON.parse(req.query[QUERY_PARAM_USERS_KEYWORD]).map(x => parseInt(x));
 			var dateArray = JSON.parse(req.query[QUERY_PARAM_TIME_KEYWORD]).map(x => parseInt(x));
+			var rateArray = JSON.parse(req.query[QUERY_PARAM_RATING_KEYWORD]).map(x => parseInt(x));
 			var params = {
 				userIdsParam: _.union(specifiedUserIds, result),
 				dateLowerParam: dateArray[0],
 				dateUpperParam: dateArray[1],
+				ratingLowerParam: rateArray[0],
+				ratingUpperParam: rateArray[1],
 				tagIdsParam: JSON.parse(req.query[QUERY_PARAM_TAGS_KEYWORD]).map(x => parseInt(x)),
 				depthParam: parseInt(req.query[QUERY_PARAM_DEPTH_KEYWORD])
 			};
@@ -146,6 +149,8 @@ router.route('/')
 
 			var query = [
 				queryHead,
+				'AND toInt(c.rating) >= toInt(' + params.ratingLowerParam + ')',
+				'AND toInt(c.rating) <= toInt(' + params.ratingUpperParam + ')',
 				'AND toInt(c.dateCreated) >= toInt(' + params.dateLowerParam + ')',
 				'AND toInt(c.dateCreated) <= toInt(' + params.dateUpperParam + ')',
 				'WITH c',

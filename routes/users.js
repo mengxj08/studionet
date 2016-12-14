@@ -43,7 +43,9 @@ router.route('/')
                         addedOn: {addedOnParam},\
                         avatar: {avatarParam},\
                         joinedOn: {joinedOnParam},\
-                        lastLoggedIn: {lastLoggedInParam}\
+                        lastLoggedIn: {lastLoggedInParam},\
+                        filters: {filtersParam},\
+                        filterNames: {filterNamesParam}\
                        })',
       'RETURN u'
     ].join('\n');
@@ -57,7 +59,9 @@ router.route('/')
       addedOnParam: Date.now(),
       avatarParam: "/assets/images/avatar.png",
       joinedOnParam: -1,  // -1 as default
-      lastLoggedInParam: -1 // -1 as default
+      lastLoggedInParam: -1, // -1 as default
+      filters: [],
+      filterNames: []
     };
 
     /*

@@ -11,6 +11,8 @@
 - avatar (default @ /uploads/default/avatar) (avatar.png/..)
 - joinedOn 
 - lastLoggedIn
+- filters
+- filterNames
 
 #### User Relationship
 

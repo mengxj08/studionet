@@ -2,6 +2,11 @@ var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var auth = require('./auth');
+var db = require('seraph')({
+  server: process.env.SERVER_URL || 'http://localhost:7474/', // 'http://studionetdb.design-automation.net'
+  user: process.env.DB_USER,
+  pass: process.env.DB_PASS
+});
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -33,11 +38,13 @@ router.get('/user', auth.ensureAuthenticated, function(req, res){
 	res.render('user');
 });
 
+// for testing - remove for deployment
 router.post('/auth/local', passport.authenticate('local', {failureRedirect: '/login'}),
   function(req, res){
     res.redirect('/');
   });
 
+// for testing - remove for deployment
 router.get('/auth/basic', passport.authenticate('basic', {failureRedirect: '/login'}),
   function(req, res) {
     res.redirect('/');
@@ -69,8 +76,25 @@ router.get('/auth/openid/return',
       //res.redirect('/admin');
     //else
     	// redirect to user dashboard
+
+      // update the last logged in for this user
+      var query = [
+        'MATCH (u:user) WHERE ID(u)={userIdParam}',
+        'SET u.lastLoggedIn={lastLoggedInParam}'
+      ].join('\n');
+
+      var params = {
+        userIdParam: req.user.id,
+        lastLoggedInParam: Date.now()
+      };
+
+      db.query(query, params, function(error, result){
+        if (error){
+          console.log('Error updating user\'s last logged in date');
+        }
+      });
        
-      // Always redirect to user-page 
+      // Always redirect to user-page async
       res.redirect('/user'); 
   });
 
