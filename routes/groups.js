@@ -459,6 +459,33 @@ router.route('/:groupId/join')
 
 	});
 
+router.route('/:groupId/leave')
+	// leave the group if the user is currently in the group
+	.get(auth.ensureAuthenticated, function(req, res){
+		var query = [
+			'MATCH (u:user)<-[r:MEMBER]-(g:group)',
+			'WHERE ID(u)={userIdParam} AND ID(g)={groupIdParam}',
+			'DELETE r'
+		].join('\n');
+
+		var params = {
+			userIdParam: req.user.id,
+			groupIdParam: parseInt(req.params.groupId)
+		};
+
+		db.query(query, params, function(req, res){
+			if (error){
+				console.log(error);
+				res.send('error leaving group');
+			}
+			else {
+				console.log('Successfully left the group');
+				res.send('Successfully left the group');
+			}
+		})
+
+	});
+
 
 // route: /api/groups/graph
 router.route('/:groupId/users/:userId')
