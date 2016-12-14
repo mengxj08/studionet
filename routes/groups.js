@@ -473,7 +473,7 @@ router.route('/:groupId/leave')
 			groupIdParam: parseInt(req.params.groupId)
 		};
 
-		db.query(query, params, function(req, res){
+		db.query(query, params, function(error, result){
 			if (error){
 				console.log(error);
 				res.send('error leaving group');
