@@ -48,11 +48,11 @@ function apiCall(query, callback){
             n.type = n.labels[0];
             n.name = setName(n);
             if (idIndex(nodes, n.id) == null)
-                nodes.push(n/*{
+                nodes.push({
                     id: n.id,
                     type: n.labels[0],
                     name: setName(n)
-                }*/);
+                });
           });
           links = links.concat(row.graph.relationships.map(function(r) {
               return {

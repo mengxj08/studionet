@@ -18,7 +18,7 @@
 - User <- Group   [:CREATED {on: "Date"}]
 - User -> Tag [:CREATED {createdOn : "Date"}]
 - User -> Contribution [:CREATED {createdOn : "Date"}]
-- User -> Contribution [:VIEWED {count: 0, lastViewed : "Date"}]
+- User -> Contribution [:VIEWED {views: 0, lastViewed : "Date"}]
 - User -> Contribution [:RATED {rating: 0, lastRated : "Date"}]
 
 #### Groups Properties
@@ -27,10 +27,11 @@
 - name
 - description
 - dateCreated
+- createdBy
 
 #### Group Relationship
 
-- User <- Group   [:MEMBER {role: "Admin"/"User", on:'Date'}]
+- User <- Group   [:MEMBER {role: "Admin"/"User", joinedOn:'Date'}]
 - Group -> Group [:SUBGROUP]
 - Group -> Tag [:TAG]
 
@@ -48,12 +49,18 @@
 
 #### Contribution Properties
 
+- createdBy
 - title
 - body
+- tags
 - ref
 - lastUpdated
-- editted
-- content-type
+- dateCreated
+- edited
+- contentType
+- rating
+- rateCount
+- views
 
 #### Contribution Relationships
 
