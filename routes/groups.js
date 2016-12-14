@@ -27,7 +27,7 @@ router.route('/')
 			'MATCH (u:user) WHERE ID(u)={userIdParam}',
 			'OPTIONAL MATCH (g)<-[:SUBGROUP]-(p:group)',
 			'OPTIONAL MATCH (u)<-[m:MEMBER]-(g)',
-			'RETURN {supernode: g.superNode, id: id(g), restricted: g.restricted, parentId: id(p), name: g.name, requestingUserStatus: m.role}'
+			'RETURN {supernode: g.superNode, id: id(g), restricted: g.restricted, parentId: id(p), name: g.name, requestingUserStatus: m.role, description: g.description}'
 		].join('\n'); 
 
 		var params = {
@@ -270,7 +270,7 @@ router.route('/:groupId/users')
 		var query = [
 			'MATCH (g:group) WHERE ID(g) = {groupIdParam}',
 			'MATCH (g)-[r:MEMBER]->(u:user)',
-			'RETURN {name: u.name, nusOpenId: u.nusOpenId, id: id(u), role: r.role}'
+			'RETURN {name: u.name, nusOpenId: u.nusOpenId, id: id(u), role: r.role, avatar: u.avatar}'
 		].join('\n');
 
 		var params = {

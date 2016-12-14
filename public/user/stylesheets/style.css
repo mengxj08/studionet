@@ -1,12 +1,5 @@
 @import 'https://fonts.googleapis.com/css?family=Roboto+Condensed:300, 600, 900|Open+Sans:300,900';
 
-*{
-	//border: 1px solid black !important;
-	//margin: 0px !important; 
-	//padding: 0px !important; 
-}
-
-
 body {
 	positive: relative; 
 	width: 100%;
@@ -183,4 +176,20 @@ p.control-label-help{
 	font-size: 12px;
 	line-height: 14px;
 	font-family: 'Open Sans';
+}
+
+.alert{
+	font-size: 12px !important;
+}
+
+/*
+ * qTip Styles
+ */
+.btn-qtip{
+	width: 60px !important;
+	height: 30px; 
+	font-size: 12px !important; 
+	border 1px solid black; 
+	padding: 2px;
+	margin: 10px 0px;
 }

@@ -140,12 +140,15 @@ angular.module('studionet')
 			
 			console.log("new group created", data);
 			o.groups.push(data);
+
+			return data; 
 		
 		}, function(error){
-			
-			console.log(error);
-			
+
+			throw error;
+		
 		});
+
 	}
 
 	return o;

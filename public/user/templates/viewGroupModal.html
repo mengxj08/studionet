@@ -1,0 +1,74 @@
+<!--- View Modal -->
+<div class="modal fade" id="viewGroupModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h4 class="modal-title text-center">{{activeGroup.name}}</h4>
+        <!-- Admin Fn -->
+        <button class='btn btn-link pull-right edit-button' data-toggle="modal" data-target="#editModal" data-dismiss="modal" ng-if='activeElement.role=="Admin"'>
+          <i class='fa fa-pencil'></i>
+        </button>
+
+      </div>
+
+      <div class="modal-body">
+
+        <!-- Body for Viewing -->
+        <div class='row'>
+          <div class='col-sm-3'><i class="icon fa fa-tasks fa-4x"></i></div>
+          <div class='col-sm-9' ng-bind-html="activeGroup.description">
+          </div>
+        </div>
+
+        <br><br>
+
+        <div class='row'>
+          <div class='col-sm-3'><i class="icon fa fa-users fa-4x"></i></div>
+          <div class='col-sm-9'>
+            <p><b>User Count: </b> {{ activeGroup.users }}
+                <!-- Admin fn -->
+                <button class='btn btn-link pull-right edit-button' data-toggle="modal" data-target="#addUserModal" data-dismiss="modal"  ng-if='activeElement.role=="Admin"'>
+              <i class='fa fa-user-plus'></i>
+            </button>
+
+            </p>
+            
+            <p><b>Created By: </b>{{ users[ activeGroup.createdBy ].name }}</p>
+            
+            <p><b>Type: </b>{{activeGroup.restricted == true ? "Closed Group" : "Open Group"}}</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class='modal-footer'>
+        <!-- buttons -->
+            
+            <!-- Close -->
+            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal" 
+              ng-click ='leaveGroup()' ng-if='activeElement.role=="Member"'>
+             Leave Group
+            </button>
+
+            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal" 
+              ng-click ='joinGroup()' ng-if='activeElement.role==undefined && activeElement.properties.restricted==false'>
+             Join Group
+            </button>
+
+            <!-- Admin Fn -->
+            <button type="button" class='btn btn-sm btn-default' data-toggle="modal" data-dismiss="modal" ng-if='activeElement.role=="Admin"' ng-click='deleteGroup()'>
+              Delete
+            </button>
+
+            <!-- Close -->
+            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">
+              Close
+            </button>
+      
+      </div>
+
+
+    </div>
+  </div>
+</div>

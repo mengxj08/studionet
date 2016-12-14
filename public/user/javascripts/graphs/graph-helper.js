@@ -67,13 +67,14 @@ var graph_style = {
               'shape': 'data(faveShape)',
               'width': 'data(width)', 
               'height': 'data(height)',   // mapData(property, a, b, c, d)  => specified range a, b; actual values c, d
-              'text-valign': 'center',
-              'font-size':'10%',
+              'text-valign': 'bottom',
+              'font-size':'1em',
+              'font-weight': '300',
               'background-color': 'data(faveColor)',
               'border-color': 'data(faveColor)',
               'content' : 'data(name)',
               'text-wrap' : 'wrap',
-              'text-max-width': '80',
+              'text-max-width': '100',
               'text-valign': 'bottom',
             })
            
@@ -117,7 +118,7 @@ var graph_style = {
               'line-color': 'green',
               'target-arrow-color':'green',
               'background-color': 'blue',
-              
+              'border-width': 3.5              
             })
             .style({
               'content': 'data(label)'

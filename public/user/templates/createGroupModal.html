@@ -1,13 +1,25 @@
 <!--- 'Create' Modal -->
-<div class="modal fade" id="createGroupModal" tabindex="-1" role="dialog" ng-controller='CreateGroupCtrl'>
+<div class="modal fade" id="createGroupModal" tabindex="-1" role="dialog">
   <div class="modal-dialog">
+    
+   
     <div class="modal-content">
       <div class="modal-header">
         <div class="modal-title">New Group</div>
       </div>
       <div class="modal-body">
-        
-        <div class='row'>
+
+        <!-- alert -->
+        <div class="alert alert-danger" role="alert" id='errorMsg' ng-show='groupError'>
+                <strong>Oh snap! </strong>Change the group name and try submitting again.
+            </div>
+
+        <div class="alert alert-success" role="alert" id='successMsg' ng-show='groupCreated'>
+                <strong>Awesome! </strong>You created a group! 
+        </div>     
+
+        <!-- group creation form -->
+        <div class='row' ng-hide='groupCreated'>
           <!-- Body for Creating -->         
           <div class="section">
               <div class="section-body">
@@ -59,10 +71,10 @@
 
       <div class="modal-footer">
 
-          <div class='button-group'>
+          <div class='button-group' ng-hide='groupCreated'>
               <!-- buttons -->
               <!-- Save -->
-              <button type="button" class="btn btn-default modal-button" ng-click=createGroup()>
+              <button type="button" class="btn btn-default modal-button" ng-click=createGroup() ng-disabled='!(group.name && group.restricted)'>
                   Create
               </button>
 
@@ -72,8 +84,22 @@
               </button>
           </div>
 
+          <div class='button-group' id='groupSuccess' ng-show='groupCreated'>
+              <!-- buttons -->
+              <!-- Edit -->
+              <button type="button" class="btn btn-default modal-button" ng-click=editGroup() data-dismiss="modal">
+                  Edit Group
+              </button>
+
+              <!-- Cancel -->
+              <button type="button" class="btn btn-default modal-button" data-dismiss="modal">
+                Close
+              </button>
+          </div>
+
       </div>
 
     </div>
+
   </div>
 </div>

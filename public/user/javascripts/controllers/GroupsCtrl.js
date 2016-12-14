@@ -7,12 +7,6 @@ angular.module('studionet')
 .controller('GroupsCtrl', ['$scope', 'profile', 'groups', 'users', 'group', '$http', function($scope, profile, groups, users, group, $http){
 
 	/*
-	 *	Constants for Member Status
-	 */
-
-
-
-	/*
 	 * Scope Variables
 	 */
 	$scope.user = profile.user;
@@ -156,29 +150,53 @@ angular.module('studionet')
 		graph.on('mouseover', 'node', function(event) {
 
 		    var node = event.cyTarget;
-		    node.qtip({
+		    var nodeData = node.data();
+
+		    var qtipFormat = {
 		         content: {
-		         	title: node.name,
-		         	text: "Lorem ipsum Culpa veniam ex sed aute sed exercitation incididunt magna aliquip in nisi id esse eiusmod incididunt id Duis anim magna laboris elit qui occaecat culpa dolore in fugiat laborum nisi sit nostrud anim sunt consequat sed nulla sint id Excepteur."
-		         },
+		         	title: nodeData.name,
+		         	text: nodeData.description
+		    	 },
+		         
 		         show: {
 		            event: event.type,
 		            ready: true
 		         },
+		         
 		         hide: {
-		            event: 'mouseout unfocus'
-		         }
-		    }, event);
-
-		});
-
-		graph.nodes().qtip({
-		    content: {
-		        text: 'I am positioned in relation to the mouse'
-		    },
-		    position: {
-		        target: 'mouse'
+		            event: 'mouseout unfocus',
+		            delay: 500
+		         },
+		         
+		         position: {
+		         	my: 'top left',
+		         	at: 'center center'
+		         },
+		         
+		         style: {
+		         	name: 'dark',
+			        classes: 'myCustomClass',
+			        width: 200 // Overrides width set by CSS (but no max-width!)
+			        //height: 100 // Overrides height set by CSS (but no max-height!)
+			     }
 		    }
+
+		
+		    // change content text for users
+		    if(nodeData.type == "USER"){
+		    	qtipFormat.content.text = "<center><img " + 
+		    				   "style='width: 80px; height: 80px;' " +
+		    				   "src=' " + nodeData.avatar+ "'><br>";
+
+		    	qtipFormat.style.width = '80px';
+
+		    }
+
+		    qtipFormat.content.text += 
+		    "<br><button class='btn btn-qtip' onclick='viewGroup(" + nodeData.id + ")'>More</button>"		   
+
+		    node.qtip(qtipFormat, event);
+
 		});
 
 		$scope.graph = graph;
@@ -188,14 +206,17 @@ angular.module('studionet')
 
 	drawGraph();
 
-
+	/*
+	 *	Create Group
+	 */
+	$scope.createGroup = function(){
+		$("#createGroupModal").modal();
+	}
 
 	/*** Viewing ***/
-	$scope.viewGroup = function(id){
-		group.getGroupInfo(id);
-		group.getGroupUsers(id);
-		$scope.activeGroup = group.group;
-		$scope.activeGroup.users = group.users;
+	// fix - global variables are bad
+	viewGroup = function(node){
+		$("#viewGroupModal").modal();
 	}
 
 	$scope.joinGroup = function(){
@@ -218,20 +239,6 @@ angular.module('studionet')
 		$scope.activeGroup = group.group;
 	}
 
-
-	/*** Creating ***/
-	$scope.createGroup = function(){
-		
-		$scope.activeGroup = {
-			'name' : "",
-			'description' : "",
-			'restricted': false,
-			'groupParentId': "-1",
-		};
-
-		$("#createGroupModal").modal();
-
-	}
 
 	$scope.toggleRestricted = function(){
 		$scope.activeGroup.restricted = !$scope.activeGroup.restricted;
@@ -361,7 +368,14 @@ angular.module('studionet')
 }])
 
 
+/*
+ *	Controller for the group creation modal 
+ */
 .controller('CreateGroupCtrl', ['$scope', 'groups', 'supernode', function($scope, groups, supernode){
+
+	$scope.groupCreated = false; 
+	$scope.groupError = false;
+
 
 	$scope.group = {
 		groupParentId: supernode.group
@@ -369,8 +383,59 @@ angular.module('studionet')
 
 	$scope.createGroup = function(){
 
-		console.log($scope.group);
-		groups.createNewGroup($scope.group)
+		groups.createNewGroup($scope.group).then( function(data){
+		
+			showSuccess();
+		
+		}, function(error){
+
+			showError();
+
+		});
+
 	}
+
+	$scope.editGroup = function(){
+		$("#editModal").modal();
+	}
+
+	var showSuccess = function(){
+
+		$scope.groupCreated = true;
+		$scope.groupError = false;
+		
+	}
+
+	var showError = function(){
+		$scope.groupError = true;
+	}
+
+
+}])
+
+
+/*
+ *	Controller for the edit group modal 
+ */
+.controller('EditGroupCtrl', ['$scope', 'groups', 'supernode', function($scope, groups, supernode){
+
+	
+
+}])
+
+/*
+ *	Controller for the view group modal 
+ */
+.controller('ViewGroupCtrl', ['$scope', 'groups', 'group', function($scope, groups, group){
+
+	$scope.activeGroup = {
+		'name': "Test Group",
+		'description': 'This is a test Group',
+		'users': [
+
+		],
+		'createdBy': '1'
+	}
+	
 
 }])
