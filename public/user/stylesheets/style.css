@@ -1,4 +1,4 @@
-@import 'https://fonts.googleapis.com/css?family=Muli|Open+Sans';
+@import 'https://fonts.googleapis.com/css?family=Roboto+Condensed:300, 600, 900|Open+Sans:300,900';
 
 *{
 	//border: 1px solid black !important;
@@ -13,12 +13,13 @@ body {
 	height: 100%; 
 
 	font-family: 'Open Sans', sans-serif;
-	font-size: 12px;
+	font-size: 12px !important;
 	background: #eee;
 }
 
 h1, h2, h3, h4, h5 ,h6{
-	font-family: 'Muli', sans-serif;
+	font-family: 'Roboto Condensed', sans-serif;
+	font-weight: 900;
 }
 
 a {
@@ -94,8 +95,6 @@ button{
   left: 0; 
 }
 
-
-
 .app-container{
 	//background-color: red;
 	width: 90%;
@@ -113,4 +112,75 @@ button{
 .height-400{
 	max-height: 400px;
 	overflow: auto;
+}
+
+textarea{
+	padding: 5px !important;
+	font-size: 12px !important;
+	width: 100% !important; 
+	resize: none;
+}
+
+input{
+	padding: 5px !important;
+	font-size: 12px !important;	
+}
+
+label{
+	font-size: 14px !important;	
+	font-family: 'Open Sans', sans-serif;
+}
+
+
+/*
+ *	Modal CSS
+ */
+
+.modal-header{
+	height: 60px;
+	line-height: 45px;
+	padding: 0px !important;
+}
+
+
+.modal-title{
+	height: 60px;
+	line-height: 60px;
+	font-family: 'Roboto Condensed';
+	font-weight: bold;
+
+	margin-left: 30px;
+}
+
+.control-label{
+	font-size: 14px; 
+	font-family: 'Roboto Condensed';
+	font-weight: bold;
+}
+
+.modal-footer{
+	height: 60px !important;
+	line-height: 45px;
+	padding: 5px !important;
+}
+
+.button-group{
+	position: relative;
+	height: 50px !important; 
+	text-align: center;
+	padding: 0px !important;
+}
+
+.modal-button{
+	margin: 0px !important;
+	min-width: 150px;
+	height: 100% !important;
+	font-size: 15px;
+	font-family: 'Roboto Condensed', sans-serif;
+}
+
+p.control-label-help{
+	font-size: 12px;
+	line-height: 14px;
+	font-family: 'Open Sans';
 }

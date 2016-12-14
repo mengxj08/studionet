@@ -20,17 +20,6 @@
    
 </div>
 
-<!-- create a group button -->
-<!-- <div class="btn-floating">
-  <div class="btn-bg"></div>
-  <button type="button"  class="btn btn-default btn-toggle" 
-    data-toggle="modal" data-target="#createGroupModal">
-    <i class="icon fa fa-plus"></i>
-    <span class="help-text">Shortcut</span>
-  </button></a>
-</div> -->
-
-
 
 <!--- View Modal -->
 <div class="modal fade" id="viewModal" tabindex="-1" role="dialog">
@@ -39,7 +28,6 @@
 
       <div class="modal-header">
         <h4 class="modal-title text-center">{{activeGroup.name}}</h4>
-
         <!-- Admin Fn -->
         <button class='btn btn-link pull-right edit-button' data-toggle="modal" data-target="#editModal" data-dismiss="modal" ng-if='activeElement.role=="Admin"'>
           <i class='fa fa-pencil'></i>
@@ -227,86 +215,84 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Creating {{activeGroup.name == "" ? "Group" : activeGroup.name}}</h4>
+        <div class="modal-title">New Group</div>
       </div>
       <div class="modal-body">
         
         <div class='row'>
           <!-- Body for Creating -->         
           <div class="section">
-              <div class='section-title'>General Information</div>
               <div class="section-body">
 
                 <div class="form-group">
-                  <label class="col-md-3 control-label">Name</label>
-                  <div class="col-md-9">
-                    <input type="text" class="form-control" placeholder="" ng-model='activeGroup.name'>
+                  <div class="col-sm-12">
+                    <label class="control-label">Name</label>
+                    <p class='control-label-help'>( name of the group  )</p>
+                  </div>
+                  <div class="col-sm-12">
+                    <input type="text" class="form-control" placeholder="" ng-model='activeGroup.name' maxlength="20">
                   </div>
                 </div>
 
                 <div class="form-group">
-                  <div class="col-md-3">
+                  <div class="col-sm-12">
                     <label class="control-label">Description</label>
+                    <p class='control-label-help'>( short description of group, max 100 characters  )</p>
                   </div>
-                  <div class="col-md-9">
-                    <textarea class="form-control" ng-model='activeGroup.description'></textarea>
+                  <div class="col-sm-12">
+                    <textarea class="form-control" ng-model='activeGroup.description' maxlength="100"></textarea>
                   </div>
                 </div>
 
-                <br><br>
-                <div class="form-group">
-                  <label class="col-md-3 control-label">Type</label>
-                  <div class="col-md-9"> 
-                    <select class="col-md-9" ng-model='activeGroup.restricted'> 
+<!--                 <div class="form-group">
+                  <label class="col-sm-12 control-label">Type</label>
+                  <div class="col-sm-12"> 
+                    <select class="col-sm-12" ng-model='activeGroup.restricted'> 
                       <option value=false>Open Group</option>
                       <option value=true>Closed Group</option>
                     </select>
                   </div>
                 </div>
-
-              </div>
-          </div>
-        </div>
-
-        <br><br>
-
-        <div class='row'>
-          <div class="section">
-            <div class='section-title'>Inheritance (cannot be changed later)</div>
-            <div class='section-body'>
-              
-
-
-              <div class="form-group">
-                <label class="col-md-4 control-label">Parent Group:{{activeGroup.groupParentId}}</label>
-                <div class="col-md-8">
-                  <select class="col-md-7" ng-model='activeGroup.groupParentId'>
-                    <option ng-repeat='group in groups' value={{group.id}}>
-                    {{group.name}} ({{group.id}})
-                    </option>
-                  </select>
+ -->
+                <div class="form-group">
+                  <div class='col-sm-12'>
+                    <label class="control-label">Group Type</label>
+                    <p class='control-label-help'>( Open Groups can be freely joined by other members )</p>
+                  </div>
+                  <div class="col-sm-12"> 
+                    <div class='radio radio-inline'>
+                      <input type='radio' name='radio4' id='radio10' value='option10' checked>
+                      <label for='radio10'>Open</<label>
+                    </div>
+                    <div class='radio radio-inline'>
+                      <input type='radio' name='radio41' id='radio11' value='option11'>
+                      <label for='radio10'>Closed</<label>
+                    </div>
+                  </div>
                 </div>
-              </div>
 
-            </div>
+
+              </div>
           </div>
+
         </div>
 
       </div>
 
       <div class="modal-footer">
 
-          <!-- buttons -->
-            
+          <div class='button-group'>
+              <!-- buttons -->
               <!-- Save -->
-              <button type="button" class="btn btn-sm btn-default" ng-click=saveGroup()>
+              <button type="button" class="btn btn-default modal-button" ng-click=saveGroup()>
                   Create
               </button>
 
               <!-- Cancel -->
-              <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">
+              <button type="button" class="btn btn-default modal-button" data-dismiss="modal">
                 Cancel
               </button>
+          </div>
 
       </div>
 

@@ -196,10 +196,6 @@ angular.module('studionet')
 		group.getGroupUsers(id);
 		$scope.activeGroup = group.group;
 		$scope.activeGroup.users = group.users;
-
-		group.users.map( function(user){
-			$scope.users[user.id].status = "Yes";
-		})
 	}
 
 	$scope.joinGroup = function(){
@@ -227,7 +223,6 @@ angular.module('studionet')
 	$scope.createGroup = function(){
 		
 		$scope.activeGroup = {
-
 			'name' : "",
 			'description' : "",
 			'restricted': false,
