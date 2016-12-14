@@ -77,7 +77,7 @@ router.route('/')
 				return res.send('Error: This group name is invalid because a group or tag with that name already exists');
 			}
 
-			var query = [
+			var mainQuery = [
 				'CREATE (g:group {createdBy: {userIdParam}, name: {nameParam}, description: {descriptionParam}, restricted: {restrictedParam}, dateCreated: {dateCreatedParam}})',
 				'WITH g',
 				'MATCH (u:user) WHERE id(u)= {userIdParam}',
@@ -87,15 +87,22 @@ router.route('/')
 				'CREATE UNIQUE (g)-[r1:TAGGED]->(t)',
 			];
 
+			var parentQuery = [];
+			var finalQuery = ['RETURN g'];
+
 			if (params.groupParentIdParam !== -1) {
-				query.push('WITH g');
-				query.push('MATCH (g1:group) WHERE id(g1)= {groupParentIdParam}');
-				query.push('CREATE UNIQUE (g1)-[r2:SUBGROUP]->(g)');
+
+				parentQuery = [
+					'WITH g',
+					'MATCH (g1:group) WHERE id(g1)= {groupParentIdParam}',
+					'CREATE UNIQUE (g1)-[r2:SUBGROUP]->(g)',
+					'WITH g1',
+					'CASE WHEN g1.restricted = true THEN SET g.restricted=true END'
+				];
+
 			}
 
-			query.push('RETURN g');
-			query = query.join('\n');
-
+			var query = mainQuery.concat(parentQuery, finalQuery);
 
 			/*
 			 *
