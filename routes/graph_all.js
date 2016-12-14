@@ -56,23 +56,22 @@ router.route('/me')
 		});
 	});
 
-	// route: /graph/all/groups
-	// TODO
-	router.route('/groups')
+// route: /graph/all/groups
+router.route('/groups')
 
-		// return whole graph
-		.get(auth.ensureAuthenticated, function(req, res){
+	// return whole graph
+	.get(auth.ensureAuthenticated, function(req, res){
 
-			var query = [
-							'MATCH (g:group) WITH g',
-							'MATCH (g)-[s:SUBGROUP]->(m)',
-							'RETURN g, m, s'
-						].join('\n');
-		
-			apiCall(query, function(data){	
-				res.send(data);
-			});
+		var query = [
+						'MATCH (g:group) WITH g',
+						'MATCH (g)-[s:SUBGROUP]->(m)',
+						'RETURN s'
+					].join('\n');
+	
+		apiCall(query, function(data){	
+			res.send(data);
+		});
 
-	});
+});
 		
 module.exports = router;

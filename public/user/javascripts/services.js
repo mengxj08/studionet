@@ -106,8 +106,15 @@ angular.module('studionet')
 		});
 	};
 
-	o.getGraph = function(){
+	o.getGraph = function(user_context){
+
+		o.getAll();
 		return $http.get('/graph/all/groups').success(function(data){
+
+			// replace the nodes with the groups that already hold data about the user status in each group
+			data.nodes = o.groups;
+			
+			// copy data
 			angular.copy(data, o.graph);
 		});
 	};
@@ -157,7 +164,6 @@ angular.module('studionet')
 	var o = {
 		group: {},
 		users: [],
-		relation: {}
 	};
 
 	o.getGroupInfo = function(id){

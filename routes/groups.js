@@ -18,17 +18,22 @@ router.route('/')
 	.get(auth.ensureAuthenticated, function(req, res){
 		
 		/*
-		 *	TODO:
-		 *	Return name, description, id, parentId, restricted, user-count, frequently used tags (later)
+		 *	Returns id, name, restricted, parentId, createdBy, requestingUserStatus
+		 *	Contextual to the user who is making the request (requesting user status)
 		 * 
 		 */
 		
 		var query = [
 			'MATCH (g:group)',
+			'MATCH (u:user) WHERE ID(u)={userIdParam}',
 			'OPTIONAL MATCH (g)<-[:SUBGROUP]-(p:group)',
-			'OPTIONAL MATCH (g)-[:MEMBER]->(m1:user)',
-			'RETURN {name: g.name, id: id(g), restricted: g.restricted, parentId: id(p), users: COUNT(m1), createdBy: g.createdBy}'
+			'OPTIONAL MATCH (u)<-[m:MEMBER]-(g)',
+			'RETURN {supernode: g.superNode, id: id(g), restricted: g.restricted, parentId: id(p), name: g.name, requestingUserStatus: m.role}'
 		].join('\n'); 
+
+		var params = {
+			userIdParam : parseInt(req.user.id)
+		}
 
 		/*
 		var query = [
@@ -49,7 +54,7 @@ router.route('/')
 		].join('\n');
 		*/
 
-		db.query(query, function(error, result){
+		db.query(query, params, function(error, result){
 			if (error)
 				console.log('Error retrieving all groups: ', error);
 			else
@@ -307,32 +312,8 @@ router.route('/:groupId/users')
 				res.send('success');
 				
 		});
-	});
-
-
-
-// route: /api/groups/graph
-router.route('/:groupId/users/:userId')
-	// edit the user's role in this group
-	.put(auth.ensureAuthenticated, auth.isModerator, function(req, res){
-		var query = [
-			'MATCH (g:group)-[r:MEMBER]->(u:user)',
-			'WHERE ID(g)=' + req.params.groupId + ' AND ID(u)=' + req.params.userId,
-			'SET r.role = {roleParam}'
-		].join('\n');
-
-		var params = {
-			roleParam: req.body.groupRole
-		};
-
-		db.query(query, params, function(error, result){
-			if (error)
-				console.log('Error editting role of user for this group');
-			else
-				res.send('success');
-		});
 	})
-
+	
 	/*
 	 * Delete a user to the group (allow for array of users)
 	 * If group is open, anyone can add himself / herself
@@ -362,6 +343,31 @@ router.route('/:groupId/users/:userId')
 				
 		});
 	});
+
+
+
+// route: /api/groups/graph
+router.route('/:groupId/users/:userId')
+	// edit the user's role in this group
+	.put(auth.ensureAuthenticated, auth.isModerator, function(req, res){
+		var query = [
+			'MATCH (g:group)-[r:MEMBER]->(u:user)',
+			'WHERE ID(g)=' + req.params.groupId + ' AND ID(u)=' + req.params.userId,
+			'SET r.role = {roleParam}'
+		].join('\n');
+
+		var params = {
+			roleParam: req.body.groupRole
+		};
+
+		db.query(query, params, function(error, result){
+			if (error)
+				console.log('Error editting role of user for this group');
+			else
+				res.send('success');
+		});
+	})
+
 
 
 module.exports = router;

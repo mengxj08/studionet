@@ -7,6 +7,12 @@ angular.module('studionet')
 .controller('GroupsCtrl', ['$scope', 'profile', 'groups', 'users', 'group', '$http', function($scope, profile, groups, users, group, $http){
 
 	/*
+	 *	Constants for Member Status
+	 */
+
+
+
+	/*
 	 * Scope Variables
 	 */
 	$scope.user = profile.user;
@@ -21,8 +27,6 @@ angular.module('studionet')
 	};  // placeholder group
 	$scope.activeElement = {};
 
-
-
 	/*
 	 *  Helper Function
 	 */
@@ -32,86 +36,150 @@ angular.module('studionet')
 		var createGraphNode = function(node){
 		    
 		    node.faveShape = "ellipse";
-		    
-		    if( node.properties.superNode != undefined ){
+
+		    if( node.supernode ){
 		          node.faveShape = "ellipse";
 		          node.faveColor = "black";
 		          node.width = "40";
 		          node.height = "40";      
 		    }
-		    else if( node.properties.role == "Admin" ){
+		    else if( node.type == "USER" ){
+		          node.faveShape = "ellipse";
+		          node.faveColor = "red";
+		          node.width = "10";
+		          node.height = "10";      
+		    }
+		    else if( node.requestingUserStatus == "Admin" ){
 		          node.faveShape = "ellipse";
 		          node.faveColor = "blue";
 		          node.width = "20";
 		          node.height = "20";      
 		    }
-		    else if( node.properties.role ){
+		    else if( node.requestingUserStatus ){
 		          node.faveShape = "ellipse";
 		          node.faveColor = "green";
 		          node.width = "20";
 		          node.height = "20";      
 		    }
-		    else if( node.properties.restricted){
+		    else if( node.restricted ){
 		          node.faveShape = "ellipse";
 		          node.faveColor = "grey";
 		          node.width = "20";
 		          node.height = "20";      
 		    }		    
-		    else if( !node.properties.restricted){
+		    else if( !node.restricted){
 		          node.faveShape = "ellipse";
 		          node.faveColor = "lightgreen";
 		          node.width = "20";
 		          node.height = "20";      
 		    }
 		    else {
-		          node.faveShape = CONTRIBUTION_SHAPE;
-		          node.faveColor = CONTRIBUTION_COLOR;
-		          node.width = CONTRIBUTION_WIDTH;
-		          node.height = CONTRIBUTION_HEIGHT;
+		          node.faveShape = "ellipse";
+		          node.faveColor = "red";
+		          node.width = "10";
+		          node.height = "10";
 		    }
 
 		    return  { data: node };
 		}
 
-		// preprocessing
-		profile.getGroups();
-	    groups.graph.nodes.map( function(node){
-	    	var created = node.properties.createdBy; 
-	    	if(node.properties.createdBy == $scope.user.id)
-	    		node.properties.role = "Admin";
-	    	else {
-	    		for(var i=0; i < profile.groups.length; i++){
-	    			if(profile.groups[i].id == node.id){ console.log("mem")
+		var createGraphEdge = function(edge){
 
-	    				node.properties.role = "Member";
-	    			}
-	    		}
-	    	}
-	    })
+		    edge.strength = EDGE_DEFAULT_STRENGTH;
+		    edge.faveColor = EDGE_DEFAULT_COLOR;
+		    edge.weigth = EDGE_DEFAULT_WEIGHT;
+		    edge.label = edge.type;
+
+		    return { data: edge };
+
+		}
 	
 		// creating the grpah
 		var graph = makeGraph( groups.graph, 'user-graph', createGraphNode);
 		
-		// relate with current user
-		profile.groups.map( function(group){
-			graph.getElementById(group.id).data().role = group.role;
-			graph.getElementById(group.id).data();
+		graph.on('tap', 'node', function(evt){
+
+			if(evt.cyTarget.data().type == "USER"){
+				console.log("you clicked on a user");
+			}
+			else{
+
+				// remove other users
+				var collection = cy.elements("node[type = 'USER']");
+				cy.remove( collection );
+				 
+				if( evt.cyTarget.data().supernode ){
+					return; 
+				}
+				else{
+
+					// explode the node to show users
+					group.getGroupUsers(evt.cyTarget.data().id)
+					.then(function(){
+
+						for (var i=0; i<group.users.length; i++) {
+
+							group.users[i].type = "USER";
+
+							var node = {
+								group: "nodes",
+								data: createGraphNode( group.users[i] ).data
+							}
+
+							var edge =  { source: evt.cyTarget.data().id, target: group.users[i].id }
+							var edge = {
+								group: "edges",
+								data: createGraphEdge(edge).data
+							}
+
+						    cy.add([ node, edge ]);
+						    cy.layout().stop(); 
+						    layout = cy.elements().makeLayout({ 'name': 'cola'}); 
+						    layout.start();
+
+						};
+
+
+					});
+					
+
+					$scope.viewGroup(evt.cyTarget.id());
+		    		$scope.activeElement = evt.cyTarget.data();
+
+		    		//$("#viewModal").modal();
+				}
+				
+			}
+
 		})
 
-		// 
-		graph.on('tap', 'node', function(evt){
-			    		
-			    		if(evt.cyTarget.data().properties.superNode == undefined){
-				    		
-				    		$scope.viewGroup(evt.cyTarget.id());
-				    		$scope.activeElement = evt.cyTarget.data();
-				    		
-				    		$("#viewModal").modal();
-			    		}
+		graph.on('mouseover', 'node', function(event) {
 
-			    		//console.log(evt.cyTarget.data().properties.createdBy == profile.id);
+		    var node = event.cyTarget;
+		    node.qtip({
+		         content: {
+		         	title: node.name,
+		         	text: "Lorem ipsum Culpa veniam ex sed aute sed exercitation incididunt magna aliquip in nisi id esse eiusmod incididunt id Duis anim magna laboris elit qui occaecat culpa dolore in fugiat laborum nisi sit nostrud anim sunt consequat sed nulla sint id Excepteur."
+		         },
+		         show: {
+		            event: event.type,
+		            ready: true
+		         },
+		         hide: {
+		            event: 'mouseout unfocus'
+		         }
+		    }, event);
 
-			    	})
+		});
+
+		graph.nodes().qtip({
+		    content: {
+		        text: 'I am positioned in relation to the mouse'
+		    },
+		    position: {
+		        target: 'mouse'
+		    }
+		});
 
 		$scope.graph = graph;
 

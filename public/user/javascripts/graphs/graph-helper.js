@@ -75,9 +75,6 @@ var graph_style = {
               'text-wrap' : 'wrap',
               'text-max-width': '80',
               'text-valign': 'bottom',
-              //'background-image': 'data(icon)',
-              //'background-width': 'data(width)',
-              //'background-height': 'data(height)'
             })
            
           .selector('.selected')

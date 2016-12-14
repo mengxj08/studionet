@@ -56,7 +56,7 @@ router.route('/')
       isAdminParam: req.body.isAdmin, 
       addedByParam: req.user.id,
       addedOnParam: Date.now(),
-      avatarParam: "/uploads/default/avatar",
+      avatarParam: "/assets/images/avatar.png",
       joinedOnParam: -1,  // -1 as default
       lastLoggedInParam: -1 // -1 as default
     };
