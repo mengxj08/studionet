@@ -7,7 +7,7 @@ var CONTRIBUTION_SHAPE = "ellipse"
 
 var MODULE_WIDTH = 15, MODULE_HEIGHT = 15;
 var USER_WIDTH = 20, USER_HEIGHT = 20; 
-var CONTRIBUTION_WIDTH = 15, CONTRIBUTION_HEIGHT = 15;
+var CONTRIBUTION_WIDTH = 30, CONTRIBUTION_HEIGHT = 30;
 
 var MODULE_COLOR = "#FB95AF";
 var USER_COLOR = "#DE9BF9";
@@ -63,19 +63,17 @@ var graph_style = {
               'height': 'data(height)',   // mapData(property, a, b, c, d)  => specified range a, b; actual values c, d
               'text-valign': 'center',
               'font-size':'15%',
-              'background-color': 'data(faveColor)',
-              'border-color': 'data(faveColor)'
-              //'background-image': 'data(icon)',
-              //'background-width': 'data(width)',
-              //'background-height': 'data(height)'
+              'border-color': 'black',
+              'color': '#222',
+              'content' : 'data(label)'
             })
            
           .selector('.selected')
             .css({
               'border-width': 3.5,
               'border-color': '#333',
-              'width': 20, 
-              'height': 20,
+              'width': 40, 
+              'height': 40,
               'font-size': '15%'
             })
           
@@ -138,7 +136,7 @@ var createGraphNode = function(node){
     var data = node;
     
     var id = angular.element($('.graph-container')).scope().user.id;
-    //console.log( id);
+
     if(node.type=="module"){
           node.faveShape = MODULE_SHAPE;
           node.faveColor = MODULE_COLOR;
@@ -439,8 +437,35 @@ var refreshGraph = function(data){
                 data.links/*.map( function(edge){ return createGraphEdge(edge) } ) */           
             );
 
+            resizeNodes(cy);
+
         })
+
+
     }
+
+}
+
+
+
+/*
+ *  Takes a graph and resizes the nodes according to incoming and outgoing links
+ */
+var resizeNodes = function( graph ){
+
+  for(var i=0; i < graph.nodes().length; i++){
+
+    if( cy.nodes().id()[i] != "0"){
+      var conn = cy.nodes()[i].incomers().length + cy.nodes()[i].outgoers().length
+      cy.nodes()[i].css({ 
+            'width': 10+conn*3, 
+            'height': 10+conn*3,   // mapData(property, a, b, c, d)  => specified range a, b; actual values c, d
+      })        
+    }
+
+  } 
+
+
 
 }
 
