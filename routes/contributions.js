@@ -34,25 +34,17 @@ router.route('/')
 				'RETURN ({title: c.title, createdBy: c.createdBy, dateCreated: c.dateCreated, id: id(c)})'		
 			].join('\n');
 
-			var getAllContributionsPromise = new Promise(function(resolve, reject){
-				db.query(query, function(error, result) {
-					if (error){
-						console.log('[ERROR] Attempt to fetch all contributions by /api/contributions failed.');
-						reject('error getting all contributions');
-					}
-					else{
-						resolve(result);
-					}		
-				});
+			db.query(query, function(error, result) {
+				if (error){
+					console.log('[ERROR] Attempt to fetch all contributions by /api/contributions failed.');
+					res.send('error getting all contributions');
+				}
+				else{
+					res.send(result);
+				}		
 			});
 
-			getAllContributionsPromise
-			.then(function(result){
-				return res.send(result);
-			})
-			.catch(function(reason){
-				return res.send(reason);
-			})
+			return;
 		}
 
 		if (numKeys !== NUM_QUERY_KEYS_CONTRIBUTION) {
@@ -533,23 +525,30 @@ router.route('/:contributionId/view')
 		});
 	});
 
+// route: /api/contributions/:contributionId/rate
 router.route('/:contributionId/rate')
 	.post(auth.ensureAuthenticated, function(req, res) {
-		var ratingGiven = req.rating;
+		// might want to add a check for the rating between a range here..
+		var givenRating = parseInt(req.body.rating);
+
+		if (givenRating < 0 || givenRating > 5) {
+			return res.send('Please give a rating between 0 and 5 inclusive');
+		}
 
 		var query = [
 			'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
 			'MATCH (u:user) WHERE ID(u)={userIdParam}',
 			'MERGE p=(u)-[r:RATED]->(c)',
-			'ON CREATE SET c.rating = (c.rating*c.rateCount + {ratingParam})/(c.rateCount+1), c.rateCount = c.rateCount+1',
-			'ON MATCH SET c.rating = (c.rating*c.rateCount - r.rating + {ratingParam})/(c.rateCount)',
+			'ON CREATE SET c.rating = (c.rating*c.rateCount + {ratingParam})/toFloat(c.rateCount+1), c.rateCount = c.rateCount+1',
+			'ON MATCH SET c.rating = (c.rating*c.rateCount - r.rating + {ratingParam})/toFloat(c.rateCount)',
 			'SET r.rating={ratingParam}, r.lastRated={lastRatedParam}',
 			'RETURN p'
 		].join('\n');
 
 		var params = {
-			contributionIdParam: req.params.contributionId,
-			ratingParam: req.body.rating,
+			userIdParam: req.user.id,
+			contributionIdParam: parseInt(req.params.contributionId),
+			ratingParam: givenRating,
 			lastRatedParam: Date.now()
 		};
 
