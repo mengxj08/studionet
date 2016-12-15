@@ -81,8 +81,9 @@ router.route('/')
 
     countPromise
     .then(function(result){
-      var invalidName = result.count > 0;
+      var invalidName = result[0].count > 0;
 
+      
       if (invalidName){
         res.status(406);
         return res.send('Error: This group name is invalid because a group or tag with that name already exists');
