@@ -94,8 +94,9 @@ router.route('/')
 				'MATCH (u:user) WHERE id(u)= {userIdParam}',
 				'CREATE UNIQUE (g)-[r:MEMBER {role: "Admin", joinedOn: ' + params.dateCreatedParam + '}]->(u)',
 				'CREATE (t:tag {name: {nameParam}, createdBy: {userIdParam}})',
-				'WITH g, t',
+				'WITH g, t, u',
 				'CREATE UNIQUE (g)-[r1:TAGGED]->(t)',
+				'CREATE UNIQUE (u)-[:CREATED {createdOn: ' + Date.now() + '}]->(t)'
 			];
 
 			var parentQuery = [];
@@ -107,13 +108,15 @@ router.route('/')
 					'WITH g',
 					'MATCH (g1:group) WHERE id(g1)= {groupParentIdParam}',
 					'CREATE UNIQUE (g1)-[r2:SUBGROUP]->(g)',
-					'WITH g1',
-					'CASE WHEN g1.restricted = true THEN SET g.restricted=true END'
+					'WITH g, CASE WHEN g1.restricted = true THEN [1] ELSE [] END as array',
+					'FOREACH (x in array | SET g.restricted=true)'
 				];
 
 			}
 
-			var query = mainQuery.concat(parentQuery, finalQuery);
+			var query = mainQuery.concat(parentQuery, finalQuery).join('\n');
+
+			console.log(query);
 
 			/*
 			 *
@@ -358,8 +361,8 @@ router.route('/:groupId/users')
 			}
 
 			var query = [
-				'MATCH (u:user) WHERE ID(u)=[' + members + ']',
-				'MATCH (u1:user) WHERE ID(u1)=[' + admins + ']',
+				'MATCH (u:user) WHERE ID(u) IN [' + members + ']',
+				'MATCH (u1:user) WHERE ID(u1) IN [' + admins + ']',
 				'MATCH (g:group) WHERE ID(g)={groupIdParam}',
 				'CREATE UNIQUE (g)-[r:MEMBER{role: "Member"}]->(u)',
 				'CREATE UNIQUE (g)-[r:MEMBER{role: "Admin"}]->(u1)',
@@ -390,7 +393,7 @@ router.route('/:groupId/users')
 											.map(x => parseInt(x));
 
 		var query = [
-			'MATCH (u:user) WHERE ID(u)=[' + userIds + ']',
+			'MATCH (u:user) WHERE ID(u) IN [' + userIds + ']',
 			'MATCH (g:group) WHERE ID(g)={groupIdParam}',
 			'MATCH (g)-[r:MEMBER]->(u)',
 			'DELETE r'

@@ -34,21 +34,30 @@ router.route('/')
 				'RETURN ({title: c.title, createdBy: c.createdBy, dateCreated: c.dateCreated, id: id(c)})'		
 			].join('\n');
 
-			db.query(query, function(error, result) {
-				if (error){
-					console.log('[ERROR] Attempt to fetch all contributions by /api/contributions failed.');
-				}
-				else{
-					res.send(result);
-				}		
+			var getAllContributionsPromise = new Promise(function(resolve, reject){
+				db.query(query, function(error, result) {
+					if (error){
+						console.log('[ERROR] Attempt to fetch all contributions by /api/contributions failed.');
+						reject('error getting all contributions');
+					}
+					else{
+						resolve(result);
+					}		
+				});
 			});
-			return;
+
+			getAllContributionsPromise
+			.then(function(result){
+				return res.send(result);
+			})
+			.catch(function(reason){
+				return res.send(reason);
+			})
 		}
 
 		if (numKeys !== NUM_QUERY_KEYS_CONTRIBUTION) {
 			console.log('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Expected 6 query parameters but only received ' + numKeys + '.');
-			res.send('must send all 6 query params');
-			return;
+			return res.send('must send all 6 query params');
 		}
 
 		// has exactly 6 query params
@@ -57,8 +66,12 @@ router.route('/')
 		// 1 Number query param (depth)
 		if (!(QUERY_PARAM_DEPTH_KEYWORD in req.query)){
 			console.log('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Expected a depth param but did not receive any.');
-			res.send('No depth query provided');
-			return;
+			return res.send('No depth query provided');
+		}
+
+		// time param must be an array
+		if (!(JSON.parse(req.query[QUERY_PARAM_TIME_KEYWORD]) instanceof Array) || !(JSON.parse(req.query[QUERY_PARAM_TIME_KEYWORD]).length === 2)){
+			return res.send('Must send array for time');
 		}
 
 		var QUERY_PARAM_DEPTH_STRING = req.query[QUERY_PARAM_DEPTH_KEYWORD];
@@ -67,8 +80,7 @@ router.route('/')
 
 		if (isDepthParamEmpty || !isDepthParamNumber) {
 			console.log('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Expected depth param to be a Number but did not receive a Number.');
-			res.send('Depth query provided is not a number');
-			return;
+			return res.send('Depth query provided is not a number');
 		}
 
 		// 5 array query params
@@ -136,23 +148,35 @@ router.route('/')
 				depthParam: parseInt(req.query[QUERY_PARAM_DEPTH_KEYWORD])
 			};
 
-			var queryHead;
-
-			if (params.tagIdsParam.length === 0) {
-				queryHead = 'MATCH (c:contribution)<-[:CREATED]-(u:user)'
+			var queryHead = 'MATCH (c:contribution)<-[:CREATED]-(u:user)'
 										+ ' WHERE ID(u) IN [' + params.userIdsParam + ']';
-			} else {
+
+			var queryLowerTime = '';
+			var queryUpperTime = '';
+
+			// consider tag filters
+			if (params.tagIdsParam.length !== 0) {
 				queryHead = 'MATCH (t:tag)<-[:TAGGED]-(c:contribution)<-[:CREATED]-(u:user)'
 										+ ' WHERE ID(u) IN [' + params.userIdsParam + ']'
 										+ ' AND ID(t) IN [' + params.tagIdsParam + ']';
+			}
+
+			// consider lower bound for time
+			if (params.dateLowerParam !== -1) {
+				queryLowerTime = 'AND toInt(c.dateCreated) >= toInt(' + params.dateLowerParam + ')';
+			}
+
+			// consider upper bound for time
+			if (params.dateUpperParam !== -1) {
+				queryUpperTime = 'AND toInt(c.dateCreated) <= toInt(' + params.dateUpperParam + ')';
 			}
 
 			var query = [
 				queryHead,
 				'AND toInt(c.rating) >= toInt(' + params.ratingLowerParam + ')',
 				'AND toInt(c.rating) <= toInt(' + params.ratingUpperParam + ')',
-				'AND toInt(c.dateCreated) >= toInt(' + params.dateLowerParam + ')',
-				'AND toInt(c.dateCreated) <= toInt(' + params.dateUpperParam + ')',
+				queryLowerTime,
+				queryUpperTime,
 				'WITH c',
 				'MATCH (c)-[*]->(c2:contribution) WITH c, c2',
 				'MATCH (c)<-[*0..' + params.depthParam + ']-(c3:contribution)',
@@ -165,13 +189,13 @@ router.route('/')
 
 			apiCall(query, function(data) {
 				console.log('[SUCCESS] Sucess in fetching filtered contributions in /api/contributions.')
-	      res.send(data);
+	      return res.send(data);
 			});
 
 		})
 		.catch(function(reason){
 			console.log(reason);
-			res.send(reason);
+			return res.send(reason);
 		});
 
 	})
