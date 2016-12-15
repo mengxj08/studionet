@@ -11,21 +11,24 @@ var db = require('seraph')({
 /* GET home page. */
 router.get('/', function(req, res, next) {
   if (!req.isAuthenticated()) {
-    res.render('index', { title: 'Express' });
+    return res.render('index', { title: 'Express' });
   }
 
+  return res.redirect('/user');
+
+  /*
   if (req.user.superAdmin) {
     res.redirect('/admin');
   }
   else {
     res.redirect('/user');
   }
-
+  */
 });
 
 // GET login page
 router.get('/login', function(req, res, next){
-	res.render('login');
+	res.render('');
 });
 
 // GET admin page
@@ -39,16 +42,16 @@ router.get('/user', auth.ensureAuthenticated, function(req, res){
 });
 
 // for testing - remove for deployment
-router.post('/auth/local', passport.authenticate('local', {failureRedirect: '/login'}),
+router.post('/auth/local', passport.authenticate('local', {failureRedirect: '/'}),
   function(req, res){
     res.redirect('/');
   });
 
 // for testing - remove for deployment
-router.get('/auth/basic', passport.authenticate('basic', {failureRedirect: '/login'}),
+router.get('/auth/basic', passport.authenticate('basic', {failureRedirect: '/'}),
   function(req, res) {
     res.redirect('/');
-  })
+  });
 
 //   POST /auth/openid
 //   Use passport.authenticate() as route middleware to authenticate the
@@ -57,7 +60,7 @@ router.get('/auth/basic', passport.authenticate('basic', {failureRedirect: '/log
 //   provider will redirect the user back to this application at
 //   /auth/openid/return
 router.post('/auth/openid', 
-  passport.authenticate('openid', { failureRedirect: '/login' }),
+  passport.authenticate('openid', { failureRedirect: '/' }),
   function(req, res) {
     res.redirect('/');
   });
@@ -68,7 +71,7 @@ router.post('/auth/openid',
 //   login page.  Otherwise, the primary route function function will be called,
 //   which, in this example, will redirect the user to the home page.
 router.get('/auth/openid/return', 
-  passport.authenticate('openid', { failureRedirect: '/login' }),
+  passport.authenticate('openid', { failureRedirect: '/' }),
   function(req, res) {
     // res.redirect('/');
     //if (req.user.superAdmin)
@@ -92,6 +95,7 @@ router.get('/auth/openid/return',
         if (error){
           console.log('Error updating user\'s last logged in date');
         }
+        return;
       });
        
       // Always redirect to user-page async

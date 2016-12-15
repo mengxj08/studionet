@@ -11,9 +11,9 @@ var db = require('seraph')({
 //   the request will proceed.  Otherwise, the user will be redirected to the
 //   login page.
 module.exports.ensureAuthenticated = function(req, res, next) {
-	
+  
   if (req.isAuthenticated()) { 
-  	return next(); 
+    return next(); 
   }
   res.redirect('/denied');
   
@@ -21,7 +21,7 @@ module.exports.ensureAuthenticated = function(req, res, next) {
 
 // Super Admin authentication middleware
 module.exports.ensureSuperAdmin = function(req, res, next){
-	
+  
   if (req.user.superAdmin){
     return next();
   }
