@@ -1,5 +1,13 @@
 @import 'https://fonts.googleapis.com/css?family=Roboto+Condensed:300, 600, 900|Open+Sans:300,900';
 
+.border{ 
+	border: 1px solid black;
+}
+
+html{
+	font-size: 12px !important;
+}
+
 body {
 	positive: relative; 
 	width: 100%;
@@ -21,6 +29,10 @@ a {
 
 a:hover, a:visited, a:focus{
 	text-decoration: none;
+}
+
+p{
+	font-size: 12px !important;
 }
 
 nav{
@@ -145,6 +157,10 @@ label{
 	margin-left: 30px;
 }
 
+.modal-content{
+
+}
+
 .control-label{
 	font-size: 14px; 
 	font-family: 'Roboto Condensed';
@@ -192,4 +208,28 @@ p.control-label-help{
 	border 1px solid black; 
 	padding: 2px;
 	margin: 10px 0px;
+}
+
+/*
+ * 	user-lists
+ */
+img.user-avatar{
+	width: 30px; 
+	height: 30px; 
+	margin: 10px; 
+	border: 1px solid black; 
+	border-radius: 50%;
+}
+
+.user-list-name{
+	line-height: 50px;
+	font-size: 14px;
+}
+
+.user-row{
+	border-bottom: 1px solid #222;
+}
+
+.user-row:hover{
+	background-color: #ddd;
 }

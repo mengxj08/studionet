@@ -4,67 +4,73 @@
     <div class="modal-content">
 
       <div class="modal-header">
-        <h4 class="modal-title text-center">{{activeGroup.name}}</h4>
+        <h4 class="modal-title">{{activeGroup.name}}</h4>
+        
         <!-- Admin Fn -->
         <button class='btn btn-link pull-right edit-button' data-toggle="modal" data-target="#editModal" data-dismiss="modal" ng-if='activeElement.role=="Admin"'>
           <i class='fa fa-pencil'></i>
         </button>
+        
+        <button class='btn btn-link pull-right edit-button' data-dismiss="modal">
+          <i class='fa fa-close'></i>
+        </button>
 
       </div>
 
-      <div class="modal-body">
+      <div class='modal-body'>
 
-        <!-- Body for Viewing -->
-        <div class='row'>
-          <div class='col-sm-3'><i class="icon fa fa-tasks fa-4x"></i></div>
-          <div class='col-sm-9' ng-bind-html="activeGroup.description">
-          </div>
-        </div>
+        <!-- alert -->
+        <div class="alert alert-danger" role="alert" id='errorMsg' ng-show='error'>
+                <strong>Oh snap! </strong> {{error.Msg}}
+            </div>
 
-        <br><br>
-
-        <div class='row'>
-          <div class='col-sm-3'><i class="icon fa fa-users fa-4x"></i></div>
-          <div class='col-sm-9'>
-            <p><b>User Count: </b> {{ activeGroup.users }}
-                <!-- Admin fn -->
-                <button class='btn btn-link pull-right edit-button' data-toggle="modal" data-target="#addUserModal" data-dismiss="modal"  ng-if='activeElement.role=="Admin"'>
-              <i class='fa fa-user-plus'></i>
-            </button>
-
-            </p>
-            
-            <p><b>Created By: </b>{{ users[ activeGroup.createdBy ].name }}</p>
-            
-            <p><b>Type: </b>{{activeGroup.restricted == true ? "Closed Group" : "Open Group"}}</p>
-          </div>
-        </div>
-
+        <div class="alert alert-success" role="alert" id='successMsg' ng-show='success'>
+                <strong>Awesome! </strong> {{success.Msg}}
+        </div>  
+        <uib-tabset active="active">
+              <uib-tab index="0" heading="About the group">
+                      <p>Description: {{ activeGroup.description }}</p>
+                      <p>CreatedBy : {{ activeGroup.createdBy }}</p>
+                      <p>Restricted: {{ activeGroup.restricted }}</p>
+                      <p>User Count: {{ activeGroup.numUsers }}</p>
+                      <p>Parent Id: {{ activeGroup.parentId }}</p>
+              </uib-tab>
+              
+              <uib-tab index="1" heading="Members">
+                  <div class='height-400'>
+                      <div class='row user-row' ng-repeat='user in users'>
+                        <div class='col-sm-2'><img class='user-avatar' src={{user.avatar}}></div>
+                        <div class='col-sm-4 user-list-name'>{{user.name}}</div>
+                        <div class='col-sm-2'>{{user}}</div>
+                      </div>
+                  </uib-tab>
+              </uib-tab>
+        </uib-tabset>
       </div>
 
+
+      
+      <!-- footer -->
       <div class='modal-footer'>
-        <!-- buttons -->
             
-            <!-- Close -->
-            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal" 
-              ng-click ='leaveGroup()' ng-if='activeElement.role=="Member"'>
-             Leave Group
-            </button>
+            <div class='button-group' id='groupSuccess' ng-show='active==0'>
+                <!-- buttons -->
 
-            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal" 
-              ng-click ='joinGroup()' ng-if='activeElement.role==undefined && activeElement.properties.restricted==false'>
-             Join Group
-            </button>
+                <!-- Subgroup -->
+                <button type="button" class="btn btn-default modal-button" data-dismiss="modal" ng-if='!restricted || (restricted && requestingUserStatus)'>Create Subgroup</button>
 
-            <!-- Admin Fn -->
-            <button type="button" class='btn btn-sm btn-default' data-toggle="modal" data-dismiss="modal" ng-if='activeElement.role=="Admin"' ng-click='deleteGroup()'>
-              Delete
-            </button>
+            </div>
 
-            <!-- Close -->
-            <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">
-              Close
-            </button>
+            <div class='button-group' id='groupSuccess' ng-show='active==1'>
+                <!-- buttons -->
+
+                <!-- Join -->
+                <button type="button" class="btn btn-default modal-button" ng-if='requestingUserStatus == undefined'>Join</button>
+
+                <!-- Leave -->
+                <button type="button" class="btn btn-default modal-button" ng-if='requestingUserStatus == "Member"'>Leave</button>
+                
+            </div>
       
       </div>
 
@@ -72,3 +78,4 @@
     </div>
   </div>
 </div>
+
