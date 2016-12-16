@@ -185,18 +185,43 @@ angular.module('studionet')
 	return o;
 }])
 
-.factory('group', ['$http', function($http){
+.factory('group', ['$http', 'profile', function($http, profile){
 
 	var o = {
 		group: {},
 		users: [],
+		user_status: undefined
 	};
 
 	o.getGroupInfo = function(id){
 		return $http.get('/api/groups/' + id).success(function(data){
-			angular.copy(data, o.group);
+				
+				data.requestingUserStatus = undefined;
+
+
+				for(var i=0; i < profile.groups.length; i++){
+					if( data.id == profile.groups[i].id ){
+							data.requestingUserStatus = profile.groups[i].role;
+					}
+				}
+
+				angular.copy(data, o.group);
+
 		});
 	};
+
+	o.getMemberStatus = function(user_id){
+		
+		for(var i=0; i < o.users.length; i++){
+			if(user_id == o.users[i]){
+				o.member_status = o.users[i].role; 
+			}
+			console.log(o.users[i]);
+		}
+
+		return "undefined"; 
+
+	}
 
 	o.getGroupUsers = function(id){
 		return $http.get('/api/groups/' + id + '/users').success(function(data){
@@ -226,7 +251,8 @@ angular.module('studionet')
 
 	o.deleteGroup = function(){
 		return $http.delete('/api/groups/' + o.group.id ).success(function(data){
-			alert("Group Deleted");
+		
+
 		});		
 	}
 

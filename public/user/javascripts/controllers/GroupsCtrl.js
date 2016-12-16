@@ -13,6 +13,8 @@ angular.module('studionet')
 	$scope.groups = groups.groups;
 	$scope.users = users.usersById();
 
+	$scope.activeGroup; 
+
 	/*
 	 *  Helper Functions for the graph
 	 */
@@ -82,10 +84,7 @@ angular.module('studionet')
 	var onTap = function(evt){
 		
 		if(evt.cyTarget.data().type == "USER"){
-
 			console.log("you clicked on a user");
-
-
 		}
 		else{
 
@@ -98,7 +97,6 @@ angular.module('studionet')
 			}
 			else{
 
-				// activate the group
 				group.getGroupInfo(evt.cyTarget.data().id).then( function(){
 
 					// explode the node to show users
@@ -125,7 +123,9 @@ angular.module('studionet')
 						    layout = cy.elements().makeLayout({ 'name': 'cola'}); 
 						    layout.start();
 
-						};
+						    viewGroup();
+
+						}
 
 
 					});
@@ -183,16 +183,24 @@ angular.module('studionet')
 	}
 
 	var drawGraph = function(){
-	
-		// creating the grpah
-		var graph = makeGraph( groups.graph, 'user-graph', createGraphNode);
-		
-		// add interactions 
-		graph.on('tap', 'node', function(evt){ onTap(evt); })
-		graph.on('mouseover', 'node', function(evt) { onHover(evt); });
 
-		// attach it to the scope
-		$scope.graph = graph;
+		groups.getAll().then( function(){
+
+				groups.getGraph().then(function(){
+
+						console.log("drawing graph")
+						// creating the grpah
+						var graph = makeGraph( groups.graph, 'user-graph', createGraphNode);
+						
+						// add interactions 
+						graph.on('tap', 'node', function(evt){ onTap(evt); })
+						graph.on('mouseover', 'node', function(evt) { onHover(evt); });
+
+						// attach it to the scope
+						$scope.graph = graph;
+			    })
+
+		})
 
 	};
 
@@ -204,10 +212,13 @@ angular.module('studionet')
 
 	/*** Viewing ***/
 	// fix - global variables are bad
-	$scope.viewGroup = function(node){	$("#viewGroupModal").modal();	};
+	viewGroup = function(){	$("#viewGroupModal").modal();	};
 
 
 	drawGraph();
+
+	$scope.refreshGraph = drawGraph;
+	$scope.viewGroup = viewGroup;
 
 
 }])
@@ -230,6 +241,10 @@ angular.module('studionet')
 
 		groups.createNewGroup($scope.group).then( function(data){
 		
+			// refresh the graph underneath
+			// function present in container scope
+			
+			$scope.$parent.refreshGraph();
 			showSuccess();
 		
 		}, function(error){
@@ -262,7 +277,7 @@ angular.module('studionet')
 /*
  *	Controller for the edit group modal 
  */
-.controller('EditGroupCtrl', ['$scope', 'groups', 'supernode', function($scope, groups, supernode){
+.controller('EditGroupCtrl', ['$scope', 'groups', 'group', 'supernode', function($scope, groups, group, supernode){
 	
 	/*** Editing Group ***/
 	$scope.saveGroupEdit = function(){
@@ -304,25 +319,50 @@ angular.module('studionet')
 /*
  *	Controller for the view group modal 
  */
-.controller('ViewGroupCtrl', ['$scope', 'groups', 'group', function($scope, groups, group){
+.controller('ViewGroupCtrl', ['$scope', 'profile', 'group', function($scope, profile, group){
 
 	// check if scope has active group
 	$scope.activeGroup = group.group;
-	$scope.users;
+	$scope.members = group.users;
 
-	group.getGroupUsers( $scope.activeGroup.id ).then( function(){ $scope.users = group.users; });
+	console.log(group.group);
 
 	$scope.active = 0; 
 	$scope.error = undefined;
 	$scope.success = undefined; 
 
-
-	$scope.deleteGroup = function(){
-		group.deleteGroup();
+	$scope.reset = function(){
+		$scope.active = 0; 
+		$scope.error = undefined;
+		$scope.success = undefined; 
 	}
 
+	$scope.deleteGroup = function(){
+		group.deleteGroup().then(function(){
+				showSuccess();
+
+				$scope.$parent.refreshGraph();
 
 
+		}, function(){
+				showError();
+		});
+
+
+
+	}
+
+	var showSuccess = function(){
+
+		$scope.success = true;
+		$scope.error = false;
+		$scope.successMsg = "Group has been deleted."
+		
+	}
+
+	var showError = function(){
+		$scope.error = true;
+	}
 
 }])
 
@@ -334,16 +374,13 @@ angular.module('studionet')
 
 	// check if scope has active group
 	$scope.activeGroup = group.group;
-	$scope.users;
+	$scope.members;
 
-	group.getGroupUsers( $scope.activeGroup.id ).then( function(){ $scope.users = group.users; });
+	group.getGroupUsers( $scope.activeGroup.id ).then( function(){ $scope.members = group.users; });
 
 	$scope.active = 0; 
 	$scope.error = undefined;
 	$scope.success = undefined; 
-
-
-
 
 
 	$scope.leaveGroup = function(){
