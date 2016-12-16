@@ -12,18 +12,10 @@
 
 
  /*** Other Css ***/
-.panel{
-	border: none;
-}
 
 .filter-heading{
 	cursor: pointer;
-}
-
-
-#filter-btn{
-	text-transform: uppercase;
-	border: 1px solid black;
+	line-height: 30px;
 }
 
 div.tree-control{
@@ -69,4 +61,21 @@ div.tree-control .tree-view li{
 .ranger-marker{
 	width: 20px !important; 
 	height: 20px !important;
+}
+
+.filter-element-count{
+	font-size: 12px;
+	border: 1px solid black;
+	padding: 0px 2px;
+
+	float: right;
+}
+
+.filter-btn{
+	background-color: #C4C2C2;
+	text-align: center;
+}
+
+.panel{
+	z-index: 20;
 }

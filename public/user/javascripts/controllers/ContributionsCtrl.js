@@ -4,7 +4,7 @@ angular.module('studionet')
  *  Main Contribution Graph Page
  * 
  */
-.controller('HomeCtrl', ['$scope', 'profile', 'users', 'Upload', '$timeout', 'ModalService', '$http', function($scope, profile, users, Upload, $timeout, ModalService, $http){
+.controller('ContributionsCtrl', ['$scope', 'profile', 'users', 'Upload', '$timeout', 'ModalService', '$http', function($scope, profile, users, Upload, $timeout, ModalService, $http){
 
 	$scope.user = profile.user;
   $scope.users = users.usersById();

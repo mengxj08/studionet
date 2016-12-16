@@ -5,6 +5,10 @@ angular.module('studionet')
  */
 .controller('FilterCtrl', ['$scope', '$http', 'users', 'tags', 'groups',   function($scope, $http, users, tags, groups){ 
 
+      $scope.filterActive = false;
+      $scope.filterChanged = false;
+
+
       // Lists populating filters
       $scope.tags = [];
       $scope.authors = [];
@@ -21,11 +25,31 @@ angular.module('studionet')
 
 
       /*
+       *
+       */
+      $scope.clearFilter = function(){
+
+            // reset defaults
+            $scope.selectedAuthors = [];
+            $scope.selectedTags = [];
+            $scope.firstDate = new Date();
+            $scope.lastDate = new Date(); 
+            $scope.firstDate.setDate($scope.firstDate.getDate() - 10);
+            $scope.ratingMin = 3;
+            $scope.ratingMax = 4;
+            $scope.depthVal = 1;
+
+            $scope.filterRequest();
+
+      }
+
+
+      /*
        *  Composes FilterURL to send to server & modifies graph
        *  d, g, r, u, t , tg
        * 
        */
-      $scope.filterRequest = function(data){
+      $scope.filterRequest = function(){
 
           var urlString = '/api/contributions?'; 
           
@@ -45,13 +69,11 @@ angular.module('studionet')
 
           + "&d=" + $scope.depthVal;   // depth
 
-          console.log(urlString);
 
           $http.get(urlString).success(function(data){
               
-              console.log(urlString);
-              console.log("results", data);
               refreshGraph(data);
+              $scope.filterActive = true;
 
           });
 

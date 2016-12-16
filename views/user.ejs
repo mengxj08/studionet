@@ -37,6 +37,8 @@
 
         <div class="app-container">
 
+            <!--Top Nav Bar -->
+            <ng-include src="'templates/top-navbar.html'" ng-controller='NavCtrl'></ng-include>
 
             <!-- Main Graph View OR User View -->
             <ui-view></ui-view>
@@ -90,7 +92,8 @@
   <!-- Controllers and Services -->
   <script type="text/javascript" src="/user/javascripts/services.js"></script>
 
-  <script type="text/javascript" src="/user/javascripts/controllers/HomeCtrl.js"></script>
+  <script type="text/javascript" src="/user/javascripts/controllers/NavCtrl.js"></script>
+  <script type="text/javascript" src="/user/javascripts/controllers/ContributionsCtrl.js"></script>
   <script type="text/javascript" src="/user/javascripts/controllers/DetailsModalCtrl.js"></script>
   <script type="text/javascript" src="/user/javascripts/controllers/FilterCtrl.js"></script> 
 
