@@ -79,3 +79,7 @@ div.tree-control .tree-view li{
 .panel{
 	z-index: 20;
 }
+
+.filter-panel{
+	background-color: #C1BCBC;
+}

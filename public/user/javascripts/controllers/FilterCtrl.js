@@ -122,6 +122,7 @@ angular.module('studionet')
               $('.filter-heading').not(this).siblings().hide();
 
               $(this).siblings().toggle();
+
         });
 
         refresh();

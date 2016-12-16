@@ -123,8 +123,6 @@ angular.module('studionet')
 						    layout = cy.elements().makeLayout({ 'name': 'cola'}); 
 						    layout.start();
 
-						    viewGroup();
-
 						}
 
 
