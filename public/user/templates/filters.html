@@ -6,7 +6,7 @@
     <div id='filters' class='row'>              
          <!-- By Author Filter -->
          <div class="filter-panel panel badge-success col-sm-2">
-              <div class="filter-heading" uib-tooltip='Filter contrbutions by authors' tooltip-placement='bottom'> 
+              <div class="filter-heading"> 
                 <h5>Authors & Groups<span class='filter-element-count'>{{selectedAuthors.length}}</span></h5>
               </div>
               <multiselect-searchtree data-input-model="authors" multi-select="true"
@@ -16,7 +16,7 @@
 
           <!-- By Tags Filter -->
           <div class="filter-panel panel badge-success col-sm-2" >
-              <div class="filter-heading" uib-tooltip='Filter contrbutions by tags' tooltip-placement='bottom'>  
+              <div class="filter-heading">
                 <h5>Tags <span class='filter-element-count'>{{selectedTags.length}}</span></h5>
                 
               </div>
@@ -27,7 +27,7 @@
           
           <!-- By Date Range -->
           <div class='filter-panel panel col-sm-2'>
-              <div class="filter-heading" uib-tooltip='Filter contrbutions by date range' tooltip-placement='bottom'>  
+              <div class="filter-heading">  
                 <h5>Date Range <span class='filter-element-count'>{{ (lastDate - firstDate) / 86400000 }}</span></h5>  
               </div>
               <div style="display:none">
@@ -40,7 +40,7 @@
 
           <!-- By Rating -->
           <div class='filter-panel panel col-sm-2'>
-              <div class="filter-heading" uib-tooltip='Filter contrbutions by rating' tooltip-placement='bottom'>  
+              <div class="filter-heading">
                 <h5>Rating <span class='filter-element-count'>{{ratingMin}} - {{ratingMax}}</span></h5>  
               </div>
               <angular-ranger min="0" max="5" step="1" min-value=ratingMin max-value=ratingMax style="display:none"></angular-ranger>
@@ -48,7 +48,7 @@
 
           <!-- By Depth -->
           <div class='filter-panel panel col-sm-2'>
-              <div class="filter-heading" uib-tooltip='Specify number of child nodes to fetch for matched contributions' tooltip-placement='bottom'>  
+              <div class="filter-heading">  
                 <h5>Depth <span class='filter-element-count'>{{depthVal}}</span></h5>  
               </div>
               <angular-ranger min="0" max="3" value=depthVal style="display:none"></angular-ranger>

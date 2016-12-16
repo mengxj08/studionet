@@ -5,7 +5,7 @@ angular.module('studionet')
  */
 .controller('FilterCtrl', ['$scope', '$http', 'users', 'tags', 'groups',   function($scope, $http, users, tags, groups){ 
 
-      $scope.filterActive = false;
+      $scope.filterStatus = false;
       $scope.filterChanged = false;
 
 
@@ -46,6 +46,8 @@ angular.module('studionet')
 
             // reset defaults
             resetDefaults();
+
+            $scope.filterActive = false; 
 
             refreshGraph();
 
@@ -112,8 +114,15 @@ angular.module('studionet')
        */
       $scope.init = function(){
 
+        // look for better solutions to this
+        
         $(".filter-heading").click(function(){
-              $(this).siblings().toggle();
+
+              // close other filter headings
+              $('.filter-heading').siblings().hide();
+
+
+              $(this).siblings().show();
         });
 
         refresh();
