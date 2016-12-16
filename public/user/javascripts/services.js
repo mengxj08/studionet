@@ -26,7 +26,7 @@ angular.module('studionet')
 	};
 
 	o.getUser = function(){
-		return $http.get('/api/profile/user').success(function(data){
+		return $http.get('/api/profile/').success(function(data){
 			angular.copy(data, o.user);
 		});
 	};

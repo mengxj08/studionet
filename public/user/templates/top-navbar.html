@@ -50,20 +50,17 @@
             <div class="profile-info">
               <h4 class="username">Saved Filters</h4>
             </div>
-            <ul class="action">
+            <ul class="action" ng-show="{{ filterNames.length == 0 || filterNames == undefined }}">
               <li>
-                <a>
-                  Filter 1
+                <a href="#">
+                  No filters found
                 </a>
               </li>
+            </ul>
+            <ul class="action" ng-repeat='filter in filterNames' ng-hide="{{ filterNames.length == 0 || filterNames == undefined }}">
               <li>
-                <a>
-                  Filter 2
-                </a>
-              </li>
-              <li>
-                <a>
-                  Filter 3
+                <a href="{{ filters_ref[$index] }}">
+                  {{ filter }} <small class='pull-right'>{{ filters[$index] }}</small>
                 </a>
               </li>
             </ul>

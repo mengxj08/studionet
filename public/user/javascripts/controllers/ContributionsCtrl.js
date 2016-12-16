@@ -52,8 +52,6 @@ angular.module('studionet')
    *
    * 
    */
-
-
   $scope.showDetailsModal = function(data, clickedContributionId) {
 
       ModalService.showModal({
