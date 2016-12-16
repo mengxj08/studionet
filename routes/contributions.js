@@ -216,7 +216,7 @@ router.route('/')
 			'CREATE (c:contribution {createdBy: {createdByParam}, title: {contributionTitleParam},'
 			+ ' body: {contributionBodyParam}, ref: {contributionRefParam}, lastUpdated:{lastUpdatedParam},'
 			+ ' dateCreated: {dateCreatedParam}, edited: {editedParam}, contentType: {contentTypeParam},'
-			+ ' rating: {ratingParam}, rateCount: {rateCountParam}, tags: {tagsParam}, views: {viewsParam}}) WITH c',
+			+ ' rating: {ratingParam}, totalRating: {totalRatingParam}, rateCount: {rateCountParam}, tags: {tagsParam}, views: {viewsParam}}) WITH c',
 			'MATCH (u:user) WHERE id(u)={createdByParam}',
 			'CREATE (u)-[r:CREATED]->(c) WITH c',
 			'MATCH (c1:contribution) where id(c1)={contributionRefParam}',
@@ -240,6 +240,7 @@ router.route('/')
 			editedParam: false,
 			contentTypeParam: req.body.contentType,
 			ratingParam: 0,
+			totalRatingParam: 0,
 			rateCountParam: 0,
 			viewsParam: 0
 		};
@@ -539,8 +540,8 @@ router.route('/:contributionId/rate')
 			'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
 			'MATCH (u:user) WHERE ID(u)={userIdParam}',
 			'MERGE p=(u)-[r:RATED]->(c)',
-			'ON CREATE SET c.rating = (c.rating*c.rateCount + {ratingParam})/toFloat(c.rateCount+1), c.rateCount = c.rateCount+1',
-			'ON MATCH SET c.rating = (c.rating*c.rateCount - r.rating + {ratingParam})/toFloat(c.rateCount)',
+			'ON CREATE SET c.rating = (c.totalRating + {ratingParam})/toFloat(c.rateCount+1), c.rateCount = c.rateCount+1, c.totalRating = c.totalRating + {ratingParam}',
+			'ON MATCH SET c.rating = (c.totalRating - r.rating + {ratingParam})/toFloat(c.rateCount), c.totalRating = c.totalRating - r.rating + {ratingParam}',
 			'SET r.rating={ratingParam}, r.lastRated={lastRatedParam}',
 			'RETURN p'
 		].join('\n');

@@ -10,10 +10,9 @@ var logger = new winston.Logger({
       filename: path.join(__dirname, "../", "logs/log_file.log"),
       datePattern: 'yyyy-MM-dd.',
       handleExceptions: true,
-      json: true,
+      json: false,
       prepend: true,
-      colorize: false,
-      level: 'debug' //'process.env.ENV === 'development' ? 'debug' : 'info''
+      level: 'info' //'process.env.ENV === 'development' ? 'debug' : 'info''
     }),
     new winston.transports.Console({
       level: 'debug',

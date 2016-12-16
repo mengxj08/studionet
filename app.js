@@ -6,6 +6,8 @@ var logger = require('./config/logger');
 var cookieParser = require('cookie-parser');
 var passport = require('passport');
 var bodyParser = require('body-parser');
+var morgan = require('morgan');
+var url = require('url'); // for parsing url to reject image logs, remove if not needed
 
 // require route files
 var profile = require('./routes/profile');
@@ -24,8 +26,23 @@ var supernode = require('./routes/supernode');
 var logs = require('./routes/logs');
 
 var app = express();
-logger.debug("Overriding 'Express' logger");
-app.use(require('morgan')('combined', { "stream": logger.stream }));
+
+// Logger configurations
+morgan.token('userDetails', function(req, res){
+  return req.isAuthenticated() ? "[" + req.user.nusOpenId + ": " + req.user.name + "]" : "[User not signed in]";
+});
+morgan.token('date', function(req, res){
+  return new Date().toString();
+});
+var morganLogFormat = ':remote-addr - :userDetails [:date]\\n":method :url HTTP/:http-version"\\nStatus Code: :status\
+\\nContent-Length: :res[content-length]\\nReferrer: ":referrer"\\n:response-time ms';
+app.use(require('morgan')(morganLogFormat, { 
+  "stream": logger.stream,
+  skip: function(req, res) {
+    var urlSource = url.parse(req.url).pathname.split('/')[1];
+    return ['assets', 'global'].indexOf(urlSource) > -1;  // don't log images, etc.
+  }
+}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

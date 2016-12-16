@@ -96,7 +96,7 @@ router.route('/')
         'CREATE UNIQUE (g)-[r:MEMBER {role: "Admin", joinedOn: ' + params.dateCreatedParam + '}]->(u)',
         'CREATE (t:tag {name: {nameParam}, createdBy: {userIdParam}})',
         'WITH g, t, u',
-        'CREATE UNIQUE (g)-[r1:TAGGED]->(t)',
+        'CREATE UNIQUE (g)-[r1:TAGGED {createdBy: ' + parseInt(req.user.id) + '}]->(t)',
         'CREATE UNIQUE (u)-[:CREATED {createdOn: ' + Date.now() + '}]->(t)'
       ];
 
@@ -191,11 +191,15 @@ router.route('/:groupId')
       'RETURN {count: count(g)+count(t)}'
     ].join('\n');
 
+    var params = {
+      nameParam: req.body.name
+    }
+
     var countPromise = new Promise(function(resolve, reject){
       db.query(countQuery, params, function(error, result){
         if (error){
           console.log('Error looking for the group in database: ', error);
-          res.send('Error looking for group in database');
+          return res.send('Error looking for group in database');
           reject();
         }
         else {
@@ -231,6 +235,7 @@ router.route('/:groupId')
       db.query(query, params, function(error, result){
         if (error) {
           console.log('Error updating group with id ' + req.params.groupId + ' : ', error);
+          res.send(error);
         }
         else {
           // return the first item because query always returns an array but REST API expects a single object
