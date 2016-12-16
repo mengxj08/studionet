@@ -1,31 +1,35 @@
 /*
- * Layouts - Experimental
+ * Graph CSS
  */
-* {
-  margin: 0px;
-  padding: 0px; }
 
-.layouts {
-  border: 1px solid black;
+.graph-container{
+  position: relative;
+  height: 100% !important;
+  margin-top: 50px;
+  z-index: 1;
+}
+
+#cy {
+
+  position: relative;
+  margin-top: 50px;
+  height: calc( 100vh - 100px); // remove for topbar & filters
+ 
   width: 100%;
-  height: 40px;
-  padding: 0px 2%;
-  margin-left: 5%;
-  background-color: rbga(0, 0, 0, 0.6);
-  z-index: 2; 
+
+  z-index: 2;
+
 }
 
 
-/* ---- Graph Container ---- */
-.graph-container{
+#user-graph {
 
-  position: absolute;
-  top: 100px;
-  left: 0px;
-  height: calc(100vh - 100px); 
-  width: 100%; 
+  position: relative;
 
-  z-index: 1;
+  width: 100%;
+  height: calc( 100vh - 50px); // remove for topbar & filters
+ 
+  z-index: 2;
 
 }
 
@@ -33,14 +37,13 @@
 .graph-controls{
 
   position: absolute;
+  bottom: 50px;
+  right: 50px;
 
-  bottom: 0px;
-
-  width: 85px; 
+  width: 30px; 
   height: auto;
 
   margin-left: calc(100vw - 75px);
-  padding: 0px 0 30px 0;
 
   z-index: 3;
 
@@ -61,61 +64,14 @@
   background: #4A95EF;
 
   box-shadow: 2px 2px 2px grey;
-  margin: 10px 20px 10px 10px;
+  margin: 10px 0px;
 
-  z-index: 4;
 
   //border: 1px solid black;
 }
 
 
-.graph-nav-control:hover{
-  width: 48px;
-  height: 48px;
-}
-
-
-
-
-
-/* 
-#filter:hover + .layouts{
-  display: block;
-  animation-name: dropdown;
-  animation-duration: 1s;
-} */
-@keyframes dropdown {
-  0% {
-    margin-top: -30px; }
-  25% {
-    margin-top: -20px; }
-  50% {
-    margin-top: -10px; }
-  100% {
-    margin-top: 0px; } }
-/* .layouts:hover{
-  -webkit-transform: translate(0,40px);
-     -moz-transform: translate(0,40px);
-      -ms-transform: translate(0,40px);
-       -o-transform: translate(0,40px);
-          transform: translate(0,40px);
-  display: block;
-} */
-button {
-  color: #000000; }
-
-input {
-  color: #000000;
-  margin: 0px; }
-
-#cy {
-  position: absolute;
-  z-index: 2;
-  width: 100%;
-  height: calc(100vh - 100px);
-  left: 0; 
-  //border: 1px solid black
-}
+/*
 
 #content-block-hover {
   display: none;
@@ -201,3 +157,37 @@ p.hover-content img{
   height: 150px !important; 
   display: block;
 }
+
+
+
+.info-popover{
+
+  width: 200px;
+
+  font-size: 14px; 
+  line-height: 20px;
+
+  border: 1px solid #706D6D;
+
+  z-index: 20 !important;
+}
+
+.info-popover:hover{
+  background-color: red;
+}
+
+.info-popover .title{
+  height: 35px; 
+  line-height: 35px;
+  background-color: #9CCBDA;
+}
+
+.title, .description{
+
+  padding: 0px 10px;
+}
+
+.description{
+  border: 1px solid #222;
+}
+*/

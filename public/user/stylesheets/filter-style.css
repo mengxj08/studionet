@@ -1,17 +1,21 @@
 /*
  *	Graph Filters 
  */
- #searchTextResults{
- 	margin-left:-50px;
+
+ #filters{
+ 	position: fixed;
+ 	top: 50px;
+ 	width: calc(100% - 100px);
+
+ 	z-index: 4;
+ 	margin: 0px 50px !important;
  }
 
- .subgroups{
- 	margin-left: 20%;
- }
+.filter-panel{
+	background-color: #C1BCBC;
+	margin-bottom: 0px !important;
+}
 
-
-
- /*** Other Css ***/
 
 .filter-heading{
 	cursor: pointer;
@@ -35,7 +39,7 @@ div.tree-control .tree-view ul .tree-checkbox{
 }
 
 div.tree-control .tree-view li{
-	margin-left: 25px !important;
+	margin-left: 15px !important;
 	min-width: 350px;
 }
 
@@ -76,10 +80,11 @@ div.tree-control .tree-view li{
 	text-align: center;
 }
 
-.panel{
-	z-index: 20;
+
+#searchTextResults{
+	margin-left:-50px;
 }
 
-.filter-panel{
-	background-color: #C1BCBC;
+.subgroups{
+	margin-left: 20%;
 }

@@ -13,7 +13,16 @@ angular.module('studionet')
 	$scope.groups = groups.groups;
 	$scope.users = users.usersById();
 
-	$scope.activeGroup; 
+	$scope.node; 
+	$scope.showPopup = true;
+
+
+	/*
+     *		Trigger Modal Functions
+	 */
+	$scope.createGroup = function(){ $("#createGroupModal").modal(); }
+	$scope.viewGroup = function(){	$("#viewGroupModal").modal();	};
+
 
 	/*
 	 *  Helper Functions for the graph
@@ -81,6 +90,9 @@ angular.module('studionet')
 
 	}
 
+	/*
+	 *   If user, display details for user
+	 */
 	var onTap = function(evt){
 		
 		if(evt.cyTarget.data().type == "USER"){
@@ -135,6 +147,13 @@ angular.module('studionet')
 	}
 
 	var onHover = function(evt){
+
+	    if(evt.cyTarget.data().supernode)
+	    	return;
+
+		// update the service
+		group.getGroupInfo(evt.cyTarget.data().id);
+
 	    var node = evt.cyTarget;
 	    var nodeData = node.data();
 
@@ -159,9 +178,8 @@ angular.module('studionet')
 	         },
 	         
 	         style: {
-	         	name: 'dark'
-		        //classes: 'myCustomClass',
-		        //width: 200 // Overrides width set by CSS (but no max-width!)
+		        classes: 'qTipClass',
+		        width: 200 // Overrides width set by CSS (but no max-width!)
 		        //height: 100 // Overrides height set by CSS (but no max-height!)
 		     }
 	    }
@@ -175,9 +193,13 @@ angular.module('studionet')
 
 	    	qtipFormat.style.width = '80px';
 
-	    } 
+	    }
+	    else{
+			qtipFormat.content.text +="<p>" + nodeData.description.substr(0,100) + "</p>" + 
+	         		  "<button class='btn btn-link btn-sm pull-right' data-target='#viewGroupModal'>More</button>"
+	    }
 
-	    node.qtip(qtipFormat, evt);		
+	   // node.qtip(qtipFormat, evt);		
 	}
 
 	var drawGraph = function(){
@@ -202,21 +224,9 @@ angular.module('studionet')
 
 	};
 
-	
-	/*
-     *		Trigger Modal Functions
-	 */
-	$scope.createGroup = function(){ $("#createGroupModal").modal(); }
-
-	/*** Viewing ***/
-	// fix - global variables are bad
-	viewGroup = function(){	$("#viewGroupModal").modal();	};
-
-
 	drawGraph();
 
 	$scope.refreshGraph = drawGraph;
-	$scope.viewGroup = viewGroup;
 
 
 }])
@@ -406,7 +416,6 @@ angular.module('studionet')
 		drawGraph();
 
 	}
-
 
 
 

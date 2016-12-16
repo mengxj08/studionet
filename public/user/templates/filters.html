@@ -2,12 +2,12 @@
 
 <!-- Side Nav with Filters -->
 
-<div ng-controller="FilterCtrl" ng-init='init()' class="container">
+<div ng-controller="FilterCtrl" ng-init='init()' class="container-fluid">
     <div id='filters' class='row'>              
          <!-- By Author Filter -->
          <div class="filter-panel panel badge-success col-sm-2">
               <div class="filter-heading"> 
-                <h5>Authors & Groups<span class='filter-element-count'>{{selectedAuthors.length}}</span></h5>
+                <h5>Authors & Groups<span class='filter-element-count'>{{ checkFilterActive("authors") }}</span></h5>
               </div>
               <multiselect-searchtree data-input-model="authors" multi-select="true"
                             data-output-model="selectedAuthors" data-callback="CustomCallback(item, selectedItems)"
@@ -17,7 +17,7 @@
           <!-- By Tags Filter -->
           <div class="filter-panel panel badge-success col-sm-2" >
               <div class="filter-heading">
-                <h5>Tags <span class='filter-element-count'>{{selectedTags.length}}</span></h5>
+                <h5>Tags <span class='filter-element-count'>{{ checkFilterActive("tags") }}</span></h5>
                 
               </div>
               <multiselect-searchtree data-input-model="tags" multi-select="true"
@@ -28,7 +28,7 @@
           <!-- By Date Range -->
           <div class='filter-panel panel col-sm-2'>
               <div class="filter-heading">  
-                <h5>Date Range <span class='filter-element-count'>{{ (lastDate - firstDate) / 86400000 }}</span></h5>  
+                <h5>Date Range <span class='filter-element-count'>{{ checkFilterActive("date") }}</span></h5>  
               </div>
               <div style="display:none">
                 From: <input type="date" name="firstDate" ng-model='firstDate'>
@@ -41,7 +41,7 @@
           <!-- By Rating -->
           <div class='filter-panel panel col-sm-2'>
               <div class="filter-heading">
-                <h5>Rating <span class='filter-element-count'>{{ratingMin}} - {{ratingMax}}</span></h5>  
+                <h5>Rating <span class='filter-element-count'>{{ checkFilterActive("rating") }}</span></h5>  
               </div>
               <angular-ranger min="0" max="5" step="1" min-value=ratingMin max-value=ratingMax style="display:none"></angular-ranger>
           </div>
@@ -49,7 +49,7 @@
           <!-- By Depth -->
           <div class='filter-panel panel col-sm-2'>
               <div class="filter-heading">  
-                <h5>Depth <span class='filter-element-count'>{{depthVal}}</span></h5>  
+                <h5>Depth <span class='filter-element-count'>{{ checkFilterActive("depth") }} </span></h5>  
               </div>
               <angular-ranger min="0" max="3" value=depthVal style="display:none"></angular-ranger>
           </div>

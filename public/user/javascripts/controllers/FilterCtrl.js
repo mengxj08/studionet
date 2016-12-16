@@ -5,6 +5,15 @@ angular.module('studionet')
  */
 .controller('FilterCtrl', ['$scope', '$http', 'users', 'tags', 'groups',   function($scope, $http, users, tags, groups){ 
 
+     
+      // Default Constants
+      var default_selectedAuthors = [], default_selectedTags = [];
+      var default_firstDate = new Date();
+      var default_lastDate = new Date(); default_firstDate.setDate(default_firstDate.getDate() - 365);
+      var default_ratingMin = 0, default_ratingMax = 5;
+      var default_depthVal = 0;
+
+
       $scope.filterStatus = false;
       $scope.filterChanged = false;
 
@@ -13,34 +22,33 @@ angular.module('studionet')
       $scope.tags = [];
       $scope.authors = [];
       
-      // Items selected in filters
-      $scope.selectedAuthors = [];
-      $scope.selectedTags = [];
-      $scope.firstDate = new Date();
-      $scope.lastDate = new Date(); 
-      $scope.firstDate.setDate($scope.firstDate.getDate() - 365);
-      $scope.ratingMin = 0;
-      $scope.ratingMax = 5;
-      $scope.depthVal = 0;
+      // Filter Selections
+      $scope.selectedAuthors, $scope.selectedTags, 
+      $scope.firstDate, $scope.lastDate, 
+      $scope.ratingMin, $scope.ratingMax;
+      $scope.depthVal;
 
-
+     
       /*
        *
        */
       var resetDefaults = function(){
-          $scope.selectedAuthors = [];
-          $scope.selectedTags = [];
-          $scope.firstDate = new Date();
-          $scope.lastDate = new Date(); 
-          $scope.firstDate.setDate($scope.firstDate.getDate() - 365);
-          $scope.ratingMin = 0;
-          $scope.ratingMax = 5;
-          $scope.depthVal = 0;
+          
+          $scope.selectedAuthors = default_selectedAuthors;
+          $scope.selectedTags = default_selectedTags;
+          $scope.firstDate = default_firstDate;
+          $scope.lastDate = default_lastDate;
+          $scope.ratingMin = default_ratingMin;
+          $scope.ratingMax = default_ratingMax;
+          $scope.depthVal = default_depthVal;
 
           // clear actual filters
           $scope.tags.map( function(tag) { tag.selected = false; return tag; });
           $scope.authors.map( function(author) { author.selected = false; return author; });
       };
+
+      resetDefaults();
+
 
       $scope.clearFilter = function(){
 
@@ -52,6 +60,42 @@ angular.module('studionet')
             refreshGraph();
 
       }
+
+      /*
+       * Check if filter is active and send the required output
+       */  
+      $scope.checkFilterActive = function( filtername ){
+          //
+          //    Fix later
+          //
+          switch (filtername) {
+/*              case "authors":
+                    if(!($scope.selectedAuthors.equals(default_selectedAuthors)))
+                      return $scope.selectedAuthors.length;
+                    break; 
+              case "tags":
+                    if($scope.selectedTags === default_selectedTags)
+                      return $scope.selectedTags.length; 
+                    break;
+              case "date":
+                    if ($scope.firstDate === default_firstDate && $scope.lastDate === default_lastDate)
+                      return  (lastDate - firstDate) / 86400000 ; 
+                    break;
+              case "rating":
+                    if($scope.ratingMin == default_ratingMin && $scope.ratingMax == default_ratingMax)
+                      return  $scope.ratingMin + "-" + $scope.ratingMax; 
+                    break;
+              case "depth":
+                    if($scope.depthVal === default_depthVal)
+                      return $scope.depthVal;  
+                    break;*/
+              default:     
+                    return "-";
+          }
+
+          return "-";
+
+      };
 
 
       /*
