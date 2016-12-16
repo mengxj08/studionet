@@ -35,7 +35,7 @@
 
 - User <- Group   [:MEMBER {role: "Admin"/"User", joinedOn:'Date'}]
 - Group -> Group [:SUBGROUP]
-- Group -> Tag [:TAG]
+- Group -> Tag [:TAGGED {createdBy: userid}]
 
 #### Tag Properties
 
@@ -45,7 +45,7 @@
 #### Tag Relationships
 
 - User -> Tag [:CREATED {createdOn : "Date"}]
-- Group -> Tag [:TAG]
+- Group -> Tag [:TAGGED {createdBy: userId}]
 - Contribution -> Tag [:TAGGED {createdBy: user-id}]
 
 
@@ -60,7 +60,8 @@
 - dateCreated
 - edited
 - contentType
-- rating
+- rating (final rating from 0 - 5)
+- totalRating (sum of all ratings)
 - rateCount
 - views
 

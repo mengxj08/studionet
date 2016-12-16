@@ -106,11 +106,12 @@ module.exports = function(passport){
 
         db.query(query, params, function(err, res){
           // error with query
-          if (err)
+          if (err) {
             return done(err);
+          }
 
           // no result
-          if (!res){
+          if (!res) {
             return done(null, false);
           }
 
@@ -135,11 +136,12 @@ module.exports = function(passport){
 
         db.query(query, params, function(err, res){
           // error with query
-          if (err)
+          if (err) {
             return done(err);
+          }
 
           // no result
-          if (!res){
+          if (!res) {
             return done(null, false);
           }
 

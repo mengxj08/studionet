@@ -32,24 +32,24 @@ module.exports.ensureSuperAdmin = function(req, res, next){
 module.exports.isGroupAdmin = function(req, res, next){
 
   var query = [
-    'MATCH (m:module)-[r:MEMBER {role: "Admin"}]->(u:user)',
-    'WHERE id(u)={userIdParam} AND id(m)={groupIdParam}',
+    'MATCH (g:group)-[r:MEMBER {role: "Admin"}]->(u:user)',
+    'WHERE id(u)={userIdParam} AND id(g)={groupIdParam}',
     'RETURN sign(count(r)) as mod'
   ].join('\n');
 
   var params = {
-    userIdParam: req.user.id,
-    groupIdParam: req.params.groupId
+    userIdParam: parseInt(req.user.id),
+    groupIdParam: parseInt(req.params.groupId)
   };
 
-  db.query(query, function(error, result){
-
-    var isModerator = result[0].mod === 1;
+  db.query(query, params, function(error, result){
 
     if (error){
-      console.log('Error checking if user ' + req.user.id +  'is a moderator of the module ' + req.params.groupId);
+      console.log('Error checking if user ' + req.user.id +  ' is a moderator of the module ' + req.params.groupId);
       return res.redirect('/denied');
     }
+
+    var isModerator = parseInt(result[0].mod) === 1;
 
     if (!isModerator){
       console.log('User ' + req.user.id + ' is not a moderator of the module ' + req.params.groupId);
