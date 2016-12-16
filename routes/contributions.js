@@ -480,7 +480,7 @@ router.route('/:contributionId')
 				'WITH t',
 				'OPTIONAL MATCH (t)<-[r1:TAGGED]-()',
 				'WITH t, CASE WHEN count(r1)>0 THEN [] ELSE [1] END as array',
-				'FOREACH (x in array | DELETE t)'
+				'FOREACH (x in array | DETACH DELETE t)'
 			].join('\n');
 
 			db.query(query, params, function(error, result){

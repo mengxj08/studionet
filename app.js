@@ -29,16 +29,16 @@ var app = express();
 
 // Logger configurations
 morgan.token('userDetails', function(req, res){
-  return req.isAuthenticated() ? "[" + req.user.nusOpenId + ": " + req.user.name + "]" : "[User not signed in]";
+  return req.isAuthenticated() ? req.user.nusOpenId + ": " + req.user.name : "User not signed in";
 });
 morgan.token('date', function(req, res){
   return new Date().toString();
 });
-var morganLogFormat = ':remote-addr - :userDetails [:date]\\n":method :url HTTP/:http-version"\\nStatus Code: :status\
-\\nContent-Length: :res[content-length]\\nReferrer: ":referrer"\\n:response-time ms';
+var morganLogFormat = '[:remote-addr][:userDetails][:date] ":method :url HTTP/:http-version"\\n\
+Status Code: :status, Content-Length: :res[content-length], Referrer: ":referrer", :response-time ms';
 app.use(require('morgan')(morganLogFormat, { 
   "stream": logger.stream,
-  skip: function(req, res) {
+  skip: function(req, res) { // for parsing url to reject image logs, remove if not needed
     var urlSource = url.parse(req.url).pathname.split('/')[1];
     return ['assets', 'global'].indexOf(urlSource) > -1;  // don't log images, etc.
   }

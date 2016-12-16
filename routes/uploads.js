@@ -146,9 +146,7 @@ router.post('/models', auth.ensureAuthenticated, multer({
 // GET user's avatar by nusOpenId param
 router.get('/:nusOpenId/avatar', auth.ensureAuthenticated, function(req, res){
 	var avatar = glob.sync('./uploads/' + req.params.nusOpenId + '/avatar/'  + 'avatar.*');
-	// sendFile does not like /../  ...
-	res.sendFile(path.resolve(__dirname + '/../') +'/' + avatar[0]);
-
+	res.sendFile(path.resolve(__dirname + '/../') +'/' + avatar[0]);	// sendFile does not like /../  ...
 });
 
 // GET: /uploads/:nusOpenId/models
