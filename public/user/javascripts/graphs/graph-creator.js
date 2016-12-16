@@ -82,7 +82,7 @@ var graph_style = {
               'curve-style': 'bezier',
               'width': 'mapData(weight, 0.1, 3, 1, 7)', 
               'target-arrow-shape': 'triangle',
-              'line-color': 'data(faveColor)',
+              'line-color': '#333',
               'source-arrow-color': 'data(faveColor)',
               //'content' : 'data(label)',
               'font-size':'10%',
@@ -108,11 +108,11 @@ var graph_style = {
               'line-color': 'green',
               'target-arrow-color':'green',
               'background-color': 'blue',
-              
             })
             .style({
               'content': 'data(label)',
-              'color': '#222'
+              'color': '#222',
+              'line-color': 'data(faveColor)'
             })
 
           .selector('.searched')
@@ -455,7 +455,7 @@ var resizeNodes = function( graph ){
 
   for(var i=0; i < graph.nodes().length; i++){
 
-    if( cy.nodes().id()[i] != "0"){
+    if( cy.nodes().id()[i] != "10"){
       var conn = cy.nodes()[i].incomers().length + cy.nodes()[i].outgoers().length
       cy.nodes()[i].css({ 
             'width': 10+conn*3, 

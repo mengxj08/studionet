@@ -5,9 +5,13 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 	// user 'routes'
 	$stateProvider
 		.state('home', {
-			url: '/',
-			templateUrl: '/user/templates/home.html',
-			controller: 'HomeCtrl',
+			abstract: true,
+			url: '/'
+		})
+		.state('contributions', {
+			url: '/contributions',
+			templateUrl: '/user/templates/contributions.html',
+			controller: 'ContributionsCtrl',
 			resolve: {
 				userProfile: ['profile', function(profile){
 					return profile.getUser() && profile.getGroups();
@@ -17,24 +21,9 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 				}]
 			}
 		})
-		.state('user', {
-			abstract: true,
-			url: '/me',
-			templateUrl: '/user/templates/user.html',
-			controller: 'UserCtrl',
-			resolve: {
-				userProfile: ['profile', function(profile){
-					return profile.getUser() && profile.getGroups();
-				}],
-				userModels: ['modelsFactory', 'userProfile', 'profile', function(modelsFactory, userProfile, profile){
-					return modelsFactory.getUserModels(profile.user.nusOpenId);
-				}]
-
-			}
-		})
-		.state('user.details', {
-			url: '/details',
-			templateUrl: '/user/templates/user.details.html',
+		.state('profile', {
+			url: '/profile',
+			templateUrl: '/user/templates/profile.html',
 			controller: 'ProfileCtrl',
 			resolve: {
 				userProfile: ['profile', function(profile){
@@ -42,9 +31,9 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 				}]
 			}
 		})
-		.state('user.groups', {
+		.state('groups', {
 			url: '/groups',
-			templateUrl: '/user/templates/user.groups.html',
+			templateUrl: '/user/templates/groups.html',
 			controller: 'GroupsCtrl',
 			resolve: {
 				supernode: ['supernode', function(supernode){
@@ -63,5 +52,5 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 			}
 		})
 
-	$urlRouterProvider.otherwise('/');
+	$urlRouterProvider.otherwise('/contributions');
 }]);

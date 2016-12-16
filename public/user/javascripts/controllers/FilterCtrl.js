@@ -5,19 +5,51 @@ angular.module('studionet')
  */
 .controller('FilterCtrl', ['$scope', '$http', 'users', 'tags', 'groups',   function($scope, $http, users, tags, groups){ 
 
+      $scope.filterActive = false;
+      $scope.filterChanged = false;
+
+
       // Lists populating filters
       $scope.tags = [];
       $scope.authors = [];
       
       // Items selected in filters
       $scope.selectedAuthors = [];
-      $scope.selectedTags = [1, 2, 3];
+      $scope.selectedTags = [];
       $scope.firstDate = new Date();
       $scope.lastDate = new Date(); 
-      $scope.firstDate.setDate($scope.firstDate.getDate() - 10);
-      $scope.ratingMin = 3;
-      $scope.ratingMax = 4;
-      $scope.depthVal = 1;
+      $scope.firstDate.setDate($scope.firstDate.getDate() - 365);
+      $scope.ratingMin = 0;
+      $scope.ratingMax = 5;
+      $scope.depthVal = 0;
+
+
+      /*
+       *
+       */
+      var resetDefaults = function(){
+          $scope.selectedAuthors = [];
+          $scope.selectedTags = [];
+          $scope.firstDate = new Date();
+          $scope.lastDate = new Date(); 
+          $scope.firstDate.setDate($scope.firstDate.getDate() - 365);
+          $scope.ratingMin = 0;
+          $scope.ratingMax = 5;
+          $scope.depthVal = 0;
+
+          // clear actual filters
+          $scope.tags.map( function(tag) { tag.selected = false; return tag; });
+          $scope.authors.map( function(author) { author.selected = false; return author; });
+      };
+
+      $scope.clearFilter = function(){
+
+            // reset defaults
+            resetDefaults();
+
+            refreshGraph();
+
+      }
 
 
       /*
@@ -25,7 +57,7 @@ angular.module('studionet')
        *  d, g, r, u, t , tg
        * 
        */
-      $scope.filterRequest = function(data){
+      $scope.filterRequest = function(){
 
           var urlString = '/api/contributions?'; 
           
@@ -45,13 +77,11 @@ angular.module('studionet')
 
           + "&d=" + $scope.depthVal;   // depth
 
-          console.log(urlString);
 
           $http.get(urlString).success(function(data){
               
-              console.log(urlString);
-              console.log("results", data);
               refreshGraph(data);
+              $scope.filterActive = true;
 
           });
 
@@ -92,17 +122,14 @@ angular.module('studionet')
 
       /*
        *  Refresh function that refreshes all lists
-       *  TODO: make these requests a service?
-       *  
        */
       function refresh(){
 
           /*
            * Get list of tags to populate tags filter
            */
-          $http.get('/api/tags/').success(function(tag_data){
-
-              $scope.tags = tag_data.map( function(tag){
+          tags.getAll().then(function(){
+              $scope.tags = tags.tags.map( function(tag){
 
                   // add properties required for tree-view plugin
                   tag.parentId = null;
@@ -115,23 +142,19 @@ angular.module('studionet')
                   return tag;
 
               });
-
-              // set default value for filter - all tags
-              //$scope.selectedTags =  $scope.tags;
-              // console.log($rootScope.selectedTags, "tags");
-
           });
             
           /*
            *  Get groups to populate By Author Filter
            * 
            */
-          $http.get('/api/groups/').success(function(group_data){
+          groups.getAll().then(function(){
 
             /*
              * Groups preprocessing
              */
 
+            var group_data = groups.groups;
             var group_hash = {}; 
 
             // create hash for group_data
@@ -171,32 +194,36 @@ angular.module('studionet')
 
             }) );
               
-          }); 
+          }).then( function(){
+
+                /*
+                 *  Get users to populate By Author filter
+                 */
+                users.getAll().then(function(){
+
+                    var user_data = users.users;
+                    $scope.authors = $scope.authors.concat( user_data.map( function(user){
+
+                        user.parentId = null; 
+                        user.isExpanded = false; 
+                        user.children = [];
+                        user.type = "user";
+                        user.selected = false;
+
+                        // default - select self
+                        if(user.id == $scope.user.id)
+                          user.selected = false; 
+
+                        return user;
+
+                    }) );
+
+                });
+
+          }) 
 
 
-          /*
-           *  Get users to populate By Author filter
-           */
-          $http.get('/api/users/').success(function(user_data){
 
-
-              $scope.authors = $scope.authors.concat( user_data.map( function(user){
-
-                  user.parentId = null; 
-                  user.isExpanded = false; 
-                  user.children = [];
-                  user.type = "user";
-                  user.selected = true;
-
-                  // default - select self
-                  if(user.id == $scope.user.id)
-                    user.selected = false; 
-
-                  return user;
-
-              }) );
-
-          });
 
       }
 
