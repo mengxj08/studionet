@@ -46,6 +46,10 @@ p{
 	font-size: 12px !important;
 }
 
+img{
+	width: 300px;
+}
+
 .container-fluid{
 	//border: 1px solid black;
 	width: 100% !important;
@@ -163,6 +167,33 @@ li.notification{
 	padding: 0px !important;
 }
 
+/*
+ * qTip CSS
+ */
+
+.qtip-titlebar{
+	height: 30px; 
+	line-height: 30px;
+	font-size: 15px; 
+	background-color: #858585 !important; 
+	padding: 0px 10px !important;
+}
+
+.qtip, .qtip-default{
+	background-color: #D6D5D5; 
+	border: 0px;
+	font-size: 12px; 
+	line-height: 16px;
+}
+
+.qtip-btn{
+	padding: 0px !important; 
+}
+
+.qtip-btn:focus{
+	outline: 0 !important;
+}
+
 
 /*
  * Helper CSS
@@ -171,3 +202,4 @@ li.notification{
 	max-height: 400px;
 	overflow: auto;
 }
+

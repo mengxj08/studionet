@@ -282,13 +282,7 @@ var makeGraph = function(dNodes, dEdges){
 
     cy = cytoscape( graph_style );
 
-    // To fix user node at center - sakshi
-    var id = angular.element($('.graph-container')).scope().user.id;
     
-    var winWidth = window.innerWidth/2;
-    var winHeight = window.innerHeight/2;
-
-
 
     /*
      *
@@ -312,48 +306,59 @@ var makeGraph = function(dNodes, dEdges){
       directlyConnected.nodes().addClass('highlighted');
       node.connectedEdges().addClass('highlighted');
 
-      /*
-       * Track mouse-position
-       */
-      var x2, y2;
-      $(document).mousemove(function(event) {
-          x2 = event.pageX;
-          y2= event.pageY;
-          
-      });
-
-    
+   
       var route = "/api/" + data.type + "s/" + data.id;
       $.get( route , function( extra_data ) {
             
-            $('#content-block-hover').css('position','absolute');
-            $('#content-block-hover').css('top', y2);
-            $('#content-block-hover').css('left', x2);
+            if(evt.cyTarget.data().supernode)
+              return;
 
+            var content = "<b>" +  angular.element($('.graph-container')).scope().users[ extra_data.createdBy ].name  + "</b>" +
+                          "<br><em>" + (new Date(extra_data.dateCreated)).toString().substr(0, 10) + "</em>" +
+                          "<br>" + extra_data.body.substr(0,300)
 
-            $('#content-block-hover').html( createHoverBox(data, extra_data) );
+            var qtipFormat = {
+                 content: {
+                  title: extra_data.title,
+                  text: content
+               },
+                 
+                 show: {
+                    evt: evt.type,
+                    solo: true,
+                    ready: true
+                 },
+                 
+                 hide: {
+                    evt: 'mouseout',
+                    delay: 0
+                 },
+                 
+                 position: {
+                  my: 'top left',
+                  at: 'center center'
+                 },
+                 
+                 events: {
+                      //this hide event will remove the qtip element from body and all assiciated events, leaving no dirt behind.
+                      hide: function(event, api) {
+                          api.destroy(true); // Destroy it immediately
+                      }
+                 },
+                 
+                 style: {
+                  classes: 'qTipClass',
+                  width: 300 // Overrides width set by CSS (but no max-width!)
+                  //height: 100 // Overrides height set by CSS (but no max-height!)
+               }
+            }
 
-            $('#content-block-hover').show();
-
+            node.qtip(qtipFormat, evt);   
       });
 
+
     });
 
-
-    /*
-     * Remove hover-box on mouse out
-     */
-    cy.on('mouseout','node', function(evt){
-
-      cy.elements().css({ content: " " });
-      cy.elements().removeClass('highlighted');
-      cy.elements().removeClass('selected');
-
-      if(cy.$('node:selected')){
-        $('#content-block-hover').html("");
-        $('#content-block-hover').hide();    
-      }
-    });
 
     cy.on('tap', 'node', function(evt){
 

@@ -4,7 +4,7 @@ angular.module('studionet')
  *	Controller for Groups
  * 
  */
-.controller('GroupsCtrl', ['$scope', 'profile', 'groups', 'users', 'group', '$http', function($scope, profile, groups, users, group, $http){
+.controller('GroupsCtrl', ['$scope', 'profile', 'groups', 'users', 'group', '$http', 'ModalService', function($scope, profile, groups, users, group, $http, ModalService){
 
 	/*
 	 * Scope Variables
@@ -20,8 +20,38 @@ angular.module('studionet')
 	/*
      *		Trigger Modal Functions
 	 */
-	$scope.createGroup = function(){ $("#createGroupModal").modal(); }
-	$scope.viewGroup = function(){	$("#viewGroupModal").modal();	};
+	$scope.createGroup = function(){ 
+		
+		$("#createGroupModal").modal(); 
+
+	}
+
+	viewGroup = function(group_id){  
+
+
+		angular.element($("#viewGroupModal")).scope().reset();
+
+		group.getGroupInfo(group_id).then( function(){
+
+			$("#viewGroupModal").modal();
+
+		})
+
+	}
+
+	//$scope.viewGroup = function(){	$("#viewGroupModal").modal();	};
+
+	$scope.editGroup = function( group_id ){	
+
+		angular.element($("#editGroupModal")).scope().reset();
+
+		group.getGroupInfo(group_id).then( function(){
+
+			$("#editGroupModal").modal();
+
+		})
+
+	}
 
 
 	/*
@@ -162,10 +192,11 @@ angular.module('studionet')
 	         	title: nodeData.name,
 	         	text: ""
 	    	 },
-	         
+       
 	         show: {
 	            evt: evt.type,
-	            ready: true
+	            ready: true,
+	            solo: true
 	         },
 	         
 	         hide: {
@@ -173,6 +204,7 @@ angular.module('studionet')
 	         },
 	         
 	         position: {
+	         	//container: $('div.graph-container'),
 	         	my: 'top left',
 	         	at: 'center center'
 	         },
@@ -180,7 +212,6 @@ angular.module('studionet')
 	         style: {
 		        classes: 'qTipClass',
 		        width: 200 // Overrides width set by CSS (but no max-width!)
-		        //height: 100 // Overrides height set by CSS (but no max-height!)
 		     }
 	    }
 
@@ -195,20 +226,21 @@ angular.module('studionet')
 
 	    }
 	    else{
-			qtipFormat.content.text +="<p>" + nodeData.description.substr(0,100) + "</p>" + 
-	         		  "<button class='btn btn-link btn-sm pull-right' data-target='#viewGroupModal'>More</button>"
+			qtipFormat.content.text +="<p>" + nodeData.description.substr(0,100)  +
+	         		  "<button class='btn btn-link btn-sm pull-right qtip-btn' onclick='viewGroup(" + nodeData.id +")'>More</button></p>"
 	    }
 
-	   // node.qtip(qtipFormat, evt);		
+	    node.qtip(qtipFormat, evt);		
 	}
 
 	var drawGraph = function(){
 
-		groups.getAll().then( function(){
+		profile.getGroups().then( function(){ 
+
+			groups.getAll().then( function(){
 
 				groups.getGraph().then(function(){
 
-						console.log("drawing graph")
 						// creating the grpah
 						var graph = makeGraph( groups.graph, 'user-graph', createGraphNode);
 						
@@ -220,13 +252,14 @@ angular.module('studionet')
 						$scope.graph = graph;
 			    })
 
+			})
 		})
 
 	};
 
 	drawGraph();
 
-	$scope.refreshGraph = drawGraph;
+	$scope.refreshGraph = drawGraph;  // fetches fresh data from server
 
 
 }])
@@ -240,6 +273,8 @@ angular.module('studionet')
 	$scope.groupCreated = false; 
 	$scope.groupError = false;
 
+	$scope.newGroupId = undefined;
+
 
 	$scope.group = {
 		groupParentId: supernode.group
@@ -251,7 +286,7 @@ angular.module('studionet')
 		
 			// refresh the graph underneath
 			// function present in container scope
-			
+			$scope.newGroupId = data.data.id;
 			$scope.$parent.refreshGraph();
 			showSuccess();
 		
@@ -264,7 +299,7 @@ angular.module('studionet')
 	}
 
 	$scope.editGroup = function(){
-		$("#editModal").modal();
+		$scope.$parent.editGroup( $scope.newGroupId  );
 	}
 
 	var showSuccess = function(){
@@ -286,41 +321,42 @@ angular.module('studionet')
  *	Controller for the edit group modal 
  */
 .controller('EditGroupCtrl', ['$scope', 'groups', 'group', 'supernode', function($scope, groups, group, supernode){
-	
-	/*** Editing Group ***/
-	$scope.saveGroupEdit = function(){
 
-		console.log($scope.activeGroup);
+	$scope.activeGroup = group.group;
+
+	$scope.status = {};
+
+	$scope.saveGroup = function(){
+
+		group.updateGroup($scope.activeGroup).then( function(data){
 		
-		$http({
-		  method  : 'PUT',
-		  url     : '/api/groups/' + $scope.activeGroup.id,
-		  data    : $scope.activeGroup,  // pass in data as strings
-		  headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
-		 })
-		.success(function(data) {
-		    
-		    console.log("data", data);
+			// refresh the graph underneath
+			// function present in container scope
+			$scope.$parent.refreshGraph();
 
-		    if (!data.success) {
+			showSuccess();
+		
+		}, function(error){
 
+			showError();
 
-		      // if not successful, bind errors to error variables
-		      //$scope.errorName = data.errors.name;
-		      //$scope.errorSuperhero = data.errors.superheroAlias;
-		    } else {
-		      // if successful, bind success message to message
-		      //$scope.message = data.message;
-		    }
-
-		  })	
+		});
 
 	}
 
-	$scope.deleteGroup = function(){
-		group.deleteGroup();
+	var showSuccess = function(){
+		$scope.status.value = true;
+		$scope.status.msg = "Group edited." 
 	}
-	
+
+	var showError = function(){
+		$scope.status.value = false;
+		$scope.status.msg = "Error occured while editing group." 
+	}
+
+	$scope.reset = function(){
+		$scope.status = {};
+	}
 
 }])
 
@@ -332,8 +368,6 @@ angular.module('studionet')
 	// check if scope has active group
 	$scope.activeGroup = group.group;
 	$scope.members = group.users;
-
-	console.log(group.group);
 
 	$scope.active = 0; 
 	$scope.error = undefined;
@@ -356,15 +390,35 @@ angular.module('studionet')
 				showError();
 		});
 
-
-
 	}
 
-	var showSuccess = function(){
+	$scope.editGroup = function(){
+		$scope.$parent.editGroup( $scope.activeGroup.id );
+	}
+
+
+
+	$scope.leaveGroup = function(){
+		group.leave().then( function(){
+			showSuccess("Successsfully left the group"); 
+			$scope.$parent.refreshGraph();
+		});
+	}
+
+
+	$scope.joinGroup = function(){
+		group.leave().then( function(){
+			showSuccess("Successsfully joined the group"); 
+			$scope.$parent.refreshGraph();
+		});
+	}
+
+
+	var showSuccess = function(msg){
 
 		$scope.success = true;
 		$scope.error = false;
-		$scope.successMsg = "Group has been deleted."
+		$scope.successMsg = msg || "Group has been deleted."
 		
 	}
 
@@ -374,49 +428,3 @@ angular.module('studionet')
 
 }])
 
-
-/*
- *	Controller for the view group modal 
- */
-.controller('UserListCtrl', ['$scope', 'group', function($scope, groups, group){
-
-	// check if scope has active group
-	$scope.activeGroup = group.group;
-	$scope.members;
-
-	group.getGroupUsers( $scope.activeGroup.id ).then( function(){ $scope.members = group.users; });
-
-	$scope.active = 0; 
-	$scope.error = undefined;
-	$scope.success = undefined; 
-
-
-	$scope.leaveGroup = function(){
-
-		var data = {
-			groupId: $scope.activeGroup.id,
-			userId: $scope.user.id
-		}
-
-		group.removeGroupMember(data);
-		drawGraph();
-	}
-
-
-	$scope.joinGroup = function(){
-
-		var data = {
-			'userId': $scope.user.id,
-			'groupId': $scope.activeGroup.id,
-			'groupRole': 'Member'
-		}
-
-		group.addGroupMember(data);
-
-		drawGraph();
-
-	}
-
-
-
-}])

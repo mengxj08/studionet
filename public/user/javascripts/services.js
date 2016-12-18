@@ -139,7 +139,6 @@ angular.module('studionet')
 		return $http.post('/api/groups', group).then(function(data){
 			
 			console.log("new group created", data);
-			o.groups.push(data);
 
 			return data; 
 		
@@ -198,12 +197,17 @@ angular.module('studionet')
 				
 				data.requestingUserStatus = undefined;
 
+				// fix me - find a better way
+				
 
 				for(var i=0; i < profile.groups.length; i++){
 					if( data.id == profile.groups[i].id ){
 							data.requestingUserStatus = profile.groups[i].role;
 					}
 				}
+
+				if( data.createdBy == profile.user.id )
+					data.requestingUserStatus = "Admin";
 
 				angular.copy(data, o.group);
 
@@ -229,12 +233,25 @@ angular.module('studionet')
 		});
 	};
 
-	o.updateContribution = function(groupDetails){
+/*	o.updateContribution = function(groupDetails){
 		return $http.put('/api/groups/'+groupDetails.groupId, groupDetails).success(function(){
 			$("#successMsg").show();
 			
 		});
-	};
+	};*/
+
+	o.join = function(){
+		return $http.get('/api/groups/' + o.group.id + '/join').success(function(data){
+			
+			console.log("joined group")
+		});
+	}
+
+	o.leave = function(){
+		return $http.get('/api/groups/' + o.group.id + '/leave').success(function(data){
+			console.log("Removed from group")
+		});
+	}
 
 	o.addGroupMember = function(data){
 		
@@ -244,9 +261,27 @@ angular.module('studionet')
 	};
 
 	o.removeGroupMember = function(data){
-		return $http.delete('/api/groups/' + o.group.id + '/users/' + data.userId, {params: data}).success(function(data){
+		return $http.delete('/api/groups/' + o.group.id + '/users/' + data.userId).success(function(data){
 			alert("Removed from group")
 		});		
+	}
+
+	o.updateGroup = function(data){
+
+		return $http({
+			  method  : 'PUT',
+			  url     : '/api/groups/' + data.id,
+			  data    : data,  // pass in data as strings
+			  headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
+			 })
+			.success(function(data) {
+
+				//o.getGroupInfo().then( function(){ o.getGroupUsers() });
+				console.log("Group edited", data);
+
+				return (data);
+			})
+
 	}
 
 	o.deleteGroup = function(){
