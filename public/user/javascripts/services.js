@@ -31,7 +31,9 @@ angular.module('studionet')
 		});
 	};
 
+	// redundant
 	o.getGroups = function(){
+		console.warn("Shouldn't be using this");
 		return $http.get('/api/profile/groups').success(function(data){
 			angular.copy(data, o.groups);
 		});
@@ -110,49 +112,6 @@ angular.module('studionet')
 	return o;
 }])
 
-.factory('groups', ['$http', function($http){
-
-	var o = {
-		groups: [],
-		graph: {}
-	};
-
-	o.getAll = function(){
-		return $http.get('/api/groups').success(function(data){
-			angular.copy(data, o.groups);
-		});
-	};
-
-	o.getGraph = function(user_context){
-
-		return $http.get('/graph/all/groups').success(function(data){
-
-			// replace the nodes with the groups that already hold data about the user status in each group
-			data.nodes = o.groups;
-			
-			// copy data
-			angular.copy(data, o.graph);
-		});
-	};
-
-	o.createNewGroup = function(group){
-		return $http.post('/api/groups', group).then(function(data){
-			
-			console.log("new group created", data);
-
-			return data; 
-		
-		}, function(error){
-
-			throw error;
-		
-		});
-
-	}
-
-	return o;
-}])
-
 .factory('tags', ['$http', function($http){
 
 	var o = {
@@ -184,7 +143,79 @@ angular.module('studionet')
 	return o;
 }])
 
-.factory('group', ['$http', 'profile', function($http, profile){
+.factory('groups', ['$http', 'profile', function($http, profile){
+
+	var o = {
+		groups: [],
+		graph: {}
+	};
+
+	o.getAll = function(){
+		return $http.get('/api/groups').success(function(data){
+			angular.copy(data, o.groups);
+
+		});
+	};
+
+	o.getGraph = function(user_context){
+
+		return $http.get('/graph/all/groups').success(function(data){
+
+			// replace the nodes with the groups that already hold data about the user status in each group
+			data.nodes = o.groups;
+			
+			// copy data
+			angular.copy(data, o.graph);
+		});
+	};
+
+	o.createNewGroup = function(group){
+		return $http.post('/api/groups', group).then(function(response){
+			
+			var data = response.data;
+
+			console.log("new group created", data);
+			
+			// add the group to the user profile
+			profile.groups.push({ id: data.id , name: data.name , role: "Admin" })
+
+			// add group to groups array
+			o.groups.push(data);
+			
+			// correct nodes for graph
+			o.graph.nodes = o.groups;
+
+			// handle links for subgroups
+
+			return data; 
+		
+		}, function(error){
+
+			throw error;
+		
+		});
+
+	}
+
+	o.updateCreate = function( data ){
+		
+		// update groups
+		groups.groups.push(data);
+	}
+
+	o.updateDelete = function( data ){
+		// update groups
+		groups.groups = groups.groups.filter( function(grp){
+			console.log(data, "deleted");
+			return grp.id != data.id;
+		})
+	}
+
+	return o;
+}])
+
+
+.factory('group', ['$http', 'profile', 'groups', 'supernode', 'users', function($http, profile, groups, supernode, users){
 
 	var o = {
 		group: {},
@@ -192,44 +223,49 @@ angular.module('studionet')
 		user_status: undefined
 	};
 
+	var cache = [];
+
 	o.getGroupInfo = function(id){
-		return $http.get('/api/groups/' + id).success(function(data){
-				
-				data.requestingUserStatus = undefined;
-
-				// fix me - find a better way
-				
-
-				for(var i=0; i < profile.groups.length; i++){
-					if( data.id == profile.groups[i].id ){
-							data.requestingUserStatus = profile.groups[i].role;
-					}
+/*
+		return new Promise( function(resolve, reject){
+			for(var i=0; i < groups.groups.length; i++){
+				if( groups.groups[i].id == id ){
+					o.group = groups.groups[i]; 
+					break;
+					resolve();
 				}
+			}
+		}) */
+		return $http.get('/api/groups/' + id).success(function(data){
+					
+					data.requestingUserStatus = undefined;
 
-				if( data.createdBy == profile.user.id )
-					data.requestingUserStatus = "Admin";
+					// fix me - find a better way
+					
 
-				angular.copy(data, o.group);
+					for(var i=0; i < profile.groups.length; i++){
+						if( data.id == profile.groups[i].id ){
+								data.requestingUserStatus = profile.groups[i].role;
+						}
+					}
 
-		});
+					angular.copy(data, o.group);
+
+					cache[id] = data;
+
+
+
+		});		
+
+
 	};
 
-	o.getMemberStatus = function(user_id){
-		
-		for(var i=0; i < o.users.length; i++){
-			if(user_id == o.users[i]){
-				o.member_status = o.users[i].role; 
-			}
-			console.log(o.users[i]);
-		}
-
-		return "undefined"; 
-
-	}
-
 	o.getGroupUsers = function(id){
+		console.log("getting users");
 		return $http.get('/api/groups/' + id + '/users').success(function(data){
 			angular.copy(data, o.users);
+
+			//o.getGroupPotentials(id);
 		});
 	};
 
@@ -240,16 +276,46 @@ angular.module('studionet')
 		});
 	};*/
 
-	o.join = function(){
+	o.joinGroup = function(){
 		return $http.get('/api/groups/' + o.group.id + '/join').success(function(data){
 			
-			console.log("joined group")
+			// push the group - id, name, role
+			profile.groups.push( {id: o.group.id, name: o.group.name, role: "Member"});
+
+			// fix status in groups & graph
+			groups.groups = groups.groups.map(function(group){
+				if(group.id == o.group.id){
+					group.requestingUserStatus = "Member";
+				}
+
+				return group;
+			})
+			groups.graph.nodes = group.groups;
+			
+			//
+			console.log("joined group", o.group)
 		});
 	}
 
-	o.leave = function(){
+	o.leaveGroup = function(){
 		return $http.get('/api/groups/' + o.group.id + '/leave').success(function(data){
-			console.log("Removed from group")
+			
+			// remove the group from groups id
+			profile.groups = profile.groups.filter( function(obj){ return obj.id!= data.id } );
+
+			// fix status in groups & graph
+			groups.groups = groups.groups.map(function(group){
+				if(group.id == data.id){
+					group.requestingUserStatus = undefined;
+				}
+
+				return group;
+			})
+			groups.graph.nodes = group.groups;
+
+			// 
+			console.log("Removed from group", data)
+
 		});
 	}
 
@@ -285,8 +351,10 @@ angular.module('studionet')
 	}
 
 	o.deleteGroup = function(){
+
 		return $http.delete('/api/groups/' + o.group.id ).success(function(data){
-		
+				
+				//groups.updateDelete( data );
 
 		});		
 	}

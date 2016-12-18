@@ -27,7 +27,7 @@ router.route('/')
 			'MATCH (u:user) WHERE ID(u)={userIdParam}',
 			'OPTIONAL MATCH (g)<-[:SUBGROUP]-(p:group)',
 			'OPTIONAL MATCH (u)<-[m:MEMBER]-(g)',
-			'RETURN {supernode: g.superNode, id: id(g), restricted: g.restricted, parentId: id(p), name: g.name, requestingUserStatus: m.role, description: g.description}'
+			'RETURN {supernode: g.superNode, id: id(g), restricted: g.restricted, parentId: id(p), createdBy: g.createdBy, name: g.name, requestingUserStatus: m.role, description: g.description}'
 		].join('\n'); 
 
 		var params = {
