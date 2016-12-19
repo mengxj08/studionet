@@ -23,18 +23,18 @@
         <div class="alert alert-success" role="alert" id='successMsg' ng-show='success'>
                 <strong>Awesome! </strong> {{successMsg}}
         </div>  
-        
-        <uib-tabset active="active" ng-hide='error || success'>
-              <uib-tab index="0" heading="About the group">
+        <div ng-hide='error || success'>
+<!--         <uib-tabset active="active" ng-hide='error || success'>
+              <uib-tab index="0" heading="About the group"> -->
                       <h4>Description</h4>
                       <p>{{ activeGroup.description }}</p>
                       <h4>Owner</h4>
                       <p><img class='user-avatar' src="{{users[activeGroup.createdBy].avatar}}"> {{ users[ activeGroup.createdBy ].name }}</p>
                       <h4>Restricted</h4>
                       <p>{{ activeGroup.restricted }}</p>
-                      <h4>Number of Members</h4>
-                      <p>{{ activeGroup.numUsers }}</p>
-              </uib-tab>
+<!--                       <h4>Number of Members</h4>
+                      <p>{{ activeGroup.numUsers }}</p> -->
+<!--               </uib-tab>
               
               <uib-tab index="1" heading="Members"> 
                   <div class='height-400'>
@@ -46,7 +46,8 @@
                   </div>
               </uib-tab>
 
-        </uib-tabset>
+        </uib-tabset> -->
+        </div>
 
       </div>
 
@@ -55,7 +56,7 @@
       <!-- footer -->
       <div class='modal-footer' ng-hide='error || success'>
             
-            <div class='button-group' ng-show='active==0'>
+<!--             <div class='button-group' ng-show='active==0'> -->
                 <!-- buttons -->
 
                 <!-- Edit Group -->
@@ -66,11 +67,11 @@
                 <button type="button" class="btn btn-default modal-button" ng-if='activeGroup.requestingUserStatus == "Admin"' ng-click='deleteGroup()'>Delete Group</button>
 
                 <!-- Subgroup -->
-                <button type="button" class="btn btn-default modal-button" ng-if='activeGroup.restricted==false || (activeGroup.restricted == true && activeGroup.requestingUserStatus != undefined)' ng-click='createSubGroup()'>Create Subgroup</button>
+                <button type="button" class="btn btn-default modal-button" ng-if='activeGroup.restricted==false || (activeGroup.restricted == true && activeGroup.requestingUserStatus != undefined)' ng-click='createSubGroup()' disabled>Create Subgroup</button>
 
-            </div>
+<!--             </div>
 
-            <div class='button-group'  ng-show='active==1'>
+            <div class='button-group'  ng-show='active==1'> -->
                 <!-- buttons -->
 
                 <!-- Join -->
@@ -79,7 +80,7 @@
                 <!-- Leave -->
                 <button type="button" class="btn btn-default modal-button" ng-if='activeGroup.requestingUserStatus == "Member"' ng-click='leaveGroup()'>Leave</button>
                 
-            </div>
+<!--             </div> -->
       
       </div>
 

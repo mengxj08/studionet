@@ -76,8 +76,10 @@ div.tree-control .tree-view li{
 }
 
 .filter-btn{
-	background-color: #C4C2C2;
+	background-color: #8C8A8A;
 	text-align: center;
+	border: 1px solid black;
+	color: #ddd;
 }
 
 

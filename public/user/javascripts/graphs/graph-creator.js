@@ -58,6 +58,7 @@ var graph_style = {
           
           .selector('node')
             .css({
+              'background-color': 'data(faveColor)',
               'shape': 'data(faveShape)',
               'width': 'data(width)', 
               'height': 'data(height)',   // mapData(property, a, b, c, d)  => specified range a, b; actual values c, d
@@ -74,7 +75,8 @@ var graph_style = {
               'border-color': '#333',
               'width': 40, 
               'height': 40,
-              'font-size': '15%'
+              'font-size': '15%',
+              'background-color': 'blue',
             })
           
           .selector('edge')
@@ -107,7 +109,7 @@ var graph_style = {
             .css({
               'line-color': 'green',
               'target-arrow-color':'green',
-              'background-color': 'blue',
+              'border-width': 3.5              
             })
             .style({
               'content': 'data(label)',
@@ -134,7 +136,7 @@ var graph_style = {
 var createGraphNode = function(node){
 
     var data = node;
-    
+
     var id = angular.element($('.graph-container')).scope().user.id;
 
     if(node.type=="module"){
@@ -291,7 +293,39 @@ var makeGraph = function(dNodes, dEdges){
      */
     cy.on('mouseover','node', function(evt){
 
-      //alert("hello world")
+
+      var qtipFormat = {
+           content: { },
+           
+           show: {
+              evt: evt.type,
+              solo: true,
+              ready: true
+           },
+           
+           hide: {
+              evt: 'mouseout',
+              delay: 0
+           },
+           
+           position: {
+            my: 'top left',
+            at: 'center center'
+           },
+           
+           events: {
+                //this hide event will remove the qtip element from body and all assiciated events, leaving no dirt behind.
+                hide: function(event, api) {
+                    api.destroy(true); // Destroy it immediately
+                }
+           },
+           
+           style: {
+            classes: 'qTipClass',
+            width: 300 // Overrides width set by CSS (but no max-width!)
+            //height: 100 // Overrides height set by CSS (but no max-height!)
+         }
+      }
 
 
       /* 
@@ -299,6 +333,8 @@ var makeGraph = function(dNodes, dEdges){
        * 
        */
       cy.elements().removeClass('highlighted');
+      cy.elements().removeClass('selected');
+
       var node = evt.cyTarget;
       var data = node.data();
       var directlyConnected = node.neighborhood();
@@ -306,52 +342,27 @@ var makeGraph = function(dNodes, dEdges){
       directlyConnected.nodes().addClass('highlighted');
       node.connectedEdges().addClass('highlighted');
 
-   
+            
+      if(data.name == "StudioNET"){
+       
+        qtipFormat.content.title = "Studionet Root Node";
+        qtipFormat.content.text = "This is the root node for Studionet."; 
+        
+        node.qtip(qtipFormat, evt); 
+        return;
+      }
+
+
       var route = "/api/" + data.type + "s/" + data.id;
       $.get( route , function( extra_data ) {
-            
-            if(evt.cyTarget.data().supernode)
-              return;
+
 
             var content = "<b>" +  angular.element($('.graph-container')).scope().users[ extra_data.createdBy ].name  + "</b>" +
                           "<br><em>" + (new Date(extra_data.dateCreated)).toString().substr(0, 10) + "</em>" +
                           "<br>" + extra_data.body.substr(0,300)
 
-            var qtipFormat = {
-                 content: {
-                  title: extra_data.title,
-                  text: content
-               },
-                 
-                 show: {
-                    evt: evt.type,
-                    solo: true,
-                    ready: true
-                 },
-                 
-                 hide: {
-                    evt: 'mouseout',
-                    delay: 0
-                 },
-                 
-                 position: {
-                  my: 'top left',
-                  at: 'center center'
-                 },
-                 
-                 events: {
-                      //this hide event will remove the qtip element from body and all assiciated events, leaving no dirt behind.
-                      hide: function(event, api) {
-                          api.destroy(true); // Destroy it immediately
-                      }
-                 },
-                 
-                 style: {
-                  classes: 'qTipClass',
-                  width: 300 // Overrides width set by CSS (but no max-width!)
-                  //height: 100 // Overrides height set by CSS (but no max-height!)
-               }
-            }
+            qtipFormat.content.title = extra_data.title;
+            qtipFormat.content.text = content;
 
             node.qtip(qtipFormat, evt);   
       });
@@ -444,6 +455,9 @@ var refreshGraph = function(data){
 
             resizeNodes(cy);
 
+            cy.minZoom(0.5);
+            cy.maxZoom(1.5);
+
         })
 
 
@@ -459,6 +473,11 @@ var refreshGraph = function(data){
 var resizeNodes = function( graph ){
 
   for(var i=0; i < graph.nodes().length; i++){
+
+    //console.log(cy.nodes()[i].data().name == "StudioNET");
+    if( cy.nodes()[i].data().name == "StudioNET")
+      continue;
+
 
     if( cy.nodes().id()[i] != "10"){
       var conn = cy.nodes()[i].incomers().length + cy.nodes()[i].outgoers().length

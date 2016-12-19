@@ -42,7 +42,9 @@ angular.module('studionet')
   }
 
   $scope.resetGraph = function(){
-    cy.reset();
+      cy.layout().stop(); 
+      layout =cy.elements().makeLayout({ 'name': 'cola'}); 
+      layout.start();   
   }
 
 

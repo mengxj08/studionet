@@ -2,7 +2,8 @@ angular.module('studionet')
 .controller('DetailsModalCtrl', ['$scope', '$http', 'profile', 'users', '$location', '$anchorScroll', function($scope, $http, profile, users, $location, $anchorScroll){
 	// $scope.name = "Jane Doe";
   // $scope.age = 12;
-  
+  $scope.user = profile.user;
+
   $scope.clickedContributionId = null;
   $scope.data = [];
   $scope.tags = [];

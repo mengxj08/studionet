@@ -167,6 +167,9 @@ li.notification{
 	padding: 0px !important;
 }
 
+.btn-link{
+	padding: 0px 0px !important;
+}
 /*
  * qTip CSS
  */

@@ -55,10 +55,18 @@
               
               <uib-tab index="1" heading="Members"> 
                   <div class='height-400'>
-                      <div class='row user-row' ng-repeat='user in members'>
-                        <div class='col-sm-2'><img class='user-avatar' src={{user.avatar}}></div>
+                      <div class='row user-row' ng-repeat='user in members | filter: user.role'>
+                        <div class='col-sm-2'><img class='user-avatar' src="{{user.avatar}}"></div>
                         <div class='col-sm-4 user-list-name'>{{user.name}}</div>
-                        <div class='col-sm-2 user-list-name'>{{user.role}}</div>
+<!--                         <div class='col-sm-1 user-list-name'>{{user.role}}</div> -->
+                        <div class='col-sm-1 user-list-name'>
+                            <button class="btn btn-link" ng-show='isMember(user.id) == true' ng-click='remove(user.id)'>
+                                <i class='icon fa fa-user-times'></i>
+                            </button>
+                            <button class="btn btn-link" ng-show='isMember(user.id) == false' ng-click='add(user.id)'>
+                               <i class='icon fa fa-user-plus'></i>
+                            </button>
+                        </div>
                       </div>
                   </div>
               </uib-tab>

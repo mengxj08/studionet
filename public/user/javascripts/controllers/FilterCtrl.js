@@ -129,6 +129,10 @@ angular.module('studionet')
               refreshGraph(data);
               $scope.filterActive = true;
 
+              if(data.nodes.length == 0){
+                console.log(data.nodes.length + " nodes found");
+              }
+
           });
 
       };
