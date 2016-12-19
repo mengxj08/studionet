@@ -78,3 +78,15 @@
 - Contribution -> Contribution [:INSPIRED {createdBy: <id>}]
 - Contribution -> Contribution [:RELATED {createdBy: <id>, note: "---description of the relationship---"}]
 
+#### Attachment Properties
+
+- dateUploaded
+- size
+- name
+
+#### Attachment Relationships
+(uploaded to /uploads/:contributionId/attachments/{name of attachment})
+
+- User -> Attachment [:UPLOADED]
+- Contribution -> Attachment [:ATTACHMENT]
+
