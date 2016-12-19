@@ -319,7 +319,6 @@ router.route('/')
 				return res.send('error');
 			}
 			else{
-				console.log(result);
 				console.log('[SUCCESS] Success in creating a new contribution for user id: ' + req.user.id);
 				req.contributionId = result[0].id;
 				next();
@@ -328,9 +327,7 @@ router.route('/')
 
 	}, multer({storage: uploads.attachmentStorage}).array('attachments'), function(req, res){
 
-		var hasAttachments = req.files.length > 0;
-
-		if (!hasAttachments) {
+		if (!req.hasOwnProperty('files')) {
 			res.status(200);
 			return res.send('success');
 		}
