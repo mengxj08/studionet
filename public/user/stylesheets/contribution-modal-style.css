@@ -1,5 +1,6 @@
 .modal {
     width: 100%;
+
 }
 
 .modal-dialog {
@@ -11,6 +12,9 @@
 .sidebar{
     width: 100%;
     margin: 20px 0px 0px 0px;
+    position: fixed;
+    width: 300px;
+    height: 200px;
 }
 
 .modal h3{
@@ -64,7 +68,7 @@ input.addTag{
 }
 
 .modal-backdrop {
-   background-color: lightgray;
+   background-color: rgba(0,0,0,0.2);
 }
 
 .modal-backdrop .in {
