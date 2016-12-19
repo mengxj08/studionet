@@ -223,6 +223,7 @@ angular.module('studionet')
 	    }
 	    else{
 			qtipFormat.content.text +="<p>" + nodeData.description.substr(0,100)  +
+						+ "<br>Status:" + nodeData.requestingUserStatus + "<br>" + 
 	         		  "<button class='btn btn-link btn-sm pull-right qtip-btn' onclick='viewGroup(" + nodeData.id +")'>More</button></p>"
 	    }
 
