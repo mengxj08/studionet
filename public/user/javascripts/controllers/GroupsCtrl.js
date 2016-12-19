@@ -250,6 +250,10 @@ angular.module('studionet')
 
 						// attach it to the scope
 						$scope.graph = graph;
+
+
+			            graph.minZoom(0.5);
+			            graph.maxZoom(1.5);
 			    })
 
 			})
@@ -260,6 +264,12 @@ angular.module('studionet')
 	drawGraph();
 
 	$scope.refreshGraph = drawGraph;  // fetches fresh data from server
+
+	$scope.resetGraph = function(){
+	    $scope.graph.layout().stop(); 
+	    layout = $scope.graph.elements().makeLayout({ 'name': 'cola'}); 
+	    layout.start();		
+	}
 
 
 }])

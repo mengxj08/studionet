@@ -455,6 +455,9 @@ var refreshGraph = function(data){
 
             resizeNodes(cy);
 
+            cy.minZoom(0.5);
+            cy.maxZoom(1.5);
+
         })
 
 
