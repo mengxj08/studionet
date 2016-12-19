@@ -193,7 +193,9 @@ router.route('/:groupId')
 
     var params = {
       nameParam: req.body.name
-    }
+    };
+
+    console.log(req.body.name);
 
     var countPromise = new Promise(function(resolve, reject){
       db.query(countQuery, params, function(error, result){
@@ -203,17 +205,18 @@ router.route('/:groupId')
           reject();
         }
         else {
-          resolve(result);
+          resolve(result[0]);
         }
       });
     });
 
     countPromise
     .then(function(result){
-
+      
       var invalidName = result.count > 0;
 
       if (invalidName){
+        res.status(500);
         return res.send('Error: This group name is invalid because a group or tag with that name already exists');
       }
 
@@ -235,11 +238,13 @@ router.route('/:groupId')
       db.query(query, params, function(error, result){
         if (error) {
           console.log('Error updating group with id ' + req.params.groupId + ' : ', error);
-          res.send(error);
+          res.status(500);
+          return res.send(error);
         }
         else {
           // return the first item because query always returns an array but REST API expects a single object
-          res.send(result[0]);
+          res.status(200);
+          return res.send(result[0]);
         }
       });
 
@@ -311,6 +316,7 @@ router.route('/:groupId/users')
     var parentQuery = [
       'MATCH (g:group) WHERE ID(g)={groupIdParam}',
       'OPTIONAL MATCH (g)<-[:SUBGROUP]-(g1:group)',
+      'WHERE NOT (g)<-[:SUBGROUP]-(:group {superNode: true})',
       'WITH g1, CASE WHEN g1 IS NULL THEN false ELSE true END as hasParent',
       'OPTIONAL MATCH (u:user)<-[r:MEMBER]-(g1)',
       'RETURN {hasParent: hasParent, userIds: collect(id(u))}'
@@ -321,14 +327,15 @@ router.route('/:groupId/users')
     };
 
     var parentPromise = new Promise(function(resolve, reject){
-      db.query(query, params, function(error, result){
+      db.query(parentQuery, params, function(error, result){
         if (error){
           console.log(error);
           res.send('Error checking if users are in the parent of this group');
           reject(error);
         }
         else {
-          resolve(result);
+          console.log('resolve result');
+          resolve(result[0]);
         }
       });
     });
@@ -338,46 +345,31 @@ router.route('/:groupId/users')
 
       var usersInParent = result.userIds;
       var hasParent = result.hasParent;
-      console.log('has parent: ' + hasParent);
-      console.log('users in the parent group' + usersInParent);
 
       var invalidUsers = [];
+      if (req.body.users instanceof String) {
+        var givenUserIds = JSON.parse(req.body.users)
+                               .map(u => parseInt(u));
+      } else {
+        var givenUserIds = req.body.users.map(u => parseInt(u));
+      }
+
+      if (!(givenUserIds instanceof Array)){
+        givenUserIds = [givenUserIds];
+      }
 
       if (hasParent) {
-
-        var givenUserIds = JSON.parse(req.body.users)
-                               .map(u => parseInt(u.id));
-
         var validUserIdsToAdd = _.intersection(usersInParent, givenUserIds);
         invalidUsers = _.difference(givenUserIds, validUserIdsToAdd);
-
-        var validUsersToAdd = JSON.parse(req.body.users)
-                                  .filter(u => validUserIdsToAdd.includes(u.id));
-
-        var admins = validUserIdsToAdd.filter(u => u.role === "Admin")
-                                      .map(u => parseInt(u.id));
-
-        var members = validUserIdsToAdd.filter(u => u.role === "Member")
-                                       .map(u => parseInt(u.id));
-
       } else {
-
-        // req.body.users (object with id, role)
-        var admins = JSON.parse(req.body.users)
-                          .filter(u => u.role === "Admin")
-                          .map(u => parseInt(u.id));
-
-        var members = JSON.parse(req.body.users)
-                          .filter(u => u.role === "Member")
-                          .map(u => parseInt(u.id));
+        var validUserIdsToAdd = givenUserIds;
       }
 
       var query = [
-        'MATCH (u:user) WHERE ID(u) IN [' + members + ']',
-        'MATCH (u1:user) WHERE ID(u1) IN [' + admins + ']',
+        'MATCH (u:user) WHERE ID(u) IN [' + validUserIdsToAdd + ']',
+        'WITH u',
         'MATCH (g:group) WHERE ID(g)={groupIdParam}',
-        'CREATE UNIQUE (g)-[r:MEMBER{role: "Member"}]->(u)',
-        'CREATE UNIQUE (g)-[r:MEMBER{role: "Admin"}]->(u1)',
+        'CREATE UNIQUE (g)-[r:MEMBER{role: "Member", joinedOn: ' + Date.now() + '}]->(u)',
         'RETURN g'
       ].join('\n');
     
@@ -386,9 +378,10 @@ router.route('/:groupId/users')
           console.log('Error linking the user to the group');
           return res.send('Error linking users to the group');
         }
-        else
-          return res.send('Successfully added admins: ' + admins + ', and members: ' + members + '.\
+        else{
+          return res.send('Successfully added members: ' + validUserIdsToAdd + '\
             \nThe following users could not be added to the group as they are not members of the parent: ' + invalidUsers);
+        }
       });
 
     })
@@ -400,14 +393,23 @@ router.route('/:groupId/users')
    */ 
   .delete(auth.ensureAuthenticated, auth.isGroupAdmin, function(req, res){
 
-    // req.body.userIds (array of user ids)
-    var userIds = JSON.parse(req.body.userIds)
-                      .map(x => parseInt(x));
+    if (req.body.userIds instanceof String) {
+      var userIds = JSON.parse(req.body.users)
+                        .map(x => parseInt(x));
+    } else {
+      var userIds = req.body.users.map(x => parseInt(x));
+    }
+
+    if (!(userIds instanceof Array)) {
+      userIds = [userIds];
+    }
+
 
     var query = [
-      'MATCH (u:user) WHERE ID(u) IN [' + userIds + ']',
       'MATCH (g:group) WHERE ID(g)={groupIdParam}',
-      'MATCH (g)-[r:MEMBER]->(u)',
+      'WITH g',
+      'OPTIONAL MATCH (u:user) WHERE ID(u) IN [' + userIds + ']',
+      'OPTIONAL MATCH (g)-[r:MEMBER]->(u)',
       'DELETE r'
     ].join('\n');
   
@@ -417,8 +419,8 @@ router.route('/:groupId/users')
 
     db.query(query, params, function(error, result){
       if (error){
-        console.log('Error linking the user to the group');
-        res.send('Error deleting users from group');
+        console.log('Error deleting users from the group');
+        res.send('Error deleting users from the group');
       }
       else{
         res.send('Successfully deleted users from the group');

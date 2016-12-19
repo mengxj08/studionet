@@ -33,7 +33,7 @@
 
 #### Group Relationship
 
-- User <- Group   [:MEMBER {role: "Admin"/"User", joinedOn:'Date'}]
+- User <- Group   [:MEMBER {role: "Admin"/"Member", joinedOn:'Date'}]
 - Group -> Group [:SUBGROUP]
 - Group -> Tag [:TAGGED {createdBy: userid}]
 
@@ -77,4 +77,16 @@
 - Contribution -> Contribution [:RESOURCE {createdBy: <id>}]
 - Contribution -> Contribution [:INSPIRED {createdBy: <id>}]
 - Contribution -> Contribution [:RELATED {createdBy: <id>, note: "---description of the relationship---"}]
+
+#### Attachment Properties
+
+- dateUploaded
+- size
+- name
+
+#### Attachment Relationships
+(uploaded to /uploads/:contributionId/attachments/{name of attachment})
+
+- User -> Attachment [:UPLOADED]
+- Contribution -> Attachment [:ATTACHMENT]
 

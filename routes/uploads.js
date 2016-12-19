@@ -76,6 +76,24 @@ var modelStorage = multer.diskStorage({
 	}
 });
 
+var attachmentStorage = multer.diskStorage({
+	destination: function(req, file, cb) {
+		var dest = './uploads/' + req.contributionId + '/attachments/';
+
+		mkdirp(dest, function(err){
+			if (err)
+				console.log(err);
+			else {
+				console.log('created', dest);
+				cb(null, dest);
+			}
+		})
+	},
+	filename: function(req, file, cb) {
+		cb(null, file.originalname);
+	}
+});
+
 
 router.post('/', auth.ensureAuthenticated, multer({
 		storage: storage

@@ -1,6 +1,12 @@
 var express = require('express');
 var router = express.Router();
+var multer = require('multer');
+var mkdirp = require('mkdirp');
+var glob = require('glob');
+var path = require('path');
+var fs = require('fs');
 var auth = require('./auth');
+var uploads = require('./uploads');
 var apiCall = require('./apicall');
 var db = require('seraph')({
 	server: process.env.SERVER_URL || 'http://localhost:7474/', // 'http://studionetdb.design-automation.net'
@@ -17,7 +23,7 @@ router.route('/')
 	.get(auth.ensureAuthenticated, function(req, res){
 
 		var numKeys = Object.keys(req.query).length;
-		var hasParams = (numKeys > 0) ? true : false;
+		var hasParams = numKeys > 0;
 		var NUM_QUERY_KEYS_CONTRIBUTION = 6;
 
 		var QUERY_PARAM_DEPTH_KEYWORD = 'd';
@@ -61,11 +67,6 @@ router.route('/')
 			return res.send('No depth query provided');
 		}
 
-		// time param must be an array
-		if (!(JSON.parse(req.query[QUERY_PARAM_TIME_KEYWORD]) instanceof Array) || !(JSON.parse(req.query[QUERY_PARAM_TIME_KEYWORD]).length === 2)){
-			return res.send('Must send array for time');
-		}
-
 		var QUERY_PARAM_DEPTH_STRING = req.query[QUERY_PARAM_DEPTH_KEYWORD];
 		var isDepthParamEmpty = QUERY_PARAM_DEPTH_STRING.length <= 0;
 		var isDepthParamNumber = !isNaN(parseInt(QUERY_PARAM_DEPTH_STRING));
@@ -91,29 +92,42 @@ router.route('/')
 			return acc 
 				&& (val == sortedQueryKeys[idx]) 
 				&& (req.query[val].length > 0) // must not be blank queries for JSON.parse()
-				&& (JSON.parse(req.query[val]) instanceof Array); // must be an array
 		}, true);
 
 		if (!correctParams) {
 			console.log('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Did not receive the exact expected params.');
-			res.send('Please send the correct 6 params');
-			return;
-		};
+			return res.send('Please send the correct 6 params');
+		}
 
 		// First get all the users matching the specified group, if present
 		var groupIds = JSON.parse(req.query[QUERY_PARAM_GROUPS_KEYWORD]).map(x => parseInt(x));
-		var query = [ 
-			'MATCH (g:group) WHERE ID(g) IN {groupIdParam}',
-			'MATCH (u:user)<-[r:MEMBER]-(g)',
-			'RETURN collect(distinct id(u))'
-		].join('\n');
+		var specifiedUserIds = JSON.parse(req.query[QUERY_PARAM_USERS_KEYWORD]).map(x => parseInt(x));
+		var matchAllGroups = false;
+		var matchAllUsers = false;
 
-		var groupQueryParam = {
-			groupIdParam: groupIds
-		};
+		if (groupIds instanceof String && groupIds === -1) {
+			// match all groups
+			matchAllGroups = true;
+		} else if (specifiedUserIds instanceof String && specifiedUserIds === -1){
+			matchAllUsers = true;
+		} else {
+			var query = [ 
+				'MATCH (g:group) WHERE ID(g) IN {groupIdParam}',
+				'MATCH (u:user)<-[r:MEMBER]-(g)',
+				'RETURN collect(distinct id(u))'
+			].join('\n');
+
+			var groupQueryParam = {
+				groupIdParam: groupIds
+			};
+		}
 
 		var usersInGroups = [];
 		var usersInGroupsPromise = new Promise(function(resolve, reject){
+			if (matchAllGroups || matchAllUsers) {
+				return resolve([]);
+			}
+
 			db.query(query, groupQueryParam, function(error, result){
 				if (error) {
 					console.log('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Failed match for group ids: ' + groupIds);
@@ -127,48 +141,84 @@ router.route('/')
 
 		usersInGroupsPromise
 		.then(function(result){
-			var specifiedUserIds = JSON.parse(req.query[QUERY_PARAM_USERS_KEYWORD]).map(x => parseInt(x));
 			var dateArray = JSON.parse(req.query[QUERY_PARAM_TIME_KEYWORD]).map(x => parseInt(x));
 			var rateArray = JSON.parse(req.query[QUERY_PARAM_RATING_KEYWORD]).map(x => parseInt(x));
+			var tagsArray = JSON.parse(req.query[QUERY_PARAM_TAGS_KEYWORD]).map(x => parseInt(x));
+
+			var matchAllUsers = false;
+			var matchAllDates = false;
+			var matchAllRatings = false;
+			var matchAllTags = false;
+
+			// check type of user filter
+			if (specifiedUserIds instanceof Array) {
+				// match those in the array only
+				var userIdsParam = _.union(specifiedUserIds, result);
+			} else {
+				// match all users
+				var userIdsParam = [];
+			}
+
+			// check type of date filter
+			if (dateArray instanceof Array) {
+				// match according to the array
+				var dateLowerParam = dateArray[0];
+				var dateUpperParam = dateArray[1];
+			} else {
+				// match all dates
+				matchAllDates = true;
+				var dateLowerParam = -1;
+				var dateUpperParam = -1;
+			}
+
+			// check type of rating
+			if (rateArray instanceof Array) {
+				// match according to the array
+				var rateLowerParam = rateArray[0];
+				var rateUpperParam = rateArray[1];
+			} else {
+				// match all ratings
+				matchAllRatings = true;
+				var rateLowerParam = 0;
+				var rateUpperParam = 5;
+			}
+
+			if (tagsArray instanceof Array) {
+				// match according to the array
+				var tagIdsParam = tagsArray;
+			} else {
+				// match all tags
+				matchAllTags = true;
+				var tagIdsParam = [];
+			}
+
 			var params = {
-				userIdsParam: _.union(specifiedUserIds, result),
-				dateLowerParam: dateArray[0],
-				dateUpperParam: dateArray[1],
-				ratingLowerParam: rateArray[0],
-				ratingUpperParam: rateArray[1],
-				tagIdsParam: JSON.parse(req.query[QUERY_PARAM_TAGS_KEYWORD]).map(x => parseInt(x)),
+				userIdsParam: userIdsParam,
+				dateLowerParam: dateLowerParam,
+				dateUpperParam: dateUpperParam,
+				ratingLowerParam: rateLowerParam,
+				ratingUpperParam: rateUpperParam,
+				tagIdsParam: tagIdsParam,
 				depthParam: parseInt(req.query[QUERY_PARAM_DEPTH_KEYWORD])
 			};
 
-			var queryHead = 'MATCH (c:contribution)<-[:CREATED]-(u:user)'
-										+ ' WHERE ID(u) IN [' + params.userIdsParam + ']';
+			var queryUserGroupTag = 'MATCH ' + (matchAllTags ? '' : '(t:tag)<-[:TAGGED]-') + '(c:contribution)'
+															+ (matchAllGroups || matchAllUsers ? '' : '<-[:CREATED]-(u:user)')
+															+ (matchAllGroups || matchAllUsers ? '' : ' WHERE ID(u) IN [' + params.userIdsParam + ']')
+															+  (matchAllTags ? '' : (' AND ID(t) IN [' + params.tagIdsParam + ']'));
 
-			var queryLowerTime = '';
-			var queryUpperTime = '';
+			var queryLowerRate = params.ratingLowerParam === -1 ? '' : ' AND toInt(c.rating) >= toInt(' + params.ratingLowerParam + ')';
+			var queryUpperRate = params.ratingUpperParam === -1 ? '' : ' AND toInt(c.rating) <= toInt(' + params.ratingUpperParam + ')';
+			var queryRating = matchAllRatings ? '' : queryLowerRate + queryUpperRate;
 
-			// consider tag filters
-			if (params.tagIdsParam.length !== 0) {
-				queryHead = 'MATCH (t:tag)<-[:TAGGED]-(c:contribution)<-[:CREATED]-(u:user)'
-										+ ' WHERE ID(u) IN [' + params.userIdsParam + ']'
-										+ ' AND ID(t) IN [' + params.tagIdsParam + ']';
-			}
-
-			// consider lower bound for time
-			if (params.dateLowerParam !== -1) {
-				queryLowerTime = 'AND toInt(c.dateCreated) >= toInt(' + params.dateLowerParam + ')';
-			}
-
-			// consider upper bound for time
-			if (params.dateUpperParam !== -1) {
-				queryUpperTime = 'AND toInt(c.dateCreated) <= toInt(' + params.dateUpperParam + ')';
-			}
+			var queryLowerDate = params.dateLowerParam === -1 ? '' : ('AND toInt(c.dateCreated) >= toInt(' + params.dateLowerParam + ')');
+			var queryUpperDate = params.dateUpperParam === -1 ? '' : (' AND toInt(c.dateCreated) <= toInt(' + params.dateUpperParam + ')');
+			var queryDate = matchAllDates ? '' : (queryLowerDate + queryUpperDate);
 
 			var query = [
-				queryHead,
-				'AND toInt(c.rating) >= toInt(' + params.ratingLowerParam + ')',
-				'AND toInt(c.rating) <= toInt(' + params.ratingUpperParam + ')',
-				queryLowerTime,
-				queryUpperTime,
+				queryUserGroupTag,
+				queryRating,
+				queryDate,
 				'WITH c',
 				'MATCH (c)-[*]->(c2:contribution) WITH c, c2',
 				'MATCH (c)<-[*0..' + params.depthParam + ']-(c3:contribution)',
@@ -178,6 +228,8 @@ router.route('/')
 				'MATCH p=(combinedContribution)-[*1]->(combinedContribution2)',
 				'RETURN distinct (p)'
 			].join('\n');
+
+			console.log(query);
 
 			apiCall(query, function(data) {
 				console.log('[SUCCESS] Sucess in fetching filtered contributions in /api/contributions.')
@@ -209,7 +261,7 @@ router.route('/')
 	 *           If tags are created, contribution creator will be set to this tags as the creator of these tags.
 	 *
 	 */
-	.post(auth.ensureAuthenticated, function(req, res){
+	.post(auth.ensureAuthenticated, function(req, res, next){
 
 		// Creating the contribution node, then link it to the creator (user)
 		var query = [
@@ -224,7 +276,8 @@ router.route('/')
 			'UNWIND {tagsParam} as tagName '
 						+ 'MERGE (t:tag {name: tagName}) '
 						+ 'ON CREATE SET t.createdBy = {createdByParam}'
-						+ 'CREATE UNIQUE (c)-[r2:TAGGED]->(t) '
+						+ 'CREATE UNIQUE (c)-[r2:TAGGED]->(t) ',
+			'RETURN id(c)'
 		].join('\n');
 
 		var currentDate = Date.now();
@@ -260,13 +313,61 @@ router.route('/')
 
 		
 		db.query(query, params, function(error, result){
-			if (error)
+			if (error){
 				console.log('[ERROR] Error creating new contribution for user : ', error);
+				res.status(500);
+				return res.send('error');
+			}
 			else{
 				console.log('[SUCCESS] Success in creating a new contribution for user id: ' + req.user.id);
-				res.send(result[0]);
+				req.contributionId = result[0].id;
+				next();
 			}
 		}); 
+
+	}, multer({storage: uploads.attachmentStorage}).array('attachments'), function(req, res){
+
+		if (!req.hasOwnProperty('files')) {
+			res.status(200);
+			return res.send('success');
+		}
+
+		var createQueries = req.files.map(f => 'CREATE (a:attachment {dateUploaded: ' + Date.now() + ', \
+																						size: ' + f.size + ', \
+																						name: ' + f.filename + '})');
+
+		var query = [
+			'MATCH (u:user) WHERE ID(u)={userIdParam}',
+			'WITH u',
+			'MATCH (c:contribution) WHERE ID(c)={contributionBodyParam}',
+			'WITH u, c'
+		];
+
+		var restOfQuery = [
+			'WITH u, c, a',
+			'CREATE (u)-[:UPLOADED]->(a)',
+			'WITH a,c',
+			'CREATE (a)<-[:ATTACHMENT]-(c)'
+		];
+
+		query = query.concat(createQueries, restOfQuery);
+		query = query.join('\n');
+
+		var params = {
+			userIdParam: req.user.id,
+			contributionIdParam: req.contributionId
+		};
+
+		db.query(query, params, function(error, result){
+			if (error){
+				console.log(error);
+				res.status(500);
+				res.send('error in uploading file as attachment');
+			} else {
+				res.status(200);
+				res.send('success');
+			}
+		});
 
 	});
 
