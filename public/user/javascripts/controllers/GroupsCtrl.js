@@ -21,6 +21,7 @@ angular.module('studionet')
      *		Trigger Modal Functions
 	 */
 	$scope.createGroup = function(){ 
+		angular.element($("#createGroupModal")).scope().reset();
 		$("#createGroupModal").modal(); 
 	}
 
@@ -215,14 +216,16 @@ angular.module('studionet')
 	    // change content text for users
 	    if(nodeData.type == "USER"){
 	    	qtipFormat.content.text = "<center><img " + 
-	    				   "style='width: 80px; height: 80px;' " +
-	    				   "src=' " + nodeData.avatar+ "'><br>";
+	    				   "style='width: 80px; height: 80px; display: inline-block;' " +
+	    				   "src=' " + nodeData.avatar + "'><br>" + 
+	    				   "<b>About the User</b><br>Lorem ipsum Incididunt et laborum cillum officia reprehenderit minim laborum sint aliquip aliqua elit dolor.";
 
-	    	qtipFormat.style.width = '80px';
+	    	qtipFormat.style.width = '180px';
 
 	    }
 	    else{
-			qtipFormat.content.text +="<p>" + nodeData.description.substr(0,100)  +
+			qtipFormat.content.text +="<p>" + nodeData.description.substr(0,100)  +  "</p>"
+						+ "<p><b>Status:</b> " + ( nodeData.requestingUserStatus || "Not Joined" ) + "</p>" + 
 	         		  "<button class='btn btn-link btn-sm pull-right qtip-btn' onclick='viewGroup(" + nodeData.id +")'>More</button></p>"
 	    }
 
@@ -283,7 +286,8 @@ angular.module('studionet')
 		
 			// refresh the graph underneath
 			// function present in container scope
-			$scope.newGroupId = data.data.id;
+			console.log(data);
+			$scope.newGroupId = data.id; 
 			$scope.$parent.refreshGraph();
 			showSuccess();
 		
@@ -297,6 +301,17 @@ angular.module('studionet')
 
 	$scope.editGroup = function(){
 		$scope.$parent.editGroup( $scope.newGroupId  );
+	}
+
+	$scope.reset = function(){
+		$scope.groupCreated = false; 
+		$scope.groupError = false;
+
+		$scope.newGroupId = undefined;	
+
+		$scope.group = {
+			groupParentId: supernode.group
+		};	
 	}
 
 	var showSuccess = function(){

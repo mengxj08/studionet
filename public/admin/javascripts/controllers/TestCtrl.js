@@ -121,7 +121,8 @@ angular.module('studionetAdmin').controller('TestCtrl', ['$scope', '$http', func
 		    name: "",
 			nusOpenId: "",
 			addedBy: "",
-			addedOn: ""
+			addedOn: "",
+			isAdmin: false
 	};
 
 	$scope.createNewUser = function(){
@@ -137,7 +138,8 @@ angular.module('studionetAdmin').controller('TestCtrl', ['$scope', '$http', func
 						name :  user.name, 
 						nusOpenId: user.nusOpenId, 
 						addedBy: $scope.userData.addedBy,
-						addedOn: $scope.userData.addedOn
+						addedOn: $scope.userData.addedOn,
+						isAdmin: false
 					}
 					postUser(userData);
 

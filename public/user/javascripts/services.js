@@ -311,7 +311,7 @@ angular.module('studionet')
 
 				return group;
 			})
-			groups.graph.nodes = group.groups;
+			//groups.graph.nodes = groups.groups;
 
 			// 
 			console.log("Removed from group", data)

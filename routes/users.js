@@ -60,8 +60,8 @@ router.route('/')
       avatarParam: "/assets/images/avatar.png",
       joinedOnParam: -1,  // -1 as default
       lastLoggedInParam: -1, // -1 as default
-      filters: [],
-      filterNames: []
+      filtersParam: [],
+      filterNamesParam: []
     };
 
     /*
