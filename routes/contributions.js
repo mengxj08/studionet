@@ -17,7 +17,7 @@ router.route('/')
 	.get(auth.ensureAuthenticated, function(req, res){
 
 		var numKeys = Object.keys(req.query).length;
-		var hasParams = (numKeys > 0) ? true : false;
+		var hasParams = numKeys > 0;
 		var NUM_QUERY_KEYS_CONTRIBUTION = 6;
 
 		var QUERY_PARAM_DEPTH_KEYWORD = 'd';
@@ -61,11 +61,6 @@ router.route('/')
 			return res.send('No depth query provided');
 		}
 
-		// time param must be an array
-		if (!(JSON.parse(req.query[QUERY_PARAM_TIME_KEYWORD]) instanceof Array) || !(JSON.parse(req.query[QUERY_PARAM_TIME_KEYWORD]).length === 2)){
-			return res.send('Must send array for time');
-		}
-
 		var QUERY_PARAM_DEPTH_STRING = req.query[QUERY_PARAM_DEPTH_KEYWORD];
 		var isDepthParamEmpty = QUERY_PARAM_DEPTH_STRING.length <= 0;
 		var isDepthParamNumber = !isNaN(parseInt(QUERY_PARAM_DEPTH_STRING));
@@ -91,29 +86,42 @@ router.route('/')
 			return acc 
 				&& (val == sortedQueryKeys[idx]) 
 				&& (req.query[val].length > 0) // must not be blank queries for JSON.parse()
-				&& (JSON.parse(req.query[val]) instanceof Array); // must be an array
 		}, true);
 
 		if (!correctParams) {
 			console.log('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Did not receive the exact expected params.');
-			res.send('Please send the correct 6 params');
-			return;
-		};
+			return res.send('Please send the correct 6 params');
+		}
 
 		// First get all the users matching the specified group, if present
 		var groupIds = JSON.parse(req.query[QUERY_PARAM_GROUPS_KEYWORD]).map(x => parseInt(x));
-		var query = [ 
-			'MATCH (g:group) WHERE ID(g) IN {groupIdParam}',
-			'MATCH (u:user)<-[r:MEMBER]-(g)',
-			'RETURN collect(distinct id(u))'
-		].join('\n');
+		var specifiedUserIds = JSON.parse(req.query[QUERY_PARAM_USERS_KEYWORD]).map(x => parseInt(x));
+		var matchAllGroups = false;
+		var matchAllUsers = false;
 
-		var groupQueryParam = {
-			groupIdParam: groupIds
-		};
+		if (groupIds instanceof String && groupIds === -1) {
+			// match all groups
+			matchAllGroups = true;
+		} else if (specifiedUserIds instanceof String && specifiedUserIds === -1){
+			matchAllUsers = true;
+		} else {
+			var query = [ 
+				'MATCH (g:group) WHERE ID(g) IN {groupIdParam}',
+				'MATCH (u:user)<-[r:MEMBER]-(g)',
+				'RETURN collect(distinct id(u))'
+			].join('\n');
+
+			var groupQueryParam = {
+				groupIdParam: groupIds
+			};
+		}
 
 		var usersInGroups = [];
 		var usersInGroupsPromise = new Promise(function(resolve, reject){
+			if (matchAllGroups || matchAllUsers) {
+				return resolve([]);
+			}
+
 			db.query(query, groupQueryParam, function(error, result){
 				if (error) {
 					console.log('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Failed match for group ids: ' + groupIds);
@@ -127,47 +135,83 @@ router.route('/')
 
 		usersInGroupsPromise
 		.then(function(result){
-			var specifiedUserIds = JSON.parse(req.query[QUERY_PARAM_USERS_KEYWORD]).map(x => parseInt(x));
 			var dateArray = JSON.parse(req.query[QUERY_PARAM_TIME_KEYWORD]).map(x => parseInt(x));
 			var rateArray = JSON.parse(req.query[QUERY_PARAM_RATING_KEYWORD]).map(x => parseInt(x));
+			var tagsArray = JSON.parse(req.query[QUERY_PARAM_TAGS_KEYWORD]).map(x => parseInt(x));
+
+			var matchAllUsers = false;
+			var matchAllDates = false;
+			var matchAllRatings = false;
+			var matchAllTags = false;
+
+			// check type of user filter
+			if (specifiedUserIds instanceof Array) {
+				// match those in the array only
+				var userIdsParam = _.union(specifiedUserIds, result);
+			} else {
+				// match all users
+				var userIdsParam = [];
+			}
+
+			// check type of date filter
+			if (dateArray instanceof Array) {
+				// match according to the array
+				var dateLowerParam = dateArray[0];
+				var dateUpperParam = dateArray[1];
+			} else {
+				// match all dates
+				matchAllDates = true;
+				var dateLowerParam = -1;
+				var dateUpperParam = -1;
+			}
+
+			// check type of rating
+			if (rateArray instanceof Array) {
+				// match according to the array
+				var rateLowerParam = rateArray[0];
+				var rateUpperParam = rateArray[1];
+			} else {
+				// match all ratings
+				matchAllRatings = true;
+				var rateLowerParam = 0;
+				var rateUpperParam = 5;
+			}
+
+			if (tagsArray instanceof Array) {
+				// match according to the array
+				var tagIdsParam = tagsArray;
+			} else {
+				// match all tags
+				matchAllTags = true;
+				var tagIdsParam = [];
+			}
+
 			var params = {
-				userIdsParam: _.union(specifiedUserIds, result),
-				dateLowerParam: dateArray[0],
-				dateUpperParam: dateArray[1],
-				ratingLowerParam: rateArray[0],
-				ratingUpperParam: rateArray[1],
-				tagIdsParam: JSON.parse(req.query[QUERY_PARAM_TAGS_KEYWORD]).map(x => parseInt(x)),
+				userIdsParam: userIdsParam,
+				dateLowerParam: dateLowerParam,
+				dateUpperParam: dateUpperParam,
+				ratingLowerParam: rateLowerParam,
+				ratingUpperParam: rateUpperParam,
+				tagIdsParam: tagIdsParam,
 				depthParam: parseInt(req.query[QUERY_PARAM_DEPTH_KEYWORD])
 			};
 
-			var queryHead = 'MATCH (c:contribution)<-[:CREATED]-(u:user)'
-										+ ' WHERE ID(u) IN [' + params.userIdsParam + ']';
-			// consider tag filters (empty means)
-			if (params.tagIdsParam.length !== 0) {
-				queryHead = 'MATCH (t:tag)<-[:TAGGED]-(c:contribution)<-[:CREATED]-(u:user)'
-										+ ' WHERE ID(u) IN [' + params.userIdsParam + ']'
-										+ ' AND ID(t) IN [' + params.tagIdsParam + ']';
-			}
+			var queryUserGroupTag = 'MATCH ' + (matchAllTags ? '' : '(t:tag)<-[:TAGGED]-') + '(c:contribution)'
+															+ (matchAllGroups || matchAllUsers ? '' : '<-[:CREATED]-(u:user)')
+															+ (matchAllGroups || matchAllUsers ? '' : ' WHERE ID(u) IN [' + params.userIdsParam + ']')
+															+  (matchAllTags ? '' : (' AND ID(t) IN [' + params.tagIdsParam + ']'));
 
+			var queryRating = matchAllRatings ? '' : ('AND toInt(c.rating) >= toInt(' + params.ratingLowerParam + ')'
+				+ ' AND toInt(c.rating) <= toInt(' + params.ratingUpperParam + ')');
 
-			var queryLowerTime = '';
-			// consider lower bound for time
-			if (params.dateLowerParam !== -1) {
-				queryLowerTime = 'AND toInt(c.dateCreated) >= toInt(' + params.dateLowerParam + ')';
-			}
-
-			var queryUpperTime = '';
-			// consider upper bound for time
-			if (params.dateUpperParam !== -1) {
-				queryUpperTime = 'AND toInt(c.dateCreated) <= toInt(' + params.dateUpperParam + ')';
-			}
+			var queryLowerDate = params.dateLowerParam === -1 ? '' : ('AND toInt(c.dateCreated) >= toInt(' + params.dateLowerParam + ')');
+			var queryUpperDate = params.dateUpperParam === -1 ? '' : (' AND toInt(c.dateCreated) <= toInt(' + params.dateUpperParam + ')');
+			var queryDate = matchAllDates ? '' : (queryLowerDate + queryUpperDate);
 
 			var query = [
-				queryHead,
-				'AND toInt(c.rating) >= toInt(' + params.ratingLowerParam + ')',
-				'AND toInt(c.rating) <= toInt(' + params.ratingUpperParam + ')',
-				queryLowerTime,
-				queryUpperTime,
+				queryUserGroupTag,
+				queryRating,
+				queryDate,
 				'WITH c',
 				'MATCH (c)-[*]->(c2:contribution) WITH c, c2',
 				'MATCH (c)<-[*0..' + params.depthParam + ']-(c3:contribution)',
@@ -177,6 +221,8 @@ router.route('/')
 				'MATCH p=(combinedContribution)-[*1]->(combinedContribution2)',
 				'RETURN distinct (p)'
 			].join('\n');
+
+			console.log(query);
 
 			apiCall(query, function(data) {
 				console.log('[SUCCESS] Sucess in fetching filtered contributions in /api/contributions.')
