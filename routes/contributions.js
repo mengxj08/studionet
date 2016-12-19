@@ -1,6 +1,12 @@
 var express = require('express');
 var router = express.Router();
+var multer = require('multer');
+var mkdirp = require('mkdirp');
+var glob = require('glob');
+var path = require('path');
+var fs = require('fs');
 var auth = require('./auth');
+var uploads = require('./uploads');
 var apiCall = require('./apicall');
 var db = require('seraph')({
 	server: process.env.SERVER_URL || 'http://localhost:7474/', // 'http://studionetdb.design-automation.net'
@@ -201,8 +207,9 @@ router.route('/')
 															+ (matchAllGroups || matchAllUsers ? '' : ' WHERE ID(u) IN [' + params.userIdsParam + ']')
 															+  (matchAllTags ? '' : (' AND ID(t) IN [' + params.tagIdsParam + ']'));
 
-			var queryRating = matchAllRatings ? '' : ('AND toInt(c.rating) >= toInt(' + params.ratingLowerParam + ')'
-				+ ' AND toInt(c.rating) <= toInt(' + params.ratingUpperParam + ')');
+			var queryLowerRate = params.ratingLowerParam === -1 ? '' : ' AND toInt(c.rating) >= toInt(' + params.ratingLowerParam + ')';
+			var queryUpperRate = params.ratingUpperParam === -1 ? '' : ' AND toInt(c.rating) <= toInt(' + params.ratingUpperParam + ')';
+			var queryRating = matchAllRatings ? '' : queryLowerRate + queryUpperRate;
 
 			var queryLowerDate = params.dateLowerParam === -1 ? '' : ('AND toInt(c.dateCreated) >= toInt(' + params.dateLowerParam + ')');
 			var queryUpperDate = params.dateUpperParam === -1 ? '' : (' AND toInt(c.dateCreated) <= toInt(' + params.dateUpperParam + ')');
@@ -254,7 +261,7 @@ router.route('/')
 	 *           If tags are created, contribution creator will be set to this tags as the creator of these tags.
 	 *
 	 */
-	.post(auth.ensureAuthenticated, function(req, res){
+	.post(auth.ensureAuthenticated, function(req, res, next){
 
 		// Creating the contribution node, then link it to the creator (user)
 		var query = [
@@ -269,7 +276,8 @@ router.route('/')
 			'UNWIND {tagsParam} as tagName '
 						+ 'MERGE (t:tag {name: tagName}) '
 						+ 'ON CREATE SET t.createdBy = {createdByParam}'
-						+ 'CREATE UNIQUE (c)-[r2:TAGGED]->(t) '
+						+ 'CREATE UNIQUE (c)-[r2:TAGGED]->(t) ',
+			'RETURN id(c)'
 		].join('\n');
 
 		var currentDate = Date.now();
@@ -305,13 +313,64 @@ router.route('/')
 
 		
 		db.query(query, params, function(error, result){
-			if (error)
+			if (error){
 				console.log('[ERROR] Error creating new contribution for user : ', error);
+				res.status(500);
+				return res.send('error');
+			}
 			else{
+				console.log(result);
 				console.log('[SUCCESS] Success in creating a new contribution for user id: ' + req.user.id);
-				res.send(result[0]);
+				req.contributionId = result[0].id;
+				next();
 			}
 		}); 
+
+	}, multer({storage: uploads.attachmentStorage}).array('attachments'), function(req, res){
+
+		var hasAttachments = req.files.length > 0;
+
+		if (!hasAttachments) {
+			res.status(200);
+			return res.send('success');
+		}
+
+		var createQueries = req.files.map(f => 'CREATE (a:attachment {dateUploaded: ' + Date.now() + ', \
+																						size: ' + f.size + ', \
+																						name: ' + f.filename + '})');
+
+		var query = [
+			'MATCH (u:user) WHERE ID(u)={userIdParam}',
+			'WITH u',
+			'MATCH (c:contribution) WHERE ID(c)={contributionBodyParam}',
+			'WITH u, c'
+		];
+
+		var restOfQuery = [
+			'WITH u, c, a',
+			'CREATE (u)-[:UPLOADED]->(a)',
+			'WITH a,c',
+			'CREATE (a)<-[:ATTACHMENT]-(c)'
+		];
+
+		query = query.concat(createQueries, restOfQuery);
+		query = query.join('\n');
+
+		var params = {
+			userIdParam: req.user.id,
+			contributionIdParam: req.contributionId
+		};
+
+		db.query(query, params, function(error, result){
+			if (error){
+				console.log(error);
+				res.status(500);
+				res.send('error in uploading file as attachment');
+			} else {
+				res.status(200);
+				res.send('success');
+			}
+		});
 
 	});
 
