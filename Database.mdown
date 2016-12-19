@@ -33,7 +33,7 @@
 
 #### Group Relationship
 
-- User <- Group   [:MEMBER {role: "Admin"/"User", joinedOn:'Date'}]
+- User <- Group   [:MEMBER {role: "Admin"/"Member", joinedOn:'Date'}]
 - Group -> Group [:SUBGROUP]
 - Group -> Tag [:TAGGED {createdBy: userid}]
 

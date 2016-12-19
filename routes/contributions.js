@@ -142,22 +142,21 @@ router.route('/')
 
 			var queryHead = 'MATCH (c:contribution)<-[:CREATED]-(u:user)'
 										+ ' WHERE ID(u) IN [' + params.userIdsParam + ']';
-
-			var queryLowerTime = '';
-			var queryUpperTime = '';
-
-			// consider tag filters
+			// consider tag filters (empty means)
 			if (params.tagIdsParam.length !== 0) {
 				queryHead = 'MATCH (t:tag)<-[:TAGGED]-(c:contribution)<-[:CREATED]-(u:user)'
 										+ ' WHERE ID(u) IN [' + params.userIdsParam + ']'
 										+ ' AND ID(t) IN [' + params.tagIdsParam + ']';
 			}
 
+
+			var queryLowerTime = '';
 			// consider lower bound for time
 			if (params.dateLowerParam !== -1) {
 				queryLowerTime = 'AND toInt(c.dateCreated) >= toInt(' + params.dateLowerParam + ')';
 			}
 
+			var queryUpperTime = '';
 			// consider upper bound for time
 			if (params.dateUpperParam !== -1) {
 				queryUpperTime = 'AND toInt(c.dateCreated) <= toInt(' + params.dateUpperParam + ')';
