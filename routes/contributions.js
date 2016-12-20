@@ -100,15 +100,27 @@ router.route('/')
 		}
 
 		// First get all the users matching the specified group, if present
-		var groupIds = JSON.parse(req.query[QUERY_PARAM_GROUPS_KEYWORD]).map(x => parseInt(x));
-		var specifiedUserIds = JSON.parse(req.query[QUERY_PARAM_USERS_KEYWORD]).map(x => parseInt(x));
+		var groupIds = JSON.parse(req.query[QUERY_PARAM_GROUPS_KEYWORD]);
+		var specifiedUserIds = JSON.parse(req.query[QUERY_PARAM_USERS_KEYWORD]);
+
+		if (groupIds instanceof Array){
+			groupIds = groupIds.map(x => parseInt(x));
+		} else {
+			groupIds = parseInt(groupIds);
+		}
+
+		if (specifiedUserIds instanceof Array) {
+			specifiedUserIds = specifiedUserIds.map(x => parseInt(x));
+		} else {
+			specifiedUserIds = parseInt(specifiedUserIds);
+		}
+
 		var matchAllGroups = false;
 		var matchAllUsers = false;
-
-		if (groupIds instanceof String && groupIds === -1) {
+		if (typeof groupIds === 'number' && groupIds === -1) {
 			// match all groups
 			matchAllGroups = true;
-		} else if (specifiedUserIds instanceof String && specifiedUserIds === -1){
+		} else if (typeof specifiedUserIds === 'number' && specifiedUserIds === -1){
 			matchAllUsers = true;
 		} else {
 			var query = [ 
@@ -141,11 +153,28 @@ router.route('/')
 
 		usersInGroupsPromise
 		.then(function(result){
-			var dateArray = JSON.parse(req.query[QUERY_PARAM_TIME_KEYWORD]).map(x => parseInt(x));
-			var rateArray = JSON.parse(req.query[QUERY_PARAM_RATING_KEYWORD]).map(x => parseInt(x));
-			var tagsArray = JSON.parse(req.query[QUERY_PARAM_TAGS_KEYWORD]).map(x => parseInt(x));
+			var dateArray = JSON.parse(req.query[QUERY_PARAM_TIME_KEYWORD]);
+			var rateArray = JSON.parse(req.query[QUERY_PARAM_RATING_KEYWORD]);
+			var tagsArray = JSON.parse(req.query[QUERY_PARAM_TAGS_KEYWORD]);
 
-			var matchAllUsers = false;
+			if (dateArray instanceof Array) {
+				dateArray = dateArray.map(x => parseInt(x));
+			} else {
+				dateArray = parseInt(dateArray);
+			}
+
+			if (rateArray instanceof Array) {
+				rateArray = rateArray.map(x => parseInt(x));
+			} else {
+				rateArray = parseInt(rateArray);
+			}
+
+			if (tagsArray instanceof Array) {
+				tagsArray = tagsArray.map(x => parseInt(x));
+			} else {
+				tagsArray = parseInt(tagsArray);
+			}
+
 			var matchAllDates = false;
 			var matchAllRatings = false;
 			var matchAllTags = false;
@@ -204,14 +233,15 @@ router.route('/')
 
 			var queryUserGroupTag = 'MATCH ' + (matchAllTags ? '' : '(t:tag)<-[:TAGGED]-') + '(c:contribution)'
 															+ (matchAllGroups || matchAllUsers ? '' : '<-[:CREATED]-(u:user)')
-															+ (matchAllGroups || matchAllUsers ? '' : ' WHERE ID(u) IN [' + params.userIdsParam + ']')
+															+ ' WHERE true'
+															+ (matchAllGroups || matchAllUsers ? '' : ' ID(u) IN [' + params.userIdsParam + ']')
 															+  (matchAllTags ? '' : (' AND ID(t) IN [' + params.tagIdsParam + ']'));
 
 			var queryLowerRate = params.ratingLowerParam === -1 ? '' : ' AND toInt(c.rating) >= toInt(' + params.ratingLowerParam + ')';
 			var queryUpperRate = params.ratingUpperParam === -1 ? '' : ' AND toInt(c.rating) <= toInt(' + params.ratingUpperParam + ')';
 			var queryRating = matchAllRatings ? '' : queryLowerRate + queryUpperRate;
 
-			var queryLowerDate = params.dateLowerParam === -1 ? '' : ('AND toInt(c.dateCreated) >= toInt(' + params.dateLowerParam + ')');
+			var queryLowerDate = params.dateLowerParam === -1 ? '' : (' AND toInt(c.dateCreated) >= toInt(' + params.dateLowerParam + ')');
 			var queryUpperDate = params.dateUpperParam === -1 ? '' : (' AND toInt(c.dateCreated) <= toInt(' + params.dateUpperParam + ')');
 			var queryDate = matchAllDates ? '' : (queryLowerDate + queryUpperDate);
 
@@ -801,7 +831,7 @@ router.route('/:contributionId/attachments/:attachmentId')
 			if (result.length === 0) {
 				return res.send('error');
 			}
-			
+
 			var contributionCreatorId = result[0].contributionCreatorId;
 			var isValidAttachment = result[0].isValidAttachment === 1;
 			var userId = parseInt(req.user.id);
