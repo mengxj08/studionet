@@ -234,7 +234,7 @@ router.route('/')
 			var queryUserGroupTag = 'MATCH ' + (matchAllTags ? '' : '(t:tag)<-[:TAGGED]-') + '(c:contribution)'
 															+ (matchAllGroups || matchAllUsers ? '' : '<-[:CREATED]-(u:user)')
 															+ ' WHERE true '
-															+ (matchAllGroups || matchAllUsers ? '' : 'AND ID(u) IN [' + params.userIdsParam + ']')
+															+ (matchAllGroups || matchAllUsers ? '' : ' AND ID(u) IN [' + params.userIdsParam + ']')
 															+  (matchAllTags ? '' : (' AND ID(t) IN [' + params.tagIdsParam + ']'));
 
 			var queryLowerRate = params.ratingLowerParam === -1 ? '' : ' AND toInt(c.rating) >= toInt(' + params.ratingLowerParam + ')';
