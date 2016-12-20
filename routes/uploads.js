@@ -32,7 +32,7 @@ router.post('/avatar', auth.ensureAuthenticated, multer({
 	].join('\n');
 
 	var params = {
-		avatarParam: '/uploads/' + req.user.nusOpenId + '/avatar'
+		avatarParam: '/uploads/users/' + req.user.nusOpenId + '/avatar'
 	};
 	
 	db.query(query, params, function(error ,result){

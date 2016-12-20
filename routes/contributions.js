@@ -264,7 +264,7 @@ router.route('/')
 	 */
 	.post(auth.ensureAuthenticated, function(req, res, next) {
 
-		req.tempFileDest = './uploads/' + req.user.id + '/temp/' + Date.now();
+		req.tempFileDest = './uploads/users/' + req.user.id + '/temp/' + Date.now();
 		next();
 
 	 }, multer({storage: storage.attachmentStorage}).array('attachments'), function(req, res, next){
@@ -341,9 +341,10 @@ router.route('/')
 		}
 
 		// move the files
-		var fileDest = req.tempFileDest;
-		console.log('fileDest: ' + fileDest);
-		mv(fileDest, './uploads/' + req.contributionId + '/attachments/', {mkdirp: true}, function(err){
+		var tempFileDest = req.tempFileDest;
+		var attachmentsDest = './uploads/contributions/' + req.contributionId + '/attachments/';
+
+		mv(tempFileDest, attachmentsDest, {mkdirp: true}, function(err){
 			if (err) {
 				console.log(err);
 			}

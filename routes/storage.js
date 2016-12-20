@@ -26,7 +26,7 @@ storage.storage = multer.diskStorage({
 
 storage.avatarStorage = multer.diskStorage({
 	destination: function(req, file, cb) {
-		var dest = './uploads/' + req.user.nusOpenId + '/avatar/';
+		var dest = './uploads/users/' + req.user.nusOpenId + '/avatar/';
 
 		var toDelete = glob.sync(dest + 'avatar.*');
 		// remove any old avatar if the user uploads a new one
