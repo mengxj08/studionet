@@ -4,8 +4,7 @@ var multer = require('multer');
 var mkdirp = require('mkdirp');
 var glob = require('glob');
 var path = require('path');
-var fs = require('fs');
-var mv = require('mv');
+var fs = require('fs-extra');
 var auth = require('./auth');
 var storage = require('./storage');
 var apiCall = require('./apicall');
@@ -342,9 +341,15 @@ router.route('/')
 		var tempFileDest = req.tempFileDest;
 		var attachmentsDest = './uploads/contributions/' + req.contributionId + '/attachments/';
 
-		mv(tempFileDest, attachmentsDest, {mkdirp: true}, function(err){
+		// first create the dir
+		// move the files
+		fs.copy(tempFileDest, attachmentsDest, function(err){
 			if (err) {
-				console.log(err);
+				console.error(err);
+			} else {
+				fs.remove(tempFileDest, function(err){
+					console.log(err);
+				})
 			}
 		});
 
@@ -676,7 +681,168 @@ router.route('/:contributionId/rate')
 				res.send('Successfully rated contribution id ' + req.params.contributionId + ' with the rating ' + req.body.rating);
 			}
 		})
-	})
+	});
 
+
+//route: /api/contributions/:contributionId/attachments
+router.route('/:contributionId/attachments')
+	.post(auth.ensureAuthenticated, function(req, res, next){
+		// ensure user owns the contribution id first
+		var query = [
+			'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
+			'RETURN c.createdBy as id'
+		].join('\n');
+
+		var params = {
+			contributionIdParam: parseInt(req.params.contributionId)
+		};
+
+		db.query(query, params, function(error, result){
+			if (error){
+				console.log(error);
+				res.send('error');
+			} else {
+				var contributionCreatorId = result[0].id;
+				var userId = parseInt(req.user.id);
+
+				if (userId === contributionCreatorId) {
+					next();
+				} else {
+					res.send('not the owner');
+				}
+			}
+		});
+	}, function(req, res, next) {
+
+		req.tempFileDest = './uploads/users/' + req.user.id + '/temp/' + Date.now();
+		next();
+
+	}, multer({storage: storage.attachmentStorage}).array('attachments'), function(req, res){
+		// add attachments (can have multiple..)
+
+			if (req.files.length === 0) {
+			res.status(200);
+			return res.send('success');
+		}
+
+		// move the files
+		var tempFileDest = req.tempFileDest;
+		var attachmentsDest = './uploads/contributions/' + req.params.contributionId + '/attachments/';
+
+		// can factor this out also..
+		fs.copy(tempFileDest, attachmentsDest, function(err){
+			if (err) {
+				console.error(err);
+			} else {
+				fs.remove(tempFileDest, function(err){
+					console.log(err);
+				})
+			}
+		});
+
+		var createQueries = req.files.map((f, idx) =>
+			' CREATE (a' + idx + ':attachment {dateUploaded: ' + Date.now() + ', size: ' + f.size + ', name: "' + f.filename + '"})' +
+			' WITH u, c, a' + idx + 
+			' CREATE (u)-[:UPLOADED]->(a' + idx + ')' +
+			' WITH a' + idx + ',c,u' +
+			' CREATE (a' + idx + ')<-[:ATTACHMENT]-(c)'
+		);
+
+		var query = [
+			'MATCH (u:user) WHERE ID(u)={userIdParam}',
+			'WITH u',
+			'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
+			'WITH u, c'
+		];
+
+		query = query.concat(createQueries);
+		query = query.join('\n');
+
+		var params = {
+			userIdParam: req.user.id,
+			contributionIdParam: parseInt(req.params.contributionId)
+		};
+
+		db.query(query, params, function(error, result){
+			if (error){
+				console.log(error);
+				res.status(500);
+				res.send('error in uploading file as attachment');
+			} else {
+				res.status(200);
+				res.send('success');
+			}
+		});
+	});
+
+//route: /api/contributions/:contributionId/attachments/:attachmentId
+router.route('/:contributionId/attachments/:attachmentId')
+	.delete(auth.ensureAuthenticated, function(req, res, next){
+		// factor this out
+		// ensure user owns the contribution id first
+		// also check the attachment id
+		var query = [
+			'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
+			'WITH c',
+			'MATCH (c)-[:ATTACHMENT]->(a:attachment) WHERE ID(a)={attachmentIdParam}',
+			'RETURN {contributionCreatorId: c.createdBy, isValidAttachment: count(a), fileName: a.name}'
+		].join('\n');
+
+		var params = {
+			contributionIdParam: parseInt(req.params.contributionId),
+			attachmentIdParam: parseInt(req.params.attachmentId)
+		};
+
+		db.query(query, params, function(error, result){
+			if (error){
+				console.log(error);
+				return res.send('error');
+			}
+			if (result.length === 0) {
+				return res.send('error');
+			}
+			
+			var contributionCreatorId = result[0].contributionCreatorId;
+			var isValidAttachment = result[0].isValidAttachment === 1;
+			var userId = parseInt(req.user.id);
+
+			if (userId === contributionCreatorId && isValidAttachment) {
+				req.fileNameToDelete = result[0].fileName;
+				next();
+			} else {
+				res.send('not the owner');
+			}
+		});
+	}, function(req, res){
+		// delete the attachment file and node in db
+		var attachmentPath = './uploads/contributions/' + req.params.contributionId + '/attachments/' + req.fileNameToDelete;
+
+		fs.remove(attachmentPath, function(err){
+			if (err) {
+				console.error(err);
+			}
+		});
+
+		var query = [
+			'MATCH (a:attachment) WHERE ID(a)={attachmentIdParam}',
+			'DETACH DELETE a'
+		].join('\n');
+
+		var params = {
+			attachmentIdParam: parseInt(req.params.attachmentId)
+		};
+
+		db.query(query, params, function(error, result){
+			if (error) {
+				console.log(error);
+				res.status(500);
+				res.send('error');
+			} else {
+				res.status(200);
+				res.send('success');
+			}
+		})
+
+	});
 
 module.exports = router;
