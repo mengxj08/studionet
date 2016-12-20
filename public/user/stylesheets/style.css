@@ -176,8 +176,8 @@ li.notification{
 
 .qtip-titlebar{
 	//height: 30px; 
-	//line-height: 30px;
-	//font-size: 15px; 
+	line-height: 32px;
+	font-size: 26px; 
 	background-color: #DFDDDD !important; 
 	padding: 0px 10px !important;
 }

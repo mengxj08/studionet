@@ -14,7 +14,6 @@ angular.module('studionet')
 	$scope.users = users.usersById();
 
 	$scope.node; 
-	$scope.showPopup = true;
 
 
 	/*
@@ -412,6 +411,8 @@ angular.module('studionet')
 	}
 
 }])
+
+
 
 /*
  *	Controller for the view group modal 

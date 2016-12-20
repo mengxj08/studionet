@@ -11,7 +11,7 @@ var CONTRIBUTION_WIDTH = 30, CONTRIBUTION_HEIGHT = 30;
 
 var MODULE_COLOR = "#FB95AF";
 var USER_COLOR = "#DE9BF9";
-var CONTRIBUTION_COLOR = "#D02F2F";
+var CONTRIBUTION_COLOR = "#8EEF99";
 
 var EDGE_DEFAULT_COLOR = "#EBE6E6";
 var EDGE_SELECTED_COLOR = "blue";
@@ -59,6 +59,7 @@ var graph_style = {
           .selector('node')
             .css({
               'background-color': 'data(faveColor)',
+              'border-width': 2.5,
               'shape': 'data(faveShape)',
               'width': 'data(width)', 
               'height': 'data(height)',   // mapData(property, a, b, c, d)  => specified range a, b; actual values c, d
@@ -71,26 +72,25 @@ var graph_style = {
            
           .selector('.selected')
             .css({
-              'border-width': 3.5,
-              'border-color': '#333',
+              'border-width': 6.5,
+              'border-color': 'black',
               'width': 40, 
               'height': 40,
               'font-size': '15%',
-              'background-color': 'blue',
+              //'background-color': 'blue',
             })
           
           .selector('edge')
             .css({
               'curve-style': 'bezier',
-              'width': 'mapData(weight, 0.1, 3, 1, 7)', 
               'target-arrow-shape': 'triangle',
-              'line-color': '#C0BDBD',
+              'line-color': '#C7C7C7',
               'source-arrow-color': '#EBEAEA',
               //'content' : 'data(label)',
               'font-size':'10%',
               'color': 'data(faveColor)',
               'edge-text-rotation': 'autorotate',
-              'target-arrow-color': '#E8E5E5'
+              'target-arrow-color': '#C7C6C6'
             })
 
           .selector('edge')
@@ -101,20 +101,21 @@ var graph_style = {
           
           .selector('.faded')
             .css({
-              'opacity': 0.75,
+              'opacity': 0.25,
               'text-opacity': 0.25
             })
           
           .selector('.highlighted')
             .css({
-              'line-color': 'green',
-              'target-arrow-color':'green',
-              'border-width': 3.5              
+              'line-color': '#D0CBCB',
+              'target-arrow-color':'#808080',
+              'border-width': 5.5              
             })
             .style({
               'content': 'data(label)',
               'color': '#222',
-              'line-color': 'data(faveColor)'
+              'font-size': '25%',
+              'line-color': '#161515'
             })
 
           .selector('.searched')
@@ -223,47 +224,6 @@ var createGraphEdge = function(edge){
 }
 
 /*
- * Composes the hover-box according to node type
- */
-var createHoverBox = function( node, extra ){
-    
-    var html_content = $('<div></div>').addClass(node.type);
-    
-    var heading = $('<h4></h4>').html(node.name || node.title);
-    html_content.append(heading);
-   
-
-    if(node.type == "module"){
-      var stat1 = $('<div></div>').addClass('stats').html('Users <br> 243');
-      statsContainer.append(stat1);
-      var stat2 = $('<div></div>').addClass('stats').html('Contributions <br> 10');
-      statsContainer.append(stat2);
-    }
-    else if(node.type == "user"){
-      var stat1 = $('<div></div>').addClass('stats').html('Last Active <br> 24-1-2017');
-      statsContainer.append(stat1);
-      var stat2 = $('<div></div>').addClass('stats').html('Contributions <br> 10');
-      statsContainer.append(stat2);
-    }
-    else if(node.type == "contribution"){
-
-      var author = $('<p class=\'hover-content\'></p>').html("Author: " + angular.element($('.graph-container')).scope().users[ extra.createdBy ].name);
-      var date = new Date(extra.dateCreated);
-      var lastUpdated = $('<p></p>').html( date.toString().substr(0, 10) );
-      var mini_content = $('<p class=\'hover-content\'></p>').html(extra.body.substr(0, 300) + "...");
-
-        
-      html_content.append(author);
-      html_content.append(lastUpdated);
-      html_content.append(mini_content);
-    }
-
-
-    return html_content;
-
-}
-
-/*
  * Makes the actual graph and defines functionality on the nodes and edges
  */
 var makeGraph = function(dNodes, dEdges){
@@ -280,7 +240,7 @@ var makeGraph = function(dNodes, dEdges){
     }
 
     //graph_style.layout = eval($("input[name='layout-radio']:checked").val());
-    graph_style.layout = COLA_GRAPH_LAYOUT;
+    graph_style.layout =  COLA_GRAPH_LAYOUT//COLA_GRAPH_LAYOUT;
 
     cy = cytoscape( graph_style );
 
@@ -334,18 +294,30 @@ var makeGraph = function(dNodes, dEdges){
        */
       cy.elements().removeClass('highlighted');
       cy.elements().removeClass('selected');
+      cy.elements().addClass('faded');
+      
 
       var node = evt.cyTarget;
       var data = node.data();
       var directlyConnected = node.neighborhood();
+
+
+     
+     
       node.addClass('selected');
-      directlyConnected.nodes().addClass('highlighted');
-      node.connectedEdges().addClass('highlighted');
+      node.removeClass('faded');
+      //directlyConnected.nodes().addClass('highlighted');
+      //node.connectedEdges().addClass('highlighted');
+      node.successors().addClass('highlighted');
+      node.successors().removeClass('faded');
+      node.predecessors().addClass('highlighted');
+      node.predecessors().removeClass('faded');
+
 
             
       if(data.name == "StudioNET"){
        
-        qtipFormat.content.title = "<h2>Studionet Root Node</h2>";
+        qtipFormat.content.title = "Studionet Root Node";
         qtipFormat.content.text = "This is the root node for Studionet."; 
         
         node.qtip(qtipFormat, evt); 
@@ -356,18 +328,21 @@ var makeGraph = function(dNodes, dEdges){
       var route = "/api/" + data.type + "s/" + data.id;
       $.get( route , function( extra_data ) {
 
-
             var content = "<b>" +  angular.element($('.graph-container')).scope().users[ extra_data.createdBy ].name  + "</b>" +
                           "<br><em>" + (new Date(extra_data.dateCreated)).toString().substr(0, 10) + "</em>" +
                           "<br>" + extra_data.body.substr(0,300)
 
-            qtipFormat.content.title =  "<h2>" + extra_data.title + "</h2>";
+            qtipFormat.content.title =  extra_data.title;
             qtipFormat.content.text = content;
 
             node.qtip(qtipFormat, evt);   
       });
 
 
+    });
+
+    cy.on('mouseout','node', function(evt){
+        cy.elements().removeClass('faded');
     });
 
 
@@ -381,8 +356,6 @@ var makeGraph = function(dNodes, dEdges){
       directlyConnected.nodes().addClass('highlighted');
       node.connectedEdges().addClass('highlighted');
 
-      var x = evt.cyPosition.x;
-      var y = evt.cyPosition.y;
 
       if(data.type == 'contribution'){
            var predecessors = node.predecessors();
@@ -474,38 +447,52 @@ var resizeNodes = function( graph ){
 
   for(var i=0; i < graph.nodes().length; i++){
 
+    var id = graph.nodes()[i].id();
+    var outgoers = cy.$('#'  + id ).successors().length;
+    //console.log(outgoers);
+
     //console.log(cy.nodes()[i].data().name == "StudioNET");
     if( cy.nodes()[i].data().name == "StudioNET")
       continue;
 
 
     if( cy.nodes().id()[i] != "10"){
-      var conn = cy.nodes()[i].incomers().length + cy.nodes()[i].outgoers().length;
-
-      if(10+conn*3 < 25)
-          cy.nodes()[i].css({ 'background-color': '#D3D0D0' });
-
-      else if(10+conn*3 < 35)
-          cy.nodes()[i].css({ 'background-color': '#D85D5D' });
-
-      else if(10+conn*3 > 45)
-          cy.nodes()[i].css({ 'background-color': '#AAF8DC' });
-
-      else if(10+conn*3 > 45)
-          cy.nodes()[i].css({ 'background-color': '#D4F561' });
-
-      var edgesFromJerry = cy.edges('edge[source="' + cy.nodes()[i].id + '"]');
-      var jerryChildren = edgesFromJerry.targets();
-      console.log(jerryChildren.length);
-      //jerryChildren.css('background-color', 'blue');
+      var conn = cy.nodes()[i].successors().length;
 
       cy.nodes()[i].css({ 
-            'width': 10+conn*3,  // mapData(property, a, b, c, d)  => specified range a, b; actual values c, d
-            'height': 10+conn*3,
+            'width': 20+conn*3,  // mapData(property, a, b, c, d)  => specified range a, b; actual values c, d
+            'height': 20+conn*3,
 
       })        
     }
 
+
+
+  }
+
+  function randomColors(total)
+  {
+      var i = 360 / (total - 1); // distribute the colors evenly on the hue range
+      var r = []; // hold the generated colors
+      for (var x=0; x<total; x++)
+      {
+          r.push(hsvToRgb(i * x, 100, 100)); // you can also alternate the saturation and value for even more contrast between the colors
+      }
+      return r;
+  }
+
+  var studionet = cy.nodes("[name='StudioNET']")[0];
+  var studionetChildren = studionet.outgoers();
+  var colors = randomColors(studionetChildren.length);
+
+  for(var i=0; i < studionetChildren.length; i++){
+      //console.log("rgb(" + colors[i][0] + "," + colors[i][1] + "," + colors[i][2] + ")" );
+      var color = "rgb(" + colors[i][0] + "," + colors[i][1] + "," + colors[i][2] + ")";
+      studionetChildren[i].css( { 'background-color' : color });
+      studionetChildren[i].successors().css( { 'background-color' : color });
+      studionetChildren[i].successors().map(function(node){ 
+           node.data().parent = studionetChildren[i].id();
+      } )
   } 
 
 
@@ -519,4 +506,72 @@ $(document).ready(function(){
     refreshGraph(); 
 });
 
-
+function hsvToRgb(h, s, v) {
+  var r, g, b;
+  var i;
+  var f, p, q, t;
+ 
+  // Make sure our arguments stay in-range
+  h = Math.max(0, Math.min(360, h));
+  s = Math.max(0, Math.min(100, s));
+  v = Math.max(0, Math.min(100, v));
+ 
+  // We accept saturation and value arguments from 0 to 100 because that's
+  // how Photoshop represents those values. Internally, however, the
+  // saturation and value are calculated from a range of 0 to 1. We make
+  // That conversion here.
+  s /= 100;
+  v /= 100;
+ 
+  if(s == 0) {
+    // Achromatic (grey)
+    r = g = b = v;
+    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+  }
+ 
+  h /= 60; // sector 0 to 5
+  i = Math.floor(h);
+  f = h - i; // factorial part of h
+  p = v * (1 - s);
+  q = v * (1 - s * f);
+  t = v * (1 - s * (1 - f));
+ 
+  switch(i) {
+    case 0:
+      r = v;
+      g = t;
+      b = p;
+      break;
+ 
+    case 1:
+      r = q;
+      g = v;
+      b = p;
+      break;
+ 
+    case 2:
+      r = p;
+      g = v;
+      b = t;
+      break;
+ 
+    case 3:
+      r = p;
+      g = q;
+      b = v;
+      break;
+ 
+    case 4:
+      r = t;
+      g = p;
+      b = v;
+      break;
+ 
+    default: // case 5:
+      r = v;
+      g = p;
+      b = q;
+  }
+ 
+  return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+}
