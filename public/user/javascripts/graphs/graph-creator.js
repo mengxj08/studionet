@@ -13,7 +13,7 @@ var MODULE_COLOR = "#FB95AF";
 var USER_COLOR = "#DE9BF9";
 var CONTRIBUTION_COLOR = "#D02F2F";
 
-var EDGE_DEFAULT_COLOR = "#B7B6B6";
+var EDGE_DEFAULT_COLOR = "#EBE6E6";
 var EDGE_SELECTED_COLOR = "blue";
 var EDGE_DEFAULT_STRENGTH = 3;
 var EDGE_DEFAULT_WEIGHT = 3;
@@ -84,13 +84,13 @@ var graph_style = {
               'curve-style': 'bezier',
               'width': 'mapData(weight, 0.1, 3, 1, 7)', 
               'target-arrow-shape': 'triangle',
-              'line-color': '#333',
-              'source-arrow-color': 'data(faveColor)',
+              'line-color': '#C0BDBD',
+              'source-arrow-color': '#EBEAEA',
               //'content' : 'data(label)',
               'font-size':'10%',
               'color': 'data(faveColor)',
               'edge-text-rotation': 'autorotate',
-              'target-arrow-color': 'data(faveColor)'
+              'target-arrow-color': '#E8E5E5'
             })
 
           .selector('edge')
@@ -345,7 +345,7 @@ var makeGraph = function(dNodes, dEdges){
             
       if(data.name == "StudioNET"){
        
-        qtipFormat.content.title = "Studionet Root Node";
+        qtipFormat.content.title = "<h2>Studionet Root Node</h2>";
         qtipFormat.content.text = "This is the root node for Studionet."; 
         
         node.qtip(qtipFormat, evt); 
@@ -361,7 +361,7 @@ var makeGraph = function(dNodes, dEdges){
                           "<br><em>" + (new Date(extra_data.dateCreated)).toString().substr(0, 10) + "</em>" +
                           "<br>" + extra_data.body.substr(0,300)
 
-            qtipFormat.content.title = extra_data.title;
+            qtipFormat.content.title =  "<h2>" + extra_data.title + "</h2>";
             qtipFormat.content.text = content;
 
             node.qtip(qtipFormat, evt);   
@@ -480,10 +480,24 @@ var resizeNodes = function( graph ){
 
 
     if( cy.nodes().id()[i] != "10"){
-      var conn = cy.nodes()[i].incomers().length + cy.nodes()[i].outgoers().length
+      var conn = cy.nodes()[i].incomers().length + cy.nodes()[i].outgoers().length;
+
+      if(10+conn*3 < 25)
+          cy.nodes()[i].css({ 'background-color': '#D3D0D0' });
+
+      else if(10+conn*3 < 35)
+          cy.nodes()[i].css({ 'background-color': '#D85D5D' });
+
+      else if(10+conn*3 > 45)
+          cy.nodes()[i].css({ 'background-color': '#AAF8DC' });
+
+      else if(10+conn*3 > 45)
+          cy.nodes()[i].css({ 'background-color': '#D4F561' });
+
       cy.nodes()[i].css({ 
-            'width': 10+conn*3, 
-            'height': 10+conn*3,   // mapData(property, a, b, c, d)  => specified range a, b; actual values c, d
+            'width': 10+conn*3,  // mapData(property, a, b, c, d)  => specified range a, b; actual values c, d
+            'height': 10+conn*3,
+
       })        
     }
 

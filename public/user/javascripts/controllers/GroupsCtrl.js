@@ -344,8 +344,6 @@ angular.module('studionet')
  */
 .controller('EditGroupCtrl', ['$scope', 'groups', 'group', 'supernode', 'users', function($scope, groups, group, supernode, users){
 
-	console.log(" edit group control ");
-
 	// get group info
 	$scope.activeGroup = group.group; 
 	// get members
@@ -368,19 +366,15 @@ angular.module('studionet')
 
 	$scope.add = function(id){
 
-		console.log("Ading user");
-		var data = {
-			userId: id
-		}
-
-		group.addGroupMember(data).then(function(){
+		group.addGroupMember({ users: [id] }).then(function(){
 			//alert("User added");
 		})
+
 	}
 
 	$scope.remove = function(id){
 
-		group.removeGroupMember(data).then(function(){
+		group.removeGroupMember({ users: [id] }).then(function(){
 			//alert("User removed");
 		})
 	}
