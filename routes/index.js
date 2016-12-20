@@ -26,6 +26,10 @@ router.get('/', function(req, res, next) {
   */
 });
 
+router.get('/upload', function(req, res, next){
+  res.render('upload');
+});
+
 // GET login page
 router.get('/login', function(req, res, next){
 	res.render('');
@@ -42,16 +46,17 @@ router.get('/user', auth.ensureAuthenticated, function(req, res){
 });
 
 // for testing - remove for deployment
-router.post('/auth/local', passport.authenticate('local', {failureRedirect: '/'}),
-  function(req, res){
-    res.redirect('/');
-  });
+//if (process.env.NODE_ENV === 'test'){
+  router.post('/auth/local', passport.authenticate('local', {failureRedirect: '/'}),
+    function(req, res){
+      res.redirect('/');
+    });
 
-// for testing - remove for deployment
-router.get('/auth/basic', passport.authenticate('basic', {failureRedirect: '/'}),
-  function(req, res) {
-    res.redirect('/');
-  });
+  router.get('/auth/basic', passport.authenticate('basic', {failureRedirect: '/'}),
+    function(req, res) {
+      res.redirect('/');
+    });
+//}
 
 //   POST /auth/openid
 //   Use passport.authenticate() as route middleware to authenticate the

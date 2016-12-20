@@ -5,8 +5,9 @@ var mkdirp = require('mkdirp');
 var glob = require('glob');
 var path = require('path');
 var fs = require('fs');
+var mv = require('mv');
 var auth = require('./auth');
-var uploads = require('./uploads');
+var storage = require('./storage');
 var apiCall = require('./apicall');
 var db = require('seraph')({
 	server: process.env.SERVER_URL || 'http://localhost:7474/', // 'http://studionetdb.design-automation.net'
@@ -261,7 +262,14 @@ router.route('/')
 	 *           If tags are created, contribution creator will be set to this tags as the creator of these tags.
 	 *
 	 */
-	.post(auth.ensureAuthenticated, function(req, res, next){
+	.post(auth.ensureAuthenticated, function(req, res, next) {
+
+		req.tempFileDest = './uploads/' + req.user.id + '/temp/' + Date.now();
+		next();
+
+	 }, multer({storage: storage.attachmentStorage}).array('attachments'), function(req, res, next){
+
+		console.log(req.body);
 
 		// Creating the contribution node, then link it to the creator (user)
 		var query = [
@@ -277,7 +285,7 @@ router.route('/')
 						+ 'MERGE (t:tag {name: tagName}) '
 						+ 'ON CREATE SET t.createdBy = {createdByParam}'
 						+ 'CREATE UNIQUE (c)-[r2:TAGGED]->(t) ',
-			'RETURN id(c)'
+			'RETURN id(c) as id'
 		].join('\n');
 
 		var currentDate = Date.now();
@@ -325,32 +333,38 @@ router.route('/')
 			}
 		}); 
 
-	}, multer({storage: uploads.attachmentStorage}).array('attachments'), function(req, res){
+	}, function(req, res){
 
 		if (!req.hasOwnProperty('files')) {
 			res.status(200);
 			return res.send('success');
 		}
 
-		var createQueries = req.files.map(f => 'CREATE (a:attachment {dateUploaded: ' + Date.now() + ', \
-																						size: ' + f.size + ', \
-																						name: ' + f.filename + '})');
+		// move the files
+		var fileDest = req.tempFileDest;
+		console.log('fileDest: ' + fileDest);
+		mv(fileDest, './uploads/' + req.contributionId + '/attachments/', {mkdirp: true}, function(err){
+			if (err) {
+				console.log(err);
+			}
+		});
+
+		var createQueries = req.files.map((f, idx) =>
+			' CREATE (a' + idx + ':attachment {dateUploaded: ' + Date.now() + ', size: ' + f.size + ', name: "' + f.filename + '"})' +
+			' WITH u, c, a' + idx + 
+			' CREATE (u)-[:UPLOADED]->(a' + idx + ')' +
+			' WITH a' + idx + ',c,u' +
+			' CREATE (a' + idx + ')<-[:ATTACHMENT]-(c)'
+		);
 
 		var query = [
 			'MATCH (u:user) WHERE ID(u)={userIdParam}',
 			'WITH u',
-			'MATCH (c:contribution) WHERE ID(c)={contributionBodyParam}',
+			'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
 			'WITH u, c'
 		];
 
-		var restOfQuery = [
-			'WITH u, c, a',
-			'CREATE (u)-[:UPLOADED]->(a)',
-			'WITH a,c',
-			'CREATE (a)<-[:ATTACHMENT]-(c)'
-		];
-
-		query = query.concat(createQueries, restOfQuery);
+		query = query.concat(createQueries);
 		query = query.join('\n');
 
 		var params = {
