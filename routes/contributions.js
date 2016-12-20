@@ -269,8 +269,6 @@ router.route('/')
 
 	 }, multer({storage: storage.attachmentStorage}).array('attachments'), function(req, res, next){
 
-		console.log(req.body);
-
 		// Creating the contribution node, then link it to the creator (user)
 		var query = [
 			'CREATE (c:contribution {createdBy: {createdByParam}, title: {contributionTitleParam},'
@@ -334,8 +332,8 @@ router.route('/')
 		}); 
 
 	}, function(req, res){
-
-		if (!req.hasOwnProperty('files')) {
+		
+		if (req.files.length === 0) {
 			res.status(200);
 			return res.send('success');
 		}
