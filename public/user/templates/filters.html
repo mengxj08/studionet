@@ -1,36 +1,45 @@
 <link rel='stylesheet' href='./stylesheets/filter-style.css' />
+<link rel='stylesheet' href='./stylesheets/accordion.css' />
 
 <!-- Side Nav with Filters -->
 
 <div ng-controller="FilterCtrl" ng-init='init()' class="container-fluid">
-    <div id='filters' class='row'>              
+    <div id='filters' class='row'> 
+
+      <div uib-accordion id="accordion">
+
          <!-- By Author Filter -->
-         <div class="filter-panel panel badge-success col-sm-2">
-              <div class="filter-heading"> 
+         <div uib-accordion-group class="filter-panel panel badge-success col-sm-2">
+          
+              <uib-accordion-heading class="filter-heading"> 
                 <h5>Authors & Groups<span class='filter-element-count'>{{ checkFilterActive("authors") }}</span></h5>
-              </div>
+              </uib-accordion-heading>
+
               <multiselect-searchtree data-input-model="authors" multi-select="true"
                             data-output-model="selectedAuthors" data-callback="CustomCallback(item, selectedItems)"
-                            data-select-only-leafs="false" extra-buttons="false" class="filter1" style="display:none"></multiselect-searchtree>
+                            data-select-only-leafs="false" extra-buttons="false" class="filter1"></multiselect-searchtree>
           </div>
 
           <!-- By Tags Filter -->
-          <div class="filter-panel panel badge-success col-sm-2" >
-              <div class="filter-heading">
+          <div uib-accordion-group class="filter-panel panel badge-success col-sm-2" >
+
+              <uib-accordion-heading class="filter-heading">
                 <h5>Tags <span class='filter-element-count'>{{ checkFilterActive("tags") }}</span></h5>
-                
-              </div>
+              </uib-accordion-heading>
+
               <multiselect-searchtree data-input-model="tags" multi-select="true"
                             data-output-model="selectedTags" data-callback="CustomCallback(item, selectedItems)"
-                            data-select-only-leafs="false" extra-buttons="false" class="filter1" style="display:none"></multiselect-searchtree>
+                            data-select-only-leafs="false" extra-buttons="false" class="filter1"></multiselect-searchtree>
           </div>
           
           <!-- By Date Range -->
-          <div class='filter-panel panel col-sm-2'>
-              <div class="filter-heading">  
+          <div uib-accordion-group class='filter-panel panel col-sm-2'>
+
+              <uib-accordion-heading class="filter-heading">  
                 <h5>Date Range <span class='filter-element-count'>{{ checkFilterActive("date") }}</span></h5>  
-              </div>
-              <div style="display:none">
+              </uib-accordion-heading>
+
+              <div>
                 From: <input type="date" name="firstDate" ng-model='firstDate'>
                 <br>
                 Till: <input type="date" name="lastDate" ng-model='lastDate'>
@@ -39,20 +48,26 @@
           </div>
 
           <!-- By Rating -->
-          <div class='filter-panel panel col-sm-2'>
-              <div class="filter-heading">
+          <div uib-accordion-group class='filter-panel panel col-sm-2'>
+
+              <uib-accordion-heading class="filter-heading">
                 <h5>Rating <span class='filter-element-count'>{{ checkFilterActive("rating") }}</span></h5>  
-              </div>
-              <angular-ranger min="0" max="5" step="1" min-value=ratingMin max-value=ratingMax style="display:none"></angular-ranger>
+              </uib-accordion-heading>
+
+              <angular-ranger min="0" max="5" step="1" min-value=ratingMin max-value=ratingMax></angular-ranger>
           </div>
 
           <!-- By Depth -->
-          <div class='filter-panel panel col-sm-2'>
-              <div class="filter-heading">  
+          <div uib-accordion-group class='filter-panel panel col-sm-2'>
+
+              <uib-accordion-heading class="filter-heading">  
                 <h5>Depth <span class='filter-element-count'>{{ checkFilterActive("depth") }} </span></h5>  
-              </div>
-              <angular-ranger min="0" max="3" value=depthVal style="display:none"></angular-ranger>
+              </uib-accordion-heading>
+
+              <angular-ranger min="0" max="3" value=depthVal></angular-ranger>
           </div>
+
+      </div>
 
           <!-- Final Filter Button -->
           <div class='filter-panel panel col-sm-1  filter-btn'>
@@ -68,7 +83,6 @@
             </div>
           </div>
 
-                        
     </div>
 </div>
 
