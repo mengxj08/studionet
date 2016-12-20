@@ -158,7 +158,7 @@ angular.module('studionet')
 
       /*
        * Initialization of filter-headings toggle functionality
-       * TODO: find better fix
+       * TODO: find better fix (accordion)
        */
       $scope.init = function(){
 
@@ -167,9 +167,9 @@ angular.module('studionet')
         $(".filter-heading").click(function(){
 
               // close filter headings
-              $('.filter-heading').not(this).siblings().hide();
+              // $('.filter-heading').not(this).siblings().hide(); //done by accordion therefore commented
 
-              $(this).siblings().toggle();
+              // $(this).siblings().toggle(); //done by accordion therefore commented
 
         });
 
