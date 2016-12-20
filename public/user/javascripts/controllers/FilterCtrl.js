@@ -124,6 +124,8 @@ angular.module('studionet')
           + "&d=" + $scope.depthVal;   // depth
 
 
+          console.log(urlString);
+
           $http.get(urlString).success(function(data){
               
               refreshGraph(data);

@@ -494,6 +494,11 @@ var resizeNodes = function( graph ){
       else if(10+conn*3 > 45)
           cy.nodes()[i].css({ 'background-color': '#D4F561' });
 
+      var edgesFromJerry = cy.edges('edge[source="' + cy.nodes()[i].id + '"]');
+      var jerryChildren = edgesFromJerry.targets();
+      console.log(jerryChildren.length);
+      //jerryChildren.css('background-color', 'blue');
+
       cy.nodes()[i].css({ 
             'width': 10+conn*3,  // mapData(property, a, b, c, d)  => specified range a, b; actual values c, d
             'height': 10+conn*3,

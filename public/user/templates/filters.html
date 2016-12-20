@@ -4,9 +4,9 @@
 <!-- Side Nav with Filters -->
 
 <div ng-controller="FilterCtrl" ng-init='init()' class="container-fluid">
-    <div id='filters' class='row'> 
+    <div id='filters' class='row'> {{ selectedTags }}
 
-      <div uib-accordion id="accordion">
+      <div uib-accordion id="accordion">  
 
          <!-- By Author Filter -->
          <div uib-accordion-group class="filter-panel panel badge-success col-sm-2">
@@ -17,7 +17,7 @@
 
               <multiselect-searchtree data-input-model="authors" multi-select="true"
                             data-output-model="selectedAuthors" data-callback="CustomCallback(item, selectedItems)"
-                            data-select-only-leafs="false" extra-buttons="false" class="filter1"></multiselect-searchtree>
+                            data-select-only-leafs="false" extra-buttons="false" class="filter1"></multiselect-searchtree> 
           </div>
 
           <!-- By Tags Filter -->
