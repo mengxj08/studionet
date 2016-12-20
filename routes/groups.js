@@ -393,7 +393,7 @@ router.route('/:groupId/users')
    */ 
   .delete(auth.ensureAuthenticated, auth.isGroupAdmin, function(req, res){
 
-    if (req.body.userIds instanceof String) {
+    if (req.body.users instanceof String) {
       var userIds = JSON.parse(req.body.users)
                         .map(x => parseInt(x));
     } else {
