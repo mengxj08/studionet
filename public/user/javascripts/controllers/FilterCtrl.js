@@ -5,13 +5,26 @@ angular.module('studionet')
  */
 .controller('FilterCtrl', ['$scope', 'supernode', 'users', 'tags', 'groups', '$http',  function($scope, supernode, users, tags, groups, $http){ 
 
+      // defaults
+      var DEFAULTS = {
+            authors : [],
+            tags : [],
+            startDate: new Date( (new Date()).setDate((new Date().getDate()) - 365) ),
+            endDate : new Date( (new Date()).setDate((new Date().getDate()) + 365) ),
+            ratingMin : 0, 
+            ratingMax : 5, 
+            depthVal : 0
+      }
+
+
+
       // Lists populating filters
       $scope.tags = [];
       $scope.authors = [];
       
       // Filter Selections
       $scope.selectedAuthors, $scope.selectedTags, 
-      $scope.firstDate, $scope.lastDate, 
+      $scope.startDate, $scope.endDate, 
       $scope.ratingMin, $scope.ratingMax;
       $scope.depthVal;
 
@@ -21,13 +34,13 @@ angular.module('studionet')
        */
       var resetDefaults = function(){
           
-          $scope.selectedAuthors = [];
-          $scope.selectedTags = [];
-          $scope.firstDate = new Date();
-          $scope.lastDate = new Date(); $scope.lastDate.setDate($scope.firstDate.getDate() - 365);
-          $scope.ratingMin = 0;
-          $scope.ratingMax = 5;
-          $scope.depthVal = 0;
+          $scope.selectedAuthors = DEFAULTS.authors;
+          $scope.selectedTags = DEFAULTS.tags;
+          $scope.startDate = DEFAULTS.startDate;
+          $scope.endDate = DEFAULTS.endDate;
+          $scope.ratingMin = DEFAULTS.ratingMin;
+          $scope.ratingMax = DEFAULTS.ratingMax;
+          $scope.depthVal = DEFAULTS.depthVal;
 
           // clear actual filters
           $scope.tags.map( function(tag) { tag.selected = false; return tag; });
@@ -92,7 +105,21 @@ angular.module('studionet')
           });
       }
 
-
+      var checkDefaults = function(){
+        if (  $scope.selectedAuthors.length == DEFAULTS.authors.length &&
+              $scope.selectedTags.length == DEFAULTS.tags.length && 
+              $scope.startDate == DEFAULTS.startDate &&
+              $scope.endDate == DEFAULTS.endDate && 
+              $scope.ratingMin == DEFAULTS.ratingMin &&
+              $scope.ratingMax == DEFAULTS.ratingMax &&
+              $scope.depthVal == DEFAULTS.depthVal ){
+          alert("No fitler active");
+          return true;
+        }
+        else
+          return false;
+     
+      }
 
 
       /* Filter Functions */
@@ -124,8 +151,8 @@ angular.module('studionet')
                       return $scope.selectedTags.length; 
                     break;
               case "date":
-                    if ($scope.firstDate === default_firstDate && $scope.lastDate === default_lastDate)
-                      return  (lastDate - firstDate) / 86400000 ; 
+                    if ($scope.startDate === default_startDate && $scope.endDate === default_endDate)
+                      return  (endDate - startDate) / 86400000 ; 
                     break;
               case "rating":
                     if($scope.ratingMin == default_ratingMin && $scope.ratingMax == default_ratingMax)
@@ -151,38 +178,48 @@ angular.module('studionet')
        */
       $scope.filterRequest = function(){
 
-          var urlString = '/api/contributions?'; 
-          
-          //  Create the URL String
-        
-          urlString +=  "g=[" + $scope.selectedAuthors.filter( function(g){ return (g.type == "group") }).map( function(u){ return u.id } ).toString() + "]"   // users
-
-          + "&u=[" + $scope.selectedAuthors.filter( function(g){ return (g.type == "user") }).map( function(u){ return u.id } ).toString() + "]"   // users
-
-          + "&tg=[" + $scope.selectedTags.map( function(g){
-             return g.id; 
-          }).toString() + "]"    // tags
-
-          + "&r=[" + $scope.ratingMin + "," + $scope.ratingMax + "]"    // rating
-
-          + "&t=[" + $scope.firstDate.getTime() + "," + $scope.lastDate.getTime() + "]"   // time
-
-          + "&d=" + $scope.depthVal;   // depth
-
-          console.log(urlString);
-
-          $http.get(urlString).success(function(data){
+          // if defaults, then don't run filter, run reset
+          if( checkDefaults() ){
+            $scope.clearFilter();
+          }
+          else{
               
-              $scope.graphInit(data);
+              var urlString = '/api/contributions?'; 
 
-              $scope.filterActive = true;
+              var groups = $scope.selectedAuthors.filter( function(g){ return (g.type == "group") });
+              var users = $scope.selectedAuthors.filter( function(g){ return (g.type == "user") });
+
+              //  Create the URL String
+            
+              urlString +=  "g=" + ( groups.length ? "[" + groups.map( function(u){ return u.id } ).toString() + "]" : "-1" )  // users
+
+              + "&u=" + ( users.length ? "[" + users.map( function(u){ return u.id } ).toString() + "]"  : "-1" )  // users
+
+              + "&tg=" + ( $scope.selectedTags.length ? "[" + $scope.selectedTags.map( function(g){ return g.id; }).toString() + "]" : "-1" )  // tags
+
+              + "&r=[" + $scope.ratingMin + "," + $scope.ratingMax + "]"    // rating
+
+              + "&t=[" + $scope.startDate.getTime() + "," + $scope.endDate.getTime() + "]"   // time
+
+              + "&d=" + $scope.depthVal;   // depth
+
+              console.log(urlString);
+
+              $http.get(urlString).success(function(data){
+                  
+                  $scope.graphInit(data);
+
+                  $scope.filterActive = true;
 
 
-              if(data.nodes.length == 0){
-                console.log(data.nodes.length + " nodes found");
-              }
+                  if(data.nodes.length == 0){
+                    console.log(data.nodes.length + " nodes found");
+                  }
 
-          });
+              });
+
+          }
+
 
       };
 

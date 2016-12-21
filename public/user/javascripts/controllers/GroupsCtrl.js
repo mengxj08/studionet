@@ -27,14 +27,15 @@ angular.module('studionet')
 		else{
 
 			// remove other users
-			var collection = cy.elements("node[type = 'USER']");
-			cy.remove( collection );
+			var collection = $scope.graph.elements("node[type = 'USER']");
+			$scope.graph.remove( collection );
 			 
 			if( evt.cyTarget.data().supernode ){
 				return; 
 			}
 			else{
 
+				// fix me
 				group.getGroupInfo(evt.cyTarget.data().id).then( function(){
 
 					// explode the node to show users
@@ -45,24 +46,21 @@ angular.module('studionet')
 
 							group.users[i].type = "USER";
 
-							var node = {
-								group: "nodes",
-								data: createGraphNode( group.users[i] ).data
-							}
+							var node = { group: "nodes", data: group.users[i] };
+							var edge = { group: "edges", data: { source: evt.cyTarget.data().id, target: group.users[i].id } }
 
-							var edge =  { source: evt.cyTarget.data().id, target: group.users[i].id }
-							var edge = {
-								group: "edges",
-								data: createGraphEdge(edge).data
-							}
-
-						    cy.add([ node, edge ]);
-						    cy.layout().stop(); 
-						    layout = cy.elements().makeLayout({ 'name': 'cola'}); 
+						    $scope.graph.add([ node, edge ]);
+						    $scope.graph.layout().stop(); 
+						    layout = $scope.graph.elements().makeLayout({ 'name': 'cola'}); 
 						    layout.start();
 
+						   	// change css of user-nodes
+						    $scope.graph.nodes().map(function(node){ 
+						    	if(node.data().type == "USER"){ 
+						    		node.css({'background-color':'red', 'width': 10, 'height': 10}) 
+						    	} 
+						    })
 						}
-
 
 					});
 				})

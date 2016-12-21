@@ -1,6 +1,5 @@
 angular.module('studionet')
 
-
 // todo
 .service('AppContextService', function(){
     
@@ -20,7 +19,6 @@ angular.module('studionet')
 
     return o; 
 })
-
 
 .factory('supernode', ['$http', function($http){
 	var o ={
@@ -62,7 +60,6 @@ angular.module('studionet')
 
 	// redundant
 	o.getContributions = function(){
-
 		console.warn("Shouldn't be using this");		
 		return $http.get('/api/profile/contributions').success(function(data){
 			angular.copy(data, o.contributions);
@@ -245,13 +242,11 @@ angular.module('studionet')
 					data.requestingUserStatus = undefined;
 
 					// fix me - find a better way
-					
-
-					for(var i=0; i < profile.groups.length; i++){
+/*					for(var i=0; i < profile.user.groups.length; i++){
 						if( data.id == profile.groups[i].id ){
 								data.requestingUserStatus = profile.groups[i].role;
 						}
-					}
+					}*/
 
 					angular.copy(data, o.group);
 

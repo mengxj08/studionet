@@ -57,6 +57,8 @@ angular.module('studionet')
               node.qtip(qtipFormat, evt); 
           }
           else{
+
+            // fix me
             var route = "/api/" + data.type + "s/" + data.id;
             $.get( route , function( extra_data ) {
                   var content = "<b>" +  angular.element($('.graph-container')).scope().users[ extra_data.createdBy ].name  + "</b>" +
