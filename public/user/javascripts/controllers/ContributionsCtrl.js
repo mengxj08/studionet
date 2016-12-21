@@ -41,10 +41,18 @@ angular.module('studionet')
     cy.elements().removeClass('searched')
   }
 
+
+  /* 
+   *    Nav Controls
+   */
   $scope.resetGraph = function(){
       cy.layout().stop(); 
-      layout =cy.elements().makeLayout({ 'name': 'cola'}); 
+      layout = cy.elements().makeLayout({ 'name': 'cola'}); 
       layout.start();   
+  }
+
+  $scope.createNewContribution = function(){
+    alert("Creates a new contribution");
   }
 
 
@@ -81,6 +89,9 @@ angular.module('studionet')
       });
 
     };
+
+
+    
 
 }])
 

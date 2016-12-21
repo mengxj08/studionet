@@ -20,9 +20,9 @@ angular.module('studionet')
 .factory('profile', ['$http', function($http){
 	var o ={
 		user: {},
-		groups: [],
-		contributions: [],
-		groupsById: {}
+		//groups: [],
+		//contributions: [],
+		//groupsById: {}
 	};
 
 	o.getUser = function(){
@@ -39,7 +39,10 @@ angular.module('studionet')
 		});
 	};
 
+	// redundant
 	o.getContributions = function(){
+
+		console.warn("Shouldn't be using this");		
 		return $http.get('/api/profile/contributions').success(function(data){
 			angular.copy(data, o.contributions);
 		});

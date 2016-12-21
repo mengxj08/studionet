@@ -415,6 +415,10 @@ var refreshGraph = function(data){
     if(arguments[0]){
       console.log("Filtered graph")
       makeGraph(data.nodes, data.links);
+        resizeNodes(cy);
+
+        cy.minZoom(0.5);
+        cy.maxZoom(1.5);
     }    
     else{
         console.log("Default graph")
@@ -432,9 +436,9 @@ var refreshGraph = function(data){
             cy.maxZoom(1.5);
 
         })
-
-
     }
+
+
 
 }
 
