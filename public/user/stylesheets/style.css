@@ -120,8 +120,14 @@ nav .navbar-nav{
 	padding: 0px !important;
 }
 
-.navbar-left, .navbar-right{
+.navbar-left{
 	margin: 0px 50px !important;
+}
+
+.navbar-right{
+	margin: 0px 25px;
+	margin-left: 0px !important;
+    border-bottom-width: 0px !important;
 }
 
 .navbar-collapse{
@@ -134,7 +140,17 @@ nav .navbar-nav{
 	font-weight: 900 !important;
 }
 
+.navbar .navbar-collapse .navbar-nav > li.dropdown:hover .dropdown-menu {
+  transform: translate(0, -3px); }
 
+.navbar .navbar-collapse .navbar-nav > li.dropdown:hover:after {
+  transform: translate(-50%, -3px); }
+
+#noDropdown > li.dropdown:hover:after {
+  display: none;
+  visibility: none;
+  opacity: none;
+  transform: none; }
 
 /*
  * App Body & Theme CSS
