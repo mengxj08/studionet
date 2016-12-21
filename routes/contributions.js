@@ -5,6 +5,7 @@ var mkdirp = require('mkdirp');
 var glob = require('glob');
 var path = require('path');
 var fs = require('fs-extra');
+var gm = require('gm');
 var auth = require('./auth');
 var storage = require('./storage');
 var apiCall = require('./apicall');
@@ -14,6 +15,9 @@ var db = require('seraph')({
 	pass: process.env.DB_PASS
 });
 var _ = require('underscore');
+var mmm = require('mmmagic'),
+      Magic = mmm.Magic;
+
 
 // route: /api/contributions
 router.route('/')
@@ -759,55 +763,125 @@ router.route('/:contributionId/attachments')
 		var tempFileDest = req.tempFileDest;
 		var attachmentsDest = './uploads/contributions/' + req.params.contributionId + '/attachments/';
 
-		// can factor this out also..
-		fs.copy(tempFileDest, attachmentsDest, function(err){
-			if (err) {
-				console.error(err);
-			} else {
-				fs.remove(tempFileDest, function(err){
-					console.log(err);
-				})
-			}
+		var transferPromise = new Promise(function(resolve, reject){
+			// can factor this out also..
+			fs.copy(tempFileDest, attachmentsDest, function(err){
+				if (err) {
+					console.error(err);
+				} else {
+					fs.remove(tempFileDest, function(err){
+						resolve();
+					})
+				}
+			});
+		})
+		.then(function(){
+
+			return new Promise(function(resolve, reject){
+				var createQueries = req.files.map((f, idx) =>
+					' CREATE (a' + idx + ':attachment {dateUploaded: ' + Date.now() + ', size: ' + f.size + ', name: "' + f.filename + '", thumb:false })' +
+					' WITH u, c, a' + idx + 
+					' CREATE (u)-[:UPLOADED]->(a' + idx + ')' +
+					' WITH a' + idx + ',c,u' +
+					' CREATE (a' + idx + ')<-[:ATTACHMENT]-(c)'
+				);
+
+				console.log('createQueries: ' + createQueries);
+
+				var query = [
+					'MATCH (u:user) WHERE ID(u)={userIdParam}',
+					'WITH u',
+					'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
+					'WITH u, c'
+				];
+
+				var returnQuery = req.files.reduce(function(acc, f, idx){
+					return acc + (idx === 0 ? ' ' : '+') + 'collect(id(a' + idx + '))';
+				}, 'RETURN ');
+
+				returnQuery += ' as id';
+
+				query = query.concat(createQueries, returnQuery);
+				query = query.join('\n');
+
+				console.log(query);
+
+				var params = {
+					userIdParam: req.user.id,
+					contributionIdParam: parseInt(req.params.contributionId)
+				};
+
+				db.query(query, params, function(error, result){
+					if (error){
+						console.log(error);
+						res.status(500);
+						res.send('error in uploading file as attachment');
+					} else {
+						res.status(200);
+						res.send('success');
+						resolve(result[0]);
+					}
+				});
+			});
+
+		})
+		.then(function(idArray){
+			// handle the thumbnail generation here
+			var magic = new Magic(mmm.MAGIC_MIME_TYPE);
+		  req.files.map((f, idx) => {
+		  	magic.detectFile(attachmentsDest + f.filename, function(err, result) {
+		      if (err) {
+		      	console.log(err);
+		      	return;
+		      }
+
+		      var isImage = result.split("/")[0] === "image";
+		      console.log(isImage);
+		      if (!isImage) {
+		      	return;
+		      }
+
+		      var thumbName = 'thumb_' + f.filename;
+		      console.log(thumbName);
+
+			    gm(attachmentsDest + f.filename)
+				  .resize(300, 300, '^')
+				  .gravity('Center')
+				  .crop(200, 200)
+				  .quality(100)
+				  .write(attachmentsDest + thumbName, function(error){
+				  	if (error) 
+				  		console.log('error!!! for : ' + f.filename);
+				  	else{
+				  		console.log('found ', idx);
+
+				  		var query = [
+				  			'MATCH (a:attachment) WHERE ID(a)={attachmentIdParam}',
+				  			'SET a.thumb = true, a.thumbName = {thumbNameParam}'
+				  		].join('\n');
+
+				  		var params = {
+				  			attachmentIdParam: idArray[idx],
+				  			thumbNameParam: thumbName
+				  		}
+
+				  		db.query(query, params, function(error, result){
+				  			if (error)
+				  				console.log(error);
+				  		});
+				  	}
+				  });
+				});
+		  })
+
 		});
 
-		var createQueries = req.files.map((f, idx) =>
-			' CREATE (a' + idx + ':attachment {dateUploaded: ' + Date.now() + ', size: ' + f.size + ', name: "' + f.filename + '"})' +
-			' WITH u, c, a' + idx + 
-			' CREATE (u)-[:UPLOADED]->(a' + idx + ')' +
-			' WITH a' + idx + ',c,u' +
-			' CREATE (a' + idx + ')<-[:ATTACHMENT]-(c)'
-		);
-
-		var query = [
-			'MATCH (u:user) WHERE ID(u)={userIdParam}',
-			'WITH u',
-			'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
-			'WITH u, c'
-		];
-
-		query = query.concat(createQueries);
-		query = query.join('\n');
-
-		var params = {
-			userIdParam: req.user.id,
-			contributionIdParam: parseInt(req.params.contributionId)
-		};
-
-		db.query(query, params, function(error, result){
-			if (error){
-				console.log(error);
-				res.status(500);
-				res.send('error in uploading file as attachment');
-			} else {
-				res.status(200);
-				res.send('success');
-			}
-		});
-	});
+	})
 
 //route: /api/contributions/:contributionId/attachments/:attachmentId
 router.route('/:contributionId/attachments/:attachmentId')
 	.get(auth.ensureAuthenticated, function(req, res, next){
+		
 		var query = [
 			'OPTIONAL MATCH (c:contribution)-[:ATTACHMENT]-(a:attachment)',
 			'WHERE ID(c)={contributionIdParam} AND ID(a)={attachmentIdParam}',
@@ -822,12 +896,11 @@ router.route('/:contributionId/attachments/:attachmentId')
 		var namePromise = new Promise(function(resolve, reject){
 			db.query(query, params, function(error, result){
 				if (error) {
-					console.error(error);
-					return reject();
+					return reject('error');
 				}
 
 				if (result[0].count === 0) {
-					return reject();
+					return reject('error');
 				}
 				return resolve(result[0]);
 
