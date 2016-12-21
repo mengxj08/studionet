@@ -4,9 +4,9 @@ var multer = require('multer');
 var mkdirp = require('mkdirp');
 var glob = require('glob');
 var path = require('path');
-var fs = require('fs');
+var fs = require('fs-extra');
 var auth = require('./auth');
-var uploads = require('./uploads');
+var storage = require('./storage');
 var apiCall = require('./apicall');
 var db = require('seraph')({
 	server: process.env.SERVER_URL || 'http://localhost:7474/', // 'http://studionetdb.design-automation.net'
@@ -100,15 +100,27 @@ router.route('/')
 		}
 
 		// First get all the users matching the specified group, if present
-		var groupIds = JSON.parse(req.query[QUERY_PARAM_GROUPS_KEYWORD]).map(x => parseInt(x));
-		var specifiedUserIds = JSON.parse(req.query[QUERY_PARAM_USERS_KEYWORD]).map(x => parseInt(x));
+		var groupIds = JSON.parse(req.query[QUERY_PARAM_GROUPS_KEYWORD]);
+		var specifiedUserIds = JSON.parse(req.query[QUERY_PARAM_USERS_KEYWORD]);
+
+		if (groupIds instanceof Array){
+			groupIds = groupIds.map(x => parseInt(x));
+		} else {
+			groupIds = parseInt(groupIds);
+		}
+
+		if (specifiedUserIds instanceof Array) {
+			specifiedUserIds = specifiedUserIds.map(x => parseInt(x));
+		} else {
+			specifiedUserIds = parseInt(specifiedUserIds);
+		}
+
 		var matchAllGroups = false;
 		var matchAllUsers = false;
-
-		if (groupIds instanceof String && groupIds === -1) {
+		if (typeof groupIds === 'number' && groupIds === -1) {
 			// match all groups
 			matchAllGroups = true;
-		} else if (specifiedUserIds instanceof String && specifiedUserIds === -1){
+		} else if (typeof specifiedUserIds === 'number' && specifiedUserIds === -1){
 			matchAllUsers = true;
 		} else {
 			var query = [ 
@@ -141,11 +153,28 @@ router.route('/')
 
 		usersInGroupsPromise
 		.then(function(result){
-			var dateArray = JSON.parse(req.query[QUERY_PARAM_TIME_KEYWORD]).map(x => parseInt(x));
-			var rateArray = JSON.parse(req.query[QUERY_PARAM_RATING_KEYWORD]).map(x => parseInt(x));
-			var tagsArray = JSON.parse(req.query[QUERY_PARAM_TAGS_KEYWORD]).map(x => parseInt(x));
+			var dateArray = JSON.parse(req.query[QUERY_PARAM_TIME_KEYWORD]);
+			var rateArray = JSON.parse(req.query[QUERY_PARAM_RATING_KEYWORD]);
+			var tagsArray = JSON.parse(req.query[QUERY_PARAM_TAGS_KEYWORD]);
 
-			var matchAllUsers = false;
+			if (dateArray instanceof Array) {
+				dateArray = dateArray.map(x => parseInt(x));
+			} else {
+				dateArray = parseInt(dateArray);
+			}
+
+			if (rateArray instanceof Array) {
+				rateArray = rateArray.map(x => parseInt(x));
+			} else {
+				rateArray = parseInt(rateArray);
+			}
+
+			if (tagsArray instanceof Array) {
+				tagsArray = tagsArray.map(x => parseInt(x));
+			} else {
+				tagsArray = parseInt(tagsArray);
+			}
+
 			var matchAllDates = false;
 			var matchAllRatings = false;
 			var matchAllTags = false;
@@ -204,14 +233,15 @@ router.route('/')
 
 			var queryUserGroupTag = 'MATCH ' + (matchAllTags ? '' : '(t:tag)<-[:TAGGED]-') + '(c:contribution)'
 															+ (matchAllGroups || matchAllUsers ? '' : '<-[:CREATED]-(u:user)')
-															+ (matchAllGroups || matchAllUsers ? '' : ' WHERE ID(u) IN [' + params.userIdsParam + ']')
+															+ ' WHERE true '
+															+ (matchAllGroups || matchAllUsers ? '' : ' AND ID(u) IN [' + params.userIdsParam + ']')
 															+  (matchAllTags ? '' : (' AND ID(t) IN [' + params.tagIdsParam + ']'));
 
 			var queryLowerRate = params.ratingLowerParam === -1 ? '' : ' AND toInt(c.rating) >= toInt(' + params.ratingLowerParam + ')';
 			var queryUpperRate = params.ratingUpperParam === -1 ? '' : ' AND toInt(c.rating) <= toInt(' + params.ratingUpperParam + ')';
 			var queryRating = matchAllRatings ? '' : queryLowerRate + queryUpperRate;
 
-			var queryLowerDate = params.dateLowerParam === -1 ? '' : ('AND toInt(c.dateCreated) >= toInt(' + params.dateLowerParam + ')');
+			var queryLowerDate = params.dateLowerParam === -1 ? '' : (' AND toInt(c.dateCreated) >= toInt(' + params.dateLowerParam + ')');
 			var queryUpperDate = params.dateUpperParam === -1 ? '' : (' AND toInt(c.dateCreated) <= toInt(' + params.dateUpperParam + ')');
 			var queryDate = matchAllDates ? '' : (queryLowerDate + queryUpperDate);
 
@@ -261,7 +291,12 @@ router.route('/')
 	 *           If tags are created, contribution creator will be set to this tags as the creator of these tags.
 	 *
 	 */
-	.post(auth.ensureAuthenticated, function(req, res, next){
+	.post(auth.ensureAuthenticated, function(req, res, next) {
+
+		req.tempFileDest = './uploads/users/' + req.user.id + '/temp/' + Date.now();
+		next();
+
+	 }, multer({storage: storage.attachmentStorage}).array('attachments'), function(req, res, next){
 
 		// Creating the contribution node, then link it to the creator (user)
 		var query = [
@@ -277,7 +312,7 @@ router.route('/')
 						+ 'MERGE (t:tag {name: tagName}) '
 						+ 'ON CREATE SET t.createdBy = {createdByParam}'
 						+ 'CREATE UNIQUE (c)-[r2:TAGGED]->(t) ',
-			'RETURN id(c)'
+			'RETURN id(c) as id'
 		].join('\n');
 
 		var currentDate = Date.now();
@@ -325,32 +360,45 @@ router.route('/')
 			}
 		}); 
 
-	}, multer({storage: uploads.attachmentStorage}).array('attachments'), function(req, res){
-
-		if (!req.hasOwnProperty('files')) {
+	}, function(req, res){
+		
+		if (req.files.length === 0) {
 			res.status(200);
 			return res.send('success');
 		}
 
-		var createQueries = req.files.map(f => 'CREATE (a:attachment {dateUploaded: ' + Date.now() + ', \
-																						size: ' + f.size + ', \
-																						name: ' + f.filename + '})');
+		// move the files
+		var tempFileDest = req.tempFileDest;
+		var attachmentsDest = './uploads/contributions/' + req.contributionId + '/attachments/';
+
+		// first create the dir
+		// move the files
+		fs.copy(tempFileDest, attachmentsDest, function(err){
+			if (err) {
+				console.error(err);
+			} else {
+				fs.remove(tempFileDest, function(err){
+					console.log(err);
+				})
+			}
+		});
+
+		var createQueries = req.files.map((f, idx) =>
+			' CREATE (a' + idx + ':attachment {dateUploaded: ' + Date.now() + ', size: ' + f.size + ', name: "' + f.filename + '"})' +
+			' WITH u, c, a' + idx + 
+			' CREATE (u)-[:UPLOADED]->(a' + idx + ')' +
+			' WITH a' + idx + ',c,u' +
+			' CREATE (a' + idx + ')<-[:ATTACHMENT]-(c)'
+		);
 
 		var query = [
 			'MATCH (u:user) WHERE ID(u)={userIdParam}',
 			'WITH u',
-			'MATCH (c:contribution) WHERE ID(c)={contributionBodyParam}',
+			'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
 			'WITH u, c'
 		];
 
-		var restOfQuery = [
-			'WITH u, c, a',
-			'CREATE (u)-[:UPLOADED]->(a)',
-			'WITH a,c',
-			'CREATE (a)<-[:ATTACHMENT]-(c)'
-		];
-
-		query = query.concat(createQueries, restOfQuery);
+		query = query.concat(createQueries);
 		query = query.join('\n');
 
 		var params = {
@@ -663,7 +711,168 @@ router.route('/:contributionId/rate')
 				res.send('Successfully rated contribution id ' + req.params.contributionId + ' with the rating ' + req.body.rating);
 			}
 		})
-	})
+	});
 
+
+//route: /api/contributions/:contributionId/attachments
+router.route('/:contributionId/attachments')
+	.post(auth.ensureAuthenticated, function(req, res, next){
+		// ensure user owns the contribution id first
+		var query = [
+			'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
+			'RETURN c.createdBy as id'
+		].join('\n');
+
+		var params = {
+			contributionIdParam: parseInt(req.params.contributionId)
+		};
+
+		db.query(query, params, function(error, result){
+			if (error){
+				console.log(error);
+				res.send('error');
+			} else {
+				var contributionCreatorId = result[0].id;
+				var userId = parseInt(req.user.id);
+
+				if (userId === contributionCreatorId) {
+					next();
+				} else {
+					res.send('not the owner');
+				}
+			}
+		});
+	}, function(req, res, next) {
+
+		req.tempFileDest = './uploads/users/' + req.user.id + '/temp/' + Date.now();
+		next();
+
+	}, multer({storage: storage.attachmentStorage}).array('attachments'), function(req, res){
+		// add attachments (can have multiple..)
+
+			if (req.files.length === 0) {
+			res.status(200);
+			return res.send('success');
+		}
+
+		// move the files
+		var tempFileDest = req.tempFileDest;
+		var attachmentsDest = './uploads/contributions/' + req.params.contributionId + '/attachments/';
+
+		// can factor this out also..
+		fs.copy(tempFileDest, attachmentsDest, function(err){
+			if (err) {
+				console.error(err);
+			} else {
+				fs.remove(tempFileDest, function(err){
+					console.log(err);
+				})
+			}
+		});
+
+		var createQueries = req.files.map((f, idx) =>
+			' CREATE (a' + idx + ':attachment {dateUploaded: ' + Date.now() + ', size: ' + f.size + ', name: "' + f.filename + '"})' +
+			' WITH u, c, a' + idx + 
+			' CREATE (u)-[:UPLOADED]->(a' + idx + ')' +
+			' WITH a' + idx + ',c,u' +
+			' CREATE (a' + idx + ')<-[:ATTACHMENT]-(c)'
+		);
+
+		var query = [
+			'MATCH (u:user) WHERE ID(u)={userIdParam}',
+			'WITH u',
+			'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
+			'WITH u, c'
+		];
+
+		query = query.concat(createQueries);
+		query = query.join('\n');
+
+		var params = {
+			userIdParam: req.user.id,
+			contributionIdParam: parseInt(req.params.contributionId)
+		};
+
+		db.query(query, params, function(error, result){
+			if (error){
+				console.log(error);
+				res.status(500);
+				res.send('error in uploading file as attachment');
+			} else {
+				res.status(200);
+				res.send('success');
+			}
+		});
+	});
+
+//route: /api/contributions/:contributionId/attachments/:attachmentId
+router.route('/:contributionId/attachments/:attachmentId')
+	.delete(auth.ensureAuthenticated, function(req, res, next){
+		// factor this out
+		// ensure user owns the contribution id first
+		// also check the attachment id
+		var query = [
+			'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
+			'WITH c',
+			'MATCH (c)-[:ATTACHMENT]->(a:attachment) WHERE ID(a)={attachmentIdParam}',
+			'RETURN {contributionCreatorId: c.createdBy, isValidAttachment: count(a), fileName: a.name}'
+		].join('\n');
+
+		var params = {
+			contributionIdParam: parseInt(req.params.contributionId),
+			attachmentIdParam: parseInt(req.params.attachmentId)
+		};
+
+		db.query(query, params, function(error, result){
+			if (error){
+				console.log(error);
+				return res.send('error');
+			}
+			if (result.length === 0) {
+				return res.send('error');
+			}
+
+			var contributionCreatorId = result[0].contributionCreatorId;
+			var isValidAttachment = result[0].isValidAttachment === 1;
+			var userId = parseInt(req.user.id);
+
+			if (userId === contributionCreatorId && isValidAttachment) {
+				req.fileNameToDelete = result[0].fileName;
+				next();
+			} else {
+				res.send('not the owner');
+			}
+		});
+	}, function(req, res){
+		// delete the attachment file and node in db
+		var attachmentPath = './uploads/contributions/' + req.params.contributionId + '/attachments/' + req.fileNameToDelete;
+
+		fs.remove(attachmentPath, function(err){
+			if (err) {
+				console.error(err);
+			}
+		});
+
+		var query = [
+			'MATCH (a:attachment) WHERE ID(a)={attachmentIdParam}',
+			'DETACH DELETE a'
+		].join('\n');
+
+		var params = {
+			attachmentIdParam: parseInt(req.params.attachmentId)
+		};
+
+		db.query(query, params, function(error, result){
+			if (error) {
+				console.log(error);
+				res.status(500);
+				res.send('error');
+			} else {
+				res.status(200);
+				res.send('success');
+			}
+		})
+
+	});
 
 module.exports = router;

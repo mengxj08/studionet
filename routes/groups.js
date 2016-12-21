@@ -379,8 +379,11 @@ router.route('/:groupId/users')
           return res.send('Error linking users to the group');
         }
         else{
-          return res.send('Successfully added members: ' + validUserIdsToAdd + '\
-            \nThe following users could not be added to the group as they are not members of the parent: ' + invalidUsers);
+            
+          return res.send({
+              'valid' : validUserIdsToAdd, 
+              'invalid': invalidUsers
+          })
         }
       });
 
@@ -393,7 +396,7 @@ router.route('/:groupId/users')
    */ 
   .delete(auth.ensureAuthenticated, auth.isGroupAdmin, function(req, res){
 
-    if (req.body.userIds instanceof String) {
+    if (req.body.users instanceof String) {
       var userIds = JSON.parse(req.body.users)
                         .map(x => parseInt(x));
     } else {
@@ -412,14 +415,18 @@ router.route('/:groupId/users')
       'OPTIONAL MATCH (g)-[r:MEMBER]->(u)',
       'DELETE r'
     ].join('\n');
-  
+    
+
+
     var params = {
       groupIdParam: parseInt(req.params.groupId)
     };
 
+
     db.query(query, params, function(error, result){
       if (error){
         console.log('Error deleting users from the group');
+        console.log(error);
         res.send('Error deleting users from the group');
       }
       else{

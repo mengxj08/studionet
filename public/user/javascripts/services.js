@@ -320,16 +320,32 @@ angular.module('studionet')
 	}
 
 	o.addGroupMember = function(data){
-		
-		return $http.post('/api/groups/' + o.group.id + '/users', data).success(function(data){
-			alert("Added to group")
+		return $http.post('/api/groups/' + o.group.id + '/users', data).success(function(res){
+				
+			o.group.users.push({ id: data.users[0] })
+
 		});
+
 	};
 
 	o.removeGroupMember = function(data){
-		return $http.delete('/api/groups/' + o.group.id + '/users/' + data.userId).success(function(data){
-			alert("Removed from group")
-		});		
+
+		return $http({
+		    method: 'DELETE',
+		    url: '/api/groups/' + o.group.id + '/users',
+		    data: data,
+		    headers: {
+		        'Content-type': 'application/json;charset=utf-8'
+		    }
+		}).success( function(res){
+
+			o.group.users = o.group.users.filter( function(user){
+
+				return !(user.id == data.users[0])
+
+			})
+
+		})
 	}
 
 	o.updateGroup = function(data){

@@ -16,6 +16,7 @@
     "express": "~4.13.4",
     "express-session": "^1.14.0",
     "eyespect": "^0.1.10",
+    "fs-extra": "^1.0.0",
     "glob": "^7.0.5",
     "mkdirp": "^0.5.1",
     "morgan": "~1.7.0",
