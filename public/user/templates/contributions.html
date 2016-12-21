@@ -2,7 +2,7 @@
 <link rel='stylesheet' href='./stylesheets/graph-style.css' />
 
 <!-- actual graph container -->
-<div class='graph-container'> 
+<div class='graph-container' ng-init='graphInit()'> 
 
   <!--Nav Bar with Filters-->
   <ng-include src="'templates/filters.html'"></ng-include>
@@ -23,8 +23,7 @@
 <ui-view></ui-view>
 
 
-<!-- include graph js -->
-<script src="./javascripts/graphs/graph-creator.js"></script>
+
 
 
 

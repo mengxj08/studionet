@@ -103,7 +103,7 @@ angular.module('studionet')
 
             $scope.filterActive = false; 
 
-            refreshGraph();
+            $scope.graphInit();
 
       }
 
@@ -169,13 +169,14 @@ angular.module('studionet')
 
           + "&d=" + $scope.depthVal;   // depth
 
-
           console.log(urlString);
 
           $http.get(urlString).success(function(data){
               
-              refreshGraph(data);
+              $scope.graphInit(data);
+
               $scope.filterActive = true;
+
 
               if(data.nodes.length == 0){
                 console.log(data.nodes.length + " nodes found");

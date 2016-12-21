@@ -149,12 +149,12 @@ angular.module('studionet')
 	o.getAll = function(){
 		return $http.get('/api/contributions').success(function(data){
 			angular.copy(data, o.contributions);
+		});
+	};
 
-			// simultaneously update the graph
-			$.get( "/graph/all", function( data ) {
-						angular.copy(data, o.graph);
-       		})
-       		
+	o.getGraph = function(){
+		return $http.get("/graph/all").success(function(data){
+			angular.copy(data, o.graph);
 		});
 	};
 
@@ -169,32 +169,15 @@ angular.module('studionet')
 	};
 
 	o.getAll = function(){
-		
 		return $http.get('/api/groups').success(function(data){
-			
 			angular.copy(data, o.groups);
-
-			// simulataneously update the graph
-			$http.get('/graph/all/groups').success(function(data){
-
-				// replace the nodes with the groups that already hold data about the user status in each group
-				data.nodes = o.groups;
-				
-				// copy data
-				angular.copy(data, o.graph);
-			});
-
 		});
 	};
 
 	o.getGraph = function(user_context){
-
-		console.warn("Groups graph service; shouldn't be called");
 		return $http.get('/graph/all/groups').success(function(data){
-
 			// replace the nodes with the groups that already hold data about the user status in each group
 			data.nodes = o.groups;
-			
 			// copy data
 			angular.copy(data, o.graph);
 		});

@@ -4,7 +4,7 @@ angular.module('studionet')
  *	Controller for Groups
  * 
  */
-.controller('GroupsCtrl', ['$scope', 'profile', 'groups', 'users', 'group', '$http', 'ModalService', function($scope, profile, groups, users, group, $http, ModalService){
+.controller('GroupsCtrl', ['$scope', 'profile', 'groups', 'users', 'group', '$http', function($scope, profile, groups, users, group, $http){
 
 	/*
 	 * Scope Variables
@@ -13,114 +13,12 @@ angular.module('studionet')
 	$scope.groups = groups.groups;
 	$scope.users = users.usersById();
 
-	$scope.node; 
-
-
-	/*
-     *		Trigger Modal Functions
-	 */
-	$scope.createGroup = function(){ 
-		angular.element($("#createGroupModal")).scope().reset();
-		$("#createGroupModal").modal(); 
-	}
-
-	viewGroup = function(group_id){  
-
-		angular.element($("#viewGroupModal")).scope().reset();
-
-		group.getGroupInfo(group_id).then( function(){ 
-			$("#viewGroupModal").modal();
-		})
-
-	}
-
-	//$scope.viewGroup = function(){	$("#viewGroupModal").modal();	};
-
-	$scope.editGroup = function( group_id ){	
-
-		angular.element($("#editGroupModal")).scope().reset();
-
-		group.getGroupInfo(group_id).then( function(){
-
-			group.getGroupUsers(group_id).then( function(){
-				
-
-				$("#editGroupModal").modal();
-			})
-		})
-
-	}
-
+	$scope.graph = {};
 
 	/*
-	 *  Helper Functions for the graph
+	 * Graph Creation and Interactions
 	 */
-	
-	// Function to format graph nodes
-	var createGraphNode = function(node){
-	    
-	    node.faveShape = "ellipse";
 
-	    if( node.supernode ){
-	          node.faveShape = "ellipse";
-	          node.faveColor = "black";
-	          node.width = "40";
-	          node.height = "40";      
-	    }
-	    else if( node.type == "USER" ){
-	          node.faveShape = "ellipse";
-	          node.faveColor = "red";
-	          node.width = "10";
-	          node.height = "10";      
-	    }
-	    else if( node.requestingUserStatus == "Admin" ){
-	          node.faveShape = "ellipse";
-	          node.faveColor = "blue";
-	          node.width = "20";
-	          node.height = "20";      
-	    }
-	    else if( node.requestingUserStatus ){
-	          node.faveShape = "ellipse";
-	          node.faveColor = "green";
-	          node.width = "20";
-	          node.height = "20";      
-	    }
-	    else if( node.restricted ){
-	          node.faveShape = "ellipse";
-	          node.faveColor = "grey";
-	          node.width = "20";
-	          node.height = "20";      
-	    }		    
-	    else if( !node.restricted){
-	          node.faveShape = "ellipse";
-	          node.faveColor = "lightgreen";
-	          node.width = "20";
-	          node.height = "20";      
-	    }
-	    else {
-	          node.faveShape = "ellipse";
-	          node.faveColor = "red";
-	          node.width = "10";
-	          node.height = "10";
-	    }
-
-	    return  { data: node };
-	}
-
-	var createGraphEdge = function(edge){
-
-	    edge.strength = EDGE_DEFAULT_STRENGTH;
-	    edge.faveColor = EDGE_DEFAULT_COLOR;
-	    edge.weigth = EDGE_DEFAULT_WEIGHT;
-	    edge.label = edge.type;
-
-	    return { data: edge };
-
-	}
-
-	/*
-	 *   If user, display details for user
-	 */
 	var onTap = function(evt){
 		
 		if(evt.cyTarget.data().type == "USER"){
@@ -183,34 +81,9 @@ angular.module('studionet')
 	    var node = evt.cyTarget;
 	    var nodeData = node.data();
 
-	    var qtipFormat = {
-	         content: {
-	         	title: nodeData.name,
-	         	text: ""
-	    	 },
-       
-	         show: {
-	            evt: evt.type,
-	            ready: true,
-	            solo: true
-	         },
-	         
-	         hide: {
-	            evt: 'mouseout',
-	         },
-	         
-	         position: {
-	         	//container: $('div.graph-container'),
-	         	my: 'top left',
-	         	at: 'center center'
-	         },
-	         
-	         style: {
-		        classes: 'qTipClass',
-		        width: 200 // Overrides width set by CSS (but no max-width!)
-		     }
-	    }
+	    var qtipFormat = STUDIONET.GRAPH.qtipFormat(evt);
 
+	    qtipFormat.content.title = nodeData.name;
 	
 	    // change content text for users
 	    if(nodeData.type == "USER"){
@@ -231,10 +104,11 @@ angular.module('studionet')
 	    node.qtip(qtipFormat, evt);		
 	}
 
-	var drawGraph = function(){
 
-		// fix
-		profile.getGroups().then( function(){ 
+	$scope.graphInit = function(graph_data){
+	  
+	  	// fix
+		/*		profile.getGroups().then( function(){ 
 
 			groups.getAll().then( function(){
 
@@ -256,28 +130,65 @@ angular.module('studionet')
 			    })
 
 			})
-		})
+		});*/
 
-	};
+		// takes either data from filters or contribution.graph data
+		$scope.graph = STUDIONET.GRAPH.makeGraph( graph_data || groups.graph, 'user-graph' );
+		var cy = $scope.graph;
 
-	drawGraph();
+		cy.on('mouseover','node', function(evt){		onHover(evt);		});
+		cy.on('mouseout','node', function(evt){				});
+		cy.on('tap','node', function(evt){		onTap(evt);		});
 
-	$scope.refreshGraph = drawGraph;  // fetches fresh data from server
+	}
 
+	/*
+     *	
+     *	Modal Functions & Graph Interactions
+     *	
+	 */
+	
 	$scope.resetGraph = function(){
 	    $scope.graph.layout().stop(); 
 	    layout = $scope.graph.elements().makeLayout({ 'name': 'cola'}); 
 	    layout.start();		
 	}
 
+	$scope.createGroup = function(){ 
+		angular.element($("#createGroupModal")).scope().reset();
+		$("#createGroupModal").modal(); 
+	}
 
-}])
+	viewGroup = function(group_id){  
+		angular.element($("#viewGroupModal")).scope().reset();
+		group.getGroupInfo(group_id).then( function(){ 
+			$("#viewGroupModal").modal();
+		})
+	}
+
+	$scope.editGroup = function( group_id ){	
+		angular.element($("#editGroupModal")).scope().reset();
+		group.getGroupInfo(group_id).then( function(){
+			group.getGroupUsers(group_id).then( function(){
+				$("#editGroupModal").modal();
+			})
+		})
+	}
+
+
+}]);
+
 
 
 /*
- *	Controller for the group creation modal 
+ *
+ *	Modal Controllers
+ *		
  */
-.controller('CreateGroupCtrl', ['$scope', 'groups', 'supernode', function($scope, groups, supernode){
+
+
+// Group Creation Controller
+angular.module('studionet').controller('CreateGroupCtrl', ['$scope', 'groups', 'supernode', function($scope, groups, supernode){
 
 	$scope.groupCreated = false; 
 	$scope.groupError = false;
@@ -335,13 +246,11 @@ angular.module('studionet')
 	}
 
 
-}])
+}]);
 
 
-/*
- *	Controller for the edit group modal 
- */
-.controller('EditGroupCtrl', ['$scope', 'groups', 'group', 'supernode', 'users', function($scope, groups, group, supernode, users){
+// Edit Groups Controller
+angular.module('studionet').controller('EditGroupCtrl', ['$scope', 'groups', 'group', 'supernode', 'users', function($scope, groups, group, supernode, users){
 
 	// get group info
 	$scope.activeGroup = group.group; 
@@ -410,14 +319,12 @@ angular.module('studionet')
 		$scope.status = {};
 	}
 
-}])
+}]);
 
 
 
-/*
- *	Controller for the view group modal 
- */
-.controller('ViewGroupCtrl', ['$scope', 'profile', 'group', function($scope, profile, group){
+// View Group Controller
+angular.module('studionet').controller('ViewGroupCtrl', ['$scope', 'profile', 'group', function($scope, profile, group){
 
 	// check if scope has active group
 	$scope.activeGroup = group.group; 
@@ -479,5 +386,5 @@ angular.module('studionet')
 		$scope.error = true;
 	}
 
-}])
+}]);
 

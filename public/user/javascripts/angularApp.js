@@ -20,10 +20,10 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 					return tags.getAll();
 				}],
 				groupsPromise: ['groups', function(groups){
-					return groups.getAll();
+					return groups.getAll() && groups.getGraph();
 				}],
 				contributionsPromise: ['contributions', function(contributions){
-					return contributions.getAll();
+					return contributions.getAll() && contributions.getGraph();
 				}],
 				usersPromise: ['users', function(users){ 
 					return users.getAll();
