@@ -807,6 +807,46 @@ router.route('/:contributionId/attachments')
 
 //route: /api/contributions/:contributionId/attachments/:attachmentId
 router.route('/:contributionId/attachments/:attachmentId')
+	.get(auth.ensureAuthenticated, function(req, res, next){
+		var query = [
+			'OPTIONAL MATCH (c:contribution)-[:ATTACHMENT]-(a:attachment)',
+			'WHERE ID(c)={contributionIdParam} AND ID(a)={attachmentIdParam}',
+			'RETURN {count: count(a), name: a.name}'
+		].join('\n');
+
+		var params = {
+			contributionIdParam: parseInt(req.params.contributionId),
+			attachmentIdParam: parseInt(req.params.attachmentId)
+		};
+
+		var namePromise = new Promise(function(resolve, reject){
+			db.query(query, params, function(error, result){
+				if (error) {
+					console.error(error);
+					return reject();
+				}
+
+				if (result[0].count === 0) {
+					return reject();
+				}
+				return resolve(result[0]);
+
+			});
+		});
+
+		namePromise
+		.then(function(result){
+			var fileName = result.name;
+			var filePath = glob.sync('./uploads/contributions/' + req.params.contributionId + '/attachments/'  + fileName);
+			res.sendFile(path.resolve(__dirname + '/../') + '/' + filePath[0]);	// sendFile does not like /../  ...
+		})
+		.catch(function(reason){
+			console.log(reason);
+			return res.send(reason);
+		});
+
+	})
+
 	.delete(auth.ensureAuthenticated, function(req, res, next){
 		// factor this out
 		// ensure user owns the contribution id first
