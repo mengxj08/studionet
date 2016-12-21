@@ -4,41 +4,21 @@ angular.module('studionet')
  *  Main Contribution Graph Page
  * 
  */
-.controller('ContributionsCtrl', ['$scope', 'profile', 'users', 'Upload', '$timeout', 'ModalService', '$http', function($scope, profile, users, Upload, $timeout, ModalService, $http){
+.controller('ContributionsCtrl', ['AppContextService','$scope', 'profile', 'users', 'Upload', '$timeout', 'ModalService', '$http', function(AppContextService, $scope, profile, users, Upload, $timeout, ModalService, $http){
+
+  /* todo: reset graph so top bar knows about the graph */
+  AppContextService.setGraph(true);
+  //console.log(AppContextService);
 
 	$scope.user = profile.user;
-  $scope.users = users.usersById();
+  $scope.users = users.usersById();   // needed for hover to get user name - fix later
 
   /*
-   *
-   *  Search Functionality
-   * 
+   *    Create Graph
    */
-  $scope.textFilter = "";
-  $scope.searchActive = false;
-
-  $scope.textSearchFilter = function(searchText){
-
-      if(searchText ==  "")
-        return; 
-
-      cy.nodes().forEach(function( ele ){
-          
-          if( (ele.data().name).toLowerCase().includes( searchText.toLowerCase() )){
-            console.log( ele.data().name );
-            ele.addClass('searched');
-            ele.connectedEdges().addClass('highlighted');
-            $scope.searchActive = true;
-          }
-         
-      });
-  }
-
-  $scope.clearSearch = function(){
-    $scope.textFilter = "";
-    $scope.searchActive = false;
-    cy.elements().removeClass('highlighted')
-    cy.elements().removeClass('searched')
+  
+  var graphInit = function(){
+    // code to generate graph
   }
 
 
@@ -83,15 +63,13 @@ angular.module('studionet')
         //   //$scope.complexResult  = "Name: " + result.name + ", age: " + result.age;
         // });
 
-        //Clear the possibly shown mouse-over thumbnail 
-        $('#content-block-hover').html("");
-        $('#content-block-hover').hide();  
+
       });
 
-    };
+  };
 
 
-    
+
 
 }])
 

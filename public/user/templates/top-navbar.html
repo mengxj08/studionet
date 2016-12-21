@@ -21,10 +21,10 @@
       </ul>
       <ul class="nav navbar-nav navbar-left">
         <li class="navbar-title">Studionet</li>
-        <li class="navbar-search hidden-sm">
-          <input ng-model='textFilter' id="search" type="text" placeholder="Search..">
-          <button class="btn-search" ng-click='textSearchFilter(textFilter)' ng-if='!searchActive'><i class="fa fa-search"></i></button>
-          <button class="btn-search" ng-click='clearSearch()' ng-if='searchActive'><i class="fa fa-close"></i></button>
+        <li class="navbar-search hidden-sm" ng-if=graph>
+          <input ng-model='textFilter.text' id="search" type="text" placeholder="Search..">
+          <button class="btn-search" ng-click='textSearchFilter(textFilter.text)' ng-if='!textFilter.active'><i class="fa fa-search"></i></button>
+          <button class="btn-search" ng-click='clearSearch()' ng-if='textFilter.active'><i class="fa fa-close"></i></button>
           </input>
         </li>
       </ul>

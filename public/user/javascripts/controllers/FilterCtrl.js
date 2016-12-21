@@ -3,20 +3,7 @@ angular.module('studionet')
 /*
  * Controller for Filters
  */
-.controller('FilterCtrl', ['$scope', '$http', 'users', 'tags', 'groups',   function($scope, $http, users, tags, groups){ 
-
-     
-      // Default Constants
-      var default_selectedAuthors = [], default_selectedTags = [];
-      var default_firstDate = new Date();
-      var default_lastDate = new Date(); default_firstDate.setDate(default_firstDate.getDate() - 365);
-      var default_ratingMin = 0, default_ratingMax = 5;
-      var default_depthVal = 0;
-
-
-      $scope.filterStatus = false;
-      $scope.filterChanged = false;
-
+.controller('FilterCtrl', ['$scope', 'supernode', 'users', 'tags', 'groups', '$http',  function($scope, supernode, users, tags, groups, $http){ 
 
       // Lists populating filters
       $scope.tags = [];
@@ -30,26 +17,85 @@ angular.module('studionet')
 
      
       /*
-       *
+       *    Helper functions
        */
       var resetDefaults = function(){
           
-          $scope.selectedAuthors = default_selectedAuthors;
-          $scope.selectedTags = default_selectedTags;
-          $scope.firstDate = default_firstDate;
-          $scope.lastDate = default_lastDate;
-          $scope.ratingMin = default_ratingMin;
-          $scope.ratingMax = default_ratingMax;
-          $scope.depthVal = default_depthVal;
+          $scope.selectedAuthors = [];
+          $scope.selectedTags = [];
+          $scope.firstDate = new Date();
+          $scope.lastDate = new Date(); $scope.lastDate.setDate($scope.firstDate.getDate() - 365);
+          $scope.ratingMin = 0;
+          $scope.ratingMax = 5;
+          $scope.depthVal = 0;
 
           // clear actual filters
           $scope.tags.map( function(tag) { tag.selected = false; return tag; });
           $scope.authors.map( function(author) { author.selected = false; return author; });
       };
 
-      resetDefaults();
+      var populateTags = function(){
+
+        return tags.tags.map( function(tag){
+
+            // add properties required for tree-view plugin
+            tag.parentId = null;
+            tag.isExpanded = false; 
+            tag.children = [];
+            
+            // default 
+            tag.selected = false;
+
+            return tag;
+
+        }); 
+
+      };
+
+      var populateGroups = function(){
+
+          // create a hashmap for the group for easy reference by id
+          var group_hash = {}; 
+          groups.groups.map( function(group){
+              group.type = "group";
+              //group.name = group.name + "</b>" //'&#xf0c0;' + " " + group.name; // append unicode for group
+              group.isExpanded = false;
+              group.children = [];
+              group_hash[group.id] = group;
+          })
+
+          // if group has parentId, add group to that parent's children array
+          groups.groups =  groups.groups.map( function(group){
+              if(group.parentId)
+                  group_hash[group.parentId].children.push(group);
+              return group;
+          })
+
+          // return groups connected to supernode
+          return groups.groups.filter(function(group){
+              return (group.parentId == supernode.group)
+          })
+
+      }
+
+      var populateAuthors = function(){
+          return users.users.map(function(user){
+
+              user.type = "user";
+              user.parentId = null; 
+              user.isExpanded = false; 
+              user.children = [];
+              user.selected = false;
+
+              return user;
+
+          });
+      }
 
 
+
+
+      /* Filter Functions */
       $scope.clearFilter = function(){
 
             // reset defaults
@@ -69,7 +115,7 @@ angular.module('studionet')
           //    Fix later
           //
           switch (filtername) {
-/*              case "authors":
+            /*              case "authors":
                     if(!($scope.selectedAuthors.equals(default_selectedAuthors)))
                       return $scope.selectedAuthors.length;
                     break; 
@@ -158,134 +204,21 @@ angular.module('studionet')
           }
       };
 
+
       /*
-       * Initialization of filter-headings toggle functionality
-       * TODO: find better fix (accordion)
+       *  Init function that refreshes all lists in the filters
        */
       $scope.init = function(){
 
-        // look for better solutions to this
-        
-        $(".filter-heading").click(function(){
+          // filters to default values
+          resetDefaults();
 
-              // close filter headings
-              // $('.filter-heading').not(this).siblings().hide(); //done by accordion therefore commented
-
-              // $(this).siblings().toggle(); //done by accordion therefore commented
-
-        });
-
-        refresh();
+          // populate filters
+          $scope.tags = populateTags();
+          $scope.authors = populateAuthors();
+          $scope.authors = $scope.authors.concat( populateGroups() );     
 
       }
-
-      /*
-       *  Refresh function that refreshes all lists
-       */
-      function refresh(){
-
-          /*
-           * Get list of tags to populate tags filter
-           */
-          tags.getAll().then(function(){
-              $scope.tags = tags.tags.map( function(tag){
-
-                  // add properties required for tree-view plugin
-                  tag.parentId = null;
-                  tag.isExpanded = false; 
-                  tag.children = [];
-                  
-                  // default 
-                  tag.selected = false;
-
-                  return tag;
-
-              });
-          });
-            
-          /*
-           *  Get groups to populate By Author Filter
-           * 
-           */
-          groups.getAll().then(function(){
-
-            /*
-             * Groups preprocessing
-             */
-
-            var group_data = groups.groups;
-            var group_hash = {}; 
-
-            // create hash for group_data
-            for(var i=0; i < group_data.length; i++){
-              
-                group_data[i].children = [];
-                group_data[i].type = "group";
-
-                // default
-                // group_data[i].selected = true;
-
-                group_hash[ group_data[i].id ] = group_data[i];
-
-            }
-
-            // if group has parentId, add group to that parent's children array
-            for(var i=0; i < group_data.length; i++){
-
-              var group = group_data[i];
-
-              if(group.parentId){
-
-                  var parentGroup = group_hash[ group.parentId ];
-                  parentGroup.children.push( group ); 
-
-              }
-
-            }
-
-            // append authors to final array - only those at highest level
-            $scope.authors = $scope.authors.concat( group_data.filter( function(group){
-                  
-                  // only highest level groups
-                  group.isExpanded = false; 
-
-                  return (group.parentId == null)
-
-            }) );
-              
-          }).then( function(){
-
-                /*
-                 *  Get users to populate By Author filter
-                 */
-                users.getAll().then(function(){
-
-                    var user_data = users.users;
-                    $scope.authors = $scope.authors.concat( user_data.map( function(user){
-
-                        user.parentId = null; 
-                        user.isExpanded = false; 
-                        user.children = [];
-                        user.type = "user";
-                        user.selected = false;
-
-                        // default - select self
-                        if(user.id == $scope.user.id)
-                          user.selected = false; 
-
-                        return user;
-
-                    }) );
-
-                });
-
-          }) 
-
-
-
-
-      }
-
 
 
 }]);

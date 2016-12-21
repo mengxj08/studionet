@@ -43,6 +43,10 @@ div.tree-control .tree-view li{
 	min-width: 350px;
 }
 
+.tree-control .clear-button{
+	top: 3px;
+}
+
 .filter-panel input{
 	padding-left: 5px;
 	width: 100%;

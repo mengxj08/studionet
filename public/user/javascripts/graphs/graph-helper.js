@@ -209,8 +209,6 @@ var createGraphEdge = function(edge){
  */
 var makeGraph = function(data, graphContainer, graphFn, edgeFn){
 
-    console.log("In graph-helper.js");
-
     // if cytoscape canvas is defined, assign that
     if(arguments[1] != undefined)
       graph_style.container = document.getElementById(arguments[1]);

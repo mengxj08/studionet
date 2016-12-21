@@ -86,6 +86,7 @@ var graph_style = {
               'target-arrow-shape': 'triangle',
               'line-color': '#C7C7C7',
               'source-arrow-color': '#EBEAEA',
+              'text-valign': 'bottom',
               //'content' : 'data(label)',
               'font-size':'10%',
               'color': 'data(faveColor)',
@@ -113,6 +114,7 @@ var graph_style = {
             })
             .style({
               'content': 'data(label)',
+              'text-valign': 'bottom',
               'color': '#222',
               'font-size': '25%',
               'line-color': '#161515'
@@ -312,7 +314,6 @@ var makeGraph = function(dNodes, dEdges){
       node.successors().removeClass('faded');
       node.predecessors().addClass('highlighted');
       node.predecessors().removeClass('faded');
-
 
             
       if(data.name == "StudioNET"){

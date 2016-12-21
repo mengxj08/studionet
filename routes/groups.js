@@ -9,41 +9,40 @@ var db = require('seraph')({
 });
 var _ = require('underscore');
 
-
 // route: /api/groups/
 router.route('/')
 
-	// return all groups
-	.get(auth.ensureAuthenticated, function(req, res){
-		
-		/*
-		 *	Returns id, name, restricted, parentId, createdBy, requestingUserStatus
-		 *	Contextual to the user who is making the request (requesting user status)
-		 * 
-		 */
-		
-		var query = [
-			'MATCH (g:group)',
-			'MATCH (u:user) WHERE ID(u)={userIdParam}',
-			'OPTIONAL MATCH (g)<-[:SUBGROUP]-(p:group)',
-			'OPTIONAL MATCH (u)<-[m:MEMBER]-(g)',
-			'RETURN {supernode: g.superNode, id: id(g), restricted: g.restricted, parentId: id(p), createdBy: g.createdBy, name: g.name, requestingUserStatus: m.role, description: g.description}'
-		].join('\n'); 
+  // return all groups
+  .get(auth.ensureAuthenticated, function(req, res){
+    
+    /*
+     *  Returns id, name, restricted, parentId, createdBy, requestingUserStatus
+     *  Contextual to the user who is making the request (requesting user status)
+     * 
+     */
+    
+    var query = [
+      'MATCH (g:group)',
+      'MATCH (u:user) WHERE ID(u)={userIdParam}',
+      'OPTIONAL MATCH (g)<-[:SUBGROUP]-(p:group)',
+      'OPTIONAL MATCH (u)<-[m:MEMBER]-(g)',
+      'RETURN {supernode: g.superNode, id: id(g), restricted: g.restricted, parentId: id(p), createdBy: g.createdBy, name: g.name, requestingUserStatus: m.role, description: g.description}'
+    ].join('\n'); 
 
-		var params = {
-			userIdParam : parseInt(req.user.id)
-		}
+    var params = {
+      userIdParam : parseInt(req.user.id)
+    }
 
-		db.query(query, params, function(error, result){
-			if (error){
-				console.log('Error retrieving all groups: ', error);
-			}
-			else{
-				res.send(result);
-			}
-		});
+    db.query(query, params, function(error, result){
+      if (error){
+        console.log('Error retrieving all groups: ', error);
+      }
+      else{
+        res.send(result);
+      }
+    });
 
-	})
+  })
 
   // create a new group
   .post(auth.ensureAuthenticated, function(req, res){
