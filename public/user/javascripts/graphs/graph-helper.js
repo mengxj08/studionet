@@ -67,7 +67,7 @@ var graph_style = {
               'font-size':'1em',
               'font-weight': '300',
               'border-color': '#222',
-              'content' : 'data(name)',
+              //'content' : 'data(name)',
               'text-wrap' : 'wrap',
               'text-max-width': '100',
               'text-valign': 'bottom',

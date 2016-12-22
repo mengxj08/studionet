@@ -13,7 +13,6 @@ angular.module('studionet')
 	//$scope.user = profile.user;
   $scope.users = users.usersById();   // needed for hover to get user name - fix later
 
-
   /*
    *    Graph Creation & Interactions
    */
@@ -45,7 +44,6 @@ angular.module('studionet')
           /*
            * Get node data and construct qTip
            */
-
           var data = node.data();
 
           var qtipFormat = STUDIONET.GRAPH.qtipFormat(evt);

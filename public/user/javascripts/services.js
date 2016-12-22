@@ -39,9 +39,9 @@ angular.module('studionet')
 .factory('profile', ['$http', function($http){
 	var o ={
 		user: {},
-		//groups: [],
-		//contributions: [],
-		//groupsById: {}
+		groups: [],
+		contributions: [],
+		groupsById: {}
 	};
 
 	o.getUser = function(){
