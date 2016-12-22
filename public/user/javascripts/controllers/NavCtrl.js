@@ -15,6 +15,10 @@ angular.module('studionet')
 
 		$scope.simple = true;
 
+		$scope.toggleFilter = function(){
+			angular.element('.graph-container').scope().showFilter = !angular.element('.graph-container').scope().showFilter
+		}
+
 		/*
 		*
 		*  Search Functionality

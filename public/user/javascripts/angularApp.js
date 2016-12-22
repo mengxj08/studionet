@@ -89,5 +89,5 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 			}
 		})
 
-	$urlRouterProvider.otherwise('/basic');
+	$urlRouterProvider.otherwise('/contributions');
 }]);

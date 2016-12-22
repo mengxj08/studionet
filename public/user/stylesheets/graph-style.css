@@ -11,10 +11,11 @@
 
 #cy {
 
-  position: relative;
-  margin-top: 50px;
-  height: calc( 100vh - 100px); // remove for topbar & filters
- 
+  position: absolute;
+  margin-top: 0px;
+  height: calc( 100vh - 50px); // remove for topbar & filters
+  //height: auto;
+  min-height: calc( 100vh - 100px);
   width: 100%;
 
   z-index: 2;
@@ -24,11 +25,10 @@
 
 #user-graph {
 
-  position: relative;
+  position: absolute;
 
-  width: 100%;
   height: calc( 100vh - 50px); // remove for topbar & filters
- 
+  //height: auto;
   z-index: 2;
 
 }
@@ -36,14 +36,15 @@
 
 .graph-controls{
 
-  position: absolute;
-  bottom: 00px;
-  right: 50px;
+  position: fixed;
+  bottom: 30px;
+  right: 25px;
 
   width: 30px; 
   height: auto;
 
-  margin-left: calc(100vw - 75px);
+  //margin-top: calc(100vh - 55px);
+  margin-left: calc(100vw - 55px);
 
   z-index: 3;
 
@@ -69,124 +70,3 @@
   //border: 1px solid black;
 }
 
-
-/*
-
-#content-block-hover {
-  display: none;
-  position: absolute;
-  top: 60px;
-  color: #D9CCCC;
-  border-radius: 0px;
-  max-width: 200px;
-  z-index: 3;
-  font-size: 12px;
-  padding: 0px !important;
-  border: 1px solid #000000;
-  background-color: rgba(3, 3, 3, 1);
-  text-align: center;
-  padding: 20px; }
-  #content-block-hover .user {
-    width: 200px; }
-    #content-block-hover .user .heading {
-      font-size: 16px;
-      border-bottom: 1px solid #000000;
-      text-decoration: uppercase;
-      text-align: center; }
-    #content-block-hover .user .stats-container {
-      width: 100%;
-      text-align: center; }
-      #content-block-hover .user .stats-container .stats {
-        width: 40%;
-        margin: 10px;
-        border: 1px solid black;
-        display: inline-block; }
-  #content-block-hover .module .heading {
-    font-size: 14px;
-    font-weight: bold;
-    line-height: 20px;
-    text-align: center;
-    text-transform: uppercase;
-    margin: 0px;
-    padding: 0px; }
-  #content-block-hover .module .module-image {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    background-image: url("http://placehold.it/100x100"); }
-  #content-block-hover .module .stats-container {
-    width: 100%;
-    text-align: center; }
-    #content-block-hover .module .stats-container .stats {
-      width: 100px;
-      margin: 10px;
-      border: 1px solid black;
-      float: left; }
-  #content-block-hover .contribution .stats-container {
-    width: 100%;
-    text-align: center; }
-    #content-block-hover .contribution .stats-container .stats {
-      width: 25%;
-      margin: 10px;
-      border: 1px solid black; }
-  #content-block-hover hr {
-    margin: 0px; }
-
-#btn-contribute {
-  border-radius: 50%; }
-
-#second-cy {
-  border: 1px solid black;
-  height: 500px; }
-
-
-
-*:focus {
-    outline: 0 !important;
-}
-
-*:active {
-    background-color: none;
-}
-
-
-
-p.hover-content img{
-  width: 150px !important; 
-  height: 150px !important; 
-  display: block;
-}
-
-
-
-.info-popover{
-
-  width: 200px;
-
-  font-size: 14px; 
-  line-height: 20px;
-
-  border: 1px solid #706D6D;
-
-  z-index: 20 !important;
-}
-
-.info-popover:hover{
-  background-color: red;
-}
-
-.info-popover .title{
-  height: 35px; 
-  line-height: 35px;
-  background-color: #9CCBDA;
-}
-
-.title, .description{
-
-  padding: 0px 10px;
-}
-
-.description{
-  border: 1px solid #222;
-}
-*/

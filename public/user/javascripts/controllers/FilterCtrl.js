@@ -26,7 +26,11 @@ angular.module('studionet')
       $scope.ratingMin, $scope.ratingMax;
       $scope.depthVal;
 
-     
+      $scope.showFilter = false;
+
+      var target = document.getElementById('cy');
+      var spinner = new Spinner(STUDIONET.GRAPH.spinner);
+
       /*
        *    Helper functions
        */
@@ -203,15 +207,19 @@ angular.module('studionet')
 
               console.log(urlString);
 
+              $(target).empty();
+              spinner.spin(target);
+
               $http.get(urlString).success(function(data){
-                  
-                  $scope.graphInit(data);
 
                   $scope.filterActive = true;
-
+                  spinner.stop();
 
                   if(data.nodes.length == 0){
-                    console.log(data.nodes.length + " nodes found");
+                    $(target).append("<h3 style='position: absolute; top:40%; left: 40%;'>Oops. No Nodes found.</h3>");
+                  }
+                  else{
+                    $scope.graphInit(data);
                   }
 
               });

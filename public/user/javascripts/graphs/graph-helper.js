@@ -1,6 +1,32 @@
 var STUDIONET = {};
 STUDIONET.GRAPH = {};
 
+
+
+// Spinner
+STUDIONET.GRAPH.spinner = {
+    lines: 13 // The number of lines to draw
+  , length: 28 // The length of each line
+  , width: 2 // The line thickness
+  , radius: 42 // The radius of the inner circle
+  , scale: 1 // Scales overall size of the spinner
+  , corners: 1 // Corner roundness (0..1)
+  , color: '#000' // #rgb or #rrggbb or array of colors
+  , opacity: 0.25 // Opacity of the lines
+  , rotate: 0 // The rotation offset
+  , direction: 1 // 1: clockwise, -1: counterclockwise
+  , speed: 1 // Rounds per second
+  , trail: 60 // Afterglow percentage
+  , fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
+  , zIndex: 2e9 // The z-index (defaults to 2000000000)
+  , className: 'spinner' // The CSS class to assign to the spinner
+  , top: '50%' // Top position relative to parent
+  , left: '50%' // Left position relative to parent
+  , shadow: false // Whether to render a shadow
+  , hwaccel: false // Whether to use hardware acceleration
+  , position: 'absolute' // Element positioning
+}
+
 /*
  * qTip format for hover functions
  *
@@ -41,7 +67,7 @@ var COLA_GRAPH_LAYOUT = { name : 'cola', padding: 10 };
 var GRID_GRAPH_LAYOUT = { name : 'grid' };
 var DAGRE_GRAPH_LAYOUT = { name : 'dagre' };
 var CIRCLE_GRAPH_LAYOUT = { name : 'circle' };
-var COSE_GRAPH_LAYOUT = { name: 'cose', padding: 15, randomize: true };
+var COSE_GRAPH_LAYOUT = { name: 'cose', padding: 10, randomize: true };
 var CONCENTRIC_GRAPH_LAYOUT = {  name: 'concentric', 
                                   concentric: function( node ){
                                     return node.degree();
@@ -64,13 +90,15 @@ var graph_style = {
           .selector('node')
             .css({
               'text-valign': 'bottom',
-              'font-size':'1em',
+              'text-margin-y': '4',
+              'font-size':'0.2em',
               'font-weight': '300',
               'border-color': '#222',
-              //'content' : 'data(name)',
+              'content' : 'data(name)',
               'text-wrap' : 'wrap',
               'text-max-width': '100',
               'text-valign': 'bottom',
+              'font-family': 'Open Sans, sans serif'
             })
 
           .selector('edge')
@@ -86,7 +114,8 @@ var graph_style = {
             .css({
               'border-width': 3.5,
               'border-color': '#333',
-              'font-size': '15%'
+              'background-color': '#A9F8A9'
+              //'font-size': '15%'
             })
           
           .selector('.faded')
@@ -97,17 +126,17 @@ var graph_style = {
           
           .selector('.highlighted')
             .css({
-              'line-color': 'green',
-              'target-arrow-color':'green',
-              'background-color': 'blue',
-              'border-width': 3.5              
+              'line-color': '#222',
+              'target-arrow-color':'black',
+              'background-color': '#4A95EF',
+              'border-width': 1.5              
             })
 
           .selector('.searched')
             .css({
               'line-color': 'blue',
               'target-arrow-color':'black',
-              'background-color': 'blue',
+              'background-color': '#4A95EF',
               'border-width': 0.5,
               'border-color': '#333',
             })
@@ -122,7 +151,7 @@ var createGraphNode = function(node){    return  { data: node };   }
 /*
  * Converts normal edge from backend into cytoscape-specific format
  */
-var createGraphEdge = function(edge){    return { data: edge };   }
+var createGraphEdge = function(edge){   var c = edge.source; edge.source = edge.target; edge.target = c; return { data: edge };   }
 
 
 /*

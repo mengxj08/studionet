@@ -5,7 +5,7 @@
 <div class='graph-container' ng-init='graphInit()'> 
 
   <!--Nav Bar with Filters-->
-  <ng-include src="'templates/filters.html'"></ng-include>
+  <ng-include src="'templates/filters.html'" ng-show='showFilter'></ng-include>
 
   <div id='cy'></div>
   

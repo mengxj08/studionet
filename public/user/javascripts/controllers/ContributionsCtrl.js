@@ -15,10 +15,17 @@ angular.module('studionet')
 
   $scope.simple = true;
 
+  $scope.showFilter = false;  
+
+  var rootnode = supernode.contribution;
+
   /*
    *    Graph Creation & Interactions
    */
   $scope.graphInit = function(graph_data){
+
+      if(arguments[0] != undefined && graph_data.nodes.length == 0)
+        return;
       
       // takes either data from filters or contribution.graph data
       $scope.graph = STUDIONET.GRAPH.makeGraph( graph_data || contributions.graph, 'cy' );
@@ -137,6 +144,69 @@ angular.module('studionet')
                  RecursiveGetData(0);
             }
           });        
+      }
+      else{
+
+        // fixme
+        var rootnode = 10;
+
+        var j = cy.nodes()[0]
+        if(j) cy.remove(j);
+
+        cy.nodes().map(function(node){
+
+            var count = node.successors().length;
+
+            node.css({ 'width': 20 + 2*(count/3), 'height': 20 + 2*(count/3) })
+
+            return node;
+
+        })
+
+        cy.on('mouseover','node', function(evt){
+
+              var node = evt.cyTarget;
+
+              /* 
+               *  Highlight connections
+               * 
+               */
+              cy.elements().removeClass('highlighted');
+              cy.elements().removeClass('selected');
+              cy.elements().addClass('faded');
+
+              node.addClass('selected');
+              node.removeClass('faded');
+              node.successors().addClass('highlighted');
+              node.successors().removeClass('faded');
+              node.predecessors().addClass('highlighted');
+              node.predecessors().removeClass('faded');
+
+              /*
+               * Get node data and construct qTip
+               */
+              var data = node.data();
+
+              var qtipFormat = STUDIONET.GRAPH.qtipFormat(evt);
+
+              if(data.id == supernode.contribution){
+                  qtipFormat.content.title = "Studionet Root Node";
+                  node.qtip(qtipFormat, evt); 
+              }
+              else{
+                qtipFormat.content.title =  data.name;
+                qtipFormat.content.text =  ""
+              }
+
+              //node.qtip(qtipFormat, evt);   
+          });
+
+          cy.on('mouseout','node', function(evt){
+              cy.elements().removeClass('faded');
+              cy.elements().removeClass('selected');
+              cy.elements().removeClass('highlighted');
+          });
+
       }
 
   }
