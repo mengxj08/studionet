@@ -2,10 +2,8 @@ var express = require('express');
 var router = express.Router();
 var multer = require('multer');
 var mkdirp = require('mkdirp');
-var glob = require('glob');
 var path = require('path');
 var fs = require('fs-extra');
-var gm = require('gm');
 var auth = require('./auth');
 var storage = require('./storage');
 var apiCall = require('./apicall');
@@ -15,21 +13,17 @@ var db = require('seraph')({
 	pass: process.env.DB_PASS
 });
 var _ = require('underscore');
-var mmm = require('mmmagic'),
-      Magic = mmm.Magic;
 var contributionUtil = require('./contributionutil');
 
 
 // route: /api/contributions
 router.route('/')
 	/*
-	 * Returns all contributions, including the name, created by, created on and id of the contribution.
+	 * Returns all contributions, including the name, created by, created on and id of the contribution if no parmas specified.
+	 * Otherwise, returns filtered contributions.
 	 */
-	.get(auth.ensureAuthenticated, function(req, res){
-
-		var numKeys = Object.keys(req.query).length;
-		var hasParams = numKeys > 0;
-		var NUM_QUERY_KEYS_CONTRIBUTION = 6;
+	.get(auth.ensureAuthenticated, contributionUtil.handleGetContributionsWithoutParams, 
+			contributionUtil.ensureGetContributionsCorrectParams, function(req, res){
 
 		var QUERY_PARAM_DEPTH_KEYWORD = 'd';
 		var QUERY_PARAM_GROUPS_KEYWORD = 'g';
@@ -37,72 +31,6 @@ router.route('/')
 		var QUERY_PARAM_USERS_KEYWORD = 'u';
 		var QUERY_PARAM_TIME_KEYWORD = 't';
 		var QUERY_PARAM_TAGS_KEYWORD = 'tg';
-
-		if (!hasParams) {
-			var query = [
-				'MATCH (c:contribution)',
-				'WITH c',
-				'RETURN ({title: c.title, createdBy: c.createdBy, dateCreated: c.dateCreated, id: id(c)})'		
-			].join('\n');
-
-			db.query(query, function(error, result) {
-				if (error){
-					console.log('[ERROR] Attempt to fetch all contributions by /api/contributions failed.');
-					res.send('error getting all contributions');
-				}
-				else{
-					res.send(result);
-				}		
-			});
-
-			return;
-		}
-
-		if (numKeys !== NUM_QUERY_KEYS_CONTRIBUTION) {
-			console.log('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Expected 6 query parameters but only received ' + numKeys + '.');
-			return res.send('must send all 6 query params');
-		}
-
-		// has exactly 6 query params
-		// check if the 6 query params are the ones that i need
-
-		// 1 Number query param (depth)
-		if (!(QUERY_PARAM_DEPTH_KEYWORD in req.query)){
-			console.log('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Expected a depth param but did not receive any.');
-			return res.send('No depth query provided');
-		}
-
-		var QUERY_PARAM_DEPTH_STRING = req.query[QUERY_PARAM_DEPTH_KEYWORD];
-		var isDepthParamEmpty = QUERY_PARAM_DEPTH_STRING.length <= 0;
-		var isDepthParamNumber = !isNaN(parseInt(QUERY_PARAM_DEPTH_STRING));
-
-		if (isDepthParamEmpty || !isDepthParamNumber) {
-			console.log('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Expected depth param to be a Number but did not receive a Number.');
-			return res.send('Depth query provided is not a number');
-		}
-
-		// 5 array query params
-		var requiredKeysWithoutDepth = [
-																		QUERY_PARAM_GROUPS_KEYWORD,
-																		QUERY_PARAM_USERS_KEYWORD,
-																		QUERY_PARAM_RATING_KEYWORD,
-																		QUERY_PARAM_TIME_KEYWORD,
-																		QUERY_PARAM_TAGS_KEYWORD
-																	 ].sort();
-
-		var sortedQueryKeys = Object.keys(req.query).sort();
-		sortedQueryKeys.splice(sortedQueryKeys.indexOf(QUERY_PARAM_DEPTH_KEYWORD), 1); // remove the depth param
-
-		var correctParams = requiredKeysWithoutDepth.reduce(function(acc, val, idx){
-			return acc 
-				&& (val == sortedQueryKeys[idx]) 
-				&& (req.query[val].length > 0) // must not be blank queries for JSON.parse()
-		}, true);
-
-		if (!correctParams) {
-			console.log('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Did not receive the exact expected params.');
-			return res.send('Please send the correct 6 params');
-		}
 
 		// First get all the users matching the specified group, if present
 		var groupIds = JSON.parse(req.query[QUERY_PARAM_GROUPS_KEYWORD]);
@@ -254,6 +182,7 @@ router.route('/')
 				queryUserGroupTag,
 				queryRating,
 				queryDate,
+				/*
 				'WITH c',
 				'MATCH (c)-[*]->(c2:contribution) WITH c, c2',
 				'MATCH (c)<-[*0..' + params.depthParam + ']-(c3:contribution)',
@@ -261,7 +190,15 @@ router.route('/')
 				'UNWIND combinedContributionsCollection AS combinedContribution',
 				'UNWIND combinedContributionsCollection AS combinedContribution2',
 				'MATCH p=(combinedContribution)-[*1]->(combinedContribution2)',
-				'RETURN distinct (p)'
+				'RETURN distinct (p)'*/
+				'WITH c',
+				'MATCH pathToSuper=(c)-[*]->(c2:contribution {superNode: true})',
+				'WITH c,  nodes(pathToSuper) AS nodesInPathToSuper',
+				'MATCH pathFromChildren=(c)<-[*0..0]-(c3:contribution)',
+				'WITH distinct(collect(c) +  nodesInPathToSuper + nodes(pathFromChildren)) AS allNodes',
+				'UNWIND allNodes as source',
+				'UNWIND allNodes as target',
+				'RETURN (source)-[*1]->(target)'
 			].join('\n');
 
 			console.log(query);
