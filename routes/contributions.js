@@ -703,13 +703,19 @@ router.route('/:contributionId/attachments/:attachmentId')
 			}
 		});
 	}, function(req, res){
-		// delete the attachment file and node in db
+		// delete the attachment file + thumbnail (if present) and node in db
 		var attachmentPath = './uploads/contributions/' + req.params.contributionId + '/attachments/' + req.fileNameToDelete;
+		var thumbnailPath = './uploads/contributions/' + req.params.contributionId + '/attachments/thumbnails/' + req.fileNameToDelete;
 
 		fs.remove(attachmentPath, function(err){
 			if (err) {
-				console.error(err);
+				return console.error(err);
 			}
+			fs.remove(thumbnailPath, function(err){
+				if (err){
+					return console.error(err);
+				}
+			});
 		});
 
 		var query = [
