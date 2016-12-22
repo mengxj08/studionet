@@ -621,7 +621,6 @@ router.route('/:contributionId/view')
 // route: /api/contributions/:contributionId/rate
 router.route('/:contributionId/rate')
 	.post(auth.ensureAuthenticated, function(req, res) {
-		// might want to add a check for the rating between a range here..
 		var givenRating = parseInt(req.body.rating);
 
 		if (givenRating < 0 || givenRating > 5) {
@@ -665,45 +664,7 @@ router.route('/:contributionId/attachments')
 
 //route: /api/contributions/:contributionId/attachments/:attachmentId
 router.route('/:contributionId/attachments/:attachmentId')
-	.get(auth.ensureAuthenticated, function(req, res, next){
-		
-		var query = [
-			'OPTIONAL MATCH (c:contribution)-[:ATTACHMENT]-(a:attachment)',
-			'WHERE ID(c)={contributionIdParam} AND ID(a)={attachmentIdParam}',
-			'RETURN {count: count(a), name: a.name}'
-		].join('\n');
-
-		var params = {
-			contributionIdParam: parseInt(req.params.contributionId),
-			attachmentIdParam: parseInt(req.params.attachmentId)
-		};
-
-		var namePromise = new Promise(function(resolve, reject){
-			db.query(query, params, function(error, result){
-				if (error) {
-					return reject('error');
-				}
-
-				if (result[0].count === 0) {
-					return reject('error');
-				}
-				return resolve(result[0]);
-
-			});
-		});
-
-		namePromise
-		.then(function(result){
-			var fileName = result.name;
-			var filePath = glob.sync('./uploads/contributions/' + req.params.contributionId + '/attachments/'  + fileName);
-			res.sendFile(path.resolve(__dirname + '/../') + '/' + filePath[0]);	// sendFile does not like /../  ...
-		})
-		.catch(function(reason){
-			console.log(reason);
-			return res.send(reason);
-		});
-
-	})
+	.get(auth.ensureAuthenticated, contributionUtil.getHandlerToSendImage(false))
 
 	.delete(auth.ensureAuthenticated, function(req, res, next){
 		// factor this out
@@ -775,44 +736,6 @@ router.route('/:contributionId/attachments/:attachmentId')
 
 //route: /api/contributions/:contributionId/attachments/:attachmentId
 router.route('/:contributionId/attachments/:attachmentId/thumbnail')
-	.get(auth.ensureAuthenticated, function(req, res, next){
-		
-		var query = [
-			'OPTIONAL MATCH (c:contribution)-[:ATTACHMENT]-(a:attachment)',
-			'WHERE ID(c)={contributionIdParam} AND ID(a)={attachmentIdParam}',
-			'RETURN {count: count(a), name: a.name}'
-		].join('\n');
-
-		var params = {
-			contributionIdParam: parseInt(req.params.contributionId),
-			attachmentIdParam: parseInt(req.params.attachmentId)
-		};
-
-		var namePromise = new Promise(function(resolve, reject){
-			db.query(query, params, function(error, result){
-				if (error) {
-					return reject('error');
-				}
-
-				if (result[0].count === 0) {
-					return reject('error');
-				}
-				return resolve(result[0]);
-
-			});
-		});
-
-		namePromise
-		.then(function(result){
-			var fileName = result.name;
-			var filePath = glob.sync('./uploads/contributions/' + req.params.contributionId + '/attachments/thumbnails/'  + fileName);
-			res.sendFile(path.resolve(__dirname + '/../') + '/' + filePath[0]);	// sendFile does not like /../  ...
-		})
-		.catch(function(reason){
-			console.log(reason);
-			return res.send(reason);
-		});
-
-	})
+	.get(auth.ensureAuthenticated, contributionUtil.getHandlerToSendImage(true))
 
 module.exports = router;

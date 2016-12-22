@@ -46,6 +46,48 @@ module.exports.ensureUserOwnsContribution = function(req, res, next){
 	});
 }
 
+module.exports.getHandlerToSendImage = function(isForThumbnail) {
+	return function(req, res, next){
+		
+		var query = [
+			'OPTIONAL MATCH (c:contribution)-[:ATTACHMENT]-(a:attachment)',
+			'WHERE ID(c)={contributionIdParam} AND ID(a)={attachmentIdParam}',
+			'RETURN {count: count(a), name: a.name}'
+		].join('\n');
+
+		var params = {
+			contributionIdParam: parseInt(req.params.contributionId),
+			attachmentIdParam: parseInt(req.params.attachmentId)
+		};
+
+		var namePromise = new Promise(function(resolve, reject){
+			db.query(query, params, function(error, result){
+				if (error) {
+					return reject('error');
+				}
+
+				if (result[0].count === 0) {
+					return reject('error');
+				}
+				return resolve(result[0]);
+
+			});
+		});
+
+		namePromise
+		.then(function(result){
+			var fileName = result.name;
+			var filePath = glob.sync('./uploads/contributions/' + req.params.contributionId + '/attachments/' + (isForThumbnail ? 'thumbnails/' : '')  + fileName);
+			res.sendFile(path.resolve(__dirname + '/../') + '/' + filePath[0]);	// sendFile does not like /../  ...
+		})
+		.catch(function(reason){
+			console.log(reason);
+			return res.send(reason);
+		});
+
+	}
+}
+
 module.exports.updateDatabaseWithAttachmentsAndGenerateThumbnails = function(req, res, next){
 	// add attachments (can have multiple..)
 
