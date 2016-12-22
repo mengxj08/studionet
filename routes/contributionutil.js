@@ -13,7 +13,7 @@ var db = require('seraph')({
 });
 
 module.exports.initTempFileDest = function(req, res, next) {
-	req.tempFileDest = './uploads/users/' + req.user.id + '/temp/' + Date.now();
+	req.tempFileDest = './uploads/users/' + req.user.nusOpenId + '/temp/' + Date.now();
 	next();
 }
 
