@@ -60,8 +60,7 @@ router.route('/')
 			'MATCH (u) WHERE ID(u)=' + parseInt(req.body.source),
 			'MATCH (c) WHERE ID(c)=' + parseInt(req.body.target),
 			'MERGE (u)-[r:' + req.body.relationshipName + ']->(c)',
-			'ON CREATE SET r.count = 1',
-			//'r.createdBy = {createdByParam}',
+			'ON CREATE SET r.count = 1, r.createdBy={createdByParam}',
 			'ON MATCH SET r.count = coalesce(r.count, 0) + 1,',
 			'r.lastUpdated = ' + Date.now()
 		].join('\n');
