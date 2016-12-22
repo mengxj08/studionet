@@ -1,8 +1,6 @@
 var STUDIONET = {};
 STUDIONET.GRAPH = {};
 
-
-
 // Spinner
 STUDIONET.GRAPH.spinner = {
     lines: 13 // The number of lines to draw
@@ -151,7 +149,7 @@ var createGraphNode = function(node){    return  { data: node };   }
 /*
  * Converts normal edge from backend into cytoscape-specific format
  */
-var createGraphEdge = function(edge){   var c = edge.source; edge.source = edge.target; edge.target = c; return { data: edge };   }
+var createGraphEdge = function(edge){  return { data: edge };   }
 
 
 /*

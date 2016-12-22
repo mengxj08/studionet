@@ -24,6 +24,7 @@ angular.module('studionet')
    */
   $scope.graphInit = function(graph_data){
 
+      // if graph_data exists with no nodes, return;
       if(arguments[0] != undefined && graph_data.nodes.length == 0)
         return;
       
@@ -181,31 +182,15 @@ angular.module('studionet')
               node.successors().removeClass('faded');
               node.predecessors().addClass('highlighted');
               node.predecessors().removeClass('faded');
-
-              /*
-               * Get node data and construct qTip
-               */
-              var data = node.data();
-
-              var qtipFormat = STUDIONET.GRAPH.qtipFormat(evt);
-
-              if(data.id == supernode.contribution){
-                  qtipFormat.content.title = "Studionet Root Node";
-                  node.qtip(qtipFormat, evt); 
-              }
-              else{
-                qtipFormat.content.title =  data.name;
-                qtipFormat.content.text =  ""
-              }
-
-              //node.qtip(qtipFormat, evt);   
+   
           });
 
-          cy.on('mouseout','node', function(evt){
-              cy.elements().removeClass('faded');
-              cy.elements().removeClass('selected');
-              cy.elements().removeClass('highlighted');
-          });
+        cy.on('mouseout','node', function(evt){
+            cy.elements().removeClass('faded');
+            cy.elements().removeClass('selected');
+            cy.elements().removeClass('highlighted');
+        });
+
 
       }
 

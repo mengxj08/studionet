@@ -15,8 +15,8 @@ var db = require('seraph')({
 	pass: process.env.DB_PASS
 });
 var _ = require('underscore');
-var mmm = require('mmmagic'),
-      Magic = mmm.Magic;
+/*var mmm = require('mmmagic'),
+      Magic = mmm.Magic;*/
 var contributionUtil = require('./contributionutil');
 
 
