@@ -841,15 +841,18 @@ router.route('/:contributionId/attachments')
 		      	return;
 		      }
 
-		      var thumbName = 'thumb_' + f.filename;
-		      console.log(thumbName);
+		      // create the /thumbnails folder if not exist yet
+		      mkdirp(attachmentsDest + '/thumbnails/', function(err){
+		      	if (err)
+		      		console.log(err);
+		      });
 
 			    gm(attachmentsDest + f.filename)
 				  .resize(300, 300, '^')
 				  .gravity('Center')
 				  .crop(200, 200)
 				  .quality(100)
-				  .write(attachmentsDest + thumbName, function(error){
+				  .write(attachmentsDest + '/thumbnails/' + f.filename, function(error){
 				  	if (error) 
 				  		console.log('error!!! for : ' + f.filename);
 				  	else{
@@ -857,12 +860,11 @@ router.route('/:contributionId/attachments')
 
 				  		var query = [
 				  			'MATCH (a:attachment) WHERE ID(a)={attachmentIdParam}',
-				  			'SET a.thumb = true, a.thumbName = {thumbNameParam}'
+				  			'SET a.thumb = true'
 				  		].join('\n');
 
 				  		var params = {
 				  			attachmentIdParam: idArray[idx],
-				  			thumbNameParam: thumbName
 				  		}
 
 				  		db.query(query, params, function(error, result){
@@ -987,5 +989,47 @@ router.route('/:contributionId/attachments/:attachmentId')
 		})
 
 	});
+
+//route: /api/contributions/:contributionId/attachments/:attachmentId
+router.route('/:contributionId/attachments/:attachmentId/thumbnail')
+	.get(auth.ensureAuthenticated, function(req, res, next){
+		
+		var query = [
+			'OPTIONAL MATCH (c:contribution)-[:ATTACHMENT]-(a:attachment)',
+			'WHERE ID(c)={contributionIdParam} AND ID(a)={attachmentIdParam}',
+			'RETURN {count: count(a), name: a.name}'
+		].join('\n');
+
+		var params = {
+			contributionIdParam: parseInt(req.params.contributionId),
+			attachmentIdParam: parseInt(req.params.attachmentId)
+		};
+
+		var namePromise = new Promise(function(resolve, reject){
+			db.query(query, params, function(error, result){
+				if (error) {
+					return reject('error');
+				}
+
+				if (result[0].count === 0) {
+					return reject('error');
+				}
+				return resolve(result[0]);
+
+			});
+		});
+
+		namePromise
+		.then(function(result){
+			var fileName = result.name;
+			var filePath = glob.sync('./uploads/contributions/' + req.params.contributionId + '/attachments/thumbnails/'  + fileName);
+			res.sendFile(path.resolve(__dirname + '/../') + '/' + filePath[0]);	// sendFile does not like /../  ...
+		})
+		.catch(function(reason){
+			console.log(reason);
+			return res.send(reason);
+		});
+
+	})
 
 module.exports = router;
