@@ -22,7 +22,7 @@ module.exports.ensureAuthenticated = function(req, res, next) {
 // Super Admin authentication middleware
 module.exports.ensureSuperAdmin = function(req, res, next){
   
-  if (req.user.superAdmin){
+  if (req.user.isAdmin){
     return next();
   }
   res.redirect('/denied');

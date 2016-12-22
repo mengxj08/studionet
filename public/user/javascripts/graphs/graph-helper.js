@@ -56,7 +56,7 @@ var graph_style = {
 
       hideLabelsOnViewport: false,
 
-      layout: COLA_GRAPH_LAYOUT,
+      layout: COSE_GRAPH_LAYOUT,
       
       style: 
         cytoscape.stylesheet()
