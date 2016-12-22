@@ -148,7 +148,8 @@ angular.module('studionet')
   }
 
   $scope.createNewContribution = function(){
-    alert("Creates a new contribution");
+      //alert("Creates a new contribution");
+      $scope.showCreateContributionModal();
   }
 
 
@@ -158,13 +159,31 @@ angular.module('studionet')
    *
    * 
    */
-  $scope.showDetailsModal = function(data, clickedContributionId) {
+  $scope.showCreateContributionModal = function(){
+      ModalService.showModal({
+        templateUrl: "/user/templates/createContributionModal.html",
+        controller: "CreateContributionCtrl",
+        inputs: {
+          title: "show create contribution modal"
+        }
+      }).then(function(modal) {
+        modal.element.modal({
+          backdrop: 'static'
+          // keyboard: false
+        });
 
+        /// set data
+        //modal.scope.setData(data,clickedContributionId);
+      });
+  } 
+
+
+  $scope.showDetailsModal = function(data, clickedContributionId) {
       ModalService.showModal({
         templateUrl: "/user/templates/home.graphView.modal.html",
         controller: "DetailsModalCtrl",
         inputs: {
-          title: "A More Complex Example"
+          title: "show details modal"
         }
       }).then(function(modal) {
         modal.element.modal({
@@ -178,14 +197,8 @@ angular.module('studionet')
         // modal.close.then(function(result) {
         //   //$scope.complexResult  = "Name: " + result.name + ", age: " + result.age;
         // });
-
-
       });
-
   };
-
-
-
 
 }])
 
