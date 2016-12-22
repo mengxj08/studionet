@@ -103,7 +103,6 @@ module.exports.updateDatabaseWithAttachmentsAndGenerateThumbnails = function(req
 	var attachmentsDest = './uploads/contributions/' + contributionId + '/attachments/';
 
 	var transferPromise = new Promise(function(resolve, reject){
-		// can factor this out also..
 		fs.copy(tempFileDest, attachmentsDest, function(err){
 			if (err) {
 				console.error(err);
@@ -119,17 +118,13 @@ module.exports.updateDatabaseWithAttachmentsAndGenerateThumbnails = function(req
 		return new Promise(function(resolve, reject){
 			var createQueries = req.files.map((f, idx) =>
 				' CREATE (a' + idx + ':attachment {dateUploaded: ' + Date.now() + ', size: ' + f.size + ', name: "' + f.filename + '", thumb:false })' +
-				' WITH u, c, a' + idx + 
 				' CREATE (u)-[:UPLOADED]->(a' + idx + ')' +
-				' WITH a' + idx + ',c,u' +
 				' CREATE (a' + idx + ')<-[:ATTACHMENT]-(c)'
 				);
 
 			var query = [
 			'MATCH (u:user) WHERE ID(u)={userIdParam}',
-			'WITH u',
 			'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
-			'WITH u, c'
 			];
 
 			var returnQuery = req.files.reduce(function(acc, f, idx){
