@@ -351,11 +351,12 @@ router.route('/')
 			if (error){
 				console.log('[ERROR] Error creating new contribution for user : ', error);
 				res.status(500);
-				return res.send('error');
+				return res.send(error);
 			}
 			else{
 				console.log('[SUCCESS] Success in creating a new contribution for user id: ' + req.user.id);
 				req.contributionId = result[0].id;
+				res.send('Success in creating the contribution');
 				next();
 			}
 		}); 

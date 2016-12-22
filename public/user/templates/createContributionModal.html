@@ -1,5 +1,32 @@
-<link rel='stylesheet' href='/user/stylesheets/contribution-modal-style.css' />
-<link rel='stylesheet' href='/user/stylesheets/groups-modal-style.css' />
+<style>
+
+  .modal-footer{
+	height: 60px !important;
+	line-height: 45px;
+	padding: 5px !important;
+  }
+
+  .modal-button{
+    margin: 0px !important;
+    min-width: 150px;
+    height: 100% !important;
+    font-size: 15px;
+    font-family: 'Roboto Condensed', sans-serif;
+  }
+
+  .wide{
+    width: 100%;
+  }
+  select.tag-list{
+	  height: 250px; 
+    width: 100%;
+  }
+
+  input.addTag{
+    width: 250px; 
+    margin-right: 10px;
+  }
+</style>
 
 <div id="myModal" class="modal fade" role="dialog">
   <div class="modal-dialog">
@@ -7,14 +34,43 @@
     <!-- Modal content-->
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-        <h4 class="modal-title">Modal Header</h4>
+        <button type="button" class="close" data-dismiss="modal" ng-click='close()'>&times;</button>
+        <h4 class="modal-title">Create a new contribution linking to the root</h4>
       </div>
       <div class="modal-body">
-        <p>Some text in the modal.</p>
+        <div class='editor'>
+            <br>
+            <label> Contribution Title: </label>
+            <br>
+            <input class='wide' value='Title' ng-model="contributionData.title"></input>
+            <br><br>
+            <label> Contribution Content: </label>
+            <br>
+            <textarea class='wide' rows="10" cols="70" ng-model="contributionData.body"></textarea>
+            <br><br>
+            <label for="singleSelect"> Relationship: </label>
+            <select name="singleSelect" id="singleSelect" ng-model=contributionData.refType>
+              <option ng-repeat="rel in relationships | filter: { src_type: 'contribution', 
+                                      target_type: 'contribution'}" 
+                                      value={{rel.name}}>{{rel.name}}</option>
+            </select>
+            <br><br>
+            <label> Tags: </label><br>
+            <select class='tag-list' rows="10" ng-model="contributionData.tags" multiple>
+              <option ng-repeat="tag in tags" value="{{tag.name}}">{{tag.name}}</option>
+            </select>
+            <br><br>
+            <input class="addTag" ng-model="tag"></input><button ng-click="contributionData.tags.push(tag)" class='btn btn-default modal-button'>Add a Tag</button>
+            <br>
+            <span><b> Selected tag names:  </b></span> 
+            <span>{{ contributionData.tags }}</span>
+        </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <center>
+        <button type="button" class="btn btn-default modal-button" data-dismiss="modal" ng-click='createContribution(contributionData)'>Submit</button>
+        <button type="button" class="btn btn-default modal-button" data-dismiss="modal" ng-click='close()'>Cancle</button>
+        </center>
       </div>
     </div>
 

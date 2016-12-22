@@ -145,25 +145,20 @@ angular.module('studionet')
       layout.start();   
   }
 
-  $scope.createNewContribution = function(){
-      //alert("Creates a new contribution");
-      $scope.showCreateContributionModal();
-  }
-
-
   /*
    *
    *  Contribution Details
    *
    * 
    */
-  $scope.showCreateContributionModal = function(){
+  $scope.createNewContribution = function(){
       ModalService.showModal({
         templateUrl: "/user/templates/createContributionModal.html",
         controller: "CreateContributionCtrl",
         inputs: {
           title: "show create contribution modal"
-        }
+        },
+        scope: $scope
       }).then(function(modal) {
         modal.element.modal({
           backdrop: 'static'
@@ -182,7 +177,8 @@ angular.module('studionet')
         controller: "DetailsModalCtrl",
         inputs: {
           title: "show details modal"
-        }
+        },
+        scope: $scope
       }).then(function(modal) {
         modal.element.modal({
           backdrop: 'static'
