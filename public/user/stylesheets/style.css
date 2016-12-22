@@ -144,13 +144,25 @@ nav .navbar-nav{
   transform: translate(0, -3px); }
 
 .navbar .navbar-collapse .navbar-nav > li.dropdown:hover:after {
-  transform: translate(-50%, -3px); }
+  transform: translate(-50%, -3px); 
+}
 
 #noDropdown > li.dropdown:hover:after {
   display: none;
   visibility: none;
   opacity: none;
-  transform: none; }
+  transform: none; 
+}
+
+.navbar .navbar-collapse .navbar-nav > li.dropdown.notification.warning a.dropdown-toggle .icon {
+    background-color: rgb(74, 149, 239);
+    color: #e7edee;
+}
+
+.dropdown-menu{
+	width: 150px !important;
+	min-width: 100px !important;
+}
 
 /*
  * App Body & Theme CSS

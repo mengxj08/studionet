@@ -33,6 +33,31 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 				}]
 			}
 		})
+		.state('basic', {
+			url: '/basic',
+			templateUrl: '/user/templates/contributions-simple.html',
+			controller: 'ContributionsCtrl',
+			resolve: {
+				supernode: ['supernode', function(supernode){
+					return supernode.getSupernodes();
+				}],
+				tags: ['tags', function(tags){
+					return tags.getAll();
+				}],
+				groupsPromise: ['groups', function(groups){
+					return groups.getAll() && groups.getGraph();
+				}],
+				contributionsPromise: ['contributions', function(contributions){
+					return contributions.getAll() && contributions.getGraph();
+				}],
+				usersPromise: ['users', function(users){ 
+					return users.getAll();
+				}],
+				userProfile: ['profile', function(profile){
+					return profile.getUser();
+				}]
+			}
+		})
 		.state('profile', {
 			url: '/profile',
 			templateUrl: '/user/templates/profile.html',
@@ -64,5 +89,5 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 			}
 		})
 
-	$urlRouterProvider.otherwise('/contributions');
+	$urlRouterProvider.otherwise('/basic');
 }]);

@@ -37,7 +37,7 @@
 .graph-controls{
 
   position: absolute;
-  bottom: 50px;
+  bottom: 00px;
   right: 50px;
 
   width: 30px; 
@@ -63,9 +63,8 @@
   color: white;
   background: #4A95EF;
 
-  box-shadow: 2px 2px 2px grey;
+  //box-shadow: 2px 2px 2px grey;
   margin: 10px 0px;
-
 
   //border: 1px solid black;
 }

@@ -16,8 +16,6 @@ angular.module('studionet')
             depthVal : 0
       }
 
-
-
       // Lists populating filters
       $scope.tags = [];
       $scope.authors = [];

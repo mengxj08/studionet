@@ -13,6 +13,7 @@ angular.module('studionet')
 		$scope.filters = profile.user.filterNames || []; 
 		$scope.filters_ref = profile.user.filters || []; 
 
+		$scope.simple = true;
 
 		/*
 		*
