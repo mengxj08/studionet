@@ -6,36 +6,18 @@ var fs = require('fs');
 
 var storage = {};
 
-storage.storage = multer.diskStorage({
-	destination: function(req, file, cb) {
-		var dest = './uploads/' + req.body.username;
-
-		mkdirp(dest, function(err){
-			if (err)
-				console.log(err);
-			else{
-				console.log('created', dest);
-				cb(null, dest);
-			}
-		});
-	},
-	filename: function(req, file, cb){
-		cb(null, file.originalname);
-	}
-});
-
 storage.avatarStorage = multer.diskStorage({
 	destination: function(req, file, cb) {
 		var dest = './uploads/users/' + req.user.nusOpenId + '/avatar/';
-
 		var toDelete = glob.sync(dest + 'avatar.*');
+
 		// remove any old avatar if the user uploads a new one
+		// probably don't need to delete existing avatar manually since will overwrite
 		toDelete.forEach(function(item, index, array){
 			fs.unlink(item, function(err){
 				if (err) throw err;
 			})
 		});
-
 		// if folder does not exist, create it
 		mkdirp(dest, function(err){
 			if (err)
@@ -48,25 +30,7 @@ storage.avatarStorage = multer.diskStorage({
 	},
 	filename: function(req, file, cb){
 		// keep the extension of the avatar
-		cb(null, 'avatar'+file.originalname.slice(file.originalname.lastIndexOf('.')));
-	}
-});
-
-storage.modelStorage = multer.diskStorage({
-	destination: function(req, file, cb) {
-		var dest = './uploads/' + req.user.nusOpenId + '/models/';
-
-		mkdirp(dest, function(err){
-			if (err)
-				console.log(err);
-			else{
-				console.log('created', dest);
-				cb(null, dest);
-			}
-		});
-	},
-	filename: function(req, file, cb){
-		cb(null, file.originalname);
+		cb(null, 'avatar' + file.originalname.slice(file.originalname.lastIndexOf('.')));
 	}
 });
 
@@ -86,6 +50,6 @@ storage.attachmentStorage = multer.diskStorage({
 	filename: function(req, file, cb) {
 		cb(null, file.originalname);
 	}
-});
+}); 
 
 module.exports = storage;
