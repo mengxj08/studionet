@@ -85,6 +85,10 @@
   //border: 1px solid black;
 }
 
+.btn-active{
+  background-color: #4A4AEF !important;
+}
+
 .graph-nav-control:hover{
   font-size: 1.1em;
 }

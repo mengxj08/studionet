@@ -15,21 +15,28 @@ angular.module('studionet')
 
   $scope.simple = true;
 
-  $scope.showFilter = false;  
-
   var rootnode = supernode.contribution;
 
+
+  $scope.toggleFilter = function(){
+    console.log(angular.element('#filterPanel').scope().filterVisible)
+    angular.element('#filterPanel').scope().filterVisible = !angular.element('#filterPanel').scope().filterVisible;
+    $scope.filterStatus = angular.element('#filterPanel').scope().filterVisible;
+    if(!$scope.filterStatus){
+      $scope.graphInit();
+    }
+  }
+
+
   var updateZoom = function(){
+    if($scope.graph){
       $scope.zoomLevel = (100*$scope.graph.zoom()).toPrecision(4);
       $scope.$apply();
+    }
   }
   
   setTimeout(updateZoom, 1000);
   document.getElementById("cy").addEventListener("wheel", updateZoom);
-
-  $scope.toggleFilter = function(){
-    angular.element('.graph-container').scope().showFilter = !angular.element('.graph-container').scope().showFilter
-  }
 
   // remove the styles from the graph
   var removeAdditionalStyles = function(){
@@ -48,8 +55,6 @@ angular.module('studionet')
    *    Graph Creation & Interactions
    */
   $scope.graphInit = function(graph_data){
-
-
 
       // if graph_data exists with no nodes, return;
       if(arguments[0] != undefined && graph_data.nodes.length == 0)
