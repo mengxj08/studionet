@@ -184,21 +184,24 @@ router.route('/')
 				queryDate,
 				/*
 				'WITH c',
-				'MATCH (c)-[*]->(c2:contribution) WITH c, c2',
-				'MATCH (c)<-[*0..' + params.depthParam + ']-(c3:contribution)',
-				'WITH distinct (collect(c) + collect(c2) + collect(c3)) as combinedContributionsCollection',
-				'UNWIND combinedContributionsCollection AS combinedContribution',
-				'UNWIND combinedContributionsCollection AS combinedContribution2',
-				'MATCH p=(combinedContribution)-[*1]->(combinedContribution2)',
-				'RETURN distinct (p)'*/
-				'WITH c',
 				'MATCH pathToSuper=(c)-[*]->(c2:contribution {superNode: true})',
 				'WITH c,  nodes(pathToSuper) AS nodesInPathToSuper',
 				'MATCH pathFromChildren=(c)<-[*0..0]-(c3:contribution)',
 				'WITH distinct(collect(c) +  nodesInPathToSuper + nodes(pathFromChildren)) AS allNodes',
 				'UNWIND allNodes as source',
 				'UNWIND allNodes as target',
-				'RETURN (source)-[*1]->(target)'
+				'RETURN distinct (source)-[*1]->(target)'*/
+				'WITH collect(id(c)) as filteredIdList',
+				'OPTIONAL MATCH pathToSuper=(c1)-[*]->(c2:contribution {superNode: true})',
+				'WHERE ID(c1) IN filteredIdList',
+				'WITH filteredIdList, collect(distinct id(c2)) as intermediateNodeList',
+				'OPTIONAL MATCH pathFromChildren=(c3)<-[*1..' + params.depthParam + ']-(c4:contribution)',
+				'WHERE ID(c3) IN filteredIdList',
+				'WITH filteredIdList + intermediateNodeList + collect(distinct id(c4)) as combinedList',
+				'UNWIND combinedList as unwindedCombinedList',
+				'WITH collect(distinct unwindedCombinedList) as distinctUnwindedCombinedList',
+				'MATCH p=(source)-[*1]->(target) WHERE ID(source) IN distinctUnwindedCombinedList AND ID(target) IN distinctUnwindedCombinedList',
+				'RETURN p'
 			].join('\n');
 
 			console.log(query);
