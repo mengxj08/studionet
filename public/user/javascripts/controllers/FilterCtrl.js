@@ -271,7 +271,7 @@ angular.module('studionet')
           resetDefaults();
 
           // populate filters 
-          $scope.tags = $filter('orderBy')(populateTags(), 'contributionCount') ;
+          $scope.tags = $filter('orderBy')(populateTags(), 'contributionCount', true) ;
           $scope.users = $filter('orderBy')(populateUsers(), 'name') ;
           $scope.groups = $filter('orderBy')(populateGroups(), 'name') ;
 
