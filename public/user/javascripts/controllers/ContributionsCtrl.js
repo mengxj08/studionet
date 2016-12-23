@@ -19,6 +19,10 @@ angular.module('studionet')
 
   var rootnode = supernode.contribution;
 
+  $scope.toggleFilter = function(){
+    angular.element('.graph-container').scope().showFilter = !angular.element('.graph-container').scope().showFilter
+  }
+
   /*
    *    Graph Creation & Interactions
    */
@@ -190,6 +194,69 @@ angular.module('studionet')
             cy.elements().removeClass('selected');
             cy.elements().removeClass('highlighted');
         });
+
+
+
+        // displays content of the node
+        cy.on('tap', 'node', function(evt){
+
+            cy.elements().removeClass('highlighted');
+            var node = evt.cyTarget;
+            var data = node.data();
+            var directlyConnected = node.neighborhood();
+            node.addClass('selected');
+            directlyConnected.nodes().addClass('highlighted');
+            node.connectedEdges().addClass('highlighted');
+
+
+            if(data.type == 'contribution'){
+                 var predecessors = node.predecessors();
+                 var successors = node.successors();
+                 var nodeTree = [];
+                 for(var i = predecessors.nodes().length - 1; i >= 0; i--){
+                   //Recursively get edges (and their sources) coming into the nodes in the collection (i.e. the incomers, the incomers' incomers, ...)
+                   var nodeItem = predecessors.nodes()[i];
+                   if(nodeItem.data().type == 'contribution'){
+                      nodeTree.push(nodeItem.data());
+                      console.log(nodeItem.data());
+                    }
+                 }
+                 nodeTree.push(data);
+                 successors.nodes().forEach(function(nodeItem){
+                    //Recursively get edges (and their targets) coming out of the nodes in the collection (i.e. the outgoers, the outgoers' outgoers, ...).
+                    if(nodeItem.data().type == 'contribution'){
+                      nodeTree.push(nodeItem.data());
+                      console.log(nodeItem.data());
+                    }
+                 })
+
+                 var RecursiveGetData = function(index){
+                    var route = "/api/" + nodeTree[index].type + "s/" + nodeTree[index].id;
+                    $.get( route , function(result) {
+                        //console.log("test on clicking onto a contribution");
+                        nodeTree[index].db_data = result;
+                        if(index == nodeTree.length - 1){
+                          angular.element($('.graph-container')).scope().showDetailsModal(nodeTree, data.id);
+
+                          //Mouse out the clicked node once it enters the modal page
+                          cy.elements().css({ content: " " });
+                          cy.elements().removeClass('highlighted');
+                          cy.elements().removeClass('selected');
+
+                          if(cy.$('node:selected')){
+                            $('#content-block-hover').html("");
+                            $('#content-block-hover').hide();    
+                          }
+                        }
+                        else{
+                          RecursiveGetData(++index);
+                        }
+                    });
+                 };
+
+                 RecursiveGetData(0);
+            }
+          });   
 
 
       }
