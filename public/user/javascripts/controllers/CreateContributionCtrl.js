@@ -36,7 +36,7 @@ angular.module('studionet')
 
     //createContribution.author = profile.user.id;
     if(!createContribution) return;
-    
+
     createContribution.ref = supernode.contribution;
     createContribution.contentType = 'TEXT';
     console.log(createContribution.ref);
@@ -51,11 +51,11 @@ angular.module('studionet')
     .success(function(data) {
       alert("Contribution Created");  
       $scope.close();
-      $scope.refresh(); 
+      //$scope.refresh(); 
       $scope.$parent.graphInit();
     })
     .error(function(error){
-      alert("Error Msg:" + error); 
+      alert("Error Msg:" + error.message); 
       $scope.close();
     })
    };
