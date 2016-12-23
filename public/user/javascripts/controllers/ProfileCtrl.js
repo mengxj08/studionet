@@ -8,6 +8,11 @@ angular.module('studionet')
 	$scope.user = profile.user;
 	$scope.groups = profile.groups;
 	$scope.contributions = profile.contributions;
+
+	$scope.close = function() {
+	    $('body').removeClass('modal-open');
+	    $('.modal-backdrop').remove();
+  	};
   	
   
 	$scope.isAdmin = profile.groups.reduce(function(res, curr){

@@ -3,11 +3,12 @@ angular.module('studionet')
 /*
  * Controller for Filters
  */
-.controller('FilterCtrl', ['$scope', 'supernode', 'users', 'tags', 'groups', '$http',  function($scope, supernode, users, tags, groups, $http){ 
+.controller('FilterCtrl', ['$scope', 'supernode', 'users', 'tags', 'groups', '$http', '$filter', function($scope, supernode, users, tags, groups, $http, $filter){ 
 
       // defaults
       var DEFAULTS = {
-            authors : [11],
+            users : [],
+            groups: [],
             tags : [],
             startDate: new Date( (new Date()).setDate((new Date().getDate()) - 1) ),
             endDate : new Date( (new Date()).setDate((new Date().getDate()) + 1) ),
@@ -18,15 +19,17 @@ angular.module('studionet')
 
       // Lists populating filters
       $scope.tags = [];
-      $scope.authors = [];
+      $scope.users = [];
+      $scope.groups = [];
       
       // Filter Selections
-      $scope.selectedAuthors, $scope.selectedTags, 
+      $scope.selectedUsers, $scope.selectedGroups, $scope.selectedTags, 
       $scope.startDate, $scope.endDate, 
       $scope.ratingMin, $scope.ratingMax;
       $scope.depthVal;
 
       $scope.showFilter = false;
+      $scope.panelsOpen = true;
 
       var target = document.getElementById('cy');
       var spinner = new Spinner(STUDIONET.GRAPH.spinner);
@@ -36,7 +39,8 @@ angular.module('studionet')
        */
       var resetDefaults = function(){
           
-          $scope.selectedAuthors = DEFAULTS.authors;
+          $scope.selectedUsers = DEFAULTS.users;
+          $scope.selectedGroups = DEFAULTS.groups;
           $scope.selectedTags = DEFAULTS.tags;
           $scope.startDate = DEFAULTS.startDate;
           $scope.endDate = DEFAULTS.endDate;
@@ -46,7 +50,10 @@ angular.module('studionet')
 
           // clear actual filters
           $scope.tags.map( function(tag) { tag.selected = false; return tag; });
-          $scope.authors.map( function(author) { author.selected = false; return author; });
+          $scope.users.map( function(user) { user.selected = false; return user; });
+          $scope.groups.map( function(group) { group.selected = false; return group; });
+
+          $scope.panelsOpen = false;
       };
 
       var populateTags = function(){
@@ -93,7 +100,7 @@ angular.module('studionet')
 
       }
 
-      var populateAuthors = function(){
+      var populateUsers = function(){
           return users.users.map(function(user){
 
               user.type = "user";
@@ -108,14 +115,15 @@ angular.module('studionet')
       }
 
       var checkDefaults = function(){
-        if (  $scope.selectedAuthors.length == DEFAULTS.authors.length &&
+        if (  $scope.selectedUsers.length == DEFAULTS.users.length &&
+              $scope.selectedGroups.length == DEFAULTS.groups.length &&
               $scope.selectedTags.length == DEFAULTS.tags.length && 
               $scope.startDate == DEFAULTS.startDate &&
               $scope.endDate == DEFAULTS.endDate && 
               $scope.ratingMin == DEFAULTS.ratingMin &&
               $scope.ratingMax == DEFAULTS.ratingMax &&
               $scope.depthVal == DEFAULTS.depthVal ){
-          alert("No fitler active");
+          alert("No Filter Active");
           return true;
         }
         else
@@ -188,14 +196,18 @@ angular.module('studionet')
               
               var urlString = '/api/contributions?'; 
 
-              var groups = $scope.selectedAuthors.filter( function(g){ return (g.type == "group") });
-              var users = $scope.selectedAuthors.filter( function(g){ return (g.type == "user") });
+              var groups = $scope.selectedGroups; //$scope.selectedAuthors.filter( function(g){ return (g.type == "group") });
+              var users = $scope.selectedUsers; //$scope.selectedAuthors.filter( function(g){ return (g.type == "user") });
+
+              var groupsUrlSeg = ( groups.length ? "[" + groups.map( function(g){ return g.id } ).toString() + "]" : ( users.length > 0 ? "[]" : "-1" ) )  // groups
+              var usersUrlSeg = ( users.length ? "[" + users.map( function(u){ return u.id } ).toString() + "]"  : ( groups.length > 0 ? "[]" : "-1" ) ) // users
+
 
               //  Create the URL String
             
-              urlString +=  "g=" + ( groups.length ? "[" + groups.map( function(u){ return u.id } ).toString() + "]" : "-1" )  // users
+              urlString +=  "g=" + groupsUrlSeg
 
-              + "&u=" + ( users.length ? "[" + users.map( function(u){ return u.id } ).toString() + "]"  : "-1" )  // users
+              + "&u=" + usersUrlSeg
 
               + "&tg=" + ( $scope.selectedTags.length ? "[" + $scope.selectedTags.map( function(g){ return g.id; }).toString() + "]" : "-1" )  // tags
 
@@ -226,6 +238,7 @@ angular.module('studionet')
 
           }
 
+          $scope.panelsOpen = false;
 
       };
 
@@ -257,10 +270,10 @@ angular.module('studionet')
           // filters to default values
           resetDefaults();
 
-          // populate filters
-          $scope.tags = populateTags();
-          $scope.authors = populateAuthors();
-          $scope.authors = $scope.authors.concat( populateGroups() );     
+          // populate filters 
+          $scope.tags = $filter('orderBy')(populateTags(), 'contributionCount', true) ;
+          $scope.users = $filter('orderBy')(populateUsers(), 'name') ;
+          $scope.groups = $filter('orderBy')(populateGroups(), 'name') ;
 
       }
 

@@ -12,6 +12,90 @@ var db = require('seraph')({
 	pass: process.env.DB_PASS
 });
 
+module.exports.handleGetContributionsWithoutParams = function(req, res, next) {
+
+	var numKeys = Object.keys(req.query).length;
+	var hasParams = numKeys > 0;
+
+	if (hasParams) {
+		return next();
+	}
+
+	var query = [
+		'MATCH (c:contribution)',
+		'WITH c',
+		'RETURN ({title: c.title, createdBy: c.createdBy, dateCreated: c.dateCreated, id: id(c)})'		
+	].join('\n');
+
+	db.query(query, function(error, result) {
+		if (error){
+			console.log('[ERROR] Attempt to fetch all contributions by /api/contributions failed.');
+			return res.send('error getting all contributions');
+		}
+		res.send(result);
+	});
+
+}
+
+module.exports.ensureGetContributionsCorrectParams = function(req, res, next) {
+	var numKeys = Object.keys(req.query).length;
+	var NUM_QUERY_KEYS_CONTRIBUTION = 6;
+
+	var QUERY_PARAM_DEPTH_KEYWORD = 'd';
+	var QUERY_PARAM_GROUPS_KEYWORD = 'g';
+	var QUERY_PARAM_RATING_KEYWORD = 'r';
+	var QUERY_PARAM_USERS_KEYWORD = 'u';
+	var QUERY_PARAM_TIME_KEYWORD = 't';
+	var QUERY_PARAM_TAGS_KEYWORD = 'tg';
+
+	if (numKeys !== NUM_QUERY_KEYS_CONTRIBUTION) {
+		console.log('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Expected 6 query parameters but only received ' + numKeys + '.');
+		return res.send('must send all 6 query params');
+	}
+
+	// has exactly 6 query params
+	// check if the 6 query params are the ones that i need
+
+	// 1 Number query param (depth)
+	if (!(QUERY_PARAM_DEPTH_KEYWORD in req.query)){
+		console.log('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Expected a depth param but did not receive any.');
+		return res.send('No depth query provided');
+	}
+
+	var QUERY_PARAM_DEPTH_STRING = req.query[QUERY_PARAM_DEPTH_KEYWORD];
+	var isDepthParamEmpty = QUERY_PARAM_DEPTH_STRING.length <= 0;
+	var isDepthParamNumber = !isNaN(parseInt(QUERY_PARAM_DEPTH_STRING));
+
+	if (isDepthParamEmpty || !isDepthParamNumber) {
+		console.log('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Expected depth param to be a Number but did not receive a Number.');
+		return res.send('Depth query provided is not a number');
+	}
+
+	var requiredKeysWithoutDepth = [
+																	QUERY_PARAM_GROUPS_KEYWORD,
+																	QUERY_PARAM_USERS_KEYWORD,
+																	QUERY_PARAM_RATING_KEYWORD,
+																	QUERY_PARAM_TIME_KEYWORD,
+																	QUERY_PARAM_TAGS_KEYWORD
+																 ].sort();
+
+	var sortedQueryKeys = Object.keys(req.query).sort();
+	sortedQueryKeys.splice(sortedQueryKeys.indexOf(QUERY_PARAM_DEPTH_KEYWORD), 1); // remove the depth param
+
+	var correctParams = requiredKeysWithoutDepth.reduce(function(acc, val, idx){
+		return acc 
+			&& (val == sortedQueryKeys[idx]) 
+			&& (req.query[val].length > 0) // must not be blank queries for JSON.parse()
+	}, true);
+
+	if (!correctParams) {
+		console.log('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Did not receive the exact expected params.');
+		return res.send('Please send the correct 6 params');
+	}
+
+	next();
+}
+
 module.exports.initTempFileDest = function(req, res, next) {
 	req.tempFileDest = './uploads/users/' + req.user.nusOpenId + '/temp/' + Date.now();
 	next();
@@ -103,7 +187,6 @@ module.exports.updateDatabaseWithAttachmentsAndGenerateThumbnails = function(req
 	var attachmentsDest = './uploads/contributions/' + contributionId + '/attachments/';
 
 	var transferPromise = new Promise(function(resolve, reject){
-		// can factor this out also..
 		fs.copy(tempFileDest, attachmentsDest, function(err){
 			if (err) {
 				console.error(err);
@@ -119,17 +202,13 @@ module.exports.updateDatabaseWithAttachmentsAndGenerateThumbnails = function(req
 		return new Promise(function(resolve, reject){
 			var createQueries = req.files.map((f, idx) =>
 				' CREATE (a' + idx + ':attachment {dateUploaded: ' + Date.now() + ', size: ' + f.size + ', name: "' + f.filename + '", thumb:false })' +
-				' WITH u, c, a' + idx + 
 				' CREATE (u)-[:UPLOADED]->(a' + idx + ')' +
-				' WITH a' + idx + ',c,u' +
 				' CREATE (a' + idx + ')<-[:ATTACHMENT]-(c)'
 				);
 
 			var query = [
 			'MATCH (u:user) WHERE ID(u)={userIdParam}',
-			'WITH u',
 			'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
-			'WITH u, c'
 			];
 
 			var returnQuery = req.files.reduce(function(acc, f, idx){

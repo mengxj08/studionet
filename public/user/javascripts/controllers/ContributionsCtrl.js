@@ -13,11 +13,17 @@ angular.module('studionet')
 	//$scope.user = profile.user;
   $scope.users = users.usersById();   // needed for hover to get user name - fix later
 
-  $scope.simple = false;
+  $scope.zoomLevel = 1;
+
+  $scope.simple = true;
 
   $scope.showFilter = false;  
 
   var rootnode = supernode.contribution;
+
+  $scope.toggleFilter = function(){
+    angular.element('.graph-container').scope().showFilter = !angular.element('.graph-container').scope().showFilter
+  }
 
   /*
    *    Graph Creation & Interactions
@@ -94,15 +100,45 @@ angular.module('studionet')
         var j = cy.nodes()[0]
         if(j) cy.remove(j);
 
+        cy.onRender( function(){
+
+            $scope.zoomLevel = (100*cy.zoom()).toPrecision(4);
+            $scope.$apply();
+
+            //console.log("Zoom: ", graph.zoom());
+            // console.log( "Nodes: ", STUDIONET.GRAPH.getVisibleNodes(cy).length );
+            //var nodes = STUDIONET.GRAPH.getVisibleNodes(graph); 
+
+            var vw = $scope.graph.extent();
+            var filter =   cy.filter(function(i, n){
+                  if( ( n.position().x > vw.x1 && n.position().x < vw.x2 ) && ( n.position().y > vw.y1 && n.position().y < vw.y2  ) )
+                    return true;
+                
+                  return false;
+            });
+
+            if( filter.length < cy.nodes().length )
+                filter.addClass('highlighted');
+            else
+                filter.removeClass('highlighted');
+
+            //console.log(filter.length);
+
+        });
+
         cy.nodes().map(function(node){
 
-            var count = node.successors().length;
+              var count = node.successors().length;
 
-            node.css({ 'width': 20 + 2*(count/3), 'height': 20 + 2*(count/3) })
+              node.css({ 'width': 20 + 2*(count/3), 'height': 20 + 2*(count/3) });
+              
+              if(count > 30)
+                  node.addClass('primary');
 
-            return node;
+              return node;
 
         })
+
 
         cy.on('mouseover','node', function(evt){
 
@@ -123,13 +159,75 @@ angular.module('studionet')
               node.predecessors().addClass('highlighted');
               node.predecessors().removeClass('faded');
    
-          });
+        });
 
         cy.on('mouseout','node', function(evt){
             cy.elements().removeClass('faded');
             cy.elements().removeClass('selected');
             cy.elements().removeClass('highlighted');
         });
+
+
+        // displays content of the node
+        cy.on('tap', 'node', function(evt){
+
+            cy.elements().removeClass('highlighted');
+            var node = evt.cyTarget;
+            var data = node.data();
+            var directlyConnected = node.neighborhood();
+            node.addClass('selected');
+            directlyConnected.nodes().addClass('highlighted');
+            node.connectedEdges().addClass('highlighted');
+
+
+            if(data.type == 'contribution'){
+                 var predecessors = node.predecessors();
+                 var successors = node.successors();
+                 var nodeTree = [];
+                 for(var i = predecessors.nodes().length - 1; i >= 0; i--){
+                   //Recursively get edges (and their sources) coming into the nodes in the collection (i.e. the incomers, the incomers' incomers, ...)
+                   var nodeItem = predecessors.nodes()[i];
+                   if(nodeItem.data().type == 'contribution'){
+                      nodeTree.push(nodeItem.data());
+                      console.log(nodeItem.data());
+                    }
+                 }
+                 nodeTree.push(data);
+                 successors.nodes().forEach(function(nodeItem){
+                    //Recursively get edges (and their targets) coming out of the nodes in the collection (i.e. the outgoers, the outgoers' outgoers, ...).
+                    if(nodeItem.data().type == 'contribution'){
+                      nodeTree.push(nodeItem.data());
+                      console.log(nodeItem.data());
+                    }
+                 })
+
+                 var RecursiveGetData = function(index){
+                    var route = "/api/" + nodeTree[index].type + "s/" + nodeTree[index].id;
+                    $.get( route , function(result) {
+                        //console.log("test on clicking onto a contribution");
+                        nodeTree[index].db_data = result;
+                        if(index == nodeTree.length - 1){
+                          angular.element($('.graph-container')).scope().showDetailsModal(nodeTree, data.id);
+
+                          //Mouse out the clicked node once it enters the modal page
+                          cy.elements().css({ content: " " });
+                          cy.elements().removeClass('highlighted');
+                          cy.elements().removeClass('selected');
+
+                          if(cy.$('node:selected')){
+                            $('#content-block-hover').html("");
+                            $('#content-block-hover').hide();    
+                          }
+                        }
+                        else{
+                          RecursiveGetData(++index);
+                        }
+                    });
+                 };
+
+                 RecursiveGetData(0);
+            }
+        });   
 
 
       }
@@ -200,9 +298,10 @@ angular.module('studionet')
    *    Nav Controls
    */
   $scope.resetGraph = function(){
-      $scope.graph.layout().stop(); 
+/*      $scope.graph.layout().stop(); 
       layout = $scope.graph.elements().makeLayout({ 'name': 'cola'}); 
-      layout.start();   
+      layout.start();   */
+      $scope.graph.fit();
   }
 
   /*
