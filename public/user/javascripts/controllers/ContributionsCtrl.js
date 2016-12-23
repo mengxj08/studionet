@@ -267,9 +267,10 @@ angular.module('studionet')
    *    Nav Controls
    */
   $scope.resetGraph = function(){
-      $scope.graph.layout().stop(); 
+/*      $scope.graph.layout().stop(); 
       layout = $scope.graph.elements().makeLayout({ 'name': 'cola'}); 
-      layout.start();   
+      layout.start();   */
+      $scope.graph.fit();
   }
 
   /*

@@ -199,11 +199,15 @@ angular.module('studionet')
               var groups = $scope.selectedGroups; //$scope.selectedAuthors.filter( function(g){ return (g.type == "group") });
               var users = $scope.selectedUsers; //$scope.selectedAuthors.filter( function(g){ return (g.type == "user") });
 
+              var groupsUrlSeg = ( groups.length ? "[" + groups.map( function(g){ return g.id } ).toString() + "]" : ( users.length > 0 ? "[]" : "-1" ) )  // groups
+              var usersUrlSeg = ( users.length ? "[" + users.map( function(u){ return u.id } ).toString() + "]"  : ( groups.length > 0 ? "[]" : "-1" ) ) // users
+
+
               //  Create the URL String
             
-              urlString +=  "g=" + ( groups.length ? "[" + groups.map( function(u){ return u.id } ).toString() + "]" : "-1" )  // users
+              urlString +=  "g=" + groupsUrlSeg
 
-              + "&u=" + ( users.length ? "[" + users.map( function(u){ return u.id } ).toString() + "]"  : "-1" )  // users
+              + "&u=" + usersUrlSeg
 
               + "&tg=" + ( $scope.selectedTags.length ? "[" + $scope.selectedTags.map( function(g){ return g.id; }).toString() + "]" : "-1" )  // tags
 
