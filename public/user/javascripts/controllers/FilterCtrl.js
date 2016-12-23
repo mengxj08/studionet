@@ -27,6 +27,7 @@ angular.module('studionet')
       $scope.depthVal;
 
       $scope.showFilter = false;
+      $scope.panelsOpen = true;
 
       var target = document.getElementById('cy');
       var spinner = new Spinner(STUDIONET.GRAPH.spinner);
@@ -47,6 +48,8 @@ angular.module('studionet')
           // clear actual filters
           $scope.tags.map( function(tag) { tag.selected = false; return tag; });
           $scope.authors.map( function(author) { author.selected = false; return author; });
+
+          $scope.panelsOpen = false;
       };
 
       var populateTags = function(){
@@ -115,7 +118,7 @@ angular.module('studionet')
               $scope.ratingMin == DEFAULTS.ratingMin &&
               $scope.ratingMax == DEFAULTS.ratingMax &&
               $scope.depthVal == DEFAULTS.depthVal ){
-          alert("No fitler active");
+          alert("No Filter Active");
           return true;
         }
         else
@@ -226,6 +229,8 @@ angular.module('studionet')
 
           }
 
+          $scope.panelsOpen = false;
+          $scope.$apply();
 
       };
 
