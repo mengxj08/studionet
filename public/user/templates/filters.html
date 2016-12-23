@@ -17,15 +17,15 @@
 
               <div class='row'>
                 <div class='col-sm-6'>
-                  <h6>Groups</h6>
-                  <multiselect-searchtree id='authorFilter' data-input-model="authors" multi-select="true"
-                                data-output-model="$parent.$parent.$parent.selectedAuthors" data-callback="CustomCallback(item, selectedItems)"
+                  <h6>Individual Users</h6>
+                  <multiselect-searchtree id='authorFilter' data-input-model="users" multi-select="true"
+                                data-output-model="$parent.$parent.$parent.selectedUsers" data-callback="CustomCallback(item, selectedItems)"
                                 data-select-only-leafs="false" extra-buttons="false" class="filter1"></multiselect-searchtree> 
                 </div>
                 <div class='col-sm-6'>
-                  <h6>Users</h6>
-                  <multiselect-searchtree id='authorFilter' data-input-model="authors" multi-select="true"
-                                data-output-model="$parent.$parent.$parent.selectedAuthors" data-callback="CustomCallback(item, selectedItems)"
+                  <h6>Group Members</h6>
+                  <multiselect-searchtree id='authorFilter' data-input-model="groups" multi-select="true"
+                                data-output-model="$parent.$parent.$parent.selectedGroups" data-callback="CustomCallback(item, selectedItems)"
                                 data-select-only-leafs="false" extra-buttons="false" class="filter1"></multiselect-searchtree> 
                 </div>
               </div>

@@ -7,7 +7,8 @@ angular.module('studionet')
 
       // defaults
       var DEFAULTS = {
-            authors : [],
+            users : [],
+            groups: [],
             tags : [],
             startDate: new Date( (new Date()).setDate((new Date().getDate()) - 366) ),
             endDate : new Date( (new Date()).setDate((new Date().getDate()) + 365) ),
@@ -18,10 +19,11 @@ angular.module('studionet')
 
       // Lists populating filters
       $scope.tags = [];
-      $scope.authors = [];
+      $scope.users = [];
+      $scope.groups = [];
       
       // Filter Selections
-      $scope.selectedAuthors, $scope.selectedTags, 
+      $scope.selectedUsers, $scope.selectedGroups, $scope.selectedTags, 
       $scope.startDate, $scope.endDate, 
       $scope.ratingMin, $scope.ratingMax;
       $scope.depthVal;
@@ -37,7 +39,8 @@ angular.module('studionet')
        */
       var resetDefaults = function(){
           
-          $scope.selectedAuthors = DEFAULTS.authors;
+          $scope.selectedUsers = DEFAULTS.users;
+          $scope.selectedGroups = DEFAULTS.groups;
           $scope.selectedTags = DEFAULTS.tags;
           $scope.startDate = DEFAULTS.startDate;
           $scope.endDate = DEFAULTS.endDate;
@@ -47,7 +50,8 @@ angular.module('studionet')
 
           // clear actual filters
           $scope.tags.map( function(tag) { tag.selected = false; return tag; });
-          $scope.authors.map( function(author) { author.selected = false; return author; });
+          $scope.users.map( function(user) { user.selected = false; return user; });
+          $scope.groups.map( function(group) { group.selected = false; return group; });
 
           $scope.panelsOpen = false;
       };
@@ -96,7 +100,7 @@ angular.module('studionet')
 
       }
 
-      var populateAuthors = function(){
+      var populateUsers = function(){
           return users.users.map(function(user){
 
               user.type = "user";
@@ -111,7 +115,8 @@ angular.module('studionet')
       }
 
       var checkDefaults = function(){
-        if (  $scope.selectedAuthors.length == DEFAULTS.authors.length &&
+        if (  $scope.selectedUsers.length == DEFAULTS.users.length &&
+              $scope.selectedGroups.length == DEFAULTS.groups.length &&
               $scope.selectedTags.length == DEFAULTS.tags.length && 
               $scope.startDate == DEFAULTS.startDate &&
               $scope.endDate == DEFAULTS.endDate && 
@@ -191,8 +196,8 @@ angular.module('studionet')
               
               var urlString = '/api/contributions?'; 
 
-              var groups = $scope.selectedAuthors.filter( function(g){ return (g.type == "group") });
-              var users = $scope.selectedAuthors.filter( function(g){ return (g.type == "user") });
+              var groups = $scope.selectedGroups; //$scope.selectedAuthors.filter( function(g){ return (g.type == "group") });
+              var users = $scope.selectedUsers; //$scope.selectedAuthors.filter( function(g){ return (g.type == "user") });
 
               //  Create the URL String
             
@@ -230,7 +235,6 @@ angular.module('studionet')
           }
 
           $scope.panelsOpen = false;
-          $scope.$apply();
 
       };
 
@@ -264,8 +268,8 @@ angular.module('studionet')
 
           // populate filters
           $scope.tags = populateTags();
-          $scope.authors = populateAuthors();
-          $scope.authors = $scope.authors.concat( populateGroups() );     
+          $scope.users = populateUsers();
+          $scope.groups = populateGroups();
 
       }
 
