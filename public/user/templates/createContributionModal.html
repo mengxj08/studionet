@@ -28,6 +28,8 @@
   }
 </style>
 
+<link rel='stylesheet' href='/user/stylesheets/textAngular/textAngular.css' />
+
 <div id="myModal" class="modal fade" role="dialog">
   <div class="modal-dialog">
 
@@ -46,7 +48,8 @@
             <br><br>
             <label> Contribution Content: </label>
             <br>
-            <textarea class='wide' rows="10" cols="70" ng-model="contributionData.body"></textarea>
+            <!-- <textarea class='wide' rows="10" cols="70" ng-model="contributionData.body"></textarea> -->
+            <div text-angular ng-model="htmlVariable"></div>
             <br><br>
             <label for="singleSelect"> Relationship: </label>
             <select name="singleSelect" id="singleSelect" ng-model=contributionData.refType>
