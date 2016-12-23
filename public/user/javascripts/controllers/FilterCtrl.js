@@ -7,10 +7,10 @@ angular.module('studionet')
 
       // defaults
       var DEFAULTS = {
-            authors : [],
+            authors : [11],
             tags : [],
-            startDate: new Date( (new Date()).setDate((new Date().getDate()) - 366) ),
-            endDate : new Date( (new Date()).setDate((new Date().getDate()) + 365) ),
+            startDate: new Date( (new Date()).setDate((new Date().getDate()) - 1) ),
+            endDate : new Date( (new Date()).setDate((new Date().getDate()) + 1) ),
             ratingMin : 0, 
             ratingMax : 5, 
             depthVal : 0

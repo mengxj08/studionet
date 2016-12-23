@@ -30,8 +30,9 @@ angular.module('studionet')
   //  This close function doesn't need to use jQuery or bootstrap, because
   //  the button has the 'data-dismiss' attribute.
   $scope.close = function() {
-
-    $('body').removeClass('modal-open');
+    console.log("Close the medal");
+    //$('body').removeClass('modal-open');
+    $(".modal").remove();
     $('.modal-backdrop').remove();
   };
 
@@ -51,18 +52,17 @@ angular.module('studionet')
       })
     .success(function(data) {
       alert("Contribution Created");
-      //$scope.close();
-      $scope.refresh(); 
+      $scope.close();
+      //$scope.refresh(); 
       $scope.$parent.graphInit();
     })
     .error(function(error){
-      alert("Error Msg:" + error);
+      alert("Error Msg:" + error.message);
       $scope.close();
     })
    };
 
   $scope.deleteContribution = function(contributionId){
-
     $http({
       method  : 'delete',
       url     : '/api/contributions/'+contributionId,
@@ -70,18 +70,43 @@ angular.module('studionet')
       headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
       })
     .success(function(data) {
-      alert("Contribution id:" + contributionId + " deleted");  
-      $scope.refresh();  
+      alert("Contribution id:" + contributionId + " deleted");
+      $scope.close();
+      //$scope.refresh();  
       $scope.$parent.graphInit();
     })
     .error(function(error){
-      alert("Error Msg:" + error);
+      alert("Error Msg:" + error.message);
       $scope.close();
     })
   }
 
-  $scope.updateContribution = function(){
+  $scope.updateContribution = function(updateContribution){
+    console.log("This is output from update contribution");
+    $http({
+      method  : 'PUT',
+      url     : '/api/contributions/'+ updateContribution.id,
+      data    : updateContribution,  // pass in data as strings
+      headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
+      })
+    .success(function(data) {
+      alert("Contribution Updated");
+      $scope.close();
+      //$scope.refresh(); 
+      $scope.$parent.graphInit();
+    })
+    .error(function(error){
+      alert("Error Msg:" + error.message);
+      $scope.close();
+    })
+  }
 
+  $scope.submitContribution = function(showCreateContribution,showUpdateContribution,contributionData){
+    if(showCreateContribution)
+      $scope.createContribution(contributionData);
+
+    if(showUpdateContribution)
+      $scope.updateContribution(contributionData);
   }
 
   $scope.refresh();

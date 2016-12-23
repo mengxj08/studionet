@@ -429,19 +429,19 @@ router.route('/:contributionId')
 			}
 
 			// Changing contribution reference.
-			if (oldRef !== newRef) {
-				// query to delete old reference relation and create a new ref relation
-				changeRelationQuery = [
-					'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
-					'MATCH (c1:contribution) WHERE ID(c1)=c.ref',
-					'MATCH (c)-[r]->(c1)',
-					'DELETE r',
-					'WITH c',
-					'MATCH (c2:contribution) WHERE ID(c2)={contributionRefParam}',
-					'CREATE (c)-[r:' + req.body.refType +']->(c2)',
-					'WITH c'
-				];
-			}
+			// if (oldRef !== newRef) {
+			// 	// query to delete old reference relation and create a new ref relation
+			// 	changeRelationQuery = [
+			// 		'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
+			// 		'MATCH (c1:contribution) WHERE ID(c1)=c.ref',
+			// 		'MATCH (c)-[r]->(c1)',
+			// 		'DELETE r',
+			// 		'WITH c',
+			// 		'MATCH (c2:contribution) WHERE ID(c2)={contributionRefParam}',
+			// 		'CREATE (c)-[r:' + req.body.refType +']->(c2)',
+			// 		'WITH c'
+			// 	];
+			// }
 
 			editContributionDetailsQuery = [
 				'MATCH (c3:contribution) WHERE ID(c3)={contributionIdParam}',
@@ -502,7 +502,7 @@ router.route('/:contributionId')
 				contributionBodyParam: req.body.body,
 				contributionRefParam: parseInt(req.body.ref), 
 				lastUpdatedParam: Date.now(),
-				refTypeParam: req.body.refType,
+				//refTypeParam: req.body.refType,
 				editedParam: true,
 				createdByParam: req.user.id,
 				contentTypeParam: req.body.contentType,
