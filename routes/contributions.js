@@ -195,7 +195,7 @@ router.route('/')
 				'MATCH p=(source)-[*1]->(target) WHERE ID(source) IN distinctUnwindedCombinedList AND ID(target) IN distinctUnwindedCombinedList',
 				'RETURN p'*/
 				'WITH collect(id(c)) as filteredIdList',
-				'OPTIONAL MATCH pathToSuper=(c1)-->(c2:contribution)',
+				'OPTIONAL MATCH pathToSuper=(c1)-[*]->(c2:contribution)',
 				'WHERE ID(c1) IN filteredIdList',
 				'WITH filteredIdList, collect(distinct id(c2)) as intermediateNodeList',
 				'OPTIONAL MATCH pathFromChildren=(c3)<-[*1..' + params.depthParam + ']-(c4:contribution)',
