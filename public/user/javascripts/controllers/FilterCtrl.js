@@ -3,20 +3,18 @@ angular.module('studionet')
 /*
  * Controller for Filters
  */
-.controller('FilterCtrl', ['$scope', '$http', 'users', 'tags', 'groups',   function($scope, $http, users, tags, groups){ 
+.controller('FilterCtrl', ['$scope', 'supernode', 'users', 'tags', 'groups', '$http',  function($scope, supernode, users, tags, groups, $http){ 
 
-     
-      // Default Constants
-      var default_selectedAuthors = [], default_selectedTags = [];
-      var default_firstDate = new Date();
-      var default_lastDate = new Date(); default_firstDate.setDate(default_firstDate.getDate() - 365);
-      var default_ratingMin = 0, default_ratingMax = 5;
-      var default_depthVal = 0;
-
-
-      $scope.filterStatus = false;
-      $scope.filterChanged = false;
-
+      // defaults
+      var DEFAULTS = {
+            authors : [],
+            tags : [],
+            startDate: new Date( (new Date()).setDate((new Date().getDate()) - 366) ),
+            endDate : new Date( (new Date()).setDate((new Date().getDate()) + 365) ),
+            ratingMin : 0, 
+            ratingMax : 5, 
+            depthVal : 0
+      }
 
       // Lists populating filters
       $scope.tags = [];
@@ -24,32 +22,109 @@ angular.module('studionet')
       
       // Filter Selections
       $scope.selectedAuthors, $scope.selectedTags, 
-      $scope.firstDate, $scope.lastDate, 
+      $scope.startDate, $scope.endDate, 
       $scope.ratingMin, $scope.ratingMax;
       $scope.depthVal;
 
-     
+      $scope.showFilter = false;
+
+      var target = document.getElementById('cy');
+      var spinner = new Spinner(STUDIONET.GRAPH.spinner);
+
       /*
-       *
+       *    Helper functions
        */
       var resetDefaults = function(){
           
-          $scope.selectedAuthors = default_selectedAuthors;
-          $scope.selectedTags = default_selectedTags;
-          $scope.firstDate = default_firstDate;
-          $scope.lastDate = default_lastDate;
-          $scope.ratingMin = default_ratingMin;
-          $scope.ratingMax = default_ratingMax;
-          $scope.depthVal = default_depthVal;
+          $scope.selectedAuthors = DEFAULTS.authors;
+          $scope.selectedTags = DEFAULTS.tags;
+          $scope.startDate = DEFAULTS.startDate;
+          $scope.endDate = DEFAULTS.endDate;
+          $scope.ratingMin = DEFAULTS.ratingMin;
+          $scope.ratingMax = DEFAULTS.ratingMax;
+          $scope.depthVal = DEFAULTS.depthVal;
 
           // clear actual filters
           $scope.tags.map( function(tag) { tag.selected = false; return tag; });
           $scope.authors.map( function(author) { author.selected = false; return author; });
       };
 
-      resetDefaults();
+      var populateTags = function(){
+
+        return tags.tags.map( function(tag){
+
+            // add properties required for tree-view plugin
+            tag.parentId = null;
+            tag.isExpanded = false; 
+            tag.children = [];
+            
+            // default 
+            tag.selected = false;
+
+            return tag;
+
+        }); 
+
+      };
+
+      var populateGroups = function(){
+
+          // create a hashmap for the group for easy reference by id
+          var group_hash = {}; 
+          groups.groups.map( function(group){
+              group.type = "group";
+              //group.name = group.name + "</b>" //'&#xf0c0;' + " " + group.name; // append unicode for group
+              group.isExpanded = false;
+              group.children = [];
+              group_hash[group.id] = group;
+          })
+
+          // if group has parentId, add group to that parent's children array
+          groups.groups =  groups.groups.map( function(group){
+              if(group.parentId)
+                  group_hash[group.parentId].children.push(group);
+              return group;
+          })
+
+          // return groups connected to supernode
+          return groups.groups.filter(function(group){
+              return (group.parentId == supernode.group)
+          })
+
+      }
+
+      var populateAuthors = function(){
+          return users.users.map(function(user){
+
+              user.type = "user";
+              user.parentId = null; 
+              user.isExpanded = false; 
+              user.children = [];
+              user.selected = false;
+
+              return user;
+
+          });
+      }
+
+      var checkDefaults = function(){
+        if (  $scope.selectedAuthors.length == DEFAULTS.authors.length &&
+              $scope.selectedTags.length == DEFAULTS.tags.length && 
+              $scope.startDate == DEFAULTS.startDate &&
+              $scope.endDate == DEFAULTS.endDate && 
+              $scope.ratingMin == DEFAULTS.ratingMin &&
+              $scope.ratingMax == DEFAULTS.ratingMax &&
+              $scope.depthVal == DEFAULTS.depthVal ){
+          alert("No fitler active");
+          return true;
+        }
+        else
+          return false;
+     
+      }
 
 
+      /* Filter Functions */
       $scope.clearFilter = function(){
 
             // reset defaults
@@ -57,7 +132,7 @@ angular.module('studionet')
 
             $scope.filterActive = false; 
 
-            refreshGraph();
+            $scope.graphInit();
 
       }
 
@@ -69,7 +144,7 @@ angular.module('studionet')
           //    Fix later
           //
           switch (filtername) {
-/*              case "authors":
+            /*              case "authors":
                     if(!($scope.selectedAuthors.equals(default_selectedAuthors)))
                       return $scope.selectedAuthors.length;
                     break; 
@@ -78,8 +153,8 @@ angular.module('studionet')
                       return $scope.selectedTags.length; 
                     break;
               case "date":
-                    if ($scope.firstDate === default_firstDate && $scope.lastDate === default_lastDate)
-                      return  (lastDate - firstDate) / 86400000 ; 
+                    if ($scope.startDate === default_startDate && $scope.endDate === default_endDate)
+                      return  (endDate - startDate) / 86400000 ; 
                     break;
               case "rating":
                     if($scope.ratingMin == default_ratingMin && $scope.ratingMax == default_ratingMax)
@@ -105,37 +180,52 @@ angular.module('studionet')
        */
       $scope.filterRequest = function(){
 
-          var urlString = '/api/contributions?'; 
-          
-          //  Create the URL String
-        
-          urlString +=  "g=[" + $scope.selectedAuthors.filter( function(g){ return (g.type == "group") }).map( function(u){ return u.id } ).toString() + "]"   // users
-
-          + "&u=[" + $scope.selectedAuthors.filter( function(g){ return (g.type == "user") }).map( function(u){ return u.id } ).toString() + "]"   // users
-
-          + "&tg=[" + $scope.selectedTags.map( function(g){
-             return g.id; 
-          }).toString() + "]"    // tags
-
-          + "&r=[" + $scope.ratingMin + "," + $scope.ratingMax + "]"    // rating
-
-          + "&t=[" + $scope.firstDate.getTime() + "," + $scope.lastDate.getTime() + "]"   // time
-
-          + "&d=" + $scope.depthVal;   // depth
-
-
-          console.log(urlString);
-
-          $http.get(urlString).success(function(data){
+          // if defaults, then don't run filter, run reset
+          if( checkDefaults() ){
+            $scope.clearFilter();
+          }
+          else{
               
-              refreshGraph(data);
-              $scope.filterActive = true;
+              var urlString = '/api/contributions?'; 
 
-              if(data.nodes.length == 0){
-                console.log(data.nodes.length + " nodes found");
-              }
+              var groups = $scope.selectedAuthors.filter( function(g){ return (g.type == "group") });
+              var users = $scope.selectedAuthors.filter( function(g){ return (g.type == "user") });
 
-          });
+              //  Create the URL String
+            
+              urlString +=  "g=" + ( groups.length ? "[" + groups.map( function(u){ return u.id } ).toString() + "]" : "-1" )  // users
+
+              + "&u=" + ( users.length ? "[" + users.map( function(u){ return u.id } ).toString() + "]"  : "-1" )  // users
+
+              + "&tg=" + ( $scope.selectedTags.length ? "[" + $scope.selectedTags.map( function(g){ return g.id; }).toString() + "]" : "-1" )  // tags
+
+              + "&r=[" + $scope.ratingMin + "," + $scope.ratingMax + "]"    // rating
+
+              + "&t=[" + $scope.startDate.getTime() + "," + $scope.endDate.getTime() + "]"   // time
+
+              + "&d=" + $scope.depthVal;   // depth
+
+              console.log(urlString);
+
+              $(target).empty();
+              spinner.spin(target);
+
+              $http.get(urlString).success(function(data){
+
+                  $scope.filterActive = true;
+                  spinner.stop();
+
+                  if(data.nodes.length == 0){
+                    $(target).append("<h3 style='position: absolute; top:40%; left: 40%;'>Oops. No Nodes found.</h3>");
+                  }
+                  else{
+                    $scope.graphInit(data);
+                  }
+
+              });
+
+          }
+
 
       };
 
@@ -158,134 +248,21 @@ angular.module('studionet')
           }
       };
 
+
       /*
-       * Initialization of filter-headings toggle functionality
-       * TODO: find better fix (accordion)
+       *  Init function that refreshes all lists in the filters
        */
       $scope.init = function(){
 
-        // look for better solutions to this
-        
-        $(".filter-heading").click(function(){
+          // filters to default values
+          resetDefaults();
 
-              // close filter headings
-              // $('.filter-heading').not(this).siblings().hide(); //done by accordion therefore commented
-
-              // $(this).siblings().toggle(); //done by accordion therefore commented
-
-        });
-
-        refresh();
+          // populate filters
+          $scope.tags = populateTags();
+          $scope.authors = populateAuthors();
+          $scope.authors = $scope.authors.concat( populateGroups() );     
 
       }
-
-      /*
-       *  Refresh function that refreshes all lists
-       */
-      function refresh(){
-
-          /*
-           * Get list of tags to populate tags filter
-           */
-          tags.getAll().then(function(){
-              $scope.tags = tags.tags.map( function(tag){
-
-                  // add properties required for tree-view plugin
-                  tag.parentId = null;
-                  tag.isExpanded = false; 
-                  tag.children = [];
-                  
-                  // default 
-                  tag.selected = false;
-
-                  return tag;
-
-              });
-          });
-            
-          /*
-           *  Get groups to populate By Author Filter
-           * 
-           */
-          groups.getAll().then(function(){
-
-            /*
-             * Groups preprocessing
-             */
-
-            var group_data = groups.groups;
-            var group_hash = {}; 
-
-            // create hash for group_data
-            for(var i=0; i < group_data.length; i++){
-              
-                group_data[i].children = [];
-                group_data[i].type = "group";
-
-                // default
-                // group_data[i].selected = true;
-
-                group_hash[ group_data[i].id ] = group_data[i];
-
-            }
-
-            // if group has parentId, add group to that parent's children array
-            for(var i=0; i < group_data.length; i++){
-
-              var group = group_data[i];
-
-              if(group.parentId){
-
-                  var parentGroup = group_hash[ group.parentId ];
-                  parentGroup.children.push( group ); 
-
-              }
-
-            }
-
-            // append authors to final array - only those at highest level
-            $scope.authors = $scope.authors.concat( group_data.filter( function(group){
-                  
-                  // only highest level groups
-                  group.isExpanded = false; 
-
-                  return (group.parentId == null)
-
-            }) );
-              
-          }).then( function(){
-
-                /*
-                 *  Get users to populate By Author filter
-                 */
-                users.getAll().then(function(){
-
-                    var user_data = users.users;
-                    $scope.authors = $scope.authors.concat( user_data.map( function(user){
-
-                        user.parentId = null; 
-                        user.isExpanded = false; 
-                        user.children = [];
-                        user.type = "user";
-                        user.selected = false;
-
-                        // default - select self
-                        if(user.id == $scope.user.id)
-                          user.selected = false; 
-
-                        return user;
-
-                    }) );
-
-                });
-
-          }) 
-
-
-
-
-      }
-
 
 
 }]);

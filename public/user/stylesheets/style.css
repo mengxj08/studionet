@@ -27,6 +27,8 @@ body {
 
 	background: white;
 
+	overflow-y: hidden;
+
 }
 
 h1, h2, h3, h4, h5 ,h6{
@@ -144,13 +146,25 @@ nav .navbar-nav{
   transform: translate(0, -3px); }
 
 .navbar .navbar-collapse .navbar-nav > li.dropdown:hover:after {
-  transform: translate(-50%, -3px); }
+  transform: translate(-50%, -3px); 
+}
 
 #noDropdown > li.dropdown:hover:after {
   display: none;
   visibility: none;
   opacity: none;
-  transform: none; }
+  transform: none; 
+}
+
+.navbar .navbar-collapse .navbar-nav > li.dropdown.notification.warning a.dropdown-toggle .icon {
+    background-color: rgb(74, 149, 239);
+    color: #e7edee;
+}
+
+.dropdown-menu{
+	width: 150px !important;
+	min-width: 100px !important;
+}
 
 /*
  * App Body & Theme CSS
@@ -193,7 +207,7 @@ li.notification{
 .qtip-titlebar{
 	//height: 30px; 
 	line-height: 32px;
-	font-size: 26px; 
+	font-size: 16px; 
 	background-color: #DFDDDD !important; 
 	padding: 0px 10px !important;
 }

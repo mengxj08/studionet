@@ -5,6 +5,7 @@ var mkdirp = require('mkdirp');
 var glob = require('glob');
 var path = require('path');
 var fs = require('fs-extra');
+var gm = require('gm');
 var auth = require('./auth');
 var storage = require('./storage');
 var apiCall = require('./apicall');
@@ -14,6 +15,10 @@ var db = require('seraph')({
 	pass: process.env.DB_PASS
 });
 var _ = require('underscore');
+/*var mmm = require('mmmagic'),
+      Magic = mmm.Magic;*/
+var contributionUtil = require('./contributionutil');
+
 
 // route: /api/contributions
 router.route('/')
@@ -291,12 +296,7 @@ router.route('/')
 	 *           If tags are created, contribution creator will be set to this tags as the creator of these tags.
 	 *
 	 */
-	.post(auth.ensureAuthenticated, function(req, res, next) {
-
-		req.tempFileDest = './uploads/users/' + req.user.id + '/temp/' + Date.now();
-		next();
-
-	 }, multer({storage: storage.attachmentStorage}).array('attachments'), function(req, res, next){
+	.post(auth.ensureAuthenticated, contributionUtil.initTempFileDest, multer({storage: storage.attachmentStorage}).array('attachments'), function(req, res, next){
 
 		// Creating the contribution node, then link it to the creator (user)
 		var query = [
@@ -351,73 +351,17 @@ router.route('/')
 			if (error){
 				console.log('[ERROR] Error creating new contribution for user : ', error);
 				res.status(500);
-				return res.send('error');
+				return res.send(error);
 			}
 			else{
 				console.log('[SUCCESS] Success in creating a new contribution for user id: ' + req.user.id);
 				req.contributionId = result[0].id;
+				res.send('Success in creating the contribution');
 				next();
 			}
 		}); 
 
-	}, function(req, res){
-		
-		if (req.files.length === 0) {
-			res.status(200);
-			return res.send('success');
-		}
-
-		// move the files
-		var tempFileDest = req.tempFileDest;
-		var attachmentsDest = './uploads/contributions/' + req.contributionId + '/attachments/';
-
-		// first create the dir
-		// move the files
-		fs.copy(tempFileDest, attachmentsDest, function(err){
-			if (err) {
-				console.error(err);
-			} else {
-				fs.remove(tempFileDest, function(err){
-					console.log(err);
-				})
-			}
-		});
-
-		var createQueries = req.files.map((f, idx) =>
-			' CREATE (a' + idx + ':attachment {dateUploaded: ' + Date.now() + ', size: ' + f.size + ', name: "' + f.filename + '"})' +
-			' WITH u, c, a' + idx + 
-			' CREATE (u)-[:UPLOADED]->(a' + idx + ')' +
-			' WITH a' + idx + ',c,u' +
-			' CREATE (a' + idx + ')<-[:ATTACHMENT]-(c)'
-		);
-
-		var query = [
-			'MATCH (u:user) WHERE ID(u)={userIdParam}',
-			'WITH u',
-			'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
-			'WITH u, c'
-		];
-
-		query = query.concat(createQueries);
-		query = query.join('\n');
-
-		var params = {
-			userIdParam: req.user.id,
-			contributionIdParam: req.contributionId
-		};
-
-		db.query(query, params, function(error, result){
-			if (error){
-				console.log(error);
-				res.status(500);
-				res.send('error in uploading file as attachment');
-			} else {
-				res.status(200);
-				res.send('success');
-			}
-		});
-
-	});
+	}, contributionUtil.updateDatabaseWithAttachmentsAndGenerateThumbnails);
 
 // route: /api/contributions/:contributionId
 router.route('/:contributionId')
@@ -678,7 +622,6 @@ router.route('/:contributionId/view')
 // route: /api/contributions/:contributionId/rate
 router.route('/:contributionId/rate')
 	.post(auth.ensureAuthenticated, function(req, res) {
-		// might want to add a check for the rating between a range here..
 		var givenRating = parseInt(req.body.rating);
 
 		if (givenRating < 0 || givenRating > 5) {
@@ -716,97 +659,14 @@ router.route('/:contributionId/rate')
 
 //route: /api/contributions/:contributionId/attachments
 router.route('/:contributionId/attachments')
-	.post(auth.ensureAuthenticated, function(req, res, next){
-		// ensure user owns the contribution id first
-		var query = [
-			'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
-			'RETURN c.createdBy as id'
-		].join('\n');
-
-		var params = {
-			contributionIdParam: parseInt(req.params.contributionId)
-		};
-
-		db.query(query, params, function(error, result){
-			if (error){
-				console.log(error);
-				res.send('error');
-			} else {
-				var contributionCreatorId = result[0].id;
-				var userId = parseInt(req.user.id);
-
-				if (userId === contributionCreatorId) {
-					next();
-				} else {
-					res.send('not the owner');
-				}
-			}
-		});
-	}, function(req, res, next) {
-
-		req.tempFileDest = './uploads/users/' + req.user.id + '/temp/' + Date.now();
-		next();
-
-	}, multer({storage: storage.attachmentStorage}).array('attachments'), function(req, res){
-		// add attachments (can have multiple..)
-
-			if (req.files.length === 0) {
-			res.status(200);
-			return res.send('success');
-		}
-
-		// move the files
-		var tempFileDest = req.tempFileDest;
-		var attachmentsDest = './uploads/contributions/' + req.params.contributionId + '/attachments/';
-
-		// can factor this out also..
-		fs.copy(tempFileDest, attachmentsDest, function(err){
-			if (err) {
-				console.error(err);
-			} else {
-				fs.remove(tempFileDest, function(err){
-					console.log(err);
-				})
-			}
-		});
-
-		var createQueries = req.files.map((f, idx) =>
-			' CREATE (a' + idx + ':attachment {dateUploaded: ' + Date.now() + ', size: ' + f.size + ', name: "' + f.filename + '"})' +
-			' WITH u, c, a' + idx + 
-			' CREATE (u)-[:UPLOADED]->(a' + idx + ')' +
-			' WITH a' + idx + ',c,u' +
-			' CREATE (a' + idx + ')<-[:ATTACHMENT]-(c)'
-		);
-
-		var query = [
-			'MATCH (u:user) WHERE ID(u)={userIdParam}',
-			'WITH u',
-			'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
-			'WITH u, c'
-		];
-
-		query = query.concat(createQueries);
-		query = query.join('\n');
-
-		var params = {
-			userIdParam: req.user.id,
-			contributionIdParam: parseInt(req.params.contributionId)
-		};
-
-		db.query(query, params, function(error, result){
-			if (error){
-				console.log(error);
-				res.status(500);
-				res.send('error in uploading file as attachment');
-			} else {
-				res.status(200);
-				res.send('success');
-			}
-		});
-	});
+	.post(auth.ensureAuthenticated, contributionUtil.ensureUserOwnsContribution, contributionUtil.initTempFileDest, 
+	multer({storage: storage.attachmentStorage}).array('attachments'), 
+	contributionUtil.updateDatabaseWithAttachmentsAndGenerateThumbnails);
 
 //route: /api/contributions/:contributionId/attachments/:attachmentId
 router.route('/:contributionId/attachments/:attachmentId')
+	.get(auth.ensureAuthenticated, contributionUtil.getHandlerToSendImage(false))
+
 	.delete(auth.ensureAuthenticated, function(req, res, next){
 		// factor this out
 		// ensure user owns the contribution id first
@@ -844,13 +704,19 @@ router.route('/:contributionId/attachments/:attachmentId')
 			}
 		});
 	}, function(req, res){
-		// delete the attachment file and node in db
+		// delete the attachment file + thumbnail (if present) and node in db
 		var attachmentPath = './uploads/contributions/' + req.params.contributionId + '/attachments/' + req.fileNameToDelete;
+		var thumbnailPath = './uploads/contributions/' + req.params.contributionId + '/attachments/thumbnails/' + req.fileNameToDelete;
 
 		fs.remove(attachmentPath, function(err){
 			if (err) {
-				console.error(err);
+				return console.error(err);
 			}
+			fs.remove(thumbnailPath, function(err){
+				if (err){
+					return console.error(err);
+				}
+			});
 		});
 
 		var query = [
@@ -874,5 +740,9 @@ router.route('/:contributionId/attachments/:attachmentId')
 		})
 
 	});
+
+//route: /api/contributions/:contributionId/attachments/:attachmentId
+router.route('/:contributionId/attachments/:attachmentId/thumbnail')
+	.get(auth.ensureAuthenticated, contributionUtil.getHandlerToSendImage(true))
 
 module.exports = router;

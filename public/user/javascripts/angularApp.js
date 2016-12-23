@@ -13,11 +13,23 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 			templateUrl: '/user/templates/contributions.html',
 			controller: 'ContributionsCtrl',
 			resolve: {
-				userProfile: ['profile', function(profile){
-					return profile.getUser() && profile.getGroups();
+				supernode: ['supernode', function(supernode){
+					return supernode.getSupernodes();
+				}],
+				tags: ['tags', function(tags){
+					return tags.getAll();
+				}],
+				groupsPromise: ['groups', function(groups){
+					return groups.getAll() && groups.getGraph();
+				}],
+				contributionsPromise: ['contributions', function(contributions){
+					return contributions.getAll() && contributions.getGraph();
 				}],
 				usersPromise: ['users', function(users){ 
 					return users.getAll();
+				}],
+				userProfile: ['profile', function(profile){
+					return profile.getUser();
 				}]
 			}
 		})
@@ -27,7 +39,7 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 			controller: 'ProfileCtrl',
 			resolve: {
 				userProfile: ['profile', function(profile){
-					return profile.getUser() && profile.getGroups() && profile.getContributions();
+					return profile.getUser() /*&& profile.getGroups() && profile.getContributions()*/;
 				}]
 			}
 		})
@@ -40,7 +52,7 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 					return supernode.getSupernodes();
 				}],
 				userProfile: ['profile', function(profile){
-					return profile.getUser() && profile.getGroups();
+					return profile.getUser() /*&& profile.getGroups()*/;
 				}],
 				groupsPromise: ['groups', function(groups){
 					return groups.getAll().then( function(){ return groups.getGraph() });

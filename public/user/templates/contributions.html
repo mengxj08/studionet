@@ -2,10 +2,10 @@
 <link rel='stylesheet' href='./stylesheets/graph-style.css' />
 
 <!-- actual graph container -->
-<div class='graph-container'> 
+<div class='graph-container' ng-init='graphInit()'> 
 
   <!--Nav Bar with Filters-->
-  <ng-include src="'templates/filters.html'"></ng-include>
+  <ng-include src="'templates/filters.html'" ng-show='showFilter'></ng-include>
 
   <div id='cy'></div>
   
@@ -14,20 +14,16 @@
 		<i class="graph-nav-control icon fa fa-expand" ng-click='resetGraph()'></i>
 
 		<!-- create a contribution -->
-		<i class="graph-nav-control icon fa fa-plus"></i>
+		<i class="graph-nav-control icon fa fa-plus" ng-click='createNewContribution()'></i>
   </div>
    
 </div>
-
-<!-- div to host the information panel on hover -->
-<div id='content-block-hover'></div>
 
 <!-- Modal -->
 <ui-view></ui-view>
 
 
-<!-- include graph js -->
-<script src="./javascripts/graphs/graph-creator.js"></script>
+
 
 
 

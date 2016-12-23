@@ -3,32 +3,31 @@
 
 <!-- Side Nav with Filters -->
 
-<div ng-controller="FilterCtrl" ng-init='init()' class="container-fluid">
-    <div id='filters' class='row'> 
+<div ng-controller="FilterCtrl" ng-init='init();' class="container-fluid">
     
+    <div id='filters' class='row'> 
       <div uib-accordion id="accordion">  
-
          <!-- By Author Filter -->
-         <div uib-accordion-group class="filter-panel panel badge-success col-sm-2">
-          
+          <div uib-accordion-group class="filter-panel panel badge-success col-sm-2">
+              
               <uib-accordion-heading class="filter-heading"> 
                 <h5>Authors & Groups<span class='filter-element-count'>{{ checkFilterActive("authors") }}</span></h5>
               </uib-accordion-heading>
 
-              <multiselect-searchtree data-input-model="authors" multi-select="true"
-                            data-output-model="selectedAuthors" data-callback="CustomCallback(item, selectedItems)"
+              <multiselect-searchtree id='authorFilter' data-input-model="authors" multi-select="true"
+                            data-output-model="$parent.$parent.$parent.selectedAuthors" data-callback="CustomCallback(item, selectedItems)"
                             data-select-only-leafs="false" extra-buttons="false" class="filter1"></multiselect-searchtree> 
           </div>
 
           <!-- By Tags Filter -->
-          <div uib-accordion-group class="filter-panel panel badge-success col-sm-2" >
+          <div uib-accordion-group class="filter-panel panel badge-success col-sm-2">
 
               <uib-accordion-heading class="filter-heading">
                 <h5>Tags <span class='filter-element-count'>{{ checkFilterActive("tags") }}</span></h5>
               </uib-accordion-heading>
 
-              <multiselect-searchtree data-input-model="tags" multi-select="true"
-                            data-output-model="selectedTags" data-callback="CustomCallback(item, selectedItems)"
+              <multiselect-searchtree id='tagFilter' data-input-model="tags" multi-select="true"
+                            data-output-model="$parent.$parent.$parent.selectedTags" data-callback="CustomCallback(item, selectedItems)"
                             data-select-only-leafs="false" extra-buttons="false" class="filter1"></multiselect-searchtree>
           </div>
           
@@ -39,10 +38,10 @@
                 <h5>Date Range <span class='filter-element-count'>{{ checkFilterActive("date") }}</span></h5>  
               </uib-accordion-heading>
 
-              <div>
-                From: <input type="date" name="firstDate" ng-model='firstDate'>
+              <div id='dateFilter'>
+                From: <input type="date" name="firstDate" ng-model='$parent.$parent.$parent.startDate'>
                 <br>
-                Till: <input type="date" name="lastDate" ng-model='lastDate'>
+                Till: <input type="date" name="lastDate" ng-model='$parent.$parent.$parent.endDate'>
               </div>
               <!--<angular-ranger min="0" max="20" step="1" value="value.max" style="display:none"></angular-ranger>-->
           </div>
@@ -54,7 +53,7 @@
                 <h5>Rating <span class='filter-element-count'>{{ checkFilterActive("rating") }}</span></h5>  
               </uib-accordion-heading>
 
-              <angular-ranger min="0" max="5" step="1" min-value=ratingMin max-value=ratingMax></angular-ranger>
+              <angular-ranger id='ratingFilter' min="0" max="5" step="1" min-value=$parent.$parent.$parent.ratingMin max-value=$parent.$parent.$parent.ratingMax></angular-ranger>
           </div>
 
           <!-- By Depth -->
@@ -64,12 +63,12 @@
                 <h5>Depth <span class='filter-element-count'>{{ checkFilterActive("depth") }} </span></h5>  
               </uib-accordion-heading>
 
-              <angular-ranger min="0" max="3" value=depthVal></angular-ranger>
+              <angular-ranger id='depthFilter' min="0" max="3" value=$parent.$parent.$parent.depthVal></angular-ranger>
           </div>
 
 
         <!-- Final Filter Button -->
-        <div class='filter-panel panel col-sm-1  filter-btn'>
+        <div class='filter-panel panel col-sm-1  filter-btn' id='filter-button'>
           <div class="filter-heading" ng-click="filterRequest()"> 
             <h5>Filter</h5>  
           </div>

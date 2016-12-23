@@ -30,7 +30,7 @@ div.tree-control{
 
 /* */
 div.tree-control .tree-view{
-	max-height: 30vh;
+	max-height: 60vh;
 	overflow: scroll;
 }
 
@@ -41,6 +41,10 @@ div.tree-control .tree-view ul .tree-checkbox{
 div.tree-control .tree-view li{
 	margin-left: 15px !important;
 	min-width: 350px;
+}
+
+.tree-control .clear-button{
+	top: 3px;
 }
 
 .filter-panel input{

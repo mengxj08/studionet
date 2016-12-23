@@ -4,49 +4,206 @@ angular.module('studionet')
  *  Main Contribution Graph Page
  * 
  */
-.controller('ContributionsCtrl', ['$scope', 'profile', 'users', 'Upload', '$timeout', 'ModalService', '$http', function($scope, profile, users, Upload, $timeout, ModalService, $http){
+.controller('ContributionsCtrl', ['AppContextService','$scope', 'supernode', 'users', 'Upload', '$timeout', 'ModalService', 'contributions', function(AppContextService, $scope, supernode, users, Upload, $timeout, ModalService, contributions){
 
-	$scope.user = profile.user;
-  $scope.users = users.usersById();
+  /* todo: reset graph so top bar knows about the graph */
+  AppContextService.setGraph(true);
+  //console.log(AppContextService);
+
+	//$scope.user = profile.user;
+  $scope.users = users.usersById();   // needed for hover to get user name - fix later
+
+  $scope.simple = true;
+
+  $scope.showFilter = false;  
+
+  var rootnode = supernode.contribution;
 
   /*
-   *
-   *  Search Functionality
-   * 
+   *    Graph Creation & Interactions
    */
-  $scope.textFilter = "";
-  $scope.searchActive = false;
+  $scope.graphInit = function(graph_data){
 
-  $scope.textSearchFilter = function(searchText){
+      // if graph_data exists with no nodes, return;
+      if(arguments[0] != undefined && graph_data.nodes.length == 0)
+        return;
+      
+      // takes either data from filters or contribution.graph data
+      $scope.graph = STUDIONET.GRAPH.makeGraph( graph_data || contributions.graph, 'cy' );
+      var cy = $scope.graph;
 
-      if(searchText ==  "")
-        return; 
+      if(!$scope.simple){
+          cy.on('mouseover','node', function(evt){
 
-      cy.nodes().forEach(function( ele ){
-          
-          if( (ele.data().name).toLowerCase().includes( searchText.toLowerCase() )){
-            console.log( ele.data().name );
-            ele.addClass('searched');
-            ele.connectedEdges().addClass('highlighted');
-            $scope.searchActive = true;
-          }
-         
-      });
+              var node = evt.cyTarget;
+
+              /* 
+               *  Highlight connections
+               * 
+               */
+              cy.elements().removeClass('highlighted');
+              cy.elements().removeClass('selected');
+              cy.elements().addClass('faded');
+
+              node.addClass('selected');
+              node.removeClass('faded');
+              node.successors().addClass('highlighted');
+              node.successors().removeClass('faded');
+              node.predecessors().addClass('highlighted');
+              node.predecessors().removeClass('faded');
+
+              /*
+               * Get node data and construct qTip
+               */
+              var data = node.data();
+
+              var qtipFormat = STUDIONET.GRAPH.qtipFormat(evt);
+
+              if(data.id == supernode.contribution){
+                  qtipFormat.content.title = "Studionet Root Node";
+                  qtipFormat.content.text = "This is the root node for Studionet."; 
+                  
+                  node.qtip(qtipFormat, evt); 
+              }
+              else{
+
+                // fix me
+                var route = "/api/" + data.type + "s/" + data.id;
+                $.get( route , function( extra_data ) {
+                      var content = "<b>" +  angular.element($('.graph-container')).scope().users[ extra_data.createdBy ].name  + "</b>" +
+                                    "<br><em>" + (new Date(extra_data.dateCreated)).toString().substr(0, 10) + "</em>" +
+                                    "<br>" + extra_data.body.substr(0,300)
+
+                      qtipFormat.content.title =  extra_data.title;
+                      qtipFormat.content.text = content;
+
+                      node.qtip(qtipFormat, evt);   
+                });
+              }
+          });
+
+          cy.on('mouseout','node', function(evt){
+              cy.elements().removeClass('faded');
+          });
+
+          cy.on('tap', 'node', function(evt){
+
+            cy.elements().removeClass('highlighted');
+            var node = evt.cyTarget;
+            var data = node.data();
+            var directlyConnected = node.neighborhood();
+            node.addClass('selected');
+            directlyConnected.nodes().addClass('highlighted');
+            node.connectedEdges().addClass('highlighted');
+
+
+            if(data.type == 'contribution'){
+                 var predecessors = node.predecessors();
+                 var successors = node.successors();
+                 var nodeTree = [];
+                 for(var i = predecessors.nodes().length - 1; i >= 0; i--){
+                   //Recursively get edges (and their sources) coming into the nodes in the collection (i.e. the incomers, the incomers' incomers, ...)
+                   var nodeItem = predecessors.nodes()[i];
+                   if(nodeItem.data().type == 'contribution'){
+                      nodeTree.push(nodeItem.data());
+                      console.log(nodeItem.data());
+                    }
+                 }
+                 nodeTree.push(data);
+                 successors.nodes().forEach(function(nodeItem){
+                    //Recursively get edges (and their targets) coming out of the nodes in the collection (i.e. the outgoers, the outgoers' outgoers, ...).
+                    if(nodeItem.data().type == 'contribution'){
+                      nodeTree.push(nodeItem.data());
+                      console.log(nodeItem.data());
+                    }
+                 })
+
+                 var RecursiveGetData = function(index){
+                    var route = "/api/" + nodeTree[index].type + "s/" + nodeTree[index].id;
+                    $.get( route , function(result) {
+                        //console.log("test on clicking onto a contribution");
+                        nodeTree[index].db_data = result;
+                        if(index == nodeTree.length - 1){
+                          angular.element($('.graph-container')).scope().showDetailsModal(nodeTree, data.id);
+
+                          //Mouse out the clicked node once it enters the modal page
+                          cy.elements().css({ content: " " });
+                          cy.elements().removeClass('highlighted');
+                          cy.elements().removeClass('selected');
+
+                          if(cy.$('node:selected')){
+                            $('#content-block-hover').html("");
+                            $('#content-block-hover').hide();    
+                          }
+                        }
+                        else{
+                          RecursiveGetData(++index);
+                        }
+                    });
+                 };
+
+                 RecursiveGetData(0);
+            }
+          });        
+      }
+      else{
+
+        // fixme
+        var rootnode = 10;
+
+        var j = cy.nodes()[0]
+        if(j) cy.remove(j);
+
+        cy.nodes().map(function(node){
+
+            var count = node.successors().length;
+
+            node.css({ 'width': 20 + 2*(count/3), 'height': 20 + 2*(count/3) })
+
+            return node;
+
+        })
+
+        cy.on('mouseover','node', function(evt){
+
+              var node = evt.cyTarget;
+
+              /* 
+               *  Highlight connections
+               * 
+               */
+              cy.elements().removeClass('highlighted');
+              cy.elements().removeClass('selected');
+              cy.elements().addClass('faded');
+
+              node.addClass('selected');
+              node.removeClass('faded');
+              node.successors().addClass('highlighted');
+              node.successors().removeClass('faded');
+              node.predecessors().addClass('highlighted');
+              node.predecessors().removeClass('faded');
+   
+          });
+
+        cy.on('mouseout','node', function(evt){
+            cy.elements().removeClass('faded');
+            cy.elements().removeClass('selected');
+            cy.elements().removeClass('highlighted');
+        });
+
+
+      }
+
   }
 
-  $scope.clearSearch = function(){
-    $scope.textFilter = "";
-    $scope.searchActive = false;
-    cy.elements().removeClass('highlighted')
-    cy.elements().removeClass('searched')
-  }
-
+  /* 
+   *    Nav Controls
+   */
   $scope.resetGraph = function(){
-      cy.layout().stop(); 
-      layout =cy.elements().makeLayout({ 'name': 'cola'}); 
+      $scope.graph.layout().stop(); 
+      layout = $scope.graph.elements().makeLayout({ 'name': 'cola'}); 
       layout.start();   
   }
-
 
   /*
    *
@@ -54,14 +211,34 @@ angular.module('studionet')
    *
    * 
    */
-  $scope.showDetailsModal = function(data, clickedContributionId) {
+  $scope.createNewContribution = function(){
+      ModalService.showModal({
+        templateUrl: "/user/templates/createContributionModal.html",
+        controller: "CreateContributionCtrl",
+        inputs: {
+          title: "show create contribution modal"
+        },
+        scope: $scope
+      }).then(function(modal) {
+        modal.element.modal({
+          backdrop: 'static'
+          // keyboard: false
+        });
 
+        /// set data
+        //modal.scope.setData(data,clickedContributionId);
+      });
+  } 
+
+
+  $scope.showDetailsModal = function(data, clickedContributionId) {
       ModalService.showModal({
         templateUrl: "/user/templates/home.graphView.modal.html",
         controller: "DetailsModalCtrl",
         inputs: {
-          title: "A More Complex Example"
-        }
+          title: "show details modal"
+        },
+        scope: $scope
       }).then(function(modal) {
         modal.element.modal({
           backdrop: 'static'
@@ -74,13 +251,8 @@ angular.module('studionet')
         // modal.close.then(function(result) {
         //   //$scope.complexResult  = "Name: " + result.name + ", age: " + result.age;
         // });
-
-        //Clear the possibly shown mouse-over thumbnail 
-        $('#content-block-hover').html("");
-        $('#content-block-hover').hide();  
       });
-
-    };
+  };
 
 }])
 

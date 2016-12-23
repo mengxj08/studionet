@@ -49,10 +49,32 @@ angular.module('studionetAdmin').controller('TestCtrl', ['$scope', '$http', func
 	 *	To create simulated contributions
 	 * 
 	 */
-	//$scope.contributionData = { 'tags' : [], 'title': 'New Contribution', 'body': 'Lorem ipsum Laborum mollit elit tempor eu irure aliqua cillum nisi quis ex dolor aliquip anim exercitation eu aliquip et adipisicing esse ullamco pariatur esse exercitation consequat minim laborum officia voluptate ad elit deserunt ad amet et esse sunt nulla est enim consequat non consectetur Ut Ut dolore laborum id dolore commodo officia deserunt fugiat dolor proident esse occaecat sed labore dolor minim adipisicing ex dolore pariatur nostrud anim consequat esse incididunt nulla officia velit commodo ea velit cillum ea deserunt dolor magna reprehenderit laboris dolor cupidatat velit nulla dolore ut in minim Ut et esse nisi dolor non ex in dolor minim amet nisi cupidatat magna incididunt adipisicing qui dolore dolore et laboris in amet proident mollit sint sit aute qui fugiat nulla voluptate mollit veniam voluptate in in incididunt id sint id veniam est id veniam qui labore mollit proident Ut dolore laborum eu culpa laborum aliquip elit minim cillum ex nostrud id officia eiusmod Excepteur Duis quis veniam magna occaecat aliquip dolor nostrud occaecat consectetur nulla dolore sit nisi exercitation fugiat nostrud Duis ut cupidatat quis laborum officia magna voluptate sit in dolor in voluptate magna voluptate in minim commodo Excepteur in ad aliqua amet Ut Duis amet amet laborum consequat aliquip sit do ex nostrud fugiat id laborum minim culpa consequat elit.' };
-	//$scope.contributionData.createdAt = new Date();
+	$scope.contributionData = { "author":"3","ref":"107","refType":"ANSWER_FOR", 'tags' : ["assignment", "submission"], 'title': 'Assignment 6', 'body': 'Lorem ipsum Laborum mollit elit tempor eu irure aliqua cillum nisi quis ex dolor aliquip anim exercitation eu aliquip et adipisicing esse ullamco pariatur esse exercitation consequat minim laborum officia voluptate ad elit deserunt ad amet et esse sunt nulla est enim consequat non consectetur Ut Ut dolore laborum id dolore commodo officia deserunt fugiat dolor proident esse occaecat sed labore dolor minim adipisicing ex dolore pariatur nostrud anim consequat esse incididunt nulla officia velit commodo ea velit cillum ea deserunt dolor magna reprehenderit laboris dolor cupidatat velit nulla dolore ut in minim Ut et esse nisi dolor non ex in dolor minim amet nisi cupidatat magna incididunt adipisicing qui dolore dolore et laboris in amet proident mollit sint sit aute qui fugiat nulla voluptate mollit veniam voluptate in in incididunt id sint id veniam est id veniam qui labore mollit proident Ut dolore laborum eu culpa laborum aliquip elit minim cillum ex nostrud id officia eiusmod Excepteur Duis quis veniam magna occaecat aliquip dolor nostrud occaecat consectetur nulla dolore sit nisi exercitation fugiat nostrud Duis ut cupidatat quis laborum officia magna voluptate sit in dolor in voluptate magna voluptate in minim commodo Excepteur in ad aliqua amet Ut Duis amet amet laborum consequat aliquip sit do ex nostrud fugiat id laborum minim culpa consequat elit.' };
+	$scope.contributionData.createdAt = new Date("2017-04-16T04:04:52.436Z")
 
-	$scope.contributionData = { 'tags': [] };
+	var count = 0; 
+    simulateData = function(){
+
+    	var user = $scope.users[count];
+
+		if(user.name == "Patrick Janssen")
+			console.log("patrick");
+		else{
+			if(user.id !== undefined){
+				$scope.contributionData.author = user.id
+				$scope.contributionData.title = "FinalSubmission" + "-" + user.name
+				$scope.createNewContribution();
+				
+			}
+		}
+
+		count++;
+		console.log(count);
+
+    }
+
+
+	//$scope.contributionData = { 'tags': [] };
 
 	$scope.tag = "";
 	$scope.addTag = function(tag){
@@ -72,7 +94,6 @@ angular.module('studionetAdmin').controller('TestCtrl', ['$scope', '$http', func
 				  headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
 				 })
 				.success(function(data) {
-				    
 					alert("Contribution Created");  
 					refresh();  
 
@@ -179,6 +200,39 @@ angular.module('studionetAdmin').controller('TestCtrl', ['$scope', '$http', func
 	 * 		Create new link
 	 */
 	$scope.linkData = {	};
+	simulateLink = function(){
+
+		var user = Math.floor(Math.random()*$scope.users.length);
+		if($scope.users[user].id !== undefined){
+			$scope.linkData.createdBy = $scope.users[user].id;
+			console.log($scope.users[user].name)
+		}
+
+		var rels = $scope.relationships.filter(function(r){ return r.src_type == 'contribution' && r.target_type=='contribution'})
+		var rel = Math.floor(Math.random()*rels.length);
+		if($scope.relationships[rel] !== undefined){
+			$scope.linkData.relationshipName = $scope.relationships[rel].name;
+			console.log($scope.linkData.relationshipName)
+		}
+
+		var source = Math.floor(Math.random()*$scope.contributions.length);
+		if($scope.contributions[source].id !== undefined){
+			$scope.linkData.source = $scope.contributions[source].id;
+			console.log($scope.contributions[source].title)
+		}
+		
+		var target = Math.floor(Math.random()*$scope.contributions.length);
+		if($scope.contributions[target].id !== undefined){
+			$scope.linkData.target = $scope.contributions[target].id;
+			console.log($scope.contributions[target].title)
+		}
+
+		if( $scope.linkData.target != $scope.linkData.source)
+			$scope.createLink();
+		else
+			simulateLink();
+
+	}
 	$scope.createLink = function(){
 
 			$http({
@@ -189,7 +243,7 @@ angular.module('studionetAdmin').controller('TestCtrl', ['$scope', '$http', func
 					 })
 					.success(function(data) {
 					    
-						alert("Link Created");  
+						//alert("Link Created");  
 						refresh();  
 
 					})

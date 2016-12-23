@@ -1,7 +1,5 @@
 angular.module('studionet')
 .controller('DetailsModalCtrl', ['$scope', '$http', 'profile', 'users', '$location', '$anchorScroll', function($scope, $http, profile, users, $location, $anchorScroll){
-	// $scope.name = "Jane Doe";
-  // $scope.age = 12;
   $scope.user = profile.user;
 
   $scope.clickedContributionId = null;
@@ -14,7 +12,7 @@ angular.module('studionet')
   $scope.refresh = function(){
       $http.get('/api/tags/').success(function(data){
 			  $scope.tags = data;
-        console.log('refreshing tages');
+        //console.log('refreshing tages');
 	    });
 
       $http.get('/api/relationships/').success(function(data){
@@ -32,37 +30,18 @@ angular.module('studionet')
   //  This close function doesn't need to use jQuery or bootstrap, because
   //  the button has the 'data-dismiss' attribute.
   $scope.close = function() {
-    // close({
-    //   name: $scope.user,
-    //   age: $scope.modules
-    // }, 500); // close, but give 500ms for bootstrap to animate
 
-    //$element.modal('hide');
     $('body').removeClass('modal-open');
     $('.modal-backdrop').remove();
   };
 
-  //  This cancel function must use the bootstrap, 'modal' function because
-  //  the doesn't have the 'data-dismiss' attribute.
-  // $scope.cancel = function() {
-  //   //  Manually hide the modal.
-  //   //$element.modal('hide');
-  //   // $('body').removeClass('modal-open');
-  //   // $('.modal-backdrop').remove();
-    
-  //   //  Now call close, returning control to the caller.
-  //   close({
-  //     name: $scope.user,
-  //     age: $scope.modules
-  //   }, 500); // close, but give 500ms for bootstrap to animate
-  
-  // };
-
   $scope.createContribution = function(createContribution){
+    if(!createContribution) return;
 
     //createContribution.author = profile.user.id;
     console.log(createContribution.ref);
     createContribution.refType = "RELATED_TO";
+    createContribution.contentType = 'TEXT';
     
     $http({
       method  : 'POST',
@@ -71,10 +50,15 @@ angular.module('studionet')
       headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
       })
     .success(function(data) {
-      alert("Contribution Created");  
+      alert("Contribution Created");
+      //$scope.close();
       $scope.refresh(); 
-      refreshGraph();
-    }) 
+      $scope.$parent.graphInit();
+    })
+    .error(function(error){
+      alert("Error Msg:" + error);
+      $scope.close();
+    })
    };
 
   $scope.deleteContribution = function(contributionId){
@@ -88,7 +72,11 @@ angular.module('studionet')
     .success(function(data) {
       alert("Contribution id:" + contributionId + " deleted");  
       $scope.refresh();  
-      refreshGraph();
+      $scope.$parent.graphInit();
+    })
+    .error(function(error){
+      alert("Error Msg:" + error);
+      $scope.close();
     })
   }
 

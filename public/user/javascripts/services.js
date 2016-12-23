@@ -1,5 +1,24 @@
 angular.module('studionet')
 
+// todo
+.service('AppContextService', function(){
+    
+    var o = {
+    	graph: null
+    }
+
+    o.getGraph = function(){
+    	//console.log("getting graph");
+    	return o.graph;
+    }
+
+    o.setGraph = function( graph_value ){
+    	o.graph = graph_value;
+    	//console.log("setting graph");
+    }
+
+    return o; 
+})
 
 .factory('supernode', ['$http', function($http){
 	var o ={
@@ -39,7 +58,9 @@ angular.module('studionet')
 		});
 	};
 
+	// redundant
 	o.getContributions = function(){
+		console.warn("Shouldn't be using this");		
 		return $http.get('/api/profile/contributions').success(function(data){
 			angular.copy(data, o.contributions);
 		});
@@ -66,19 +87,6 @@ angular.module('studionet')
 	return o;
 }])
 
-.factory('modelsFactory', ['$http', function($http){
-	var o = {
-		userModels: []
-	};
-
-	o.getUserModels = function(nusOpenId){
-		return $http.get('/uploads/' + nusOpenId + '/models').success(function(data){
-			angular.copy(data, o.userModels);
-		});
-	}
-
-	return o;
-}])
 
 .factory('users', ['$http', function($http){
 
@@ -131,12 +139,19 @@ angular.module('studionet')
 .factory('contributions', ['$http', function($http){
 
 	var o = {
-		contributions: []
+		contributions: [],
+		graph: {}
 	};
 
 	o.getAll = function(){
 		return $http.get('/api/contributions').success(function(data){
 			angular.copy(data, o.contributions);
+		});
+	};
+
+	o.getGraph = function(){
+		return $http.get("/graph/all").success(function(data){
+			angular.copy(data, o.graph);
 		});
 	};
 
@@ -153,17 +168,13 @@ angular.module('studionet')
 	o.getAll = function(){
 		return $http.get('/api/groups').success(function(data){
 			angular.copy(data, o.groups);
-
 		});
 	};
 
 	o.getGraph = function(user_context){
-
 		return $http.get('/graph/all/groups').success(function(data){
-
 			// replace the nodes with the groups that already hold data about the user status in each group
 			data.nodes = o.groups;
-			
 			// copy data
 			angular.copy(data, o.graph);
 		});
@@ -226,28 +237,16 @@ angular.module('studionet')
 	var cache = [];
 
 	o.getGroupInfo = function(id){
-/*
-		return new Promise( function(resolve, reject){
-			for(var i=0; i < groups.groups.length; i++){
-				if( groups.groups[i].id == id ){
-					o.group = groups.groups[i]; 
-					break;
-					resolve();
-				}
-			}
-		}) */
 		return $http.get('/api/groups/' + id).success(function(data){
 					
 					data.requestingUserStatus = undefined;
 
 					// fix me - find a better way
-					
-
-					for(var i=0; i < profile.groups.length; i++){
+/*					for(var i=0; i < profile.user.groups.length; i++){
 						if( data.id == profile.groups[i].id ){
 								data.requestingUserStatus = profile.groups[i].role;
 						}
-					}
+					}*/
 
 					angular.copy(data, o.group);
 
@@ -269,12 +268,12 @@ angular.module('studionet')
 		});
 	};
 
-/*	o.updateContribution = function(groupDetails){
-		return $http.put('/api/groups/'+groupDetails.groupId, groupDetails).success(function(){
-			$("#successMsg").show();
-			
-		});
-	};*/
+	/*	o.updateContribution = function(groupDetails){
+			return $http.put('/api/groups/'+groupDetails.groupId, groupDetails).success(function(){
+				$("#successMsg").show();
+				
+			});
+		};*/
 
 	o.joinGroup = function(){
 		return $http.get('/api/groups/' + o.group.id + '/join').success(function(data){
@@ -378,4 +377,18 @@ angular.module('studionet')
 	return o;
 }])
 
-;
+
+
+.factory('modelsFactory', ['$http', function($http){
+	var o = {
+		userModels: []
+	};
+
+	o.getUserModels = function(nusOpenId){
+		return $http.get('/uploads/' + nusOpenId + '/models').success(function(data){
+			angular.copy(data, o.userModels);
+		});
+	}
+
+	return o;
+}]);
