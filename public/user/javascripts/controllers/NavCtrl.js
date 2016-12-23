@@ -3,7 +3,7 @@ angular.module('studionet')
 /*
  * Controller for Filters
  */
-.controller('NavCtrl', ['AppContextService', '$scope', 'profile', function(AppContextService, $scope, profile){
+.controller('NavCtrl', ['AppContextService', '$scope', 'profile', 'ModalService', function(AppContextService, $scope, profile, ModalService){
 
 		$scope.graph = AppContextService.graph;
 
@@ -16,7 +16,25 @@ angular.module('studionet')
 		$scope.simple = true;
 
 		$scope.toggleFilter = function(){
-			angular.element('.graph-container').scope().showFilter = !angular.element('.graph-container').scope().showFilter
+			angular.element('.graph-container').scope().showFilter = !angular.element('.graph-container').scope().showFilter;
+		}
+
+		$scope.showProfile = function(){
+			
+			ModalService.showModal({
+				templateUrl: "/user/templates/profile.html",
+				controller: "ProfileCtrl",
+				inputs: {
+				  title: "User Profile"
+				},
+				scope: $scope
+			}).then(function(modal) {
+			    modal.element.modal({
+			      backdrop: 'static'
+			      // keyboard: false
+			    });
+			});
+
 		}
 
 		/*

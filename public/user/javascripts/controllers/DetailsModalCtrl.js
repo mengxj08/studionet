@@ -6,17 +6,21 @@ angular.module('studionet')
   $scope.data = [];
   $scope.tags = [];
   $scope.relationships= [];
+  $scope.contributions = [];
 
   $scope.users = users.usersById();
 
   $scope.refresh = function(){
       $http.get('/api/tags/').success(function(data){
 			  $scope.tags = data;
-        //console.log('refreshing tages');
 	    });
 
       $http.get('/api/relationships/').success(function(data){
 			  $scope.relationships = data;
+		  });
+
+      $http.get('/api/contributions/').success(function(data){
+			  $scope.contributions = data;
 		  });	
   }
 
@@ -30,8 +34,9 @@ angular.module('studionet')
   //  This close function doesn't need to use jQuery or bootstrap, because
   //  the button has the 'data-dismiss' attribute.
   $scope.close = function() {
-
-    $('body').removeClass('modal-open');
+    console.log("Close the medal");
+    //$('body').removeClass('modal-open');
+    $(".modal").remove();
     $('.modal-backdrop').remove();
   };
 
@@ -51,18 +56,17 @@ angular.module('studionet')
       })
     .success(function(data) {
       alert("Contribution Created");
-      //$scope.close();
-      $scope.refresh(); 
+      $scope.close();
+      //$scope.refresh(); 
       $scope.$parent.graphInit();
     })
     .error(function(error){
-      alert("Error Msg:" + error);
+      alert("Error Msg:" + error.message);
       $scope.close();
     })
    };
 
   $scope.deleteContribution = function(contributionId){
-
     $http({
       method  : 'delete',
       url     : '/api/contributions/'+contributionId,
@@ -70,18 +74,78 @@ angular.module('studionet')
       headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
       })
     .success(function(data) {
-      alert("Contribution id:" + contributionId + " deleted");  
-      $scope.refresh();  
+      alert("Contribution id:" + contributionId + " deleted");
+      $scope.close();
+      //$scope.refresh();  
       $scope.$parent.graphInit();
     })
     .error(function(error){
-      alert("Error Msg:" + error);
+      alert("Error Msg:" + error.message);
       $scope.close();
     })
   }
 
-  $scope.updateContribution = function(){
+  $scope.updateContribution = function(updateContribution){
+    console.log("This is output from update contribution");
+    $http({
+      method  : 'PUT',
+      url     : '/api/contributions/'+ updateContribution.id,
+      data    : updateContribution,  // pass in data as strings
+      headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
+      })
+    .success(function(data) {
+      alert("Contribution Updated");
+      $scope.close();
+      //$scope.refresh(); 
+      $scope.$parent.graphInit();
+    })
+    .error(function(error){
+      alert("Error Msg:" + error.message);
+      $scope.close();
+    })
+  }
 
+  $scope.createLink = function(linkData){
+    linkData.createdBy = $scope.user.id;
+
+    if(linkData.currentContributionType == 'source'){
+      linkData.source = linkData.currentContributionId;
+      linkData.target = linkData.linkedtoContributionId;
+    }
+    else{
+      linkData.source = linkData.linkedtoContributionId;
+      linkData.target = linkData.currentContributionId;
+    }
+
+    console.log(linkData);
+    $http({
+          method  : 'POST',
+          url     : '/api/relationships/',
+          data    : linkData,  
+          headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
+          })
+        .success(function(data) {
+          alert("Link Created");  
+          $scope.close();
+          //$scope.refresh(); 
+          $scope.$parent.graphInit(); 
+        })
+        .error(function(error){
+          alert("Error Msg:" + error.message);
+          $scope.close();
+        })
+	}
+
+
+  $scope.submitContribution = function(showCreateContribution,showLinkingContribution,showUpdateContribution,contributionData,linkData){
+    if(showCreateContribution)
+      $scope.createContribution(contributionData);
+
+    if(showLinkingContribution)
+      $scope.createLink(linkData);
+
+    if(showUpdateContribution)
+      $scope.updateContribution(contributionData);
   }
 
   $scope.refresh();

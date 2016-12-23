@@ -2,10 +2,8 @@ var express = require('express');
 var router = express.Router();
 var multer = require('multer');
 var mkdirp = require('mkdirp');
-var glob = require('glob');
 var path = require('path');
 var fs = require('fs-extra');
-var gm = require('gm');
 var auth = require('./auth');
 var storage = require('./storage');
 var apiCall = require('./apicall');
@@ -15,21 +13,17 @@ var db = require('seraph')({
 	pass: process.env.DB_PASS
 });
 var _ = require('underscore');
-/*var mmm = require('mmmagic'),
-      Magic = mmm.Magic;*/
 var contributionUtil = require('./contributionutil');
 
 
 // route: /api/contributions
 router.route('/')
 	/*
-	 * Returns all contributions, including the name, created by, created on and id of the contribution.
+	 * Returns all contributions, including the name, created by, created on and id of the contribution if no parmas specified.
+	 * Otherwise, returns filtered contributions.
 	 */
-	.get(auth.ensureAuthenticated, function(req, res){
-
-		var numKeys = Object.keys(req.query).length;
-		var hasParams = numKeys > 0;
-		var NUM_QUERY_KEYS_CONTRIBUTION = 6;
+	.get(auth.ensureAuthenticated, contributionUtil.handleGetContributionsWithoutParams, 
+			contributionUtil.ensureGetContributionsCorrectParams, function(req, res){
 
 		var QUERY_PARAM_DEPTH_KEYWORD = 'd';
 		var QUERY_PARAM_GROUPS_KEYWORD = 'g';
@@ -37,72 +31,6 @@ router.route('/')
 		var QUERY_PARAM_USERS_KEYWORD = 'u';
 		var QUERY_PARAM_TIME_KEYWORD = 't';
 		var QUERY_PARAM_TAGS_KEYWORD = 'tg';
-
-		if (!hasParams) {
-			var query = [
-				'MATCH (c:contribution)',
-				'WITH c',
-				'RETURN ({title: c.title, createdBy: c.createdBy, dateCreated: c.dateCreated, id: id(c)})'		
-			].join('\n');
-
-			db.query(query, function(error, result) {
-				if (error){
-					console.log('[ERROR] Attempt to fetch all contributions by /api/contributions failed.');
-					res.send('error getting all contributions');
-				}
-				else{
-					res.send(result);
-				}		
-			});
-
-			return;
-		}
-
-		if (numKeys !== NUM_QUERY_KEYS_CONTRIBUTION) {
-			console.log('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Expected 6 query parameters but only received ' + numKeys + '.');
-			return res.send('must send all 6 query params');
-		}
-
-		// has exactly 6 query params
-		// check if the 6 query params are the ones that i need
-
-		// 1 Number query param (depth)
-		if (!(QUERY_PARAM_DEPTH_KEYWORD in req.query)){
-			console.log('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Expected a depth param but did not receive any.');
-			return res.send('No depth query provided');
-		}
-
-		var QUERY_PARAM_DEPTH_STRING = req.query[QUERY_PARAM_DEPTH_KEYWORD];
-		var isDepthParamEmpty = QUERY_PARAM_DEPTH_STRING.length <= 0;
-		var isDepthParamNumber = !isNaN(parseInt(QUERY_PARAM_DEPTH_STRING));
-
-		if (isDepthParamEmpty || !isDepthParamNumber) {
-			console.log('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Expected depth param to be a Number but did not receive a Number.');
-			return res.send('Depth query provided is not a number');
-		}
-
-		// 5 array query params
-		var requiredKeysWithoutDepth = [
-																		QUERY_PARAM_GROUPS_KEYWORD,
-																		QUERY_PARAM_USERS_KEYWORD,
-																		QUERY_PARAM_RATING_KEYWORD,
-																		QUERY_PARAM_TIME_KEYWORD,
-																		QUERY_PARAM_TAGS_KEYWORD
-																	 ].sort();
-
-		var sortedQueryKeys = Object.keys(req.query).sort();
-		sortedQueryKeys.splice(sortedQueryKeys.indexOf(QUERY_PARAM_DEPTH_KEYWORD), 1); // remove the depth param
-
-		var correctParams = requiredKeysWithoutDepth.reduce(function(acc, val, idx){
-			return acc 
-				&& (val == sortedQueryKeys[idx]) 
-				&& (req.query[val].length > 0) // must not be blank queries for JSON.parse()
-		}, true);
-
-		if (!correctParams) {
-			console.log('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Did not receive the exact expected params.');
-			return res.send('Please send the correct 6 params');
-		}
 
 		// First get all the users matching the specified group, if present
 		var groupIds = JSON.parse(req.query[QUERY_PARAM_GROUPS_KEYWORD]);
@@ -207,6 +135,7 @@ router.route('/')
 
 			// check type of rating
 			if (rateArray instanceof Array) {
+        
 				// match according to the array
 				var rateLowerParam = rateArray[0];
 				var rateUpperParam = rateArray[1];
@@ -254,14 +183,29 @@ router.route('/')
 				queryUserGroupTag,
 				queryRating,
 				queryDate,
-				'WITH c',
-				'MATCH (c)-[*]->(c2:contribution) WITH c, c2',
-				'MATCH (c)<-[*0..' + params.depthParam + ']-(c3:contribution)',
-				'WITH distinct (collect(c) + collect(c2) + collect(c3)) as combinedContributionsCollection',
-				'UNWIND combinedContributionsCollection AS combinedContribution',
-				'UNWIND combinedContributionsCollection AS combinedContribution2',
-				'MATCH p=(combinedContribution)-[*1]->(combinedContribution2)',
-				'RETURN distinct (p)'
+				/*
+				'WITH collect(id(c)) as filteredIdList',
+				'OPTIONAL MATCH pathToSuper=(c1)-[*]->(c2:contribution {superNode: true})',
+				'WHERE ID(c1) IN filteredIdList',
+				'WITH filteredIdList, collect(distinct id(c2)) as intermediateNodeList',
+				'OPTIONAL MATCH pathFromChildren=(c3)<-[*1..' + params.depthParam + ']-(c4:contribution)',
+				'WHERE ID(c3) IN filteredIdList',
+				'WITH filteredIdList + intermediateNodeList + collect(distinct id(c4)) as combinedList',
+				'UNWIND combinedList as unwindedCombinedList',
+				'WITH collect(distinct unwindedCombinedList) as distinctUnwindedCombinedList',
+				'MATCH p=(source)-[*1]->(target) WHERE ID(source) IN distinctUnwindedCombinedList AND ID(target) IN distinctUnwindedCombinedList',
+				'RETURN p'*/
+				'WITH collect(id(c)) as filteredIdList',
+				'OPTIONAL MATCH pathToSuper=(c1)-[*]->(c2:contribution)',
+				'WHERE ID(c1) IN filteredIdList',
+				'WITH filteredIdList, collect(distinct id(c2)) as intermediateNodeList',
+				'OPTIONAL MATCH pathFromChildren=(c3)<-[*1..' + params.depthParam + ']-(c4:contribution)',
+				'WHERE ID(c3) IN filteredIdList',
+				'WITH filteredIdList + intermediateNodeList + collect(distinct id(c4)) as combinedList',
+				'UNWIND combinedList as unwindedCombinedList',
+				'WITH collect(distinct unwindedCombinedList) as distinctUnwindedCombinedList',
+				'MATCH p=(source)-[*1]->(target) WHERE ID(source) IN distinctUnwindedCombinedList AND ID(target) IN distinctUnwindedCombinedList',
+				'RETURN p'
 			].join('\n');
 
 			console.log(query);
@@ -429,19 +373,19 @@ router.route('/:contributionId')
 			}
 
 			// Changing contribution reference.
-			if (oldRef !== newRef) {
-				// query to delete old reference relation and create a new ref relation
-				changeRelationQuery = [
-					'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
-					'MATCH (c1:contribution) WHERE ID(c1)=c.ref',
-					'MATCH (c)-[r]->(c1)',
-					'DELETE r',
-					'WITH c',
-					'MATCH (c2:contribution) WHERE ID(c2)={contributionRefParam}',
-					'CREATE (c)-[r:' + req.body.refType +']->(c2)',
-					'WITH c'
-				];
-			}
+			// if (oldRef !== newRef) {
+			// 	// query to delete old reference relation and create a new ref relation
+			// 	changeRelationQuery = [
+			// 		'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
+			// 		'MATCH (c1:contribution) WHERE ID(c1)=c.ref',
+			// 		'MATCH (c)-[r]->(c1)',
+			// 		'DELETE r',
+			// 		'WITH c',
+			// 		'MATCH (c2:contribution) WHERE ID(c2)={contributionRefParam}',
+			// 		'CREATE (c)-[r:' + req.body.refType +']->(c2)',
+			// 		'WITH c'
+			// 	];
+			// }
 
 			editContributionDetailsQuery = [
 				'MATCH (c3:contribution) WHERE ID(c3)={contributionIdParam}',
@@ -502,7 +446,7 @@ router.route('/:contributionId')
 				contributionBodyParam: req.body.body,
 				contributionRefParam: parseInt(req.body.ref), 
 				lastUpdatedParam: Date.now(),
-				refTypeParam: req.body.refType,
+				//refTypeParam: req.body.refType,
 				editedParam: true,
 				createdByParam: req.user.id,
 				contentTypeParam: req.body.contentType,
