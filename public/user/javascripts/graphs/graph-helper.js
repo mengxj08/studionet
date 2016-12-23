@@ -89,22 +89,25 @@ var graph_style = {
             .css({
               'text-valign': 'bottom',
               'text-margin-y': '4',
-              'font-size':'0.2em',
+              'font-size':'1em',
               'font-weight': '300',
               'border-color': '#222',
               'text-wrap' : 'wrap',
               'text-max-width': '100',
               'text-valign': 'bottom',
-              'font-family': 'Open Sans, sans serif'
+              'font-family': 'Open Sans, sans serif',
+              'min-zoomed-font-size': '0.5em'
             })
 
           .selector('edge')
             .css({
-              'curve-style': 'bezier',
+              'curve-style': 'haystack',
               'target-arrow-shape': 'triangle',
+              'text-valign': 'bottom',
               //'content' : 'data(name)',
               'color': '#222',
               'edge-text-rotation': 'autorotate',
+              'border-width': 1
             })     
            
           .selector('.selected')
@@ -117,17 +120,41 @@ var graph_style = {
           
           .selector('.faded')
             .css({
-              'opacity': 0.75,
+              'opacity': 0.55,
               'text-opacity': 0.25
             })
           
-          .selector('.highlighted')
+          .selector('node.highlighted')
             .css({
               'line-color': '#222',
               'target-arrow-color':'black',
+              'content' : 'data(name)',
               'background-color': '#4A95EF',
+              'border-width': 1,
+              'font-size': '0.7em',
+              'color': '#535353',
+              'font-weight': '400'
+            })
+
+          .selector('edge.highlighted')
+            .css({
+              'curve-style': 'bezier',
+              'line-color': '#000000',
+              'target-arrow-color':'black',
+              'content' : 'data(name)',
+              'width': 0.6,
+              'font-size': '1em',
+              'font-weight': '400'
+            })
+
+          .selector('.primary')
+            .css({
+              'line-color': '#222',
+              'target-arrow-color':'black',
+              'background-color': '#2E5CC6',
               'border-width': 1.5              
             })
+
 
           .selector('.searched')
             .css({
@@ -268,14 +295,14 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
     // disable zooming
     //graph_style.zoomingEnabled = false;
     graph_style.minZoom = 0.1;
-    graph_style.wheelSensitivity = 0.3;
+    graph_style.wheelSensitivity = 0.1;
 
     // performance options
     graph_style.hideEdgesOnViewport = true;
     graph_style.hideLabelsOnViewport = true;
     graph_style.motionBlur = true;
 
-    graph = cytoscape( graph_style );
+    var graph = cytoscape( graph_style );
 
     graph.fit();
 
@@ -288,8 +315,12 @@ STUDIONET.GRAPH.getVisibleNodes = function(cy){
     var visible = [];
 
     cy.nodes().map(function(node){
-      if( viewportContainsNode(vw, node) )
+      if( viewportContainsNode(vw, node) ){
+        node.data('visible', true);
         visible.push(node);
+      }
+      else
+        node.data('visible', false);
     })
 
     return visible;

@@ -33,6 +33,21 @@
 
 }
 
+.info-pane{
+  position: fixed;
+  right: 100px;
+  bottom: 30px;
+
+  width: 100px; 
+  height: auto;
+
+  padding: 0px 10px;
+
+  text-align: right;
+
+  z-index: 3;
+}
+
 
 .graph-controls{
 

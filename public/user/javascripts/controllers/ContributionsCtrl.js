@@ -13,6 +13,8 @@ angular.module('studionet')
 	//$scope.user = profile.user;
   $scope.users = users.usersById();   // needed for hover to get user name - fix later
 
+  $scope.zoomLevel = 1;
+
   $scope.simple = true;
 
   $scope.showFilter = false;  
@@ -158,15 +160,45 @@ angular.module('studionet')
         var j = cy.nodes()[0]
         if(j) cy.remove(j);
 
+        cy.onRender( function(){
+
+            $scope.zoomLevel = (100*cy.zoom()).toPrecision(4);
+            $scope.$apply();
+
+            //console.log("Zoom: ", graph.zoom());
+            // console.log( "Nodes: ", STUDIONET.GRAPH.getVisibleNodes(cy).length );
+            //var nodes = STUDIONET.GRAPH.getVisibleNodes(graph); 
+
+            var vw = $scope.graph.extent();
+            var filter =   cy.filter(function(i, n){
+                  if( ( n.position().x > vw.x1 && n.position().x < vw.x2 ) && ( n.position().y > vw.y1 && n.position().y < vw.y2  ) )
+                    return true;
+                
+                  return false;
+            });
+
+            if( filter.length < cy.nodes().length )
+                filter.addClass('highlighted');
+            else
+                filter.removeClass('highlighted');
+
+            //console.log(filter.length);
+
+        });
+
         cy.nodes().map(function(node){
 
-            var count = node.successors().length;
+              var count = node.successors().length;
 
-            node.css({ 'width': 20 + 2*(count/3), 'height': 20 + 2*(count/3) })
+              node.css({ 'width': 20 + 2*(count/3), 'height': 20 + 2*(count/3) });
+              
+              if(count > 30)
+                  node.addClass('primary');
 
-            return node;
+              return node;
 
         })
+
 
         cy.on('mouseover','node', function(evt){
 
@@ -187,14 +219,13 @@ angular.module('studionet')
               node.predecessors().addClass('highlighted');
               node.predecessors().removeClass('faded');
    
-          });
+        });
 
         cy.on('mouseout','node', function(evt){
             cy.elements().removeClass('faded');
             cy.elements().removeClass('selected');
             cy.elements().removeClass('highlighted');
         });
-
 
 
         // displays content of the node
@@ -256,7 +287,7 @@ angular.module('studionet')
 
                  RecursiveGetData(0);
             }
-          });   
+        });   
 
 
       }
