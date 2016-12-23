@@ -191,3 +191,31 @@
     border-top-width: 0;
     border-bottom-color: #fff;
 }
+
+/*Customised textAngular CSS*/
+.textAngular .btn-toolbar {
+    background-color: #F0F0F0;
+    padding: 10px 10px 5px;
+    margin-left: 0px;
+    border: 1px solid #EEE;
+}
+
+.textAngular .btn-default{
+    color: #333;
+    background-color: #fff;
+    border-color: #ccc;
+}
+
+.textAngular .btn-default:hover, .textAngular .btn-default:focus, .textAngular .btn-default:active, .textAngular .btn-default.active, .textAngular .open .dropdown-toggle.btn-default{
+    color: #333;
+    background-color: #ebebeb;
+    border-color: #adadad;
+}
+
+.textAngular .btn:hover {
+    transform:none;
+}
+
+.textAngular .btn.disabled, .textAngular .btn[disabled], .textAngular fieldset[disabled] .btn{
+    background-color: white;
+}
