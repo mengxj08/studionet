@@ -6,17 +6,21 @@ angular.module('studionet')
   $scope.data = [];
   $scope.tags = [];
   $scope.relationships= [];
+  $scope.contributions = [];
 
   $scope.users = users.usersById();
 
   $scope.refresh = function(){
       $http.get('/api/tags/').success(function(data){
 			  $scope.tags = data;
-        //console.log('refreshing tages');
 	    });
 
       $http.get('/api/relationships/').success(function(data){
 			  $scope.relationships = data;
+		  });
+
+      $http.get('/api/contributions/').success(function(data){
+			  $scope.contributions = data;
 		  });	
   }
 
@@ -101,9 +105,44 @@ angular.module('studionet')
     })
   }
 
-  $scope.submitContribution = function(showCreateContribution,showUpdateContribution,contributionData){
+  $scope.createLink = function(linkData){
+    linkData.createdBy = $scope.user.id;
+
+    if(linkData.currentContributionType == 'source'){
+      linkData.source = linkData.currentContributionId;
+      linkData.target = linkData.linkedtoContributionId;
+    }
+    else{
+      linkData.source = linkData.linkedtoContributionId;
+      linkData.target = linkData.currentContributionId;
+    }
+
+    console.log(linkData);
+    $http({
+          method  : 'POST',
+          url     : '/api/relationships/',
+          data    : linkData,  
+          headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
+          })
+        .success(function(data) {
+          alert("Link Created");  
+          $scope.close();
+          //$scope.refresh(); 
+          $scope.$parent.graphInit(); 
+        })
+        .error(function(error){
+          alert("Error Msg:" + error.message);
+          $scope.close();
+        })
+	}
+
+
+  $scope.submitContribution = function(showCreateContribution,showLinkingContribution,showUpdateContribution,contributionData,linkData){
     if(showCreateContribution)
       $scope.createContribution(contributionData);
+
+    if(showLinkingContribution)
+      $scope.createLink(linkData);
 
     if(showUpdateContribution)
       $scope.updateContribution(contributionData);

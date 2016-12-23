@@ -54,7 +54,7 @@
                     </div>
                   </div>
                 </div>
-
+<!-- Create a new contribution by replying to existing ones -->
                 <div class='editor reply' ng-show='showCreateContribution'>
                     <hr>
                     <label>Replying to the above contribution:</label>
@@ -83,10 +83,8 @@
                     <br>
                     <span><b> Selected tag names:  </b></span> 
                     <span>{{ contributionData.tags }}</span>
-                    <br>
-
                 </div>
-
+<!-- Update existing contributions -->
                 <div class='editor update' ng-show='showUpdateContribution'>
                     <hr>
                     <label>Update the above contribution:</label>
@@ -98,13 +96,6 @@
                     <label> Contribution Content: </label>
                     <br>
                     <textarea class='wide' rows="10" cols="70" ng-model="contributionData.body"></textarea>
-                    <!--<br><br>
-                    <label for="singleSelect"> Relationship: </label>
-                    <select name="singleSelect" id="singleSelect" ng-model=contributionData.refType>
-                      <option ng-repeat="rel in relationships | filter: { src_type: 'contribution', 
-                                              target_type: 'contribution'}" 
-                                              value={{rel.name}}>{{rel.name}}</option>
-                    </select>-->
                     <br><br>
                     <label> Tags: </label><br>
                     <select class='tag-list' rows="10" ng-model="contributionData.tags" multiple>
@@ -115,8 +106,31 @@
                     <br>
                     <span><b> Selected tag names:  </b></span> 
                     <span>{{ contributionData.tags }}</span>
-                    <br>
+                </div>
+<!-- Add cross links -->
+                <div class='editor Linking' ng-show='showLinkingContribution'>
+                    <hr>
+                    <label> Link the above contribution to others:</label>
+                    <br><br>
+                    <label for="singleSelect"> The current contribution is </label>
+                    <select name="singleSelect" id="singleSelect" ng-model=linkData.currentContributionType>
+                      <option value='source'>source</option>
+                      <option value='target'>target</option>
+                    </select>
+                    <br><br>
 
+                    <label for="singleSelect"> Relationship: </label>
+                    <select name="singleSelect" id="singleSelect" ng-model=linkData.relationshipName>
+                      <option ng-repeat="rel in relationships | filter: { src_type: 'contribution', 
+                                              target_type: 'contribution'}" 
+                                              value={{rel.name}}>{{rel.name}}</option>
+                    </select>
+                    <br><br>
+                    <label for="singleSelect" ng-show="linkData.currentContributionType == 'source'"> Target: </label>
+                    <label for="singleSelect" ng-show="linkData.currentContributionType == 'target'"> Source: </label>
+                    <select name="singleSelect" id="singleSelect" ng-model="linkData.linkedtoContributionId">
+                      <option ng-repeat="tmp in contributions" value={{tmp.id}}>{{tmp.title}} ({{tmp.id}})</option>
+                    </select>
                 </div>
             </div>
           </div>
@@ -125,16 +139,16 @@
                 <center>
                   <div ng-hide='hideReplyButton'>
                   <button type="button" ng-click="showCreateContribution=true; hideReplyButton=true; contributionData={};contributionData.tags=[];contributionData.ref=contribution.db_data.id" class="btn btn-default modal-button">Reply</button>
-                  <button type="button" ng-click="linkContribution()" class="btn btn-default modal-button">Link</button>
+                  <button type="button" ng-click="showLinkingContribution=true; hideReplyButton=true; linkData={}; linkData.currentContributionId=contribution.db_data.id" class="btn btn-default modal-button">Link</button>
                   <button type="button" ng-click="showUpdateContribution=true; hideReplyButton=true; contributionData=contribution.db_data;" class="btn btn-default modal-button"
                   ng-show="(user.id == contribution.db_data.createdBy)">Update</button>
                   <button type="button" ng-click="deleteContribution(contribution.db_data.id)" class="btn btn-default modal-button"
                   ng-show="(user.id == contribution.db_data.createdBy)">Delete</button>
                   </div>
                   <div ng-show='hideReplyButton'>
-                    <button type="button" ng-click="submitContribution(showCreateContribution,showUpdateContribution,contributionData);
-                    showCreateContribution=false; showUpdateContribution=false; hideReplyButton=false" class="btn btn-default modal-button">Submit</button>
-                    <button type="button" ng-click="showCreateContribution=false; showUpdateContribution=false; hideReplyButton=false" class="btn btn-default modal-button">Cancel</button>
+                    <button type="button" ng-click="submitContribution(showCreateContribution,showLinkingContribution,showUpdateContribution,contributionData,linkData);
+                    showCreateContribution=false; showUpdateContribution=false; showLinkingContribution=false; hideReplyButton=false" class="btn btn-default modal-button">Submit</button>
+                    <button type="button" ng-click="showCreateContribution=false; showUpdateContribution=false; showLinkingContribution=false; hideReplyButton=false" class="btn btn-default modal-button">Cancel</button>
                   </div>
                 </center>
               </div>
