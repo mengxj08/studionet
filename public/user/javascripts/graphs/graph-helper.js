@@ -43,7 +43,7 @@ STUDIONET.GRAPH.qtipFormat = function(evt){
      position: {
         //container: $('div.graph-container'),
         my: 'top left',
-        at: 'center center'
+        at: 'bottom right'
      },
      events: {
                     //this hide event will remove the qtip element from body and all assiciated events, leaving no dirt behind.
@@ -53,7 +53,7 @@ STUDIONET.GRAPH.qtipFormat = function(evt){
      },
      style: {
         classes: 'qTipClass',
-        width: 200 // Overrides width set by CSS (but no max-width!)
+        width: 300 // Overrides width set by CSS (but no max-width!)
      }
   }
 }
@@ -73,6 +73,63 @@ var CONCENTRIC_GRAPH_LAYOUT = {  name: 'concentric',
                                   levelWidth: function( nodes ){
                                     return 1;
                                   }};
+
+var computeSizeFn = function(node){
+
+    var successors = node.successors().length;
+    var basic = 20;
+    var final = basic; 
+
+    switch(true){
+
+        case (successors < 10):
+            break;
+        case (successors < 30):
+            final = basic + 20; 
+            break;
+        case (successors < 50):
+            final = basic + 40; 
+            break;
+        case (successors > 50):
+            final = basic + 60; 
+            break;
+
+    }
+
+    return final; 
+
+}
+
+var computeBgColorFn = function(node){
+
+    var successors = node.successors().length;
+    var final = "#989BB4"; 
+
+    switch(true){
+
+        case (successors < 10):
+            break;
+        case (successors < 30):
+            final = "#6B73B4"; 
+            break;
+        case (successors < 50):
+            final = "#4551B4"; 
+            break;
+        case (successors > 50):
+            final = "#2030B4"; 
+            break;
+
+    }
+
+    return final; 
+
+}
+
+var computeLabel = function(ele){
+   return ele.data().name.substr(0,5)+"...";
+}
+
+
 /*
  * Cytoscape Specific Styles
  */
@@ -87,82 +144,58 @@ var graph_style = {
           
           .selector('node')
             .css({
+              'width': computeSizeFn,
+              'height': computeSizeFn,
+              'background-color': computeBgColorFn,
+              'label' : computeLabel,
               'text-valign': 'bottom',
-              'text-margin-y': '4',
-              'font-size':'1em',
-              'font-weight': '300',
-              'border-color': '#222',
-              'text-wrap' : 'wrap',
-              'text-max-width': '100',
-              'text-valign': 'bottom',
+              'text-margin-y': '2',
+              'font-size': '1em',
+              'line-height': '1em',
+              'font-weight': '400',  
+              'text-wrap': 'wrap',
+              'text-max-width': '30px',
               'font-family': 'Open Sans, sans serif',
-              'min-zoomed-font-size': '0.5em'
+              'min-zoomed-font-size': '1em',
+              'margin': '20px'
             })
 
           .selector('edge')
             .css({
               'curve-style': 'haystack',
-              'target-arrow-shape': 'triangle',
-              'text-valign': 'bottom',
-              //'content' : 'data(name)',
-              'color': '#222',
-              'edge-text-rotation': 'autorotate',
-              'border-width': 1
+              'line-color': '#7E8CF8',
+              'width': 1
             })     
-           
-          .selector('.selected')
-            .css({
-              'border-width': 3.5,
-              'border-color': '#333',
-              'background-color': '#A9F8A9'
-              //'font-size': '15%'
-            })
-          
-          .selector('.faded')
-            .css({
-              'opacity': 0.55,
-              'text-opacity': 0.25
-            })
-          
+
           .selector('node.highlighted')
             .css({
-              'line-color': '#222',
-              'target-arrow-color':'black',
               'content' : 'data(name)',
-              'background-color': '#4A95EF',
-              'border-width': 1,
-              'font-size': '0.7em',
-              'color': '#535353',
-              'font-weight': '400'
+              'font-size': '1em',
+              'font-weight': '600',
+              'text-wrap': 'wrap',
+              'text-max-width': '70px',
+              'min-zoomed-font-size': '1em',
+              'z-index': 5
+
             })
 
           .selector('edge.highlighted')
             .css({
               'curve-style': 'bezier',
+              'target-arrow-shape': 'triangle',
               'line-color': '#000000',
               'target-arrow-color':'black',
               'content' : 'data(name)',
-              'width': 0.6,
+              'width': 1.2,
               'font-size': '1em',
-              'font-weight': '400'
+              'font-weight': '400',
+              'z-index': 5
             })
-
-          .selector('.primary')
+       
+          .selector('.faded')
             .css({
-              'line-color': '#222',
-              'target-arrow-color':'black',
-              'background-color': '#2E5CC6',
-              'border-width': 1.5              
-            })
-
-
-          .selector('.searched')
-            .css({
-              'line-color': 'blue',
-              'target-arrow-color':'black',
-              'background-color': '#4A95EF',
-              'border-width': 0.5,
-              'border-color': '#333',
+              'opacity': 0.2,
+              'text-opacity': 0.2
             })
 
 }

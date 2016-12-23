@@ -1,12 +1,6 @@
-.modal {
-    width: 100%;
-
-}
-
-.modal-dialog {
-    width: 100%;
-    margin: 20px 0px 50px 0px;
-    padding-right: 20px;
+.viewContributionContainer{
+    width: 50% !important; 
+    //margin-right: 10% !important; 
 }
 
 .sidebar{

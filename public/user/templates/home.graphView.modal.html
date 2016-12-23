@@ -5,15 +5,15 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
 <div class="modal fade" display='block'>
   <div class='row'>
-    <div class='col-sm-4'>
+<!--     <div class='col-sm-4'>
       <div class="modal-dialog sidebar">
         <div class='modal-content'>
           <p>This is the sub-graph to show the map. It should associate with the scrolling actions in the right canvas.</p>
         </div>
       </div>
-    </div>
-    <div class='col-sm-8 modal-dialog-container'>
-      <div class="modal-dialog" ng-repeat='contribution in data'>
+    </div> -->
+    <div class='col-sm-12 modal-dialog-container'>
+      <div class="modal-dialog viewContributionContainer" ng-repeat='contribution in data'>
         <div id="{{ 'modal' + contribution.db_data.id }}" class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" ng-click="close()" data-dismiss="modal" aria-hidden="true">&times;</button>
