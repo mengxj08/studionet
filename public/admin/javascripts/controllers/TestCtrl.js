@@ -94,7 +94,6 @@ angular.module('studionetAdmin').controller('TestCtrl', ['$scope', '$http', func
 				  headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
 				 })
 				.success(function(data) {
-				    
 					alert("Contribution Created");  
 					refresh();  
 

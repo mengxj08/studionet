@@ -6,36 +6,53 @@
 <div ng-controller="FilterCtrl" ng-init='init();' class="container-fluid">
     
     <div id='filters' class='row'> 
-      <div uib-accordion id="accordion">  
+      <div uib-accordion id="accordion" close-others=false>  
+
+        <div class='col-sm-5'>
          <!-- By Author Filter -->
-          <div uib-accordion-group class="filter-panel panel badge-success col-sm-2">
-              
+          <div uib-accordion-group is-open=$parent.panelsOpen class="filter-panel panel badge-success">
               <uib-accordion-heading class="filter-heading"> 
-                <h5>Authors & Groups<span class='filter-element-count'>{{ checkFilterActive("authors") }}</span></h5>
+                <h5>Authors<span class='filter-element-count'></span></h5>
               </uib-accordion-heading>
 
-              <multiselect-searchtree id='authorFilter' data-input-model="authors" multi-select="true"
-                            data-output-model="$parent.$parent.$parent.selectedAuthors" data-callback="CustomCallback(item, selectedItems)"
-                            data-select-only-leafs="false" extra-buttons="false" class="filter1"></multiselect-searchtree> 
-          </div>
+              <div class='row'>
+                <div class='col-sm-6'>
+                  <h6>Individual Users</h6>
+                  <multiselect-searchtree id='authorFilter' data-input-model="users" multi-select="true"
+                                data-output-model="$parent.$parent.$parent.selectedUsers" data-callback="CustomCallback(item, selectedItems)"
+                                data-select-only-leafs="false" extra-buttons="false" class="filter1"></multiselect-searchtree> 
+                </div>
+                <div class='col-sm-6'>
+                  <h6>Group Members</h6>
+                  <multiselect-searchtree id='authorFilter' data-input-model="groups" multi-select="true"
+                                data-output-model="$parent.$parent.$parent.selectedGroups" data-callback="CustomCallback(item, selectedItems)"
+                                data-select-only-leafs="false" extra-buttons="false" class="filter1"></multiselect-searchtree> 
+                </div>
+              </div>
 
+          </div>
+        </div>
+
+        <div class='col-sm-3'>
           <!-- By Tags Filter -->
-          <div uib-accordion-group class="filter-panel panel badge-success col-sm-2">
+          <div uib-accordion-group is-open=$parent.panelsOpen class="filter-panel panel badge-success">
 
               <uib-accordion-heading class="filter-heading">
-                <h5>Tags <span class='filter-element-count'>{{ checkFilterActive("tags") }}</span></h5>
+                <h5>Tags <span class='filter-element-count'></span></h5>
               </uib-accordion-heading>
 
               <multiselect-searchtree id='tagFilter' data-input-model="tags" multi-select="true"
                             data-output-model="$parent.$parent.$parent.selectedTags" data-callback="CustomCallback(item, selectedItems)"
                             data-select-only-leafs="false" extra-buttons="false" class="filter1"></multiselect-searchtree>
           </div>
-          
-          <!-- By Date Range -->
-          <div uib-accordion-group class='filter-panel panel col-sm-2'>
+        </div>
+         
+        <div class='col-sm-2'> 
+          <!-- By Ranges-->
+          <div uib-accordion-group is-open=$parent.panelsOpen class='filter-panel panel'>
 
               <uib-accordion-heading class="filter-heading">  
-                <h5>Date Range <span class='filter-element-count'>{{ checkFilterActive("date") }}</span></h5>  
+                <h5>Ranges<span class='filter-element-count'></span></h5>  
               </uib-accordion-heading>
 
               <div id='dateFilter'>
@@ -43,42 +60,36 @@
                 <br>
                 Till: <input type="date" name="lastDate" ng-model='$parent.$parent.$parent.endDate'>
               </div>
-              <!--<angular-ranger min="0" max="20" step="1" value="value.max" style="display:none"></angular-ranger>-->
-          </div>
 
-          <!-- By Rating -->
-          <div uib-accordion-group class='filter-panel panel col-sm-2'>
-
-              <uib-accordion-heading class="filter-heading">
-                <h5>Rating <span class='filter-element-count'>{{ checkFilterActive("rating") }}</span></h5>  
-              </uib-accordion-heading>
-
+              <h5>Rating <span class='filter-element-count'></span></h5>  
               <angular-ranger id='ratingFilter' min="0" max="5" step="1" min-value=$parent.$parent.$parent.ratingMin max-value=$parent.$parent.$parent.ratingMax></angular-ranger>
-          </div>
 
-          <!-- By Depth -->
-          <div uib-accordion-group class='filter-panel panel col-sm-2'>
 
-              <uib-accordion-heading class="filter-heading">  
-                <h5>Depth <span class='filter-element-count'>{{ checkFilterActive("depth") }} </span></h5>  
-              </uib-accordion-heading>
-
+              <h5>Depth <span class='filter-element-count'></span></h5>  
               <angular-ranger id='depthFilter' min="0" max="3" value=$parent.$parent.$parent.depthVal></angular-ranger>
-          </div>
-
-
-        <!-- Final Filter Button -->
-        <div class='filter-panel panel col-sm-1  filter-btn'>
-          <div class="filter-heading" ng-click="filterRequest()"> 
-            <h5>Filter</h5>  
           </div>
         </div>
 
         <!-- Final Filter Button -->
-        <div class='filter-panel panel col-sm-1 filter-btn'>
-          <div class="filter-heading" ng-click="clearFilter()"> 
-            <h5>Reset</span></h5>  
+        <div class='col-sm-2'>
+
+          <!-- Toggle Filter Button -->
+          <div class='col-sm-4 filter-btn  align-right' ng-click="$parent.panelsOpen = !$parent.panelsOpen" uib-tooltip='Toggle Panel' tooltip-placement='bottom'>
+            <div class="icon"><i class="fa fa-close" aria-hidden="true"></i></div>
           </div>
+
+          <!-- Final Filter Button -->
+          <div class='col-sm-4 filter-btn  align-right' ng-click="filterRequest()" uib-tooltip='Filter Graph' tooltip-placement='bottom'>
+            <div class="icon"><i class="fa fa-filter" aria-hidden="true"></i></div>
+          </div>
+
+          <!-- Final Filter Button -->
+          <div class='col-sm-4 filter-btn  align-right' ng-click="clearFilter()" uib-tooltip='Reset Graph' tooltip-placement='bottom'>
+            <div class="icon"><i class="fa fa-refresh" aria-hidden="true"></i></div>
+          </div>
+
+
+
         </div>
 
     </div>

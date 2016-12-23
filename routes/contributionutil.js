@@ -4,8 +4,8 @@ var path = require('path');
 var fs = require('fs-extra');
 var gm = require('gm');
 var _ = require('underscore');
-var mmm = require('mmmagic'),
-      Magic = mmm.Magic;
+/*var mmm = require('mmmagic'),
+      Magic = mmm.Magic;*/
 var db = require('seraph')({
 	server: process.env.SERVER_URL || 'http://localhost:7474/', // 'http://studionetdb.design-automation.net'
 	user: process.env.DB_USER,

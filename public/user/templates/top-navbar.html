@@ -19,31 +19,43 @@
           </div>
         </li>
       </ul>
+
       <ul class="nav navbar-nav navbar-left">
         <li class="navbar-title">Studionet</li>
-        <li class="navbar-search hidden-sm" ng-if=graph>
+
+        <li class="navbar-search hidden-sm" ng-if=!simple>
           <input ng-model='textFilter.text' id="search" type="text" placeholder="Search..">
           <button class="btn-search" ng-click='textSearchFilter(textFilter.text)' ng-if='!textFilter.active'><i class="fa fa-search"></i></button>
           <button class="btn-search" ng-click='clearSearch()' ng-if='textFilter.active'><i class="fa fa-close"></i></button>
           </input>
         </li>
+
       </ul>
-      <ul class="nav navbar-nav navbar-right" id="noDropdown">
-        <li class="dropdown notification warning">
+
+      <ul class="nav navbar-nav navbar-right" id="noDropdown" >
+
+<!--         <li class="dropdown notification warning"  ng-if='simple' ng-click='toggleFilter()'>
+          <a class="dropdown-toggle" data-toggle="dropdown">
+            <div class="icon"><i class="fa fa-filter" aria-hidden="true"></i></div>
+            <div class="title">Filters</div>
+          </a>
+        </li> -->
+
+        <li class="dropdown notification warning" ng-if='!simple'>
           <a ui-sref="contributions" class="dropdown-toggle" data-toggle="dropdown">
             <div class="icon"><i class="fa fa-pencil" aria-hidden="true"></i></div>
             <div class="title">Contributions</div>
           </a>
         </li>
-        <li class="dropdown notification warning">
+
+        <li class="dropdown notification warning"  ng-if='!simple'>
           <a ui-sref="groups" class="dropdown-toggle" data-toggle="dropdown">
             <div class="icon"><i class="fa fa-users" aria-hidden="true"></i></div>
             <div class="title">Groups</div>
           </a>
         </li>
 
-      <ul class="nav navbar-nav navbar-right">
-        <li class="dropdown notification warning">
+        <li class="dropdown notification warning"  ng-if='!simple'>
           <a ui-sref="groups" class="dropdown-toggle" data-toggle="dropdown">
             <div class="icon"><i class="fa fa-filter" aria-hidden="true"></i></div>
             <div class="title">Filters</div>
@@ -68,12 +80,13 @@
             </ul>
           </div>
         </li>
+
         <li class="dropdown notification warning">
-          <a ui-sref="profile" class="dropdown-toggle" data-toggle="dropdown">
+          <a ng-click='showProfile()' class="dropdown-toggle" data-toggle="dropdown" uib-tooltip='My Profile' tooltip-placement='left'>
             <div class="icon"><i class="fa fa-user" aria-hidden="true"></i></div>
             <div class="title">Profile</div>
           </a>
-          <div class="dropdown-menu">
+<!--           <div class="dropdown-menu">
             <div class="profile-info">
               <h4 class="username">{{user.name}}</h4>
             </div>
@@ -94,7 +107,7 @@
                 </a>
               </li>
             </ul>
-          </div>
+          </div> -->
         </li>
 
       </ul>

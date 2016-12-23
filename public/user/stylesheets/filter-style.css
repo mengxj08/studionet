@@ -5,14 +5,16 @@
  #filters{
  	position: fixed;
  	top: 50px;
- 	width: calc(100% - 100px);
+ 	width: 80%;
+ 	padding: 5px 5px;
+ 	background-color: #E3E8EE;
 
  	z-index: 4;
- 	margin: 0px 50px !important;
+ 	margin-left: 10% !important;
  }
 
 .filter-panel{
-	background-color: #C1BCBC;
+	background-color: #F8F8F8;
 	margin-bottom: 0px !important;
 }
 
@@ -20,6 +22,14 @@
 .filter-heading{
 	cursor: pointer;
 	line-height: 30px;
+}
+
+.panel-heading{
+	background-color: #F8F8F8 !important;
+}
+
+.panel-group .panel{
+	border-radius: 0px !important;
 }
 
 div.tree-control{
@@ -30,18 +40,33 @@ div.tree-control{
 
 /* */
 div.tree-control .tree-view{
-	max-height: 30vh;
+	max-height: 60vh;
 	overflow: scroll;
+	margin-left: -15px;
 }
 
 div.tree-control .tree-view ul .tree-checkbox{
-	max-width: 8px;
+	max-width: 14px;
+    margin: 0px 15px 0px 0px !important;
+    height: 20px;
+    width: 20px;
 }
 
 div.tree-control .tree-view li{
 	margin-left: 15px !important;
 	min-width: 350px;
 }
+
+.tree-control .tree-view ul .item-details{
+	font-size: 14px; 
+	line-height: 22px;
+}
+
+input[type="checkbox"] .tree-checkbox{
+  width: 30px; /*Desired width*/
+  height: 30px; /*Desired height*/
+}
+
 
 .tree-control .clear-button{
 	top: 3px;
@@ -80,11 +105,19 @@ div.tree-control .tree-view li{
 }
 
 .filter-btn{
-	background-color: #8C8A8A;
+	color: #4A95EF;
 	text-align: center;
-	border: 1px solid black;
-	color: #ddd;
+	background-color: white;
+	width: 30px; 
+	height: 30px;
+	line-height: 30px !important;
+	border-radius: 50% !important;
+	margin: 2.5px 10px !important;
+	padding: 0px !important;
 }
+.align-right{
+	float: right;
+} 
 
 
 #searchTextResults{

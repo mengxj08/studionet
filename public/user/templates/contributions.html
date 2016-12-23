@@ -5,16 +5,20 @@
 <div class='graph-container' ng-init='graphInit()'> 
 
   <!--Nav Bar with Filters-->
-  <ng-include src="'templates/filters.html'"></ng-include>
+  <ng-include src="'templates/filters.html'" ng-show='showFilter'></ng-include>
 
   <div id='cy'></div>
   
   <div class='graph-controls'>
+
+  		<!-- filter toggle -->
+		<i class="graph-nav-control icon fa fa-filter" ng-click='toggleFilter()' uib-tooltip='Show Filter Panel'  tooltip-placement='left'></i>
+
 		<!-- reset graph -->
-		<i class="graph-nav-control icon fa fa-expand" ng-click='resetGraph()'></i>
+		<i class="graph-nav-control icon fa fa-expand" ng-click='resetGraph()' uib-tooltip='Reset Graph'  tooltip-placement='left'></i>
 
 		<!-- create a contribution -->
-		<i class="graph-nav-control icon fa fa-plus" ng-click='createNewContribution()'></i>
+		<i class="graph-nav-control icon fa fa-plus" ng-click='createNewContribution()' uib-tooltip='Create New Contribution'  tooltip-placement='left'></i>
   </div>
    
 </div>
