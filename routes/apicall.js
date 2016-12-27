@@ -54,7 +54,6 @@ function apiCall(query, callback){
     //inspect(headers, 'headers')
     //inspect(statusCode, 'statusCode')
     //inspect(body, 'body')
-
     var nodes = [], links = [];
 
     var data = body.results[0].data;
