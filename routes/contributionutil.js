@@ -3,7 +3,6 @@ var glob = require('glob');
 var path = require('path');
 var fs = require('fs-extra');
 var gm = require('gm');
-var _ = require('underscore');
 /*var mmm = require('mmmagic'),
       Magic = mmm.Magic;*/
 var db = require('seraph')({

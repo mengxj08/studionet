@@ -1,12 +1,10 @@
 var express = require('express');
 var router = express.Router();
 var multer = require('multer');
-var mkdirp = require('mkdirp');
-var path = require('path');
 var fs = require('fs-extra');
 var auth = require('./auth');
 var storage = require('./storage');
-var apiCall = require('./apicall');
+var graphQuery = require('./graph-query');
 var winston = require('winston');
 var db = require('seraph')({
   server: process.env.SERVER_URL || 'http://localhost:7474/', // 'http://studionetdb.design-automation.net'
@@ -126,7 +124,7 @@ router.route('/')
         'RETURN p'
       ].join('\n');
 
-      apiCall(query, function(data) {    
+      graphQuery(query, function(data) {    
 
         data['nodes'].map((node) => {
           node.match = hash[node['id']];
@@ -135,7 +133,7 @@ router.route('/')
 
         console.log('[SUCCESS] Sucess in fetching filtered contributions in /api/contributions.')
         return res.send(data);
-        
+
       });
     })
     .catch(function(reason){
