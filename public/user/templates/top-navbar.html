@@ -36,14 +36,14 @@
 
 <!--         <li class="dropdown notification warning"  ng-if='simple' ng-click='toggleFilter()'>
           <a class="dropdown-toggle" data-toggle="dropdown">
-            <div class="icon"><i class="fa fa-filter" aria-hidden="true"></i></div>
+            <div class="icon" uib-tooltip="Filters" tooltip-trigger="'mouseenter' " tooltip-placement="bottom"><i class="fa fa-filter" aria-hidden="true"></i></div>
             <div class="title">Filters</div>
           </a>
         </li> -->
 
         <li class="dropdown notification warning" ng-if='!simple'>
           <a ui-sref="contributions" class="dropdown-toggle" data-toggle="dropdown">
-            <div class="icon"><i class="fa fa-pencil" aria-hidden="true"></i></div>
+            <div class="icon" uib-tooltip="Contributions" tooltip-trigger="'mouseenter'" tooltip-placement="bottom"><i class="fa fa-pencil" aria-hidden="true"></i></div>
             <div class="title">Contributions</div>
           </a>
         </li>
@@ -54,7 +54,6 @@
             <div class="title">Groups</div>
           </a>
         </li>
-
         <li class="dropdown notification warning"  ng-if='!simple'>
           <a ui-sref="groups" class="dropdown-toggle" data-toggle="dropdown">
             <div class="icon"><i class="fa fa-filter" aria-hidden="true"></i></div>

@@ -1,3 +1,4 @@
+<link rel='stylesheet' href='/user/stylesheets/textAngular/textAngular.css' />
 <style>
 
   .modal-footer{
@@ -46,7 +47,8 @@
             <br><br>
             <label> Contribution Content: </label>
             <br>
-            <textarea class='wide' rows="10" cols="70" ng-model="contributionData.body"></textarea>
+            <!-- <textarea class='wide' rows="10" cols="70" ng-model="contributionData.body"></textarea> -->
+            <div text-angular ng-model="htmlVariable" class="textAngular"></div>
             <br><br>
             <label for="singleSelect"> Relationship: </label>
             <select name="singleSelect" id="singleSelect" ng-model=contributionData.refType>
