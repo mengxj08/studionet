@@ -1,11 +1,4 @@
-<link rel='stylesheet' href='/user/stylesheets/contribution-modal-style.css' />
-<link rel='stylesheet' href='/user/stylesheets/groups-modal-style.css' />
-
-<link rel='stylesheet' href='/user/stylesheets/textAngular/textAngular.css' />
-<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
-<div class="modal fade" display='block'>
+<div class="modal fade viewContribution" display='block'>
   <div class='row'>
 <!--     <div class='col-sm-4'>
       <div class="modal-dialog sidebar">
@@ -38,9 +31,6 @@
                           <!-- content -->
                           <p ng-bind-html="contribution.db_data.body"></p>
 
-                          <br><br>
-
-                          
                           <!-- rating -->
                           <h4> Your rating: 
                           <span id='rating' uib-rating ng-model="$parent.rate" max="$parent.max" read-only="false" on-hover="$parent.hoveringOver(value)" on-leave="overStar = null" ng-click='rateContribution($parent.rate, contribution.db_data.id)'></span>
@@ -50,13 +40,18 @@
                           <br><br>
                       </div>
                       <div class='tab-pane fade' id="{{ 'statistics' + contribution.db_data.id}}">
-                          <h3>This is the column for contributions' statistics.</h3>
-                          <p>Lorem ipsum Exercitation esse fugiat quis do consectetur eu dolore dolor nisi cupidatat dolore quis occaecat sed id aute tempor fugiat aute aute est veniam et tempor velit sint consectetur amet in dolor ea in elit voluptate dolor minim do commodo eiusmod pariatur in consectetur ea consectetur qui et ut esse ut veniam elit ad culpa tempor veniam cillum ut esse dolor qui aliquip Duis ullamco deserunt ullamco laboris proident minim eu eiusmod et dolor et tempor fugiat officia amet aliquip mollit ut reprehenderit ad eu irure aute sed quis do velit do sit sunt ut consectetur ad reprehenderit minim cupidatat ad consequat in et Excepteur cillum nulla enim ex veniam cillum esse veniam dolor eu deserunt eu pariatur ut ut adipisicing elit do consequat ullamco anim velit nulla proident do reprehenderit enim proident est sint ex in pariatur qui magna ad cupidatat commodo ad Excepteur sit exercitation consequat amet eu voluptate dolor cillum velit nulla cupidatat dolor sit in ea aliqua fugiat ut incididunt deserunt laboris adipisicing qui minim sunt deserunt ea Duis aliqua id mollit Ut consectetur nulla amet reprehenderit cillum cillum sunt deserunt non nostrud amet exercitation dolor elit irure eu in consectetur.</p>
+                          <h3>Contribution Data</h3>
+                          <p>Rating: {{contribution.db_data.rating}}</p>
+                          <p>Total Rating: {{contribution.db_data.totalRating}}</p>
+                          <p>Last Updated: {{contribution.db_data.lastupdated}}</p>
+                          <p>Date Created: {{contribution.db_data.dateCreated}}</p>
+                          <p>Rate Count: {{contribution.db_data.rateCount}}</p>
+                          <p>Number of Views: {{contribution.db_data.views}}</p>
                       </div>
                       <div class='tab-pane fade' id="{{ 'author' + contribution.db_data.id}}">
                           <div class='row'>
                             <div class='col-sm-4'>
-                              <!--<img src={{users[contribution.db_data.createdBy].avatar}} style='width: 100px; height: 100px;'>-->
+                              <img src={{users[contribution.db_data.createdBy].avatar}} style='width: 100px; height: 100px;'>
                             </div>
                             <div class='col-sm-8'>
                                 <h3>{{ users[contribution.db_data.createdBy].name }}</h3>

@@ -4,41 +4,57 @@ angular.module('studionet')
  *  Main Contribution Graph Page
  * 
  */
-.controller('ContributionsCtrl', ['$scope', 'supernode', 'users', 'Upload', '$timeout', 'ModalService', 'contributions', 'contribution', function($scope, supernode, users, Upload, $timeout, ModalService, contributions, contribution){
+.controller('ContributionsCtrl', ['$scope', 'supernode', 'users', 'Upload', '$timeout', 'ModalService', 'contributions', 'contribution', 'tags', function($scope, supernode, users, Upload, $timeout, ModalService, contributions, contribution, tags){
 
-	//$scope.user = profile.user;
+  $scope.simple = true;
+  $scope.filterStatus = false;  // default
+
+  $scope.tags = tags.tags;
+
+  //$scope.user = profile.user;
   $scope.users = users.usersById();   // needed for hover to get user name - fix later
 
   var activeNode = null;
 
-  $scope.zoomLevel = "Calibrating...";
 
-  $scope.simple = true;
 
   var rootnode = supernode.contribution;
 
-
+  /* 
+   * Toggle Filter
+   */
   $scope.toggleFilter = function(){
+    
     console.log(angular.element('#filterPanel').scope().filterVisible)
+
     angular.element('#filterPanel').scope().filterVisible = !angular.element('#filterPanel').scope().filterVisible;
+
     $scope.filterStatus = angular.element('#filterPanel').scope().filterVisible;
+    
     if(!$scope.filterStatus){
+      angular.element('#filterPanel').scope().clearFilter();
       $scope.graphInit();
     }
   }
 
-
+  /*
+   * Zooming Code
+   */
+  $scope.zoomLevel = "Calibrating...";
   var updateZoom = function(){
     if($scope.graph){
       $scope.zoomLevel = (100*$scope.graph.zoom()).toPrecision(4);
       $scope.$apply();
     }
   }
-  
   setTimeout(updateZoom, 1000);
   document.getElementById("cy").addEventListener("wheel", updateZoom);
 
-  // remove the styles from the graph
+
+
+  /*
+   * Graph Styles
+   */
   var removeAdditionalStyles = function(){
       $scope.graph.batch(function(){
 
@@ -52,17 +68,48 @@ angular.module('studionet')
   }
 
   /*
+   * Graph selection
+   */
+  $scope.highlightNode = function( node ){
+
+    var node = node; 
+
+    if( node.isNode == undefined )
+      node = $scope.graph.getElementById(node);
+
+    $scope.graph.batch(function(){
+        $scope.graph.elements()
+          .removeClass('highlighted')
+          .removeClass('selected')
+          .addClass('faded');
+
+          node.removeClass('faded')
+              .addClass('selected');
+          
+          node.predecessors().removeClass('faded')
+                             .addClass('highlighted');
+          
+          node.successors().removeClass('faded')  
+                           .addClass('highlighted');
+    });
+
+  }
+
+  /*
    *    Graph Creation & Interactions
    */
-  $scope.graphInit = function(graph_data){
+  $scope.graphInit = function(graph_data, node_id){
 
       // if graph_data exists with no nodes, return;
       if(arguments[0] != undefined && graph_data.nodes.length == 0)
         return;
-      
+
       // takes either data from filters or contribution.graph data
       $scope.graph = STUDIONET.GRAPH.makeGraph( graph_data || contributions.graph, 'cy' );
       var cy = $scope.graph;
+      
+      if(arguments[1] != undefined)
+        $scope.highlightNode(node_id);
 
       //updateZoom();
 
@@ -75,16 +122,7 @@ angular.module('studionet')
                *  Highlight connections
                * 
                */
-              cy.elements().removeClass('highlighted');
-              cy.elements().removeClass('selected');
-              cy.elements().addClass('faded');
-
-              node.addClass('selected');
-              node.removeClass('faded');
-              node.successors().addClass('highlighted');
-              node.successors().removeClass('faded');
-              node.predecessors().addClass('highlighted');
-              node.predecessors().removeClass('faded');
+              $scope.highlightNode(node);
 
               /*
                * Get node data and construct qTip
@@ -125,7 +163,7 @@ angular.module('studionet')
         // remove supernode
         cy.getElementById(supernode.contribution).remove();
 
-/*        cy.onRender( function(){
+      /*  cy.onRender( function(){
 
             $scope.zoomLevel = (100*cy.zoom()).toPrecision(4);
             $scope.$apply();
@@ -151,7 +189,7 @@ angular.module('studionet')
 
         }); */
 
-/*        cy.nodes().map(function(node){
+       /* cy.nodes().map(function(node){
 
               var count = node.successors().length;
 
@@ -285,27 +323,12 @@ angular.module('studionet')
 
                 var node = evt.cyTarget;
 
-                // highlights
-                cy.batch(function(){
-                    cy.elements()
-                      .removeClass('highlighted')
-                      .removeClass('selected')
-                      .addClass('faded');
-
-                      node.removeClass('faded')
-                          .addClass('highlighted');
-                      
-                      node.predecessors().removeClass('faded')
-                                         .addClass('highlighted');
-                      
-                      node.successors().removeClass('faded')  
-                                       .addClass('highlighted');
-                });
+                $scope.highlightNode(node);
 
                 // preview
                 if(node.data('qtip') == undefined){
                   
-                  console.log("Constructing new qtip");
+                  //console.log("Constructing new qtip");
 
                   var qtipFormat = STUDIONET.GRAPH.qtipFormat(evt);
                   var data = node.data();
@@ -328,7 +351,7 @@ angular.module('studionet')
 
                 }
                 else{
-                  console.log("qtip already defined");
+                  //console.log("qtip already defined");
                   node.qtip(node.data('qtip'), evt);
                 }
 
@@ -352,7 +375,7 @@ angular.module('studionet')
    *    Nav Controls
    */
   $scope.resetGraph = function(){
-/*      $scope.graph.layout().stop(); 
+    /*  $scope.graph.layout().stop(); 
       layout = $scope.graph.elements().makeLayout({ 'name': 'cola'}); 
       layout.start();   */
       $scope.graph.fit();
@@ -361,38 +384,42 @@ angular.module('studionet')
 
   /*
    *
-   *  Contribution Details
+   *  Contribution Creation
    *
-   * 
    */
   $scope.createNewContribution = function(){
+
       ModalService.showModal({
+
         templateUrl: "/user/templates/createContributionModal.html",
         controller: "CreateContributionCtrl",
-        inputs: {
-          title: "show create contribution modal"
-        },
         scope: $scope
-      }).then(function(modal) {
-        modal.element.modal({
-          backdrop: 'static'
-          // keyboard: false
-        });
 
-        /// set data
-        //modal.scope.setData(data,clickedContributionId);
+      }).then(function(modal) {
+
+          // activate modal
+          modal.element.modal({ backdrop: 'static' });
+
+          /// set data
+          //modal.scope.setData(data,clickedContributionId);
+        
       });
+
   } 
 
 
+  /*
+   *
+   *  Contribution Details
+   *
+   */
   $scope.showDetailsModal = function(data, clickedContributionId) {
       ModalService.showModal({
+
         templateUrl: "/user/templates/home.graphView.modal.html",
         controller: "DetailsModalCtrl",
-        inputs: {
-          title: "show details modal"
-        },
         scope: $scope
+
       }).then(function(modal) {
         modal.element.modal({
           backdrop: 'static'
