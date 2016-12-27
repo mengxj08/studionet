@@ -242,7 +242,8 @@ angular.module('studionet')
                   $scope.filterActive = true;
                   spinner.stop();
 
-                  if(data.nodes.length == 0){
+                  console.log(data);
+                  if(data.nodes == undefined || data.nodes.length == 0){
                     $(target).append("<h3 style='position: absolute; top:40%; left: 40%;'>Oops. No Nodes found.</h3>");
                   }
                   else{

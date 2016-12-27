@@ -102,6 +102,10 @@ var computeSizeFn = function(node){
 
 var computeBgColorFn = function(node){
 
+    // if filtered contribution
+    if(node.data('match'))
+      return "#0AEF40";
+
     var successors = node.successors().length;
     var final = "#989BB4"; 
 
