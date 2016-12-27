@@ -146,6 +146,13 @@ angular.module('studionet')
      
       }
 
+      var getTime = function(d){
+        d.setHours(0);
+        d.setMinutes(0);
+        d.setSeconds(0);
+        return d.getTime();
+      }
+
 
       /* Filter Functions */
       $scope.clearFilter = function(){
@@ -228,7 +235,7 @@ angular.module('studionet')
 
               + "&r=[" + $scope.ratingMin + "," + $scope.ratingMax + "]"    // rating
 
-              + "&t=[" + $scope.startDate.getTime() + "," + $scope.endDate.getTime() + "]"   // time
+              + "&t=[" + getTime($scope.startDate) + "," + getTime($scope.endDate) + "]"   // time
 
               + "&d=" + $scope.depthVal;   // depth
 
