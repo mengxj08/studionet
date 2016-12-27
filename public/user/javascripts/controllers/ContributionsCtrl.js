@@ -4,7 +4,7 @@ angular.module('studionet')
  *  Main Contribution Graph Page
  * 
  */
-.controller('ContributionsCtrl', ['$scope', 'supernode', 'users', 'Upload', '$timeout', 'ModalService', 'contributions', function($scope, supernode, users, Upload, $timeout, ModalService, contributions){
+.controller('ContributionsCtrl', ['$scope', 'supernode', 'users', 'Upload', '$timeout', 'ModalService', 'contributions', 'contribution', function($scope, supernode, users, Upload, $timeout, ModalService, contributions, contribution){
 
 	//$scope.user = profile.user;
   $scope.users = users.usersById();   // needed for hover to get user name - fix later
@@ -216,8 +216,19 @@ angular.module('studionet')
                     directlyConnected.nodes().addClass('highlighted');
                     node.connectedEdges().addClass('highlighted');
 
+                    // if data is already defined, donot load again - directly show modal
+                    if(node.data('db_data')){
+                        angular.element($('.graph-container')).scope().showDetailsModal( [node.data()], node.data('id'));
+                    }
+                    else{
+                      console.log("fetch data");
+                    }
 
-                    if(data.type == 'contribution'){
+                    /*
+                     * Removing slow recursive for simple version
+                     * 
+                     */
+                    /*if(data.type == 'contribution'){
                           var predecessors = node.predecessors();
                           var successors = node.successors();
                           var nodeTree = [];
@@ -263,7 +274,7 @@ angular.module('studionet')
                           };
 
                           RecursiveGetData(0);
-                    }
+                    } */
 
             }
              // if unselected node
@@ -298,10 +309,10 @@ angular.module('studionet')
 
                   var qtipFormat = STUDIONET.GRAPH.qtipFormat(evt);
                   var data = node.data();
-                  
-                  // fix me
-                  var route = "/api/contributions/" + data.id;
-                  $.get( route , function( extra_data ) {
+
+                  contribution.getContribution(data.id).then(function(res){
+
+                        var extra_data = res.data;
                         var content = "<b>" +  angular.element($('.graph-container')).scope().users[ extra_data.createdBy ].name  + "</b>" +
                                       "<br><em>" + (new Date(extra_data.dateCreated)).toString().substr(0, 10) + "</em>" +
                                       "<br>" + extra_data.body.substr(0,300)
@@ -310,9 +321,11 @@ angular.module('studionet')
                         qtipFormat.content.text = content;
 
                         node.data('qtip', qtipFormat);
+                        node.data('db_data', extra_data);
 
                         node.qtip(qtipFormat, evt);   
                   });
+
                 }
                 else{
                   console.log("qtip already defined");

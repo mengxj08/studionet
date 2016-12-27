@@ -158,6 +158,36 @@ angular.module('studionet')
 	return o;
 }])
 
+.factory('contribution', ['$http', 'profile', function($http, profile){
+
+	var o = {
+		contribution: {}
+	};
+
+	o.getContribution = function(id){
+		return $http.get('/api/contributions/' + id).success(function(data){
+				angular.copy(data, o.contribution);
+		});
+	};
+
+	o.updateViewCount = function(id){
+		return $http.post('/api/contributions/' + id + '/view').success(function(data){
+			o.contribution.views += 1;
+			console.log(data);
+		});
+	};
+
+	o.rateContribution = function(id, rating){
+		return $http.post('/api/contributions/' + id + '/rate', {'rating': rating} ).success(function(data){
+			console.log(data);
+		});
+	};
+
+
+	return o;
+}])
+
+
 .factory('groups', ['$http', 'profile', function($http, profile){
 
 	var o = {

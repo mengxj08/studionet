@@ -1,5 +1,5 @@
 angular.module('studionet')
-.controller('DetailsModalCtrl', ['$scope', '$http', 'profile', 'users', '$location', '$anchorScroll', function($scope, $http, profile, users, $location, $anchorScroll){
+.controller('DetailsModalCtrl', ['$scope', '$http', 'profile', 'users', '$location', '$anchorScroll', 'contribution', function($scope, $http, profile, users, $location, $anchorScroll, contribution){
   $scope.user = profile.user;
 
   $scope.clickedContributionId = null;
@@ -10,6 +10,26 @@ angular.module('studionet')
 
   $scope.users = users.usersById();
 
+  /*
+   * Rating-related Code
+   */
+  $scope.rate = 0;
+  $scope.max = 5;
+  $scope.overStar = null; 
+  $scope.percent = 0;
+  $scope.hoveringOver = function(value) {
+    $scope.overStar = value;
+    $scope.percent = 100 * (value / $scope.max);
+  };
+  $scope.rateContribution = function(rating, id){
+     contribution.rateContribution(id, rating).then(function(){
+        console.log("Contribution Rated Successfully");
+    })
+  }
+
+  /*
+   * General
+   */
   $scope.refresh = function(){
       $http.get('/api/tags/').success(function(data){
 			  $scope.tags = data;
@@ -34,10 +54,19 @@ angular.module('studionet')
   //  This close function doesn't need to use jQuery or bootstrap, because
   //  the button has the 'data-dismiss' attribute.
   $scope.close = function() {
-    console.log("Close the medal");
+
+    console.log("Close the modal");
+
+    // increase viewcount for contribution
+    console.log("Updating view count");
+    contribution.updateViewCount($scope.clickedContributionId);
+    
+
     //$('body').removeClass('modal-open');
     $(".modal").remove();
     $('.modal-backdrop').remove();
+
+    
   };
 
   $scope.createContribution = function(createContribution){

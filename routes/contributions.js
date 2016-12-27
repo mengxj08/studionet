@@ -7,6 +7,7 @@ var fs = require('fs-extra');
 var auth = require('./auth');
 var storage = require('./storage');
 var apiCall = require('./apicall');
+var winston = require('winston');
 var db = require('seraph')({
 	server: process.env.SERVER_URL || 'http://localhost:7474/', // 'http://studionetdb.design-automation.net'
 	user: process.env.DB_USER,
@@ -86,120 +87,141 @@ router.route('/')
 
 		usersInGroupsPromise
 		.then(function(result){
-			var dateArray = JSON.parse(req.query[QUERY_PARAM_TIME_KEYWORD]);
-			var rateArray = JSON.parse(req.query[QUERY_PARAM_RATING_KEYWORD]);
-			var tagsArray = JSON.parse(req.query[QUERY_PARAM_TAGS_KEYWORD]);
+			
+			return new Promise(function(resolve, reject){
+				var dateArray = JSON.parse(req.query[QUERY_PARAM_TIME_KEYWORD]);
+				var rateArray = JSON.parse(req.query[QUERY_PARAM_RATING_KEYWORD]);
+				var tagsArray = JSON.parse(req.query[QUERY_PARAM_TAGS_KEYWORD]);
 
-			if (dateArray instanceof Array) {
-				dateArray = dateArray.map(x => parseInt(x));
-			} else {
-				dateArray = parseInt(dateArray);
-			}
+				if (dateArray instanceof Array) {
+					dateArray = dateArray.map(x => parseInt(x));
+				} else {
+					dateArray = parseInt(dateArray);
+				}
 
-			if (rateArray instanceof Array) {
-				rateArray = rateArray.map(x => parseInt(x));
-			} else {
-				rateArray = parseInt(rateArray);
-			}
+				if (rateArray instanceof Array) {
+					rateArray = rateArray.map(x => parseInt(x));
+				} else {
+					rateArray = parseInt(rateArray);
+				}
 
-			if (tagsArray instanceof Array) {
-				tagsArray = tagsArray.map(x => parseInt(x));
-			} else {
-				tagsArray = parseInt(tagsArray);
-			}
+				if (tagsArray instanceof Array) {
+					tagsArray = tagsArray.map(x => parseInt(x));
+				} else {
+					tagsArray = parseInt(tagsArray);
+				}
 
-			var matchAllDates = false;
-			var matchAllRatings = false;
-			var matchAllTags = false;
+				var matchAllDates = false;
+				var matchAllRatings = false;
+				var matchAllTags = false;
 
-			// check type of user filter
-			if (specifiedUserIds instanceof Array) {
-				// match those in the array only
-				var userIdsParam = _.union(specifiedUserIds, result);
-			} else {
-				// match all users
-				var userIdsParam = [];
-			}
+				// check type of user filter
+				if (specifiedUserIds instanceof Array) {
+					// match those in the array only
+					var userIdsParam = _.union(specifiedUserIds, result);
+				} else {
+					// match all users
+					var userIdsParam = [];
+				}
 
-			// check type of date filter
-			if (dateArray instanceof Array) {
-				// match according to the array
-				var dateLowerParam = dateArray[0];
-				var dateUpperParam = dateArray[1];
-			} else {
-				// match all dates
-				matchAllDates = true;
-				var dateLowerParam = -1;
-				var dateUpperParam = -1;
-			}
+				// check type of date filter
+				if (dateArray instanceof Array) {
+					// match according to the array
+					var dateLowerParam = dateArray[0];
+					var dateUpperParam = dateArray[1];
+				} else {
+					// match all dates
+					matchAllDates = true;
+					var dateLowerParam = -1;
+					var dateUpperParam = -1;
+				}
 
-			// check type of rating
-			if (rateArray instanceof Array) {
-        
-				// match according to the array
-				var rateLowerParam = rateArray[0];
-				var rateUpperParam = rateArray[1];
-			} else {
-				// match all ratings
-				matchAllRatings = true;
-				var rateLowerParam = 0;
-				var rateUpperParam = 5;
-			}
+				// check type of rating
+				if (rateArray instanceof Array) {
+	        
+					// match according to the array
+					var rateLowerParam = rateArray[0];
+					var rateUpperParam = rateArray[1];
+				} else {
+					// match all ratings
+					matchAllRatings = true;
+					var rateLowerParam = 0;
+					var rateUpperParam = 5;
+				}
 
-			if (tagsArray instanceof Array) {
-				// match according to the array
-				var tagIdsParam = tagsArray;
-			} else {
-				// match all tags
-				matchAllTags = true;
-				var tagIdsParam = [];
-			}
+				if (tagsArray instanceof Array) {
+					// match according to the array
+					var tagIdsParam = tagsArray;
+				} else {
+					// match all tags
+					matchAllTags = true;
+					var tagIdsParam = [];
+				}
 
-			var params = {
-				userIdsParam: userIdsParam,
-				dateLowerParam: dateLowerParam,
-				dateUpperParam: dateUpperParam,
-				ratingLowerParam: rateLowerParam,
-				ratingUpperParam: rateUpperParam,
-				tagIdsParam: tagIdsParam,
-				depthParam: parseInt(req.query[QUERY_PARAM_DEPTH_KEYWORD])
-			};
+				var params = {
+					userIdsParam: userIdsParam,
+					dateLowerParam: dateLowerParam,
+					dateUpperParam: dateUpperParam,
+					ratingLowerParam: rateLowerParam,
+					ratingUpperParam: rateUpperParam,
+					tagIdsParam: tagIdsParam,
+					depthParam: parseInt(req.query[QUERY_PARAM_DEPTH_KEYWORD])
+				};
 
-			var queryUserGroupTag = 'MATCH ' + (matchAllTags ? '' : '(t:tag)<-[:TAGGED]-') + '(c:contribution)'
-															+ (matchAllGroups || matchAllUsers ? '' : '<-[:CREATED]-(u:user)')
-															+ ' WHERE true '
-															+ (matchAllGroups || matchAllUsers ? '' : ' AND ID(u) IN [' + params.userIdsParam + ']')
-															+  (matchAllTags ? '' : (' AND ID(t) IN [' + params.tagIdsParam + ']'));
+				var queryUserGroupTag = 'MATCH ' + (matchAllTags ? '' : '(t:tag)<-[:TAGGED]-') + '(c:contribution)'
+																+ (matchAllGroups || matchAllUsers ? '' : '<-[:CREATED]-(u:user)')
+																+ ' WHERE true '
+																+ (matchAllGroups || matchAllUsers ? '' : ' AND ID(u) IN [' + params.userIdsParam + ']')
+																+  (matchAllTags ? '' : (' AND ID(t) IN [' + params.tagIdsParam + ']'));
 
-			var queryLowerRate = params.ratingLowerParam === -1 ? '' : ' AND toInt(c.rating) >= toInt(' + params.ratingLowerParam + ')';
-			var queryUpperRate = params.ratingUpperParam === -1 ? '' : ' AND toInt(c.rating) <= toInt(' + params.ratingUpperParam + ')';
-			var queryRating = matchAllRatings ? '' : queryLowerRate + queryUpperRate;
+				var queryLowerRate = params.ratingLowerParam === -1 ? '' : ' AND toInt(c.rating) >= toInt(' + params.ratingLowerParam + ')';
+				var queryUpperRate = params.ratingUpperParam === -1 ? '' : ' AND toInt(c.rating) <= toInt(' + params.ratingUpperParam + ')';
+				var queryRating = matchAllRatings ? '' : queryLowerRate + queryUpperRate;
 
-			var queryLowerDate = params.dateLowerParam === -1 ? '' : (' AND toInt(c.dateCreated) >= toInt(' + params.dateLowerParam + ')');
-			var queryUpperDate = params.dateUpperParam === -1 ? '' : (' AND toInt(c.dateCreated) <= toInt(' + params.dateUpperParam + ')');
-			var queryDate = matchAllDates ? '' : (queryLowerDate + queryUpperDate);
+				var queryLowerDate = params.dateLowerParam === -1 ? '' : (' AND toInt(c.dateCreated) >= toInt(' + params.dateLowerParam + ')');
+				var queryUpperDate = params.dateUpperParam === -1 ? '' : (' AND toInt(c.dateCreated) <= toInt(' + params.dateUpperParam + ')');
+				var queryDate = matchAllDates ? '' : (queryLowerDate + queryUpperDate);
+
+				var query = [
+					queryUserGroupTag,
+					queryRating,
+					queryDate,
+					'RETURN collect(id(c)) as filteredIdList'
+				].join('\n');
+
+				db.query(query, function(error, result){
+					if (error)
+						return console.log(error);
+					resolve({
+						filteredIdList: result[0],
+						depthParam: params.depthParam,
+						queryUserGroupTag: queryUserGroupTag,
+						queryRating: queryRating,
+						queryDate: queryDate,
+					});
+				})
+			})
+
+		})
+		.then(function(result){
+			var filteredIdList = result.filteredIdList;
+			var depthParam = result.depthParam;
+			var queryUserGroupTag = result.queryUserGroupTag;
+			var queryRating = result.queryRating;
+			var queryDate = result.queryDate;
+
+			var hash = {};
+			filteredIdList.reduce((acc, curr) => hash[curr] = 1);
 
 			var query = [
 				queryUserGroupTag,
 				queryRating,
 				queryDate,
-				/*
-				'WITH collect(id(c)) as filteredIdList',
-				'OPTIONAL MATCH pathToSuper=(c1)-[*]->(c2:contribution {superNode: true})',
-				'WHERE ID(c1) IN filteredIdList',
-				'WITH filteredIdList, collect(distinct id(c2)) as intermediateNodeList',
-				'OPTIONAL MATCH pathFromChildren=(c3)<-[*1..' + params.depthParam + ']-(c4:contribution)',
-				'WHERE ID(c3) IN filteredIdList',
-				'WITH filteredIdList + intermediateNodeList + collect(distinct id(c4)) as combinedList',
-				'UNWIND combinedList as unwindedCombinedList',
-				'WITH collect(distinct unwindedCombinedList) as distinctUnwindedCombinedList',
-				'MATCH p=(source)-[*1]->(target) WHERE ID(source) IN distinctUnwindedCombinedList AND ID(target) IN distinctUnwindedCombinedList',
-				'RETURN p'*/
 				'WITH collect(id(c)) as filteredIdList',
 				'OPTIONAL MATCH pathToSuper=(c1)-[*]->(c2:contribution)',
 				'WHERE ID(c1) IN filteredIdList',
-				'WITH filteredIdList, collect(distinct id(c2)) as intermediateNodeList',
-				'OPTIONAL MATCH pathFromChildren=(c3)<-[*1..' + params.depthParam + ']-(c4:contribution)',
+				'WITH collect(distinct id(c2)) as intermediateNodeList, filteredIdList',
+				'OPTIONAL MATCH pathFromChildren=(c3)<-[*1..' + depthParam + ']-(c4:contribution)',
 				'WHERE ID(c3) IN filteredIdList',
 				'WITH filteredIdList + intermediateNodeList + collect(distinct id(c4)) as combinedList',
 				'UNWIND combinedList as unwindedCombinedList',
@@ -212,9 +234,18 @@ router.route('/')
 
 			apiCall(query, function(data) {
 				console.log('[SUCCESS] Sucess in fetching filtered contributions in /api/contributions.')
-	      return res.send(data);
-			});
+	      
+				data['nodes'].map((curr) => {
+					var node = curr;
+					node.match = false;
+					if (hash[curr['id']] === 1){
+						node.match = true; 
+					}
+					return node;
+				});
 
+				return res.send(data);
+			});
 		})
 		.catch(function(reason){
 			console.log(reason);
@@ -476,8 +507,9 @@ router.route('/:contributionId')
 
 		// First count incoming relationships 
 		var countQuery = [
-			'MATCH (c:contribution)<-[r]-(:contribution)',
+			'MATCH (c:contribution)',
 			'WHERE ID(c)={contributionIdParam}',
+			'OPTIONAL MATCH (c)<-[r]-(:contribution)',
 			'RETURN {count: count(r), createdBy: c.createdBy}'
 		].join('\n');
 
@@ -490,7 +522,7 @@ router.route('/:contributionId')
 					reject(error);
 				}
 				else {
-					resolve(result);
+					resolve(result[0]);
 				}
 
 			});
@@ -499,17 +531,43 @@ router.route('/:contributionId')
 		countPromise
 		.then(function(result){
 
-			var incomingRelsCount = result.count;
-			var isCreator = result.createdBy === parseInt(req.user.id);
+			return new Promise(function(resolve, reject){
+				var incomingRelsCount = result.count;
+				var isCreator = result.createdBy === req.user.id;
 
-			if (!isCreator){
-				return res.send('Cannot delete contribution that was not created by you');
-			}
+				if (!isCreator){
+					return res.send('Cannot delete contribution that was not created by you');
+				}
 
-			if (incomingRelsCount > 0) {
-				return res.send('Cannot delete contribution that is not a leaf node');
-			}
+				deleteAttachmentsFromFileAndDbAsync(parseInt(req.params.contributionId));
+				if (incomingRelsCount > 0) {
+					var query = [
+						'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
+						'SET c.edited = {editedParam},',
+						'c.lastUpdated = {lastUpdatedParam},',
+						'c.title = {titleParam},',
+						'c.body = {bodyParam}',
+					].join('\n');
 
+					var params = {
+						contributionIdParam: parseInt(req.params.contributionId),
+						editedParam: true,
+						lastUpdatedParam: Date.now(),
+						titleParam: 'DELETED',
+						bodyParam: 'CONTRIBUTION DELETED'
+					};
+
+					db.query(query, params, function(error, result){
+						if (error)
+							console.log(error);
+					})
+					return res.send('Deleted non-leaf node attachments and marked contribution as deleted');
+				}
+				resolve();
+			})
+
+		})
+		.then(function(result){
 			var query = [
 				'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
 				'OPTIONAL MATCH (c)-[r:TAGGED]->(t:tag)',
@@ -526,13 +584,36 @@ router.route('/:contributionId')
 					res.send('Cannot delete this leaf');
 				}
 				else {
-					res.send('Successfully deleted contribution with id: ' + req.params.contributionid);
+					res.send('Successfully deleted contribution with id: ' + req.params.contributionId);
 				}
 			})
-
 		});
 
 	});
+
+var deleteAttachmentsFromFileAndDbAsync = function(contributionId) {
+	// delete from db
+	var query = [
+		'OPTIONAL MATCH (c:contribution)-[:ATTACHMENT]->(a:attachment) WHERE ID(c)={contributionIdParam}',
+		'DETACH DELETE a'
+	].join('\n');
+
+	var params = {
+		contributionIdParam: contributionId
+	};
+
+	db.query(query, params, function(error, result){
+		if (error)
+			console.log(error);
+	});
+
+	var attachmentsPath = './uploads/contributions/' + contributionId; 
+	fs.remove(attachmentsPath, function(err){
+		if (err) {
+			return console.log(err);
+		}
+	});
+}
 
 // route: /api/contributions/:contributionId/view
 router.route('/:contributionId/view')
