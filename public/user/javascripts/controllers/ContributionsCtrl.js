@@ -7,6 +7,7 @@ angular.module('studionet')
 .controller('ContributionsCtrl', ['$scope', 'supernode', 'users', 'Upload', '$timeout', 'ModalService', 'contributions', 'contribution', 'tags', function($scope, supernode, users, Upload, $timeout, ModalService, contributions, contribution, tags){
 
   $scope.simple = true;
+  $scope.filterStatus = false;  // default
 
   $scope.tags = tags.tags;
 
@@ -67,9 +68,37 @@ angular.module('studionet')
   }
 
   /*
+   * Graph selection
+   */
+  $scope.highlightNode = function( node ){
+
+    var node = node; 
+
+    if( node.isNode == undefined )
+      node = $scope.graph.getElementById(node);
+
+    $scope.graph.batch(function(){
+        $scope.graph.elements()
+          .removeClass('highlighted')
+          .removeClass('selected')
+          .addClass('faded');
+
+          node.removeClass('faded')
+              .addClass('selected');
+          
+          node.predecessors().removeClass('faded')
+                             .addClass('highlighted');
+          
+          node.successors().removeClass('faded')  
+                           .addClass('highlighted');
+    });
+
+  }
+
+  /*
    *    Graph Creation & Interactions
    */
-  $scope.graphInit = function(graph_data){
+  $scope.graphInit = function(graph_data, node_id){
 
       // if graph_data exists with no nodes, return;
       if(arguments[0] != undefined && graph_data.nodes.length == 0)
@@ -78,6 +107,9 @@ angular.module('studionet')
       // takes either data from filters or contribution.graph data
       $scope.graph = STUDIONET.GRAPH.makeGraph( graph_data || contributions.graph, 'cy' );
       var cy = $scope.graph;
+      
+      if(arguments[1] != undefined)
+        $scope.highlightNode(node_id);
 
       //updateZoom();
 
@@ -90,16 +122,7 @@ angular.module('studionet')
                *  Highlight connections
                * 
                */
-              cy.elements().removeClass('highlighted');
-              cy.elements().removeClass('selected');
-              cy.elements().addClass('faded');
-
-              node.addClass('selected');
-              node.removeClass('faded');
-              node.successors().addClass('highlighted');
-              node.successors().removeClass('faded');
-              node.predecessors().addClass('highlighted');
-              node.predecessors().removeClass('faded');
+              $scope.highlightNode(node);
 
               /*
                * Get node data and construct qTip
@@ -300,27 +323,12 @@ angular.module('studionet')
 
                 var node = evt.cyTarget;
 
-                // highlights
-                cy.batch(function(){
-                    cy.elements()
-                      .removeClass('highlighted')
-                      .removeClass('selected')
-                      .addClass('faded');
-
-                      node.removeClass('faded')
-                          .addClass('highlighted');
-                      
-                      node.predecessors().removeClass('faded')
-                                         .addClass('highlighted');
-                      
-                      node.successors().removeClass('faded')  
-                                       .addClass('highlighted');
-                });
+                $scope.highlightNode(node);
 
                 // preview
                 if(node.data('qtip') == undefined){
                   
-                  console.log("Constructing new qtip");
+                  //console.log("Constructing new qtip");
 
                   var qtipFormat = STUDIONET.GRAPH.qtipFormat(evt);
                   var data = node.data();
@@ -343,7 +351,7 @@ angular.module('studionet')
 
                 }
                 else{
-                  console.log("qtip already defined");
+                  //console.log("qtip already defined");
                   node.qtip(node.data('qtip'), evt);
                 }
 
@@ -410,9 +418,6 @@ angular.module('studionet')
 
         templateUrl: "/user/templates/home.graphView.modal.html",
         controller: "DetailsModalCtrl",
-        inputs: {
-          title: "show details modal"
-        },
         scope: $scope
 
       }).then(function(modal) {

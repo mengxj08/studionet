@@ -68,29 +68,29 @@ angular.module('studionet')
   };
 
   $scope.createContribution = function(createContribution){
-    if(!createContribution) return;
+        if(!createContribution) return;
 
-    //createContribution.author = profile.user.id;
-    console.log(createContribution.ref);
-    createContribution.refType = "RELATED_TO";
-    createContribution.contentType = 'TEXT';
-    
-    $http({
-      method  : 'POST',
-      url     : '/api/contributions/',
-      data    : createContribution,  // pass in data as strings
-      headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
-      })
-    .success(function(data) {
-      alert("Contribution Created");
-      $scope.close();
-      //$scope.refresh(); 
-      $scope.$parent.graphInit();
-    })
-    .error(function(error){
-      alert("Error Msg:" + error.message);
-      $scope.close();
-    })
+        //createContribution.author = profile.user.id;
+        console.log(createContribution.ref);
+        createContribution.refType = "RELATED_TO";
+        createContribution.contentType = 'TEXT';
+        
+        $http({
+          method  : 'POST',
+          url     : '/api/contributions/',
+          data    : createContribution,  // pass in data as strings
+          headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
+          })
+        .success(function(data) {
+          alert("Contribution Created");
+          $scope.close();
+          //$scope.refresh(); 
+          $scope.$parent.graphInit();
+        })
+        .error(function(error){
+          alert("Error Msg:" + error.message);
+          $scope.close();
+        })
    };
 
   $scope.deleteContribution = function(contributionId){

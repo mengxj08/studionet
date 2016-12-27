@@ -173,11 +173,12 @@ angular.module('studionet')
 }])
 
 
-.factory('contributions', ['$http', function($http){
+.factory('contributions', ['$http', 'profile', function($http, profile){
 
 	var o = {
 		contributions: [],
-		graph: {}
+		graph: {},
+		marked: []
 	};
 
 	o.getAll = function(){
@@ -188,14 +189,36 @@ angular.module('studionet')
 
 	o.getGraph = function(){
 		return $http.get("/graph/all").success(function(data){
+
+			// mark the nodes owned by the user
+			var contributionHash = o.contributions.hash();
+			data.nodes = data.nodes.map(function(node){
+
+					// find if contribution is owned by user
+					if( contributionHash[node.id].createdBy == profile.user.id ){
+						node.owner = true;
+					}
+					else
+						node.owner = false;
+
+					// check if contribution was recently created and hence marked 
+					if( o.marked.indexOf( node.id ) > -1)
+						node.marked = true;
+					else
+						node.marked = false;
+
+					return node;
+			})
+
 			angular.copy(data, o.graph);
+
 		});
 	};
 
 	return o;
 }])
 
-.factory('contribution', ['$http', 'profile', function($http, profile){
+.factory('contribution', ['$http', 'profile', 'contributions', function($http, profile, contributions){
 
 	var o = {
 		contribution: {}
@@ -215,6 +238,10 @@ angular.module('studionet')
 	      headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
 	      })
 	    .success(function(res) {
+
+	    	// mark in graph
+	    	contributions.marked.push(res.id);
+	    	console.log(res.id);
 
 			// refresh graph
 			
@@ -360,7 +387,7 @@ angular.module('studionet')
 					data.requestingUserStatus = undefined;
 
 					// fix me - find a better way
-/*					for(var i=0; i < profile.user.groups.length; i++){
+				/*	for(var i=0; i < profile.user.groups.length; i++){
 						if( data.id == profile.groups[i].id ){
 								data.requestingUserStatus = profile.groups[i].role;
 						}
@@ -510,3 +537,20 @@ angular.module('studionet')
 
 	return o;
 }]);
+
+
+/*
+ *   General Function
+ */
+
+Array.prototype.hash = function(){
+	
+	var hash = [];
+
+	this.map(function(a){
+		hash[a.id] = a;
+	})
+	
+	return hash;
+
+}
