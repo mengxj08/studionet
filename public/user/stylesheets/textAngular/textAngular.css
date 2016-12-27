@@ -204,6 +204,12 @@
     color: #333;
     background-color: #fff;
     border-color: #ccc;
+
+    height: 30px !important;
+    width: 35px !important;
+    font-size: 14px;
+    padding: 1px 1px;
+    text-align: center;
 }
 
 .textAngular .btn-default:hover, .textAngular .btn-default:focus, .textAngular .btn-default:active, .textAngular .btn-default.active, .textAngular .open .dropdown-toggle.btn-default{
@@ -218,4 +224,9 @@
 
 .textAngular .btn.disabled, .textAngular .btn[disabled], .textAngular fieldset[disabled] .btn{
     background-color: white;
+}
+
+.textAngular .btn.btn-sm{
+    font-size: 13px !important;
+    width: 40px !important;
 }
