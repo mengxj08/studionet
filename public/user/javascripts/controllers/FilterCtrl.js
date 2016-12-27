@@ -43,6 +43,7 @@ angular.module('studionet')
         console.log($scope.filterVisible);
         $scope.filterVisible = !$scope.filterVisible;
       }
+      
       $scope.getFilterStatus = function(){
         console.log($scope.filterVisible);
         return $scope.filterVisible;

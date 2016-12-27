@@ -87,6 +87,42 @@ angular.module('studionet')
 	return o;
 }])
 
+/*
+.factory('graphs', ['$http', 'groups', function($http, groups){
+
+	var o = {
+		contribution: {},
+		groups: {}
+	};
+
+	o.getContributionsGraph = function(){
+		return $http.get("/graph/all").success(function(data){
+			angular.copy(data, o.contribution);
+		});
+	};
+
+	o.filterContributions = function(){
+		return $http.get(urlString).success(function(data){
+			//$scope.graphInit(data);
+		});
+	}
+
+	o.getGroupsGraph = function(user_context){
+		return $http.get('/graph/all/groups').success(function(data){
+			// replace the nodes with the groups that already hold data about the user status in each group
+			data.nodes = groups.groups;
+			// copy data
+			angular.copy(data, o.groups);
+		});
+	};
+
+	o.drawGraph = function(){
+
+	}
+
+
+}])*/
+
 
 .factory('users', ['$http', function($http){
 
@@ -120,7 +156,7 @@ angular.module('studionet')
 	return o;
 }])
 
-.factory('tags', ['$http', function($http){
+.factory('tags', ['$http', '$filter', function($http, $filter){
 
 	var o = {
 		tags: []
@@ -128,7 +164,8 @@ angular.module('studionet')
 
 	o.getAll = function(){
 		return $http.get('/api/tags').success(function(data){
-			angular.copy(data, o.tags);
+			// order according to contribution count
+			angular.copy($filter('orderBy')(data, 'contributionCount', true) , o.tags);
 		});
 	};
 
@@ -169,6 +206,56 @@ angular.module('studionet')
 				angular.copy(data, o.contribution);
 		});
 	};
+
+	o.createContribution = function(new_contribution){
+	    return $http({
+	      method  : 'POST',
+	      url     : '/api/contributions/',
+	      data    : new_contribution,  // pass in data as strings
+	      headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
+	      })
+	    .success(function(res) {
+
+			// refresh graph
+			
+			// refresh tags
+			
+
+			// refresh profile
+
+			// refresh contributions
+			
+
+			// send success
+			return res;  
+	    })
+	    .error(function(error){
+			throw error;
+	    })
+	}
+
+	o.deleteContribution = function(contribution_id){
+	    return $http({
+				method  : 'delete',
+				url     : '/api/contributions/' + contribution_id,
+				data    : {},  // pass in data as strings
+				headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
+				})
+	    .success(function(data) {
+			alert("Contribution id:" + contributionId + " deleted");
+			// $scope.close();
+			// $scope.refresh();  
+			// $scope.$parent.graphInit();
+			// 
+			// if filter active, re-render filter
+			// else render entire graph
+			
+	    })
+	    .error(function(error){
+			throw error;
+	    })		
+	
+	}
 
 	o.updateViewCount = function(id){
 		return $http.post('/api/contributions/' + id + '/view').success(function(data){

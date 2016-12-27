@@ -96,22 +96,13 @@ angular.module('studionet')
    };
 
   $scope.deleteContribution = function(contributionId){
-    $http({
-      method  : 'delete',
-      url     : '/api/contributions/'+contributionId,
-      data    : {},  // pass in data as strings
-      headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
-      })
-    .success(function(data) {
-      alert("Contribution id:" + contributionId + " deleted");
-      $scope.close();
-      //$scope.refresh();  
-      $scope.$parent.graphInit();
-    })
-    .error(function(error){
-      alert("Error Msg:" + error.message);
-      $scope.close();
-    })
+
+      console.log($scope.$parent.filterStatus);
+/*    contribution.deleteContribution(contributionIdb).then(function(){
+      alert("Error", error)
+    }, function(error){
+      alert("Error", error)
+    })*/
   }
 
   $scope.updateContribution = function(updateContribution){

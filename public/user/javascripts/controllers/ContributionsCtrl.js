@@ -4,16 +4,18 @@ angular.module('studionet')
  *  Main Contribution Graph Page
  * 
  */
-.controller('ContributionsCtrl', ['$scope', 'supernode', 'users', 'Upload', '$timeout', 'ModalService', 'contributions', 'contribution', function($scope, supernode, users, Upload, $timeout, ModalService, contributions, contribution){
+.controller('ContributionsCtrl', ['$scope', 'supernode', 'users', 'Upload', '$timeout', 'ModalService', 'contributions', 'contribution', 'tags', function($scope, supernode, users, Upload, $timeout, ModalService, contributions, contribution, tags){
 
-	//$scope.user = profile.user;
+  $scope.simple = true;
+
+  $scope.tags = tags.tags;
+
+  //$scope.user = profile.user;
   $scope.users = users.usersById();   // needed for hover to get user name - fix later
 
   var activeNode = null;
 
   $scope.zoomLevel = "Calibrating...";
-
-  $scope.simple = true;
 
   var rootnode = supernode.contribution;
 
@@ -125,7 +127,7 @@ angular.module('studionet')
         // remove supernode
         cy.getElementById(supernode.contribution).remove();
 
-/*        cy.onRender( function(){
+      /*  cy.onRender( function(){
 
             $scope.zoomLevel = (100*cy.zoom()).toPrecision(4);
             $scope.$apply();
@@ -151,7 +153,7 @@ angular.module('studionet')
 
         }); */
 
-/*        cy.nodes().map(function(node){
+       /* cy.nodes().map(function(node){
 
               var count = node.successors().length;
 
@@ -352,7 +354,7 @@ angular.module('studionet')
    *    Nav Controls
    */
   $scope.resetGraph = function(){
-/*      $scope.graph.layout().stop(); 
+    /*  $scope.graph.layout().stop(); 
       layout = $scope.graph.elements().makeLayout({ 'name': 'cola'}); 
       layout.start();   */
       $scope.graph.fit();
@@ -361,38 +363,45 @@ angular.module('studionet')
 
   /*
    *
-   *  Contribution Details
+   *  Contribution Creation
    *
-   * 
    */
   $scope.createNewContribution = function(){
+
       ModalService.showModal({
+
         templateUrl: "/user/templates/createContributionModal.html",
         controller: "CreateContributionCtrl",
-        inputs: {
-          title: "show create contribution modal"
-        },
         scope: $scope
-      }).then(function(modal) {
-        modal.element.modal({
-          backdrop: 'static'
-          // keyboard: false
-        });
 
-        /// set data
-        //modal.scope.setData(data,clickedContributionId);
+      }).then(function(modal) {
+
+          // activate modal
+          modal.element.modal({ backdrop: 'static' });
+
+          /// set data
+          //modal.scope.setData(data,clickedContributionId);
+        
       });
+
   } 
 
 
+  /*
+   *
+   *  Contribution Details
+   *
+   */
   $scope.showDetailsModal = function(data, clickedContributionId) {
       ModalService.showModal({
+
         templateUrl: "/user/templates/home.graphView.modal.html",
         controller: "DetailsModalCtrl",
         inputs: {
           title: "show details modal"
         },
         scope: $scope
+
       }).then(function(modal) {
         modal.element.modal({
           backdrop: 'static'

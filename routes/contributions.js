@@ -331,7 +331,8 @@ router.route('/')
 			else{
 				console.log('[SUCCESS] Success in creating a new contribution for user id: ' + req.user.id);
 				req.contributionId = result[0].id;
-				res.send('Success in creating the contribution');
+				res.status(200);
+				res.send( result[0] );
 				next();
 			}
 		}); 

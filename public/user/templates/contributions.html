@@ -1,6 +1,10 @@
 <!-- Stylesheet for graph -->
 <link rel='stylesheet' href='./stylesheets/graph-style.css' />
 
+<!-- Stylesheet for Modals & textAngular -->
+<link rel='stylesheet' href='/user/stylesheets/textAngular/textAngular.css' />
+<link rel='stylesheet' href='/user/stylesheets/contribution-modal-style.css' />
+
 <!-- actual graph container -->
 <div class='graph-container' ng-init='graphInit()'> 
 
@@ -35,7 +39,8 @@
 
 
 
-
-
-
+<!-- Chips Template for Create / Edit / Reply Contributions -->
+<script type="text/ng-template" id="tags-template">
+  <span>{{data.name}} ( <i>{{data.contributionCount}}</i> )</span>
+</script>
 
