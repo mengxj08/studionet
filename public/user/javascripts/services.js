@@ -29,7 +29,7 @@ angular.module('studionet')
 	o.getSupernodes = function(){
 		return $http.get('/api/supernode').success(function(data){
 			o.group = data.groupId; 
-			o.contribution = data.contributionId;
+			o.contribution = data.contributionId; 
 		});
 	};
 

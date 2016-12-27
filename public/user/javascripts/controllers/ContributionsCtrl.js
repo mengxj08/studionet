@@ -4,25 +4,51 @@ angular.module('studionet')
  *  Main Contribution Graph Page
  * 
  */
-.controller('ContributionsCtrl', ['AppContextService','$scope', 'supernode', 'users', 'Upload', '$timeout', 'ModalService', 'contributions', function(AppContextService, $scope, supernode, users, Upload, $timeout, ModalService, contributions){
-
-  /* todo: reset graph so top bar knows about the graph */
-  AppContextService.setGraph(true);
-  //console.log(AppContextService);
+.controller('ContributionsCtrl', ['$scope', 'supernode', 'users', 'Upload', '$timeout', 'ModalService', 'contributions', function($scope, supernode, users, Upload, $timeout, ModalService, contributions){
 
 	//$scope.user = profile.user;
   $scope.users = users.usersById();   // needed for hover to get user name - fix later
 
-  $scope.zoomLevel = 1;
+  var activeNode = null;
+
+  $scope.zoomLevel = "Calibrating...";
 
   $scope.simple = true;
 
-  $scope.showFilter = false;  
-
   var rootnode = supernode.contribution;
 
+
   $scope.toggleFilter = function(){
-    angular.element('.graph-container').scope().showFilter = !angular.element('.graph-container').scope().showFilter
+    console.log(angular.element('#filterPanel').scope().filterVisible)
+    angular.element('#filterPanel').scope().filterVisible = !angular.element('#filterPanel').scope().filterVisible;
+    $scope.filterStatus = angular.element('#filterPanel').scope().filterVisible;
+    if(!$scope.filterStatus){
+      $scope.graphInit();
+    }
+  }
+
+
+  var updateZoom = function(){
+    if($scope.graph){
+      $scope.zoomLevel = (100*$scope.graph.zoom()).toPrecision(4);
+      $scope.$apply();
+    }
+  }
+  
+  setTimeout(updateZoom, 1000);
+  document.getElementById("cy").addEventListener("wheel", updateZoom);
+
+  // remove the styles from the graph
+  var removeAdditionalStyles = function(){
+      $scope.graph.batch(function(){
+
+          $scope.graph.elements()
+            .removeClass('highlighted')
+            .removeClass('selected')
+            .removeClass('faded');
+      });          
+
+      activeNode = null;
   }
 
   /*
@@ -37,6 +63,8 @@ angular.module('studionet')
       // takes either data from filters or contribution.graph data
       $scope.graph = STUDIONET.GRAPH.makeGraph( graph_data || contributions.graph, 'cy' );
       var cy = $scope.graph;
+
+      //updateZoom();
 
       if(!$scope.simple){
           cy.on('mouseover','node', function(evt){
@@ -94,13 +122,10 @@ angular.module('studionet')
       }
       else{
 
-        // fixme
-        var rootnode = 10;
+        // remove supernode
+        cy.getElementById(supernode.contribution).remove();
 
-        var j = cy.nodes()[0]
-        if(j) cy.remove(j);
-
-        cy.onRender( function(){
+/*        cy.onRender( function(){
 
             $scope.zoomLevel = (100*cy.zoom()).toPrecision(4);
             $scope.$apply();
@@ -124,173 +149,189 @@ angular.module('studionet')
 
             //console.log(filter.length);
 
-        });
+        }); */
 
-        cy.nodes().map(function(node){
+/*        cy.nodes().map(function(node){
 
               var count = node.successors().length;
 
-              node.css({ 'width': 20 + 2*(count/3), 'height': 20 + 2*(count/3) });
+              //node.css({ 'width': 20 + 2*(count/3), 'height': 20 + 2*(count/3) });
               
               if(count > 30)
                   node.addClass('primary');
 
               return node;
 
-        })
+        })*/
 
-
+        /*     Deactivate graph interactions   
         cy.on('mouseover','node', function(evt){
 
               var node = evt.cyTarget;
 
-              /* 
-               *  Highlight connections
-               * 
-               */
-              cy.elements().removeClass('highlighted');
-              cy.elements().removeClass('selected');
-              cy.elements().addClass('faded');
+              cy.batch(function(){
 
-              node.addClass('selected');
-              node.removeClass('faded');
-              node.successors().addClass('highlighted');
-              node.successors().removeClass('faded');
-              node.predecessors().addClass('highlighted');
-              node.predecessors().removeClass('faded');
-   
+                  cy.elements()
+                    .removeClass('highlighted')
+                    .removeClass('selected')
+                    .addClass('faded');
+
+                  node.addClass('selected')
+                      .removeClass('faded')
+                      .successors().addClass('highlighted')
+                      .successors().removeClass('faded')
+                      .predecessors().addClass('highlighted')
+                      .predecessors().removeClass('faded')
+              });
         });
 
         cy.on('mouseout','node', function(evt){
-            cy.elements().removeClass('faded');
-            cy.elements().removeClass('selected');
-            cy.elements().removeClass('highlighted');
+
+          cy.batch(function(){
+            cy.elements().removeClass('faded')
+                          .removeClass('selected')
+                          .removeClass('highlighted')
+          });
         });
 
+        */
+        
+        cy.on('tap', function(evt){
 
-        // displays content of the node
-        cy.on('tap', 'node', function(evt){
-
-            cy.elements().removeClass('highlighted');
-            var node = evt.cyTarget;
-            var data = node.data();
-            var directlyConnected = node.neighborhood();
-            node.addClass('selected');
-            directlyConnected.nodes().addClass('highlighted');
-            node.connectedEdges().addClass('highlighted');
-
-
-            if(data.type == 'contribution'){
-                 var predecessors = node.predecessors();
-                 var successors = node.successors();
-                 var nodeTree = [];
-                 for(var i = predecessors.nodes().length - 1; i >= 0; i--){
-                   //Recursively get edges (and their sources) coming into the nodes in the collection (i.e. the incomers, the incomers' incomers, ...)
-                   var nodeItem = predecessors.nodes()[i];
-                   if(nodeItem.data().type == 'contribution'){
-                      nodeTree.push(nodeItem.data());
-                      console.log(nodeItem.data());
-                    }
-                 }
-                 nodeTree.push(data);
-                 successors.nodes().forEach(function(nodeItem){
-                    //Recursively get edges (and their targets) coming out of the nodes in the collection (i.e. the outgoers, the outgoers' outgoers, ...).
-                    if(nodeItem.data().type == 'contribution'){
-                      nodeTree.push(nodeItem.data());
-                      console.log(nodeItem.data());
-                    }
-                 })
-
-                 var RecursiveGetData = function(index){
-                    var route = "/api/" + nodeTree[index].type + "s/" + nodeTree[index].id;
-                    $.get( route , function(result) {
-                        //console.log("test on clicking onto a contribution");
-                        nodeTree[index].db_data = result;
-                        if(index == nodeTree.length - 1){
-                          angular.element($('.graph-container')).scope().showDetailsModal(nodeTree, data.id);
-
-                          //Mouse out the clicked node once it enters the modal page
-                          cy.elements().css({ content: " " });
-                          cy.elements().removeClass('highlighted');
-                          cy.elements().removeClass('selected');
-
-                          if(cy.$('node:selected')){
-                            $('#content-block-hover').html("");
-                            $('#content-block-hover').hide();    
-                          }
-                        }
-                        else{
-                          RecursiveGetData(++index);
-                        }
-                    });
-                 };
-
-                 RecursiveGetData(0);
+            // if clicked on neither edge nor node
+            if( !( evt.cyTarget.isNode && evt.cyTarget.isNode() ) ){
+                removeAdditionalStyles();
             }
-        });   
+            // if selected node, display complete contents
+            else if( evt.cyTarget.isNode && evt.cyTarget.id() == activeNode ){
+
+                    console.log("Selected Node Clicked Again");
+
+                    //This is the "tapping" behavior onto each node to trigger the contribution view
+                    cy.elements().removeClass('highlighted');
+                    var node = evt.cyTarget;
+                    var data = node.data();
+                    var directlyConnected = node.neighborhood();
+                    node.addClass('selected');
+                    directlyConnected.nodes().addClass('highlighted');
+                    node.connectedEdges().addClass('highlighted');
+
+
+                    if(data.type == 'contribution'){
+                          var predecessors = node.predecessors();
+                          var successors = node.successors();
+                          var nodeTree = [];
+                          for(var i = predecessors.nodes().length - 1; i >= 0; i--){
+                            //Recursively get edges (and their sources) coming into the nodes in the collection (i.e. the incomers, the incomers' incomers, ...)
+                            var nodeItem = predecessors.nodes()[i];
+                            if(nodeItem.data().type == 'contribution'){
+                              nodeTree.push(nodeItem.data());
+                              console.log(nodeItem.data());
+                            }
+                          }
+                          nodeTree.push(data);
+                          successors.nodes().forEach(function(nodeItem){
+                            //Recursively get edges (and their targets) coming out of the nodes in the collection (i.e. the outgoers, the outgoers' outgoers, ...).
+                            if(nodeItem.data().type == 'contribution'){
+                              nodeTree.push(nodeItem.data());
+                              console.log(nodeItem.data());
+                            }
+                          })
+
+                          var RecursiveGetData = function(index){
+                            var route = "/api/" + nodeTree[index].type + "s/" + nodeTree[index].id;
+                            $.get( route , function(result) {
+                                //console.log("test on clicking onto a contribution");
+                                nodeTree[index].db_data = result;
+                                if(index == nodeTree.length - 1){
+                                  angular.element($('.graph-container')).scope().showDetailsModal(nodeTree, data.id);
+
+                                  //Mouse out the clicked node once it enters the modal page
+                                  cy.elements().css({ content: " " });
+                                  cy.elements().removeClass('highlighted');
+                                  cy.elements().removeClass('selected');
+
+                                  if(cy.$('node:selected')){
+                                    $('#content-block-hover').html("");
+                                    $('#content-block-hover').hide();    
+                                  }
+                                }
+                                else{
+                                  RecursiveGetData(++index);
+                                }
+                            });
+                          };
+
+                          RecursiveGetData(0);
+                    }
+
+            }
+             // if unselected node
+            else if( evt.cyTarget.isNode() ){
+
+                console.log("New Node Clicked");
+                activeNode = evt.cyTarget.id();
+
+                var node = evt.cyTarget;
+
+                // highlights
+                cy.batch(function(){
+                    cy.elements()
+                      .removeClass('highlighted')
+                      .removeClass('selected')
+                      .addClass('faded');
+
+                      node.removeClass('faded')
+                          .addClass('highlighted');
+                      
+                      node.predecessors().removeClass('faded')
+                                         .addClass('highlighted');
+                      
+                      node.successors().removeClass('faded')  
+                                       .addClass('highlighted');
+                });
+
+                // preview
+                if(node.data('qtip') == undefined){
+                  
+                  console.log("Constructing new qtip");
+
+                  var qtipFormat = STUDIONET.GRAPH.qtipFormat(evt);
+                  var data = node.data();
+                  
+                  // fix me
+                  var route = "/api/contributions/" + data.id;
+                  $.get( route , function( extra_data ) {
+                        var content = "<b>" +  angular.element($('.graph-container')).scope().users[ extra_data.createdBy ].name  + "</b>" +
+                                      "<br><em>" + (new Date(extra_data.dateCreated)).toString().substr(0, 10) + "</em>" +
+                                      "<br>" + extra_data.body.substr(0,300)
+
+                        qtipFormat.content.title =  extra_data.title;
+                        qtipFormat.content.text = content;
+
+                        node.data('qtip', qtipFormat);
+
+                        node.qtip(qtipFormat, evt);   
+                  });
+                }
+                else{
+                  console.log("qtip already defined");
+                  node.qtip(node.data('qtip'), evt);
+                }
+
+            }
+            else{
+
+              console.log("Undefined Interaction");
+            
+            }
+        
+        })
 
 
       }
 
-      cy.on('tap', 'node', function(evt){
-        //This is the "tapping" behavior onto each node to trigger the contribution view
-        cy.elements().removeClass('highlighted');
-        var node = evt.cyTarget;
-        var data = node.data();
-        var directlyConnected = node.neighborhood();
-        node.addClass('selected');
-        directlyConnected.nodes().addClass('highlighted');
-        node.connectedEdges().addClass('highlighted');
 
-
-        if(data.type == 'contribution'){
-              var predecessors = node.predecessors();
-              var successors = node.successors();
-              var nodeTree = [];
-              for(var i = predecessors.nodes().length - 1; i >= 0; i--){
-                //Recursively get edges (and their sources) coming into the nodes in the collection (i.e. the incomers, the incomers' incomers, ...)
-                var nodeItem = predecessors.nodes()[i];
-                if(nodeItem.data().type == 'contribution'){
-                  nodeTree.push(nodeItem.data());
-                  console.log(nodeItem.data());
-                }
-              }
-              nodeTree.push(data);
-              successors.nodes().forEach(function(nodeItem){
-                //Recursively get edges (and their targets) coming out of the nodes in the collection (i.e. the outgoers, the outgoers' outgoers, ...).
-                if(nodeItem.data().type == 'contribution'){
-                  nodeTree.push(nodeItem.data());
-                  console.log(nodeItem.data());
-                }
-              })
-
-              var RecursiveGetData = function(index){
-                var route = "/api/" + nodeTree[index].type + "s/" + nodeTree[index].id;
-                $.get( route , function(result) {
-                    //console.log("test on clicking onto a contribution");
-                    nodeTree[index].db_data = result;
-                    if(index == nodeTree.length - 1){
-                      angular.element($('.graph-container')).scope().showDetailsModal(nodeTree, data.id);
-
-                      //Mouse out the clicked node once it enters the modal page
-                      cy.elements().css({ content: " " });
-                      cy.elements().removeClass('highlighted');
-                      cy.elements().removeClass('selected');
-
-                      if(cy.$('node:selected')){
-                        $('#content-block-hover').html("");
-                        $('#content-block-hover').hide();    
-                      }
-                    }
-                    else{
-                      RecursiveGetData(++index);
-                    }
-                });
-              };
-
-              RecursiveGetData(0);
-        }
-    }); 
 
   }
 
@@ -302,6 +343,7 @@ angular.module('studionet')
       layout = $scope.graph.elements().makeLayout({ 'name': 'cola'}); 
       layout.start();   */
       $scope.graph.fit();
+      removeAdditionalStyles();
   }
 
   /*
@@ -352,6 +394,7 @@ angular.module('studionet')
         // });
       });
   };
+
 
 }])
 

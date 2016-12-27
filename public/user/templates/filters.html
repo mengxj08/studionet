@@ -3,7 +3,7 @@
 
 <!-- Side Nav with Filters -->
 
-<div ng-controller="FilterCtrl" ng-init='init();' class="container-fluid">
+<div id='filterPanel' ng-controller="FilterCtrl" ng-init='init();' class="container-fluid" ng-show='filterVisible'>
     
     <div id='filters' class='row'> 
       <div uib-accordion id="accordion" close-others=false>  
@@ -12,7 +12,7 @@
          <!-- By Author Filter -->
           <div uib-accordion-group is-open=$parent.panelsOpen class="filter-panel panel badge-success">
               <uib-accordion-heading class="filter-heading"> 
-                <h5>Authors<span class='filter-element-count'></span></h5>
+                <h5>Authors</h5>
               </uib-accordion-heading>
 
               <div class='row'>
@@ -38,7 +38,7 @@
           <div uib-accordion-group is-open=$parent.panelsOpen class="filter-panel panel badge-success">
 
               <uib-accordion-heading class="filter-heading">
-                <h5>Tags <span class='filter-element-count'></span></h5>
+                <h5>Tags</h5>
               </uib-accordion-heading>
 
               <multiselect-searchtree id='tagFilter' data-input-model="tags" multi-select="true"
@@ -52,7 +52,7 @@
           <div uib-accordion-group is-open=$parent.panelsOpen class='filter-panel panel'>
 
               <uib-accordion-heading class="filter-heading">  
-                <h5>Ranges<span class='filter-element-count'></span></h5>  
+                <h5>Ranges</h5>  
               </uib-accordion-heading>
 
               <div id='dateFilter'>
@@ -75,18 +75,19 @@
 
           <!-- Toggle Filter Button -->
           <div class='col-sm-4 filter-btn  align-right' ng-click="$parent.panelsOpen = !$parent.panelsOpen" uib-tooltip='Toggle Panel' tooltip-placement='bottom'>
-            <div class="icon"><i class="fa fa-close" aria-hidden="true"></i></div>
+            <div class="icon"><i ng-class="$parent.panelsOpen ? 'fa fa-chevron-up' : 'fa fa-chevron-down'"  aria-hidden="true"></i></div>
           </div>
 
-          <!-- Final Filter Button -->
+          <!-- Reset Button -->
+          <div class='col-sm-4 filter-btn  align-right' ng-click="clearFilter()" uib-tooltip='Reset' tooltip-placement='bottom'>
+            <div class="icon"><i class="fa fa-circle" aria-hidden="true"></i></div>
+          </div>
+
+          <!-- Filter Button -->
           <div class='col-sm-4 filter-btn  align-right' ng-click="filterRequest()" uib-tooltip='Filter Graph' tooltip-placement='bottom'>
             <div class="icon"><i class="fa fa-filter" aria-hidden="true"></i></div>
           </div>
 
-          <!-- Final Filter Button -->
-          <div class='col-sm-4 filter-btn  align-right' ng-click="clearFilter()" uib-tooltip='Reset Graph' tooltip-placement='bottom'>
-            <div class="icon"><i class="fa fa-refresh" aria-hidden="true"></i></div>
-          </div>
 
 
 

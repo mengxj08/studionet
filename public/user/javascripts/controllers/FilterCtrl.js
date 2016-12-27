@@ -10,8 +10,8 @@ angular.module('studionet')
             users : [],
             groups: [],
             tags : [],
-            startDate: new Date( (new Date()).setDate((new Date().getDate()) - 1) ),
-            endDate : new Date( (new Date()).setDate((new Date().getDate()) + 1) ),
+            startDate: new Date( (new Date()).setDate((new Date().getDate()) - 120) ),
+            endDate : new Date( (new Date()).setDate((new Date().getDate()) + 120) ),
             ratingMin : 0, 
             ratingMax : 5, 
             depthVal : 0
@@ -28,11 +28,26 @@ angular.module('studionet')
       $scope.ratingMin, $scope.ratingMax;
       $scope.depthVal;
 
-      $scope.showFilter = false;
+
       $scope.panelsOpen = true;
 
       var target = document.getElementById('cy');
       var spinner = new Spinner(STUDIONET.GRAPH.spinner);
+
+
+      /*
+       * Filter Visibility Options
+       */
+      $scope.filterVisible = false;
+      $scope.toggleFilter = function(){
+        console.log($scope.filterVisible);
+        $scope.filterVisible = !$scope.filterVisible;
+      }
+      $scope.getFilterStatus = function(){
+        console.log($scope.filterVisible);
+        return $scope.filterVisible;
+      }
+
 
       /*
        *    Helper functions

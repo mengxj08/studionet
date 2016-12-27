@@ -13,10 +13,10 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 			templateUrl: '/user/templates/contributions.html',
 			controller: 'ContributionsCtrl',
 			resolve: {
-				supernode: ['supernode', function(supernode){
+				supernodePromise: ['supernode', function(supernode){
 					return supernode.getSupernodes();
 				}],
-				tags: ['tags', function(tags){
+				tagsPromise: ['tags', function(tags){
 					return tags.getAll();
 				}],
 				groupsPromise: ['groups', function(groups){

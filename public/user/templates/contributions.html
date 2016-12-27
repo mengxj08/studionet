@@ -5,24 +5,22 @@
 <div class='graph-container' ng-init='graphInit()'> 
 
   <!--Nav Bar with Filters-->
-  <ng-include src="'templates/filters.html'" ng-show='showFilter'></ng-include>
+  <ng-include src="'templates/filters.html'"></ng-include>
 
   <div id='cy'></div>
 
   <div class='info-pane'>
     <!-- Zoom Level -->
-    <h5>Zoom Level</h5> <h6>{{zoomLevel}}</h6>
+    <h5>Zoom Level</h5> <h6>{{zoomLevel}} &nbsp; %</h6>
   </div>
   
   <div class='graph-controls'>
-
-
-
-  	<!-- filter toggle -->
-		<i class="graph-nav-control icon fa fa-filter" ng-click='toggleFilter()' uib-tooltip='Toggle Filters'  tooltip-placement='left'></i>
-
 		<!-- reset graph -->
-		<i class="graph-nav-control icon fa fa-expand" ng-click='resetGraph()' uib-tooltip='Reset Graph'  tooltip-placement='left'></i>
+		<i class="graph-nav-control icon fa fa-arrows-alt" ng-click='resetGraph()' uib-tooltip='Fit Graph'  tooltip-placement='left'></i>
+
+    <!-- filter toggle -->
+    <i ng-class="filterStatus ? 'graph-nav-control icon fa fa-search btn-active' : 'graph-nav-control icon fa fa-search'" 
+       ng-click='toggleFilter()' uib-tooltip='{{filterStatus ? "Clear Filters" : "Filter Mode"}}'  tooltip-placement='left'></i>
 
 		<!-- create a contribution -->
 		<i class="graph-nav-control icon fa fa-plus" ng-click='createNewContribution()' uib-tooltip='New Contribution'  tooltip-placement='left'></i>
