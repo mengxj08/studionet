@@ -32,7 +32,19 @@
                 <div class='row'>
                   <div class="tab-content">
                       <div class='tab-pane fade in active' id="{{ 'content' + contribution.db_data.id}}">
+
+                          <!-- content -->
                           <p ng-bind-html="contribution.db_data.body"></p>
+
+                          <br><br>
+
+                          
+                          <!-- rating -->
+                          <h4> Your rating: 
+                          <span id='rating' uib-rating ng-model="$parent.rate" max="$parent.max" read-only="false" on-hover="$parent.hoveringOver(value)" on-leave="overStar = null" ng-click='rateContribution($parent.rate, contribution.db_data.id)'></span>
+                          <pre style="margin:15px 0;">Rate: <b>{{$parent.rate}}</b> - Hovering over: <b>{{$parent.overStar || "none"}}</b></pre>
+                          </h4>
+                          
                           <br><br>
                       </div>
                       <div class='tab-pane fade' id="{{ 'statistics' + contribution.db_data.id}}">

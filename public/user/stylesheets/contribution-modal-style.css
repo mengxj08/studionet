@@ -78,3 +78,8 @@ hr {
     border-style: inset;
     border-width: 1px;
 } 
+
+#rating .glyphicon{
+    font-size: 20px;
+    line-height: 20px;
+} 
