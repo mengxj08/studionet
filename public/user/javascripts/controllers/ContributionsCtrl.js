@@ -15,32 +15,45 @@ angular.module('studionet')
 
   var activeNode = null;
 
-  $scope.zoomLevel = "Calibrating...";
+
 
   var rootnode = supernode.contribution;
 
-
+  /* 
+   * Toggle Filter
+   */
   $scope.toggleFilter = function(){
+    
     console.log(angular.element('#filterPanel').scope().filterVisible)
+
     angular.element('#filterPanel').scope().filterVisible = !angular.element('#filterPanel').scope().filterVisible;
+
     $scope.filterStatus = angular.element('#filterPanel').scope().filterVisible;
+    
     if(!$scope.filterStatus){
+      angular.element('#filterPanel').scope().clearFilter();
       $scope.graphInit();
     }
   }
 
-
+  /*
+   * Zooming Code
+   */
+  $scope.zoomLevel = "Calibrating...";
   var updateZoom = function(){
     if($scope.graph){
       $scope.zoomLevel = (100*$scope.graph.zoom()).toPrecision(4);
       $scope.$apply();
     }
   }
-  
   setTimeout(updateZoom, 1000);
   document.getElementById("cy").addEventListener("wheel", updateZoom);
 
-  // remove the styles from the graph
+
+
+  /*
+   * Graph Styles
+   */
   var removeAdditionalStyles = function(){
       $scope.graph.batch(function(){
 
@@ -61,7 +74,7 @@ angular.module('studionet')
       // if graph_data exists with no nodes, return;
       if(arguments[0] != undefined && graph_data.nodes.length == 0)
         return;
-      
+
       // takes either data from filters or contribution.graph data
       $scope.graph = STUDIONET.GRAPH.makeGraph( graph_data || contributions.graph, 'cy' );
       var cy = $scope.graph;

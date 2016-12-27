@@ -242,7 +242,8 @@ angular.module('studionet')
 				headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
 				})
 	    .success(function(data) {
-			alert("Contribution id:" + contributionId + " deleted");
+			
+			alert(data);
 			// $scope.close();
 			// $scope.refresh();  
 			// $scope.$parent.graphInit();

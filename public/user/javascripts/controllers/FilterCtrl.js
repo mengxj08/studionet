@@ -10,8 +10,8 @@ angular.module('studionet')
             users : [],
             groups: [],
             tags : [],
-            startDate: new Date( (new Date()).setDate((new Date().getDate()) - 120) ),
-            endDate : new Date( (new Date()).setDate((new Date().getDate()) + 120) ),
+            startDate: new Date( (new Date()).setDate((new Date().getDate()) - 2) ),
+            endDate : new Date( (new Date()).setDate((new Date().getDate()) + 2) ),
             ratingMin : 0, 
             ratingMax : 5, 
             depthVal : 0
@@ -43,7 +43,7 @@ angular.module('studionet')
         console.log($scope.filterVisible);
         $scope.filterVisible = !$scope.filterVisible;
       }
-      
+
       $scope.getFilterStatus = function(){
         console.log($scope.filterVisible);
         return $scope.filterVisible;

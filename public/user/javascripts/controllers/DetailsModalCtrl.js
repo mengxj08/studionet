@@ -55,16 +55,14 @@ angular.module('studionet')
   //  the button has the 'data-dismiss' attribute.
   $scope.close = function() {
 
-    console.log("Close the modal");
+      // increase viewcount for contribution
+      console.log("Updating view count");
+      contribution.updateViewCount($scope.clickedContributionId);
 
-    // increase viewcount for contribution
-    console.log("Updating view count");
-    contribution.updateViewCount($scope.clickedContributionId);
-    
 
-    //$('body').removeClass('modal-open');
-    $(".modal").remove();
-    $('.modal-backdrop').remove();
+      //$('body').removeClass('modal-open');
+      $(".modal").remove();
+      $('.modal-backdrop').remove();
 
     
   };
@@ -97,12 +95,23 @@ angular.module('studionet')
 
   $scope.deleteContribution = function(contributionId){
 
-      console.log($scope.$parent.filterStatus);
-/*    contribution.deleteContribution(contributionIdb).then(function(){
-      alert("Error", error)
+    console.log($scope.$parent.filterStatus);
+    contribution.deleteContribution(contributionId).then(function(){
+
+      if($scope.$parent.filterStatus){
+        angular.element('#filterPanel').scope().filterRequest();  
+      }
+      else{
+        $scope.$parent.graphInit();
+      }
+
+      $scope.close();
+
     }, function(error){
-      alert("Error", error)
-    })*/
+        
+        alert("Error", error)
+    
+    })
   }
 
   $scope.updateContribution = function(updateContribution){
