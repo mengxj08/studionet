@@ -155,7 +155,7 @@
                   <button type="button" ng-click="showUpdateContribution=true; hideReplyButton=true; contributionData=contribution.db_data;" class="btn btn-default modal-button"
                   ng-show="(user.id == contribution.db_data.createdBy)">Update</button>
                   <button type="button" ng-click="deleteContribution(contribution.db_data.id)" class="btn btn-default modal-button"
-                  ng-show="(user.id == contribution.db_data.createdBy)">Delete</button>
+                  ng-show="(user.id == contribution.db_data.createdBy)" data-dismiss='modal'>Delete</button>
                   </div>
                   <div ng-show='hideReplyButton'>
                     <button type="button" ng-click="submitContribution(showCreateContribution,showLinkingContribution,showUpdateContribution,contributionData,linkData);

@@ -232,23 +232,23 @@ angular.module('studionet')
 
 	o.createContribution = function(new_contribution){
 
-		formData = new FormData();
-		formData.append("title", new_contribution.title);
-		formData.append("tags", new_contribution.tags);
-		formData.append("body", new_contribution.body);
-		formData.append("refType", new_contribution.refType);
-		formData.append("contentType", new_contribution.contentType);
-		formData.append("ref", new_contribution.ref);
-		//formData.append("attachments", new_contribution.attachments[0]);
+		console.log(new_contribution);
+		var formData = new FormData();
+		formData.append('title', new_contribution.title);
+		formData.append('body', new_contribution.body);
+		formData.append('tags', new_contribution.tags);
+		formData.append('attachments', new_contribution.attachments);
+		formData.append('refType', new_contribution.refType);
+		formData.append('contentType', new_contribution.contentType);
+		formData.append('ref', new_contribution.ref);
 
-		console.log(JSON.stringify(formData));
-		
+
 	    return $http({
 	      method  : 'POST',
-	      url     : '/api/contributions/',
-	      headers : { 'Content-Type': 'multipart/form-data;' },  // set the headers so angular passing info as form data (not request payload)
-	      transformRequest : angular.identity,
-	      data    : formData
+	      url     : '/api/contributions',
+	      headers : { 'Content-Type': 'multipart/form-data; boundary=...', 'enctype':'multipart/form-data;' },
+      	  processData: false,
+          data: formData
 	    })
 	    .success(function(res) {
 

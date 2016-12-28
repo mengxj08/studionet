@@ -6,8 +6,6 @@ angular.module('studionet')
 
       $scope.alert = {}; 
 
-      // for the new contribution
-      $scope.contributionData = { attachments: [], tags: [], refType: "RELATED_TO", contentType: "text", ref: supernode.contribution};
 
       $scope.loadTags = function($query){
           return all_tags.filter(function(tag){
@@ -27,13 +25,21 @@ angular.module('studionet')
 
       };
 
+            // for the new contribution
+      $scope.contributionData = { _tags: [], _files: [], attachments: [], tags: [], refType: "RELATED_TO", contentType: "text", ref: supernode.contribution};
       $scope.createContribution = function(){
-          $scope.contributionData.s_tags.map(function(t){
-             $scope.contributionData.tags.push(t.name);
-          })
 
-          console.log($scope.contributionData);
+          $scope.contributionData._tags.map(function(t){
+             $scope.contributionData.tags.push(t.name);
+          });
+
+          $scope.contributionData._files.map(function(file){
+             $scope.contributionData.attachments.push(file);
+          });
           
+          delete $scope.contributionData._tags;
+          delete $scope.contributionData._files;
+
           contribution.createContribution( $scope.contributionData ).then(function(res){
                 $scope.alert.success = true; 
                 $scope.alert.successMsg = "Contribution Id : " + res.data.id; 

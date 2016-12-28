@@ -31,10 +31,10 @@
              
               <!-- tags -->
               <div class='form-section'>
-                <label> Tags <small>({{contributionData.tags.length || 0}}) </small></label>
+                <label> Tags <small>( {{ contributionData._tags.length || 0 }} tag(s) added) </small></label>
                 <tags-input class='tags-input' class="bootstrap"
                   type='text'
-                  ng-model="contributionData.s_tags"
+                  ng-model="contributionData._tags"
                   display-property='name'
                   placeholder="Add a tag"
                   replace-spaces-with-dashes="false">
@@ -57,12 +57,12 @@
 
               <!-- attachments -->
               <div class='form-section'>
-                <label> Attachments </label>
-                <div class="button" ngf-select ng-model="contributionData.attachments" ngf-multiple="true">Select</div>
-                {{contributionData.attachments.length}} files uploaded
+                <label> Attachments <small>({{contributionData._files.length}} file(s) uploaded)</small> </label>
+                <div class="button" ngf-select ng-model="contributionData._files" ngf-multiple="true">Choose File</div>
               </div>
 
           </div>
+
         </div>
 
         <div class="modal-footer">
