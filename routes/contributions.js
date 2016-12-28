@@ -12,7 +12,7 @@ var db = require('seraph')({
   pass: process.env.DB_PASS
 });
 var _ = require('underscore');
-var contributionUtil = require('./contributionutil');
+var contributionUtil = require('./contribution-util');
 var contributionsFilterHelper = require('./contributions-filter');
 
 
@@ -235,7 +235,36 @@ router.route('/:contributionId')
 
     var query = [
       'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
-      'RETURN c'
+      'OPTIONAL MATCH (c)<-[rating5:RATED {rating: 5}]-(:user) ',
+      'OPTIONAL MATCH (c)<-[rating4:RATED {rating: 4}]-(:user) ',
+      'OPTIONAL MATCH (c)<-[rating3:RATED {rating: 3}]-(:user) ',
+      'OPTIONAL MATCH (c)<-[rating2:RATED {rating: 2}]-(:user) ',
+      'OPTIONAL MATCH (c)<-[rating1:RATED {rating: 1}]-(:user) ',
+      'OPTIONAL MATCH (c)<-[rating0:RATED {rating: 0}]-(:user)',
+      'OPTIONAL MATCH (a:attachment)<-[:ATTACHMENT]-(c)',
+      'RETURN { \
+                ratingArray: [count(rating0), \
+                  count(rating1), count(rating2), \
+                  count(rating3), count(rating4), \
+                  count(rating5)], \
+                edited: c.edited, \
+                rating: c.rating, \
+                totalRating: c.totalRating, \
+                title: c.title, \
+                body: c.body, \
+                tags: c.tags, \
+                lastUpdated: c.lastUpdated, \
+                ref: c.ref, \
+                dateCreated: c.dateCreated, \
+                rateCount: c.rateCount, \
+                createdBy: c.createdBy, \
+                contentType: c.contentType, \
+                views: c.views, \
+                attachments: collect({ \
+                  attachment: a, \
+                  id: id(a) \
+                }) \
+              }'
     ].join('\n');
 
     var params = {
@@ -568,7 +597,6 @@ router.route('/:contributionId/attachments/:attachmentId')
   .get(auth.ensureAuthenticated, contributionUtil.getHandlerToSendImage(false))
 
   .delete(auth.ensureAuthenticated, function(req, res, next){
-    // factor this out
     // ensure user owns the contribution id first
     // also check the attachment id
     var query = [
@@ -604,7 +632,9 @@ router.route('/:contributionId/attachments/:attachmentId')
       }
     });
   }, function(req, res){
+    // user is the creator.
     // delete the attachment file + thumbnail (if present) and node in db
+    /*
     var attachmentPath = './uploads/contributions/' + req.params.contributionId + '/attachments/' + req.fileNameToDelete;
     var thumbnailPath = './uploads/contributions/' + req.params.contributionId + '/attachments/thumbnails/' + req.fileNameToDelete;
 
@@ -618,14 +648,18 @@ router.route('/:contributionId/attachments/:attachmentId')
         }
       });
     });
+    */
 
     var query = [
-      'MATCH (a:attachment) WHERE ID(a)={attachmentIdParam}',
-      'DETACH DELETE a'
+      'MATCH (a:attachment)<-[r:ATTACHMENT]-(c:contribution)',
+      'WHERE ID(a)={attachmentIdParam} AND ID(c)={contributionIdParam}',
+      'CREATE (a)<-[:DELETED_ATTACHMENT]-(c)',
+      'DELETE r'
     ].join('\n');
 
     var params = {
-      attachmentIdParam: parseInt(req.params.attachmentId)
+      attachmentIdParam: parseInt(req.params.attachmentId),
+      contributionIdParam: parseInt(req.params.contributionId)
     };
 
     db.query(query, params, function(error, result){

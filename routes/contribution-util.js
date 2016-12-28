@@ -3,8 +3,8 @@ var glob = require('glob');
 var path = require('path');
 var fs = require('fs-extra');
 var gm = require('gm');
-/*var mmm = require('mmmagic'),
-      Magic = mmm.Magic;*/
+var mmm = require('mmmagic'),
+      Magic = mmm.Magic;
 var db = require('seraph')({
 	server: process.env.SERVER_URL || 'http://localhost:7474/', // 'http://studionetdb.design-automation.net'
 	user: process.env.DB_USER,
@@ -177,8 +177,9 @@ module.exports.updateDatabaseWithAttachmentsAndGenerateThumbnails = function(req
 	var contributionId = parseInt(req.contributionId || req.params.contributionId);
 
 	if (req.files.length === 0) {
-		res.status(200);
-		return res.send('success');
+		// res.status(200);
+		// return res.send('success');
+		return;
 	}
 
 	// move the files
@@ -199,8 +200,9 @@ module.exports.updateDatabaseWithAttachmentsAndGenerateThumbnails = function(req
 	.then(function(){
 
 		return new Promise(function(resolve, reject){
+			
 			var createQueries = req.files.map((f, idx) =>
-				' CREATE (a' + idx + ':attachment {dateUploaded: ' + Date.now() + ', size: ' + f.size + ', name: "' + f.filename + '", thumb:false })' +
+				' CREATE (a' + idx + ':attachment {dateUploaded: ' + f.filename.split("_")[0] + ', size: ' + f.size + ', name: "' + f.filename + '", thumb:false })' +
 				' CREATE (u)-[:UPLOADED]->(a' + idx + ')' +
 				' CREATE (a' + idx + ')<-[:ATTACHMENT]-(c)'
 				);
@@ -227,11 +229,7 @@ module.exports.updateDatabaseWithAttachmentsAndGenerateThumbnails = function(req
 			db.query(query, params, function(error, result){
 				if (error){
 					console.log(error);
-					res.status(500);
-					res.send('error in uploading file as attachment');
 				} else {
-					res.status(200);
-					res.send('success');
 					resolve(result[0]);
 				}
 			});

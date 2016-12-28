@@ -132,9 +132,9 @@ router.get('/groups', auth.ensureAuthenticated, function(req, res){
 router.get('/contributions', auth.ensureAuthenticated, function(req, res){
   
   var query = [
-    'MATCH (u:user)-[r:CREATED]->(c:contribution)',
-    'WHERE ID(u)={userIdParam}',
-    'RETURN {id: id(c), title: c.title}'
+    'MATCH (u:user) WHERE ID(u)={userIdParam}',
+    'OPTIONAL MATCH (u)-[rel]->(c:contribution)',
+    'RETURN collect(rel)'
   ].join('\n');
 
   var params = {
