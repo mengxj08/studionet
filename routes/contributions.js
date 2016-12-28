@@ -20,128 +20,9 @@ var contributionsFilterHelper = require('./contributions-filter');
 router.route('/')
   /*
    * Returns all contributions, including the name, created by, created on and id of the contribution if no parmas specified.
-   * Otherwise, returns filtered contributions.
    */
-  .get(auth.ensureAuthenticated, contributionUtil.handleGetContributionsWithoutParams, 
-      contributionUtil.ensureGetContributionsCorrectParams, function(req, res){
-
-    var QUERY_PARAM_DEPTH_KEYWORD = 'd';
-    var QUERY_PARAM_GROUPS_KEYWORD = 'g';
-    var QUERY_PARAM_RATING_KEYWORD = 'r';
-    var QUERY_PARAM_USERS_KEYWORD = 'u';
-    var QUERY_PARAM_TIME_KEYWORD = 't';
-    var QUERY_PARAM_TAGS_KEYWORD = 'tg';
-
-    // First get all the users matching the specified group, if present
-    var groupIds = contributionsFilterHelper.parseArrayOrNumberToInt(JSON.parse(req.query[QUERY_PARAM_GROUPS_KEYWORD]));
-    var specifiedUserIds = contributionsFilterHelper.parseArrayOrNumberToInt(JSON.parse(req.query[QUERY_PARAM_USERS_KEYWORD]));    
-
-    var matchAllGroups = contributionsFilterHelper.isMatchingAllForParam(groupIds);
-    var matchAllUsers = contributionsFilterHelper.isMatchingAllForParam(specifiedUserIds);
-
-    var usersInGroupsPromise = new Promise(function(resolve, reject){
-      if (matchAllGroups || matchAllUsers) {
-        return resolve();
-      }
-
-      var groupQuery = [ 
-        'MATCH (g:group) WHERE ID(g) IN {groupIdParam}',
-        'MATCH (u:user)<-[r:MEMBER]-(g)',
-        'RETURN collect(distinct id(u))'
-      ].join('\n');
-
-      var groupQueryParam = {
-        groupIdParam: groupIds
-      };
-
-      db.query(groupQuery, groupQueryParam, function(error, result){
-        if (error) {
-          return reject('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Failed match for group ids: ' + groupIds);
-        }
-        return resolve(result[0]);
-      });
-
-    });
-
-    usersInGroupsPromise
-    .then(function(userIdsFromGroupQuery){
+  .get(auth.ensureAuthenticated, contributionUtil.handleGetContributionsWithoutParams) 
       
-      return new Promise(function(resolve, reject){
-        var dateArray = contributionsFilterHelper.parseArrayOrNumberToInt(JSON.parse(req.query[QUERY_PARAM_TIME_KEYWORD]));
-        var rateArray = contributionsFilterHelper.parseArrayOrNumberToInt(JSON.parse(req.query[QUERY_PARAM_RATING_KEYWORD]));
-        var tagsArray = contributionsFilterHelper.parseArrayOrNumberToInt(JSON.parse(req.query[QUERY_PARAM_TAGS_KEYWORD]));
-
-        var userIdsParam = contributionsFilterHelper.getFinalUserIdParam(specifiedUserIds, userIdsFromGroupQuery);
-        var dateParamObj = contributionsFilterHelper.getFinalDateParamObj(dateArray);
-        var rateParamObj = contributionsFilterHelper.getFinalRateParamObj(rateArray);
-        var tagsParamObj = contributionsFilterHelper.getFinalTagsParamObj(tagsArray);
-
-        var queryUserGroupTag = contributionsFilterHelper.getQueryFilteringUsersGroupsAndTags(tagsParamObj, 
-            matchAllGroups, matchAllUsers, userIdsParam);
-        var queryRating = contributionsFilterHelper.getCombinedQueryFilteringRating(rateParamObj);
-        var queryDate = contributionsFilterHelper.getCombinedQueryFilteringDate(dateParamObj);
-
-        var query = [
-          queryUserGroupTag,
-          queryRating,
-          queryDate,
-          'RETURN collect(id(c)) as filteredIdList'
-        ].join('\n');
-
-        db.query(query, function(error, result){
-          if (error)
-            return console.log(error);
-
-          return resolve({
-            filteredIdList: result[0],
-            depthParam: parseInt(req.query[QUERY_PARAM_DEPTH_KEYWORD]),
-            queryUserGroupTag: queryUserGroupTag,
-            queryRating: queryRating,
-            queryDate: queryDate,
-          });
-        })
-      })
-
-    })
-    .then(function(result){
-      var hash = {};
-      result.filteredIdList.forEach(e => hash[e] = true);
-
-      var query = [
-        result.queryUserGroupTag,
-        result.queryRating,
-        result.queryDate,
-        'WITH collect(id(c)) as filteredIdList',
-        'OPTIONAL MATCH pathToSuper=(c1)-[*]->(c2:contribution)',
-        'WHERE ID(c1) IN filteredIdList',
-        'WITH collect(distinct id(c2)) as intermediateNodeList, filteredIdList',
-        'OPTIONAL MATCH pathFromChildren=(c3)<-[*1..' + result.depthParam + ']-(c4:contribution)',
-        'WHERE ID(c3) IN filteredIdList',
-        'WITH filteredIdList + intermediateNodeList + collect(distinct id(c4)) as combinedList',
-        'UNWIND combinedList as unwindedCombinedList',
-        'WITH collect(distinct unwindedCombinedList) as distinctUnwindedCombinedList',
-        'MATCH p=(source)-[*1]->(target) WHERE ID(source) IN distinctUnwindedCombinedList AND ID(target) IN distinctUnwindedCombinedList',
-        'RETURN p'
-      ].join('\n');
-
-      graphQuery(query, function(data) {    
-
-        data['nodes'].map((node) => {
-          node.match = hash[node['id']];
-          return node;
-        });
-
-        console.log('[SUCCESS] Sucess in fetching filtered contributions in /api/contributions.')
-        return res.send(data);
-
-      });
-    })
-    .catch(function(reason){
-      console.log(reason);
-      return res.send(reason);
-    });
-
-  })
 
 	/*
 	 * Creates a new contribution linked to the current user.
@@ -227,6 +108,129 @@ router.route('/')
 		}); 
 
 	}, contributionUtil.updateDatabaseWithAttachmentsAndGenerateThumbnails);
+
+router.route('/filters')
+  .post(contributionUtil.ensureGetContributionsCorrectParams, function(req, res){
+
+    var REQ_DEPTH_KEYWORD = 'd';
+    var REQ_GROUPS_KEYWORD = 'g';
+    var REQ_RATING_KEYWORD = 'r';
+    var REQ_USERS_KEYWORD = 'u';
+    var REQ_TIME_KEYWORD = 't';
+    var REQ_TAGS_KEYWORD = 'tg';
+
+    // First get all the users matching the specified group, if present
+    var groupIds = contributionsFilterHelper.parseArrayOrNumberToInt(JSON.parse(req.body[REQ_GROUPS_KEYWORD]));
+    var specifiedUserIds = contributionsFilterHelper.parseArrayOrNumberToInt(JSON.parse(req.body[REQ_USERS_KEYWORD]));    
+
+    var matchAllGroups = contributionsFilterHelper.isMatchingAllForParam(groupIds);
+    var matchAllUsers = contributionsFilterHelper.isMatchingAllForParam(specifiedUserIds);
+
+    var usersInGroupsPromise = new Promise(function(resolve, reject){
+      if (matchAllGroups || matchAllUsers) {
+        return resolve();
+      }
+
+      var groupQuery = [ 
+        'MATCH (g:group) WHERE ID(g) IN {groupIdParam}',
+        'MATCH (u:user)<-[r:MEMBER]-(g)',
+        'RETURN collect(distinct id(u))'
+      ].join('\n');
+
+      var groupQueryParam = {
+        groupIdParam: groupIds
+      };
+
+      db.query(groupQuery, groupQueryParam, function(error, result){
+        if (error) {
+          return reject('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Failed match for group ids: ' + groupIds);
+        }
+        return resolve(result[0]);
+      });
+
+    });
+
+    usersInGroupsPromise
+    .then(function(userIdsFromGroupQuery){
+      
+      return new Promise(function(resolve, reject){
+        var dateArray = contributionsFilterHelper.parseArrayOrNumberToInt(JSON.parse(req.body[REQ_TIME_KEYWORD]));
+        var rateArray = contributionsFilterHelper.parseArrayOrNumberToInt(JSON.parse(req.body[REQ_RATING_KEYWORD]));
+        var tagsArray = contributionsFilterHelper.parseArrayOrNumberToInt(JSON.parse(req.body[REQ_TAGS_KEYWORD]));
+
+        var userIdsParam = contributionsFilterHelper.getFinalUserIdParam(specifiedUserIds, userIdsFromGroupQuery);
+        var dateParamObj = contributionsFilterHelper.getFinalDateParamObj(dateArray);
+        var rateParamObj = contributionsFilterHelper.getFinalRateParamObj(rateArray);
+        var tagsParamObj = contributionsFilterHelper.getFinalTagsParamObj(tagsArray);
+
+        var queryUserGroupTag = contributionsFilterHelper.getQueryFilteringUsersGroupsAndTags(tagsParamObj, 
+            matchAllGroups, matchAllUsers, userIdsParam);
+        var queryRating = contributionsFilterHelper.getCombinedQueryFilteringRating(rateParamObj);
+        var queryDate = contributionsFilterHelper.getCombinedQueryFilteringDate(dateParamObj);
+
+        var query = [
+          queryUserGroupTag,
+          queryRating,
+          queryDate,
+          'RETURN collect(id(c)) as filteredIdList'
+        ].join('\n');
+
+        db.query(query, function(error, result){
+          if (error)
+            return console.log(error);
+
+          return resolve({
+            filteredIdList: result[0],
+            depthParam: parseInt(req.body[REQ_DEPTH_KEYWORD]),
+            queryUserGroupTag: queryUserGroupTag,
+            queryRating: queryRating,
+            queryDate: queryDate,
+          });
+        })
+      })
+
+    })
+    .then(function(result){
+      var hash = {};
+      result.filteredIdList.forEach(e => hash[e] = true);
+
+      var query = [
+        result.queryUserGroupTag,
+        result.queryRating,
+        result.queryDate,
+        'WITH collect(id(c)) as filteredIdList',
+        'OPTIONAL MATCH pathToSuper=(c1)-[*]->(c2:contribution)',
+        'WHERE ID(c1) IN filteredIdList',
+        'WITH collect(distinct id(c2)) as intermediateNodeList, filteredIdList',
+        'OPTIONAL MATCH pathFromChildren=(c3)<-[*1..' + result.depthParam + ']-(c4:contribution)',
+        'WHERE ID(c3) IN filteredIdList',
+        'WITH filteredIdList + intermediateNodeList + collect(distinct id(c4)) as combinedList',
+        'UNWIND combinedList as unwindedCombinedList',
+        'WITH collect(distinct unwindedCombinedList) as distinctUnwindedCombinedList',
+        'MATCH p=(source)-[*1]->(target) WHERE ID(source) IN distinctUnwindedCombinedList AND ID(target) IN distinctUnwindedCombinedList',
+        'RETURN p'
+      ].join('\n');
+
+      console.log(query);
+
+      graphQuery(query, function(data) {    
+
+        data['nodes'].map((node) => {
+          node.match = hash[node['id']];
+          return node;
+        });
+
+        console.log('[SUCCESS] Sucess in fetching filtered contributions in /api/contributions.')
+        return res.send(data);
+
+      });
+    })
+    .catch(function(reason){
+      console.log(reason);
+      return res.send(reason);
+    });
+
+  });
 
 // route: /api/contributions/:contributionId
 router.route('/:contributionId')

@@ -13,7 +13,7 @@ var db = require('seraph')({
 
 module.exports.handleGetContributionsWithoutParams = function(req, res, next) {
 
-	var numKeys = Object.keys(req.query).length;
+	var numKeys = Object.keys(req.body).length;
 	var hasParams = numKeys > 0;
 
 	if (hasParams) {
@@ -37,15 +37,15 @@ module.exports.handleGetContributionsWithoutParams = function(req, res, next) {
 }
 
 module.exports.ensureGetContributionsCorrectParams = function(req, res, next) {
-	var numKeys = Object.keys(req.query).length;
+	var numKeys = Object.keys(req.body).length;
 	var NUM_QUERY_KEYS_CONTRIBUTION = 6;
 
-	var QUERY_PARAM_DEPTH_KEYWORD = 'd';
-	var QUERY_PARAM_GROUPS_KEYWORD = 'g';
-	var QUERY_PARAM_RATING_KEYWORD = 'r';
-	var QUERY_PARAM_USERS_KEYWORD = 'u';
-	var QUERY_PARAM_TIME_KEYWORD = 't';
-	var QUERY_PARAM_TAGS_KEYWORD = 'tg';
+	var REQ_DEPTH_KEYWORD = 'd';
+	var REQ_GROUPS_KEYWORD = 'g';
+	var REQ_RATING_KEYWORD = 'r';
+	var REQ_USERS_KEYWORD = 'u';
+	var REQ_TIME_KEYWORD = 't';
+	var REQ_TAGS_KEYWORD = 'tg';
 
 	if (numKeys !== NUM_QUERY_KEYS_CONTRIBUTION) {
 		console.log('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Expected 6 query parameters but only received ' + numKeys + '.');
@@ -56,12 +56,12 @@ module.exports.ensureGetContributionsCorrectParams = function(req, res, next) {
 	// check if the 6 query params are the ones that i need
 
 	// 1 Number query param (depth)
-	if (!(QUERY_PARAM_DEPTH_KEYWORD in req.query)){
+	if (!(REQ_DEPTH_KEYWORD in req.body)){
 		console.log('[ERROR] Attempt to fetch filtered contributions by /api/contributions failed.\nReason: Expected a depth param but did not receive any.');
 		return res.send('No depth query provided');
 	}
 
-	var QUERY_PARAM_DEPTH_STRING = req.query[QUERY_PARAM_DEPTH_KEYWORD];
+	var QUERY_PARAM_DEPTH_STRING = req.body[REQ_DEPTH_KEYWORD];
 	var isDepthParamEmpty = QUERY_PARAM_DEPTH_STRING.length <= 0;
 	var isDepthParamNumber = !isNaN(parseInt(QUERY_PARAM_DEPTH_STRING));
 
@@ -71,20 +71,20 @@ module.exports.ensureGetContributionsCorrectParams = function(req, res, next) {
 	}
 
 	var requiredKeysWithoutDepth = [
-																	QUERY_PARAM_GROUPS_KEYWORD,
-																	QUERY_PARAM_USERS_KEYWORD,
-																	QUERY_PARAM_RATING_KEYWORD,
-																	QUERY_PARAM_TIME_KEYWORD,
-																	QUERY_PARAM_TAGS_KEYWORD
+																	REQ_GROUPS_KEYWORD,
+																	REQ_USERS_KEYWORD,
+																	REQ_RATING_KEYWORD,
+																	REQ_TIME_KEYWORD,
+																	REQ_TAGS_KEYWORD
 																 ].sort();
 
-	var sortedQueryKeys = Object.keys(req.query).sort();
-	sortedQueryKeys.splice(sortedQueryKeys.indexOf(QUERY_PARAM_DEPTH_KEYWORD), 1); // remove the depth param
+	var sortedQueryKeys = Object.keys(req.body).sort();
+	sortedQueryKeys.splice(sortedQueryKeys.indexOf(REQ_DEPTH_KEYWORD), 1); // remove the depth param
 
 	var correctParams = requiredKeysWithoutDepth.reduce(function(acc, val, idx){
 		return acc 
 			&& (val == sortedQueryKeys[idx]) 
-			&& (req.query[val].length > 0) // must not be blank queries for JSON.parse()
+			&& (req.body[val].length > 0) // must not be blank queries for JSON.parse()
 	}, true);
 
 	if (!correctParams) {
@@ -200,7 +200,7 @@ module.exports.updateDatabaseWithAttachmentsAndGenerateThumbnails = function(req
 	.then(function(){
 
 		return new Promise(function(resolve, reject){
-			
+
 			var createQueries = req.files.map((f, idx) =>
 				' CREATE (a' + idx + ':attachment {dateUploaded: ' + f.filename.split("_")[0] + ', size: ' + f.size + ', name: "' + f.filename + '", thumb:false })' +
 				' CREATE (u)-[:UPLOADED]->(a' + idx + ')' +
