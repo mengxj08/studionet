@@ -87,6 +87,42 @@ angular.module('studionet')
 	return o;
 }])
 
+/*
+.factory('graphs', ['$http', 'groups', function($http, groups){
+
+	var o = {
+		contribution: {},
+		groups: {}
+	};
+
+	o.getContributionsGraph = function(){
+		return $http.get("/graph/all").success(function(data){
+			angular.copy(data, o.contribution);
+		});
+	};
+
+	o.filterContributions = function(){
+		return $http.get(urlString).success(function(data){
+			//$scope.graphInit(data);
+		});
+	}
+
+	o.getGroupsGraph = function(user_context){
+		return $http.get('/graph/all/groups').success(function(data){
+			// replace the nodes with the groups that already hold data about the user status in each group
+			data.nodes = groups.groups;
+			// copy data
+			angular.copy(data, o.groups);
+		});
+	};
+
+	o.drawGraph = function(){
+
+	}
+
+
+}])*/
+
 
 .factory('users', ['$http', function($http){
 
@@ -120,7 +156,7 @@ angular.module('studionet')
 	return o;
 }])
 
-.factory('tags', ['$http', function($http){
+.factory('tags', ['$http', '$filter', function($http, $filter){
 
 	var o = {
 		tags: []
@@ -128,7 +164,8 @@ angular.module('studionet')
 
 	o.getAll = function(){
 		return $http.get('/api/tags').success(function(data){
-			angular.copy(data, o.tags);
+			// order according to contribution count
+			angular.copy($filter('orderBy')(data, 'contributionCount', true) , o.tags);
 		});
 	};
 
@@ -136,11 +173,12 @@ angular.module('studionet')
 }])
 
 
-.factory('contributions', ['$http', function($http){
+.factory('contributions', ['$http', 'profile', function($http, profile){
 
 	var o = {
 		contributions: [],
-		graph: {}
+		graph: {},
+		marked: []
 	};
 
 	o.getAll = function(){
@@ -151,12 +189,119 @@ angular.module('studionet')
 
 	o.getGraph = function(){
 		return $http.get("/graph/all").success(function(data){
+
+			// mark the nodes owned by the user
+			var contributionHash = o.contributions.hash();
+			data.nodes = data.nodes.map(function(node){
+
+					// find if contribution is owned by user
+					if( contributionHash[node.id].createdBy == profile.user.id ){
+						node.owner = true;
+					}
+					else
+						node.owner = false;
+
+					// check if contribution was recently created and hence marked 
+					if( o.marked.indexOf( node.id ) > -1)
+						node.marked = true;
+					else
+						node.marked = false;
+
+					return node;
+			})
+
 			angular.copy(data, o.graph);
+
 		});
 	};
 
 	return o;
 }])
+
+.factory('contribution', ['$http', 'profile', 'contributions', function($http, profile, contributions){
+
+	var o = {
+		contribution: {}
+	};
+
+	o.getContribution = function(id){
+		return $http.get('/api/contributions/' + id).success(function(data){
+				angular.copy(data, o.contribution);
+		});
+	};
+
+	o.createContribution = function(new_contribution){
+	    return $http({
+	      method  : 'POST',
+	      url     : '/api/contributions/',
+	      data    : new_contribution,  // pass in data as strings
+	      headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
+	      })
+	    .success(function(res) {
+
+	    	// mark in graph
+	    	contributions.marked.push(res.id);
+	    	console.log(res.id);
+
+			// refresh graph
+			
+			// refresh tags
+			
+
+			// refresh profile
+
+			// refresh contributions
+			
+
+			// send success
+			return res;  
+	    })
+	    .error(function(error){
+			throw error;
+	    })
+	}
+
+	o.deleteContribution = function(contribution_id){
+	    return $http({
+				method  : 'delete',
+				url     : '/api/contributions/' + contribution_id,
+				data    : {},  // pass in data as strings
+				headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
+				})
+	    .success(function(data) {
+			
+			alert(data);
+			// $scope.close();
+			// $scope.refresh();  
+			// $scope.$parent.graphInit();
+			// 
+			// if filter active, re-render filter
+			// else render entire graph
+			
+	    })
+	    .error(function(error){
+			throw error;
+	    })		
+	
+	}
+
+	o.updateViewCount = function(id){
+		return $http.post('/api/contributions/' + id + '/view').success(function(data){
+			o.contribution.views += 1;
+			console.log(data);
+		});
+	};
+
+	o.rateContribution = function(id, rating){
+		return $http.post('/api/contributions/' + id + '/rate', {'rating': rating} ).success(function(data){
+			console.log(data);
+		});
+	};
+
+
+	return o;
+}])
+
 
 .factory('groups', ['$http', 'profile', function($http, profile){
 
@@ -242,7 +387,7 @@ angular.module('studionet')
 					data.requestingUserStatus = undefined;
 
 					// fix me - find a better way
-/*					for(var i=0; i < profile.user.groups.length; i++){
+				/*	for(var i=0; i < profile.user.groups.length; i++){
 						if( data.id == profile.groups[i].id ){
 								data.requestingUserStatus = profile.groups[i].role;
 						}
@@ -392,3 +537,20 @@ angular.module('studionet')
 
 	return o;
 }]);
+
+
+/*
+ *   General Function
+ */
+
+Array.prototype.hash = function(){
+	
+	var hash = [];
+
+	this.map(function(a){
+		hash[a.id] = a;
+	})
+	
+	return hash;
+
+}

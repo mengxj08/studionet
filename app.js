@@ -24,6 +24,8 @@ var contributions = require('./routes/contributions');
 var supernode = require('./routes/supernode');
 
 var logs = require('./routes/logs');
+if (process.env.NODE_ENV === 'test')
+  var testdata = require('./routes/testdata');
 
 var app = express();
 
@@ -88,6 +90,8 @@ app.use('/api/supernode', supernode);
 app.use('/uploads', uploads);
 
 app.use('/api/logs', logs);
+if (process.env.NODE_ENV === 'test')
+  app.use('/api/testdata', testdata);
 
 
 // catch 404 and forward to error handler

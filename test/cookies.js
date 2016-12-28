@@ -24,6 +24,8 @@ var expect = chai.expect;
 var request = require('supertest');
 var agent = request.agent(app);
 
+console.log(app.settings);
+
 var inspect = require('eyespect').inspector();
 
 var csvUrl = "https://raw.githubusercontent.com/edmundmok/studionet/master/test/testdata.csv";
@@ -103,7 +105,6 @@ describe('Cookies test', function() {
 					expect(res).to.have.status(302);
 					expect(res).to.redirectTo('/');
 					var loginCookie = res.headers['set-cookie'];
-					console.log(loginCookie);
 					return done();
 				});
 		});
@@ -114,6 +115,7 @@ describe('Cookies test', function() {
 				.get('/api/users')
 				.end(function(err, res){
 					expect(res).to.have.status(200);
+					console.log(res);
 					return done();
 				});
 		});

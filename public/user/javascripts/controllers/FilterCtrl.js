@@ -10,8 +10,8 @@ angular.module('studionet')
             users : [],
             groups: [],
             tags : [],
-            startDate: new Date( (new Date()).setDate((new Date().getDate()) - 120) ),
-            endDate : new Date( (new Date()).setDate((new Date().getDate()) + 120) ),
+            startDate: new Date( (new Date()).setDate((new Date().getDate()) - 2) ),
+            endDate : new Date( (new Date()).setDate((new Date().getDate()) + 2) ),
             ratingMin : 0, 
             ratingMax : 5, 
             depthVal : 0
@@ -43,6 +43,7 @@ angular.module('studionet')
         console.log($scope.filterVisible);
         $scope.filterVisible = !$scope.filterVisible;
       }
+
       $scope.getFilterStatus = function(){
         console.log($scope.filterVisible);
         return $scope.filterVisible;
@@ -146,6 +147,13 @@ angular.module('studionet')
      
       }
 
+      var getTime = function(d){
+        d.setHours(0);
+        d.setMinutes(0);
+        d.setSeconds(0);
+        return d.getTime();
+      }
+
 
       /* Filter Functions */
       $scope.clearFilter = function(){
@@ -228,7 +236,7 @@ angular.module('studionet')
 
               + "&r=[" + $scope.ratingMin + "," + $scope.ratingMax + "]"    // rating
 
-              + "&t=[" + $scope.startDate.getTime() + "," + $scope.endDate.getTime() + "]"   // time
+              + "&t=[" + getTime($scope.startDate) + "," + getTime($scope.endDate) + "]"   // time
 
               + "&d=" + $scope.depthVal;   // depth
 
@@ -242,7 +250,8 @@ angular.module('studionet')
                   $scope.filterActive = true;
                   spinner.stop();
 
-                  if(data.nodes.length == 0){
+                  console.log(data);
+                  if(data.nodes == undefined || data.nodes.length == 0){
                     $(target).append("<h3 style='position: absolute; top:40%; left: 40%;'>Oops. No Nodes found.</h3>");
                   }
                   else{

@@ -77,8 +77,12 @@ var CONCENTRIC_GRAPH_LAYOUT = {  name: 'concentric',
 var computeSizeFn = function(node){
 
     var successors = node.successors().length;
-    var basic = 20;
+    var basic = 25;
     var final = basic; 
+
+    if(node.data('marked') == true)
+      return basic + 30;
+
 
     switch(true){
 
@@ -101,6 +105,17 @@ var computeSizeFn = function(node){
 }
 
 var computeBgColorFn = function(node){
+
+    // if filtered contribution
+    if(node.data('match'))
+      return "#0AEF40";
+
+    if(node.data('owner') == true)
+      return "#068E26";
+
+    if(node.data('marked') == true)
+      return "#F3CB17";
+
 
     var successors = node.successors().length;
     var final = "#989BB4"; 
@@ -166,6 +181,13 @@ var graph_style = {
               'line-color': '#7E8CF8',
               'width': 1
             })     
+
+          .selector('node.selected')
+            .css({
+              'background-color' : '#F0F311',
+              'border-width': '2',
+              'border-color': 'black'
+            })
 
           .selector('node.highlighted')
             .css({

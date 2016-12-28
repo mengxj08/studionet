@@ -105,7 +105,7 @@ router.route('/')
     })
     .then(function(result){
       var hash = {};
-      result.filteredIdList.reduce((acc, curr) => hash[curr] = true);
+      result.filteredIdList.forEach(e => hash[e] = true);
 
       var query = [
         result.queryUserGroupTag,
@@ -143,89 +143,90 @@ router.route('/')
 
   })
 
-  /*
-   * Creates a new contribution linked to the current user.
-   *
-   * req.author : profile.user.id;
-   * req.title : Contribution's Title
-   * req.body : Contribution's Content
-   * req.tags : Array - Contribution's tags
-   * To-do: Once a new tag is specified for the created contribution, this new tag should be sent to DB as well
-   * 
-   * req.ref : the being created contribution's parent (reply to ... )  
-   * 
-   * Links created:
-   * Reference link - Reference to another contribution (may be normal contribution or root node)
-   * Tag link - Links itself to the tags specified in the req body, creating them if necessary. 
-   *           If tags are created, contribution creator will be set to this tags as the creator of these tags.
-   *
-   */
-  .post(auth.ensureAuthenticated, contributionUtil.initTempFileDest, multer({storage: storage.attachmentStorage}).array('attachments'), function(req, res, next){
+	/*
+	 * Creates a new contribution linked to the current user.
+	 *
+	 * req.author : profile.user.id;
+	 * req.title : Contribution's Title
+	 * req.body : Contribution's Content
+	 * req.tags : Array - Contribution's tags
+	 * To-do: Once a new tag is specified for the created contribution, this new tag should be sent to DB as well
+	 * 
+	 * req.ref : the being created contribution's parent (reply to ... )  
+	 * 
+	 * Links created:
+	 * Reference link - Reference to another contribution (may be normal contribution or root node)
+	 * Tag link - Links itself to the tags specified in the req body, creating them if necessary. 
+	 *           If tags are created, contribution creator will be set to this tags as the creator of these tags.
+	 *
+	 */
+	.post(auth.ensureAuthenticated, contributionUtil.initTempFileDest, multer({storage: storage.attachmentStorage}).array('attachments'), function(req, res, next){
 
-    // Creating the contribution node, then link it to the creator (user)
-    var query = [
-      'CREATE (c:contribution {createdBy: {createdByParam}, title: {contributionTitleParam},'
-      + ' body: {contributionBodyParam}, ref: {contributionRefParam}, lastUpdated:{lastUpdatedParam},'
-      + ' dateCreated: {dateCreatedParam}, edited: {editedParam}, contentType: {contentTypeParam},'
-      + ' rating: {ratingParam}, totalRating: {totalRatingParam}, rateCount: {rateCountParam}, tags: {tagsParam}, views: {viewsParam}}) WITH c',
-      'MATCH (u:user) WHERE id(u)={createdByParam}',
-      'CREATE (u)-[r:CREATED]->(c) WITH c',
-      'MATCH (c1:contribution) where id(c1)={contributionRefParam}',
-      'CREATE (c)-[r1:' + (req.body.refType || "RELATED_TO") +']->(c1) WITH c',
-      'UNWIND {tagsParam} as tagName '
-            + 'MERGE (t:tag {name: tagName}) '
-            + 'ON CREATE SET t.createdBy = {createdByParam}'
-            + 'CREATE UNIQUE (c)-[r2:TAGGED]->(t) ',
-      'RETURN id(c) as id'
-    ].join('\n');
+		// Creating the contribution node, then link it to the creator (user)
+		var query = [
+			'CREATE (c:contribution {createdBy: {createdByParam}, title: {contributionTitleParam},'
+			+ ' body: {contributionBodyParam}, ref: {contributionRefParam}, lastUpdated:{lastUpdatedParam},'
+			+ ' dateCreated: {dateCreatedParam}, edited: {editedParam}, contentType: {contentTypeParam},'
+			+ ' rating: {ratingParam}, totalRating: {totalRatingParam}, rateCount: {rateCountParam}, tags: {tagsParam}, views: {viewsParam}}) WITH c',
+			'MATCH (u:user) WHERE id(u)={createdByParam}',
+			'CREATE (u)-[r:CREATED]->(c) WITH c',
+			'MATCH (c1:contribution) where id(c1)={contributionRefParam}',
+			'CREATE (c)-[r1:' + (req.body.refType || "RELATED_TO") +']->(c1) WITH c',
+			'UNWIND {tagsParam} as tagName '
+						+ 'MERGE (t:tag {name: tagName}) '
+						+ 'ON CREATE SET t.createdBy = {createdByParam}'
+						+ 'CREATE UNIQUE (c)-[r2:TAGGED]->(t) ',
+			'RETURN id(c) as id'
+		].join('\n');
 
-    var currentDate = Date.now();
-    var params = {
-      createdByParam: parseInt(req.user.id),
-      tagsParam: req.body.tags,
-      contributionTitleParam: req.body.title,
-      contributionBodyParam: req.body.body,
-      contributionRefParam: parseInt(req.body.ref), 
-      lastUpdatedParam: currentDate,
-      dateCreatedParam: currentDate,
-      refTypeParam: req.body.refType || "RELATED_TO", 
-      editedParam: false,
-      contentTypeParam: req.body.contentType,
-      ratingParam: 0,
-      totalRatingParam: 0,
-      rateCountParam: 0,
-      viewsParam: 0
-    };
+		var currentDate = Date.now();
+		var params = {
+			createdByParam: parseInt(req.user.id),
+			tagsParam: req.body.tags,
+			contributionTitleParam: req.body.title,
+			contributionBodyParam: req.body.body,
+			contributionRefParam: parseInt(req.body.ref), 
+			lastUpdatedParam: currentDate,
+			dateCreatedParam: currentDate,
+			refTypeParam: req.body.refType || "RELATED_TO", 
+			editedParam: false,
+			contentTypeParam: req.body.contentType,
+			ratingParam: 0,
+			totalRatingParam: 0,
+			rateCountParam: 0,
+			viewsParam: 0
+		};
 
-    /*
-     *  Only to allow creationg of synthetic data; 
-     *  Changes creating user from actual user to user specified;
-     *  !! Remove in production
-     * 
-     */
-    if(auth.ensureSuperAdmin && req.body.author && req.body.createdAt){
+		/*
+		 *	Only to allow creationg of synthetic data; 
+		 *	Changes creating user from actual user to user specified;
+		 *	!! Remove in production
+		 * 
+		 */
+		if(auth.ensureSuperAdmin && req.body.author && req.body.createdAt){
 
-      params.createdByParam = parseInt(req.body.author);    // remove in production
-      params.dateCreatedParam = new Date(req.body.createdAt).getTime();
-      params.lastUpdatedParam = new Date(req.body.createdAt).getTime();
-    }
+			params.createdByParam = parseInt(req.body.author);		// remove in production
+			params.dateCreatedParam = new Date(req.body.createdAt).getTime();
+			params.lastUpdatedParam = new Date(req.body.createdAt).getTime();
+		}
 
-    
-    db.query(query, params, function(error, result){
-      if (error){
-        console.log('[ERROR] Error creating new contribution for user : ', error);
-        res.status(500);
-        return res.send(error);
-      }
-      else{
-        console.log('[SUCCESS] Success in creating a new contribution for user id: ' + req.user.id);
-        req.contributionId = result[0].id;
-        res.send('Success in creating the contribution');
-        next();
-      }
-    }); 
+		
+		db.query(query, params, function(error, result){
+			if (error){
+				console.log('[ERROR] Error creating new contribution for user : ', error);
+				res.status(500);
+				return res.send(error);
+			}
+			else{
+				console.log('[SUCCESS] Success in creating a new contribution for user id: ' + req.user.id);
+				req.contributionId = result[0].id;
+				res.status(200);
+				res.send( result[0] );
+				next();
+			}
+		}); 
 
-  }, contributionUtil.updateDatabaseWithAttachmentsAndGenerateThumbnails);
+	}, contributionUtil.updateDatabaseWithAttachmentsAndGenerateThumbnails);
 
 // route: /api/contributions/:contributionId
 router.route('/:contributionId')

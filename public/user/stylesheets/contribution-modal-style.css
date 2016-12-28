@@ -1,52 +1,71 @@
-.viewContributionContainer{
-    width: 50% !important; 
-    //margin-right: 10% !important; 
+/*
+ * General Styling for all Modals
+ */
+
+.modal{
+  width: 70% !important;
+  margin-left: 15% !important;  
+  overflow-y: hidden !important;
 }
 
-.sidebar{
-    width: 100%;
-    margin: 20px 0px 0px 0px;
-    position: fixed;
-    width: 300px;
-    height: 200px;
+.modal-dialog{
+  padding: 0px !important;
+
 }
 
-.modal h3{
-
-    font-size: 14px;
-    font-weight: bold;
-    line-height: 20px;
-    text-transform: uppercase;
-    
-    margin: 0px;
-    padding: 0px;
-
-    display: inline-block;
+.modal-content{
+  overflow-y: hidden !important;
 }
 
-.modal span{
-    font-size: 12px;
-    font-style: italic;
-    line-height: 20px;
-    text-transform: none;
+
+.modal-body{
+    overflow: auto !important;
+    max-height: 800px;
 }
 
-.modal-dialog-container{
-    height: 1000px;
-    overflow-y: auto;
-    overflow-x: hidden;
+.editor{
+  max-height: 100%;
 }
 
+.createContribution{
+    width: 70% !important;
+    margin-left: 15% !important; 
+}
+
+
+.viewContribution{
+    width: 70% !important; 
+    margin-left: 15% !important;  
+}
+
+
+.wide{
+  width: 100% !important;
+}
+
+/*
+ * Modal Header
+ */
 .modal-header{
-    text-align: center;
+    height: 45px;
+    line-height: 25px; 
 }
+
+.close{ 
+    line-height: 25px;
+}
+
+h4.modal-title{
+    line-height: 25px;
+    font-size: 16px !important; 
+}
+
+/*
+ * Modal Body
+ */
 
 select, input{
 	width: 300px;
-}
-
-input.wide{
-	width: 450px;
 }
 
 select.tag-list{
@@ -78,3 +97,57 @@ hr {
     border-style: inset;
     border-width: 1px;
 } 
+
+#rating .glyphicon{
+    font-size: 20px;
+    line-height: 20px;
+} 
+
+
+.close{
+  line-height: 45px;
+}
+
+.modal-header{
+  text-align: left !important;
+  padding 0px 30px !important;
+}
+
+.modal-footer{
+  height: 60px !important;
+  line-height: 45px;
+  padding: 5px !important;
+}
+
+.modal-button{
+  margin: 0px !important;
+  min-width: 150px;
+  height: 100% !important;
+  font-size: 15px;
+  font-family: 'Roboto Condensed', sans-serif;
+}
+
+.textAngular .btn-default{
+  padding: 0px !important;
+}
+
+.textAngular .btn-group{
+  display: inline-block;
+}
+
+.ta-editor.ta-html, .ta-scroll-window.form-control{
+  max-height: 300px;
+}
+
+tags-input .tags{
+  max-height: 35px;
+  overflow-y: auto;
+}
+
+.textAngular .btn-toolbar{
+  padding: 0px !important;
+}
+
+.btn-toolbar > .btn, .btn-toolbar > .btn-group, .btn-toolbar > .input-group{
+  margin-left: 0px !important;
+}
