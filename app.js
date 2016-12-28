@@ -9,6 +9,7 @@ var bodyParser = require('body-parser');
 var morgan = require('morgan');
 var url = require('url'); // for parsing url to reject image logs, remove if not needed
 
+
 // require route files
 var profile = require('./routes/profile');
 var routes = require('./routes/index');
@@ -22,6 +23,7 @@ var graph_all = require('./routes/graph_all');
 var graph_med = require('./routes/graph_med');
 var contributions = require('./routes/contributions');
 var supernode = require('./routes/supernode');
+
 
 var logs = require('./routes/logs');
 //if (process.env.NODE_ENV === 'test')
@@ -56,8 +58,8 @@ app.set('view engine', 'ejs');
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 //if (process.env.NODE_ENV !== 'test')
 // app.use(logger('dev'));
-app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 app.use(cookieParser());
 // use express session
 app.use(session({ 

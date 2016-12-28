@@ -242,11 +242,12 @@ angular.module('studionet')
 		formData.append('contentType', new_contribution.contentType);
 		formData.append('ref', new_contribution.ref);
 
+		formData.description = "This is a form";
 
 	    return $http({
 	      method  : 'POST',
 	      url     : '/api/contributions',
-	      headers : { 'Content-Type': 'multipart/form-data; boundary=...', 'enctype':'multipart/form-data;' },
+	      headers : { 'Content-Type': undefined, 'enctype':'multipart/form-data; charset=utf-8' },
       	  processData: false,
           data: formData
 	    })

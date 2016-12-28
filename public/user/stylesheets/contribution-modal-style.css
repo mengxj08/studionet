@@ -84,7 +84,7 @@ h4.modal-title{
 
 .editor{
    padding: 10px 30px !important;
-   max-height: 700px;
+   max-height: 500px;
    overflow-y: auto !important;
 }
 
