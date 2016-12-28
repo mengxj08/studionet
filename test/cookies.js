@@ -23,22 +23,15 @@ var assert = chai.assert;
 var expect = chai.expect;
 var request = require('supertest');
 var agent = request.agent(app);
-
-console.log(app.settings);
-
-var inspect = require('eyespect').inspector();
-
-var csvUrl = "https://raw.githubusercontent.com/edmundmok/studionet/master/test/testdata.csv";
-
 var testUser = {
 	username: 'USER1',
 	password: '123'
 }
+var csvUrl = "http://localhost:3000/api/testdata";
 
 describe('Cookies test', function() {
 
 	// Before each test we empty the database and add the test user
-	
 	before(function(done) {
 
 		var deletePromise = new Promise(function(resolve, reject){
@@ -115,7 +108,6 @@ describe('Cookies test', function() {
 				.get('/api/users')
 				.end(function(err, res){
 					expect(res).to.have.status(200);
-					console.log(res);
 					return done();
 				});
 		});

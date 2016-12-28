@@ -5,11 +5,9 @@ var path = require('path');
 router.route('/')
 
 	.get(function(req, res){
-
-		console.log('received');
-		
+		res.set("Content-Disposition", "inline;filename=testdata.csv");
+		res.set('Content-Type', 'text/csv');
 		res.sendFile(path.resolve(__dirname + '/../test/testdata.csv'));
-
 	})
 
 
