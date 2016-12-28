@@ -2,11 +2,12 @@ angular.module('studionet')
 .controller('CreateContributionCtrl', ['$scope', 'supernode', 'contribution', function($scope, supernode, contribution){
 
       var all_tags = $scope.$parent.tags; 
+      $scope.file;
 
       $scope.alert = {}; 
 
       // for the new contribution
-      $scope.contributionData = { tags: [], refType: "RELATED_TO", contentType: "text", ref: supernode.contribution};
+      $scope.contributionData = { attachments: [], tags: [], refType: "RELATED_TO", contentType: "text", ref: supernode.contribution};
 
       $scope.loadTags = function($query){
           return all_tags.filter(function(tag){
@@ -31,6 +32,8 @@ angular.module('studionet')
              $scope.contributionData.tags.push(t.name);
           })
 
+          console.log($scope.contributionData);
+          
           contribution.createContribution( $scope.contributionData ).then(function(res){
                 $scope.alert.success = true; 
                 $scope.alert.successMsg = "Contribution Id : " + res.data.id; 
@@ -41,7 +44,7 @@ angular.module('studionet')
           }, function(error){
                 $scope.alert.error = true; 
                 $scope.alert.errorMsg = error;
-          });
+          }); 
 
        };
    

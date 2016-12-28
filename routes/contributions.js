@@ -43,6 +43,8 @@ router.route('/')
 	 */
 	.post(auth.ensureAuthenticated, contributionUtil.initTempFileDest, multer({storage: storage.attachmentStorage}).array('attachments'), function(req, res, next){
 
+		console.log(req.body);
+
 		// Creating the contribution node, then link it to the creator (user)
 		var query = [
 			'CREATE (c:contribution {createdBy: {createdByParam}, title: {contributionTitleParam},'

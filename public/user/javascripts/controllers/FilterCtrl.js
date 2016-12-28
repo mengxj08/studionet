@@ -217,7 +217,7 @@ angular.module('studionet')
           }
           else{
               
-              var urlString = '/api/contributions?'; 
+              var urlString = '/api/contributions/filters'; 
 
               var groups = $scope.selectedGroups; //$scope.selectedAuthors.filter( function(g){ return (g.type == "group") });
               var users = $scope.selectedUsers; //$scope.selectedAuthors.filter( function(g){ return (g.type == "user") });
@@ -226,9 +226,17 @@ angular.module('studionet')
               var usersUrlSeg = ( users.length ? "[" + users.map( function(u){ return u.id } ).toString() + "]"  : ( groups.length > 0 ? "[]" : "-1" ) ) // users
 
 
+              var data = {};
+              data.g = groupsUrlSeg;
+              data.u = usersUrlSeg; 
+              data.tg = ( $scope.selectedTags.length ? "[" + $scope.selectedTags.map( function(g){ return g.id; }).toString() + "]" : "-1" );
+              data.r = "[" + $scope.ratingMin + "," + $scope.ratingMax + "]";
+              data.t = "[" + getTime($scope.startDate) + "," + getTime($scope.endDate) + "]"
+              data.d =  $scope.depthVal;
+
               //  Create the URL String
             
-              urlString +=  "g=" + groupsUrlSeg
+/*              urlString +=  "g=" + groupsUrlSeg
 
               + "&u=" + usersUrlSeg
 
@@ -238,14 +246,19 @@ angular.module('studionet')
 
               + "&t=[" + getTime($scope.startDate) + "," + getTime($scope.endDate) + "]"   // time
 
-              + "&d=" + $scope.depthVal;   // depth
+              + "&d=" + $scope.depthVal;   // depth*/
 
-              console.log(urlString);
+              console.log(data);
 
               $(target).empty();
               spinner.spin(target);
 
-              $http.get(urlString).success(function(data){
+              $http({
+                method  : 'POST',
+                url     : '/api/contributions/filters',
+                headers : { 'Content-Type': 'application/json' }, 
+                data    : data
+              }).success(function(data){
 
                   $scope.filterActive = true;
                   spinner.stop();

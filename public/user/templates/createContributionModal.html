@@ -58,12 +58,12 @@
               <!-- attachments -->
               <div class='form-section'>
                 <label> Attachments </label>
-                <input type='file' ng-model='contributionData.attachment'>{{contributionData.attachment}}
+                <div class="button" ngf-select ng-model="contributionData.attachments" ngf-multiple="true">Select</div>
+                {{contributionData.attachments.length}} files uploaded
               </div>
 
           </div>
         </div>
-
 
         <div class="modal-footer">
           <center>
