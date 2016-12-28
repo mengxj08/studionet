@@ -188,6 +188,10 @@ nav .navbar-nav{
 	cursor: pointer;
 }
 
+.icon:hover{
+    transform: scale(1.1) rotate(7deg);
+}
+
 li.notification{
 	margin-left: 10px !important;
 }
