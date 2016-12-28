@@ -1,11 +1,10 @@
 var request = require('request');
 var inspect = require('eyespect').inspector();
-
 var db_loc = 'http://'+ process.env.DB_USER +':'+ process.env.DB_PASS +'@localhost:7474/db/data/transaction/commit'; 
 if(process.env.SERVER_URL != undefined)
     db_loc = 'http://'+ process.env.DB_USER +':'+ process.env.DB_PASS +'@' + process.env.SERVER_URL.slice(7) + '/db/data/transaction/commit'; 
 
-function idIndex(a, id){
+var idIndex = function (a, id){
   for (var i = 0; i < a.length ; i++) {
     if (a[i].id === id) {
       return a[i];
@@ -14,7 +13,7 @@ function idIndex(a, id){
   return null;
 }
 
-function setName(n) {
+var setName = function (n) {
     if (n.labels[0] === "contribution") {
         return n.properties.title;
     } else {
@@ -22,7 +21,7 @@ function setName(n) {
     }
 }
 
-function apiCall(query, callback){
+var graphQuery = function (query, callback){
   var postData = {
     "statements": [
       {
@@ -71,6 +70,7 @@ function apiCall(query, callback){
                 name: setName(n)
             });
       });
+
       links = links.concat(row.graph.relationships.map(function(r) {
           return {
               target: idIndex(nodes, r.startNode).id,   // should not be a case where start or end is null.
@@ -78,6 +78,7 @@ function apiCall(query, callback){
               name: r.type
           };
       }));
+
     });
 
     callback({
@@ -89,4 +90,4 @@ function apiCall(query, callback){
 
 }
 
-module.exports = apiCall;
+module.exports = graphQuery;
