@@ -34,7 +34,7 @@ angular.module('studionet')
           });
 
           $scope.contributionData._files.map(function(file){
-             $scope.contributionData.attachments.push(file);
+             $scope.contributionData.attachments.push(fileReader.result);
           });
           
           delete $scope.contributionData._tags;
