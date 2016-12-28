@@ -628,13 +628,13 @@ router.route('/:contributionId/attachments/:attachmentId')
         req.fileNameToDelete = result[0].fileName;
         next();
       } else {
-        res.send('not the owner');
+        return res.send('not the owner');
       }
     });
   }, function(req, res){
     // user is the creator.
     // delete the attachment file + thumbnail (if present) and node in db
-    /*
+    
     var attachmentPath = './uploads/contributions/' + req.params.contributionId + '/attachments/' + req.fileNameToDelete;
     var thumbnailPath = './uploads/contributions/' + req.params.contributionId + '/attachments/thumbnails/' + req.fileNameToDelete;
 
@@ -648,7 +648,27 @@ router.route('/:contributionId/attachments/:attachmentId')
         }
       });
     });
-    */
+
+    var query = [
+      'MATCH (a:attachment) WHERE ID(a)={attachmentIdParam}',
+      'DETACH DELETE a'
+    ].join('\n');
+
+    var params = {
+      attachmentIdParam: parseInt(req.params.attachmentId)
+    };
+
+    db.query(query, params, function(error, result){
+      if (error) {
+        console.log(error);
+        res.status(500);
+        res.send('error');
+      } else {
+        res.status(200);
+        res.send('success');
+      }
+    })
+    /*
 
     var query = [
       'MATCH (a:attachment)<-[r:ATTACHMENT]-(c:contribution)',
@@ -671,7 +691,7 @@ router.route('/:contributionId/attachments/:attachmentId')
         res.status(200);
         res.send('success');
       }
-    })
+    });*/
 
   });
 

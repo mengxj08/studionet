@@ -49,7 +49,7 @@ storage.attachmentStorage = multer.diskStorage({
 	},
 	filename: function(req, file, cb) {
 		// e.g. 12313123_originalname.txt
-		cb(null, Date.now() + '_' + file.originalname);
+		cb(null, /*Date.now() + '_' + */file.originalname);
 	}
 }); 
 
