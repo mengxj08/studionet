@@ -2,6 +2,25 @@
  * General Styling for all Modals
  */
 
+
+.modal-backdrop {
+   background-color: rgba(0,0,0,0.2);
+}
+
+.modal-backdrop .in {
+    opacity: 0.9 !important;
+}
+
+hr { 
+    display: block;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: auto;
+    margin-right: auto;
+    border-style: inset;
+    border-width: 1px;
+} 
+
 .modal{
   width: 70% !important;
   margin-left: 15% !important;  
@@ -17,15 +36,6 @@
   overflow-y: hidden !important;
 }
 
-
-.modal-body{
-    overflow: auto !important;
-    max-height: 800px;
-}
-
-.editor{
-  max-height: 100%;
-}
 
 .createContribution{
     width: 70% !important;
@@ -48,15 +58,16 @@
  */
 .modal-header{
     height: 45px;
-    line-height: 25px; 
-}
+    padding: 10px 30px 10px 30px !important;
+  }
 
 .close{ 
-    line-height: 25px;
+    line-height: 25px !important;
 }
 
 h4.modal-title{
     line-height: 25px;
+    text-align: center !important;
     font-size: 16px !important; 
 }
 
@@ -64,54 +75,33 @@ h4.modal-title{
  * Modal Body
  */
 
-select, input{
+
+.modal-body{
+    overflow: hidden !important;
+    max-height: 70%;
+    padding: 0px !important;
+}
+
+.editor{
+   padding: 10px 30px !important;
+   max-height: 700px;
+   overflow-y: auto !important;
+}
+
+.form-section{
+  margin: 10px 0px;
+}
+
+input{
 	width: 300px;
+  display: inline-block;
 }
 
-select.tag-list{
-	height: 250px; 
-    width: 400px;
-	/*margin-bottom: 10px;*/
-}
-
-input.addTag{
-    width: 250px; 
-    /*margin-left: 5px;*/
-    margin-right: 10px;
-}
-
-.modal-backdrop {
-   background-color: rgba(0,0,0,0.2);
-}
-
-.modal-backdrop .in {
-    opacity: 0.9 !important;
-}
-
-hr { 
-    display: block;
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
-    margin-left: auto;
-    margin-right: auto;
-    border-style: inset;
-    border-width: 1px;
-} 
 
 #rating .glyphicon{
     font-size: 20px;
     line-height: 20px;
 } 
-
-
-.close{
-  line-height: 45px;
-}
-
-.modal-header{
-  text-align: left !important;
-  padding 0px 30px !important;
-}
 
 .modal-footer{
   height: 60px !important;
@@ -127,6 +117,13 @@ hr {
   font-family: 'Roboto Condensed', sans-serif;
 }
 
+
+
+// textAngular
+.ta-editor.ta-html, .ta-scroll-window.form-control{
+  max-height: 300px;
+}
+
 .textAngular .btn-default{
   padding: 0px !important;
 }
@@ -135,14 +132,6 @@ hr {
   display: inline-block;
 }
 
-.ta-editor.ta-html, .ta-scroll-window.form-control{
-  max-height: 300px;
-}
-
-tags-input .tags{
-  max-height: 35px;
-  overflow-y: auto;
-}
 
 .textAngular .btn-toolbar{
   padding: 0px !important;
@@ -150,4 +139,9 @@ tags-input .tags{
 
 .btn-toolbar > .btn, .btn-toolbar > .btn-group, .btn-toolbar > .input-group{
   margin-left: 0px !important;
+}
+
+tags-input .tags{
+  max-height: 35px;
+  overflow-y: auto;
 }
