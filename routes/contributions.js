@@ -141,6 +141,8 @@ router.route('/filters')
         'RETURN collect(distinct id(u))'
       ].join('\n');
 
+      console.log(groupQuery);
+
       var groupQueryParam = {
         groupIdParam: groupIds
       };
@@ -178,6 +180,8 @@ router.route('/filters')
           queryDate,
           'RETURN collect(id(c)) as filteredIdList'
         ].join('\n');
+
+        console.log(query);
 
         db.query(query, function(error, result){
           if (error)
