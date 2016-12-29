@@ -202,7 +202,7 @@ module.exports.updateDatabaseWithAttachmentsAndGenerateThumbnails = function(req
 		return new Promise(function(resolve, reject){
 
 			var createQueries = req.files.map((f, idx) =>
-				' CREATE (a' + idx + ':attachment {dateUploaded: ' + f.filename.split("_")[0] + ', size: ' + f.size + ', name: "' + f.filename + '", thumb:false })' +
+				' CREATE (a' + idx + ':attachment {dateUploaded: ' + Date.now() + ', size: ' + f.size + ', name: "' + f.filename + '", thumb:false })' +
 				' CREATE (u)-[:UPLOADED]->(a' + idx + ')' +
 				' CREATE (a' + idx + ')<-[:ATTACHMENT]-(c)'
 				);

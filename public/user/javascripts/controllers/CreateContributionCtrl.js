@@ -26,19 +26,13 @@ angular.module('studionet')
       };
 
             // for the new contribution
-      $scope.contributionData = { _tags: [], _files: [], attachments: [], tags: [], refType: "RELATED_TO", contentType: "text", ref: supernode.contribution};
+      $scope.contributionData = { _tags: [], attachments: [], tags: [], refType: "RELATED_TO", contentType: "text", ref: supernode.contribution};
       $scope.createContribution = function(){
 
           $scope.contributionData._tags.map(function(t){
              $scope.contributionData.tags.push(t.name);
           });
-
-          $scope.contributionData._files.map(function(file){
-             $scope.contributionData.attachments.push(fileReader.result);
-          });
-          
           delete $scope.contributionData._tags;
-          delete $scope.contributionData._files;
 
           contribution.createContribution( $scope.contributionData ).then(function(res){
                 $scope.alert.success = true; 

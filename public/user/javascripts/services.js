@@ -232,8 +232,7 @@ angular.module('studionet')
 
 	o.createContribution = function(new_contribution){
 
-		console.log(new_contribution);
-		formData = new FormData();
+		var formData = new FormData();
 		formData.append('title', new_contribution.title);
 		formData.append('body', new_contribution.body);
 		formData.append('tags', new_contribution.tags);
@@ -241,21 +240,9 @@ angular.module('studionet')
 		formData.append('contentType', new_contribution.contentType);
 		formData.append('ref', new_contribution.ref);
 
-        formData.append('attachments1', "text1", 'text1.txt');
-        formData.append('attachments2', "text2", 'text2.txt');
-        formData.append('attachments', JSON.stringify(['hello', 'world']));
-
-
-		formData.description = "This is a form";
-
-
-/*		for(var i=0; i<new_contribution.attachments.length; i++){
-			var fileReader = new FileReader();
-			fileReader.readAsText(new_contribution.attachments[i]);
-			formData.append('attachments[' + i + ']', fileReader.result );
-			console.log(fileReader.result);
-			setTimeout(300);
-		}*/
+		new_contribution.attachments.map(function(file){
+			formData.append('attachments', file, file.name);
+		})
 
 	    return $http({
 	      method  : 'POST',
