@@ -202,6 +202,8 @@ router.route('/filters')
       var hash = {};
       result.filteredIdList.forEach(e => hash[e] = true);
 
+      // avg complete query time: 1100ms
+      /*
       var query = [
         result.queryUserGroupTag,
         result.queryRating,
@@ -216,6 +218,43 @@ router.route('/filters')
         'UNWIND combinedList as unwindedCombinedList',
         'WITH collect(distinct unwindedCombinedList) as distinctUnwindedCombinedList',
         'MATCH p=(source)-[*1]->(target) WHERE ID(source) IN distinctUnwindedCombinedList AND ID(target) IN distinctUnwindedCombinedList',
+        'RETURN p'
+      ].join('\n');*/
+
+      // avg complete query time: 800ms
+      /*
+      var query = [
+        result.queryUserGroupTag,
+        result.queryRating,
+        result.queryDate,
+        'WITH c, collect(id(c)) as filteredIdList',
+        'OPTIONAL MATCH pathToSuper=(c)-[*]->(c2:contribution)',
+        'WITH c, collect(distinct id(c2)) as intermediateNodeList, filteredIdList',
+        'OPTIONAL MATCH pathFromChildren=(c)<-[*1..' + result.depthParam + ']-(c4:contribution)',
+        'WITH filteredIdList + intermediateNodeList + collect(distinct id(c4)) as combinedList',
+        'UNWIND combinedList as unwindedCombinedList',
+        'WITH collect(distinct unwindedCombinedList) as distinctUnwindedCombinedList',
+        'MATCH p=(source)-[*1]->(target) WHERE ID(source) IN distinctUnwindedCombinedList AND ID(target) IN distinctUnwindedCombinedList',
+        'RETURN p'
+      ].join('\n');
+      */
+
+      // avg complete query time: 700ms
+      var query = [
+        result.queryUserGroupTag,
+        result.queryRating,
+        result.queryDate,
+        'MATCH (c:contribution)',
+        'WHERE true',
+        'WITH c, collect(c) as filteredNodeList',
+        'OPTIONAL MATCH pathToSuper=(c)-[*]->(contributionOnPathToSuper:contribution)',
+        'WITH c, collect(distinct contributionOnPathToSuper) as intermediateNodeList, filteredNodeList',
+        'OPTIONAL MATCH pathFromChildren=(c)<-[*1..1]-(children:contribution)',
+        'WITH filteredNodeList + intermediateNodeList + collect(distinct children) as combinedList',
+        'UNWIND combinedList as unwindedCombinedList',
+        'WITH collect(distinct unwindedCombinedList) as distinctUnwindedCombinedList',
+        'UNWIND distinctUnwindedCombinedList as source',
+        'MATCH p=(source)-[]->(target:contribution) WHERE target IN distinctUnwindedCombinedList',
         'RETURN p'
       ].join('\n');
 
