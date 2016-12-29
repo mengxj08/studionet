@@ -150,6 +150,8 @@ angular.module('studionet')
                       qtipFormat.content.text = content;
 
                       node.qtip(qtipFormat, evt);   
+                      node.data('db_data', extra_data);
+
                 });
               }
           });
@@ -233,6 +235,17 @@ angular.module('studionet')
         });
 
         */
+
+        // Show whole name of node 
+        cy.on('mouseover','node', function(evt){
+            cy.elements().removeClass('fullname');
+             evt.cyTarget.addClass('fullname');
+        });
+
+        cy.on('mouseout','node', function(evt){
+            cy.elements().removeClass('fullname');
+        });
+
         
         cy.on('tap', function(evt){
 
@@ -240,7 +253,6 @@ angular.module('studionet')
             if( !( evt.cyTarget.isNode && evt.cyTarget.isNode() ) ){
                 removeAdditionalStyles();
             }
-            // if selected node, display complete contents
             else if( evt.cyTarget.isNode && evt.cyTarget.id() == activeNode ){
 
                     console.log("Selected Node Clicked Again");
@@ -254,9 +266,13 @@ angular.module('studionet')
                     directlyConnected.nodes().addClass('highlighted');
                     node.connectedEdges().addClass('highlighted');
 
+                    var nodeTree = [];
+                    nodeTree.push(data);
+
                     // if data is already defined, donot load again - directly show modal
+                    // db_data stores additional-data from the server
                     if(node.data('db_data')){
-                        angular.element($('.graph-container')).scope().showDetailsModal( [node.data()], node.data('id'));
+                      angular.element($('.graph-container')).scope().showDetailsModal( nodeTree, node.data('id'));
                     }
                     else{
                       console.log("fetch data");

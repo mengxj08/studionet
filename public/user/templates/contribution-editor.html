@@ -1,0 +1,50 @@
+<!-- alert -->
+<div class="alert alert-danger" role="alert" id='errorMsg' ng-show='alert.error'>
+        <strong>Oh snap! </strong>{{ alert.errorMsg }}
+</div>
+
+<div class="alert alert-success" role="alert" id='successMsg' ng-show='alert.success'>
+        <strong>Awesome! </strong>{{ alert.successMsg }}
+</div>   
+
+<div class='editor' ng-hide='alert.success'>
+
+    <!-- Title -->
+    <div class='form-section'>
+      <label> Title </label>
+      <input class='wide' value='Title' ng-model="contributionData.title">
+    </div>
+   
+    <!-- tags -->
+    <div class='form-section'>
+      <label> Tags <small>( {{ contributionData._tags.length || 0 }} tag(s) added) </small></label>
+      <tags-input class='tags-input' class="bootstrap"
+        type='text'
+        ng-model="contributionData._tags"
+        display-property='name'
+        placeholder="Add a tag"
+        replace-spaces-with-dashes="false">
+      <auto-complete source="loadTags($query)"
+                     min-length="0"
+                     debounce-delay="0"
+                     max-results-to-show="10000"
+                     load-on-down-arrow="true"
+                     load-on-focus="true"
+                     template="tags-template"></auto-complete>
+      </tags-input>
+    </div>
+
+    <!-- Content -->
+    <div class='form-section'>
+      <label> Content </label>
+      <div text-angular ng-model="contributionData.body" class="textAngular"></div>
+    </div>
+
+
+    <!-- attachments -->
+    <div class='form-section'>
+      <label> Attachments <small>({{contributionData.attachments.length}} file(s) uploaded)</small> </label>
+      <div class="button" ngf-select ng-model="contributionData.attachments" ngf-multiple="true">Choose File</div>
+    </div>
+
+</div>

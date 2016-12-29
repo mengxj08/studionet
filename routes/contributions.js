@@ -251,6 +251,7 @@ router.route('/:contributionId')
                   count(rating1), count(rating2), \
                   count(rating3), count(rating4), \
                   count(rating5)], \
+                id: ID(c),\
                 edited: c.edited, \
                 rating: c.rating, \
                 totalRating: c.totalRating, \

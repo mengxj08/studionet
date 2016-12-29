@@ -220,6 +220,11 @@ var graph_style = {
               'text-opacity': 0.2
             })
 
+          .selector('node.fullname')
+            .css({
+              'content' : 'data(name)'
+            })
+
 }
 
 /*

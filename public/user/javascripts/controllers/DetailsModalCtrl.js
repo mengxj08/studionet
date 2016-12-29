@@ -2,8 +2,13 @@ angular.module('studionet')
 .controller('DetailsModalCtrl', ['$scope', '$http', 'profile', 'users', '$location', '$anchorScroll', 'contribution', function($scope, $http, profile, users, $location, $anchorScroll, contribution){
   $scope.user = profile.user;
 
-  $scope.clickedContributionId = null;
-  $scope.data = [];
+  // contribution that was clicked
+  $scope.activeContribution = null;
+
+  // tree of the contribution clicked
+  $scope.contributionTree = [];  
+
+  // general 
   $scope.tags = [];
   $scope.relationships= [];
   $scope.contributions = [];
@@ -44,9 +49,10 @@ angular.module('studionet')
 		  });	
   }
 
-  $scope.setData = function(data, clickedContributionId){
-      $scope.data = data;
-      $scope.clickedContributionId = clickedContributionId;
+  // setting data from scope calling ModalService
+  $scope.setData = function(data, activeContribution){
+      $scope.contributionTree = data;
+      $scope.activeContribution = activeContribution;
       console.log('Data output from DetailsModalCtrl');
       console.log(data);
   }
@@ -57,13 +63,11 @@ angular.module('studionet')
 
       // increase viewcount for contribution
       console.log("Updating view count");
-      contribution.updateViewCount($scope.clickedContributionId);
-
+      contribution.updateViewCount($scope.activeContribution);
 
       //$('body').removeClass('modal-open');
       $(".modal").remove();
       $('.modal-backdrop').remove();
-
     
   };
 
@@ -95,27 +99,22 @@ angular.module('studionet')
 
   $scope.deleteContribution = function(contributionId){
 
-    console.log($scope.$parent.filterStatus);
-    contribution.deleteContribution(contributionId).then(function(){
+      contribution.deleteContribution(contributionId).then(function(){
 
-      if($scope.$parent.filterStatus){
-        angular.element('#filterPanel').scope().filterRequest();  
-      }
-      else{
-        $scope.$parent.graphInit();
-      }
+        if($scope.$parent.filterStatus){
+          angular.element('#filterPanel').scope().filterRequest();  
+        }
+        else{
+          $scope.$parent.graphInit();
+        }
 
-      $scope.close();
-
-    }, function(error){
-        
-        alert("Error", error)
-    
-    })
+      }, function(error){
+          alert("Error occured while deleting contribution")
+      })
   }
 
   $scope.updateContribution = function(updateContribution){
-    console.log("This is output from update contribution");
+    console.log("This is output from update contribution", updateContribution);
     $http({
       method  : 'PUT',
       url     : '/api/contributions/'+ updateContribution.id,
@@ -181,7 +180,7 @@ angular.module('studionet')
 
   $scope.scrollTo = function (){
       // set the location.hash to the id of the element you wish to scroll to.
-      $location.hash('modal' + $scope.clickedContributionId);
+      $location.hash('modal' + $scope.activeContribution);
 
       // call $anchorScroll()
       $anchorScroll();

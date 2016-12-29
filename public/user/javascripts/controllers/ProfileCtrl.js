@@ -7,7 +7,10 @@ angular.module('studionet')
 	 */
 	$scope.user = profile.user;
 	$scope.groups = profile.groups;
-	$scope.contributions = profile.contributions;
+	$scope.contributions = $scope.user.contributions;
+	$scope.tags = $scope.user.tags;
+
+	$scope.lastLoggedIn = new Date($scope.user.lastLoggedIn);
 
 	$scope.close = function() {
 	    $('body').removeClass('modal-open');
@@ -67,6 +70,10 @@ angular.module('studionet')
   		if($event.keyCode==13){
   			profile.changeName($scope.user);
   		}
+  	}
+
+  	$scope.showContribution = function(contribution_id){
+  		alert("Hello from " , contribution_id);
   	}
 	  
 

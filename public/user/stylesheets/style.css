@@ -203,6 +203,13 @@ li.notification{
 .btn-link{
 	padding: 0px 0px !important;
 }
+
+.nav-tabs > li.active a, .nav-tabs > li.active a:focus, .nav-tabs > li.active a:hover{
+	border-bottom: 4px solid #4386D7 !important;
+	color: #4386D7 !important;
+}
+
+
 /*
  * qTip CSS
  */

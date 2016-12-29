@@ -276,6 +276,8 @@ angular.module('studionet')
 	}
 
 	o.deleteContribution = function(contribution_id){
+
+		console.log("deleting", contribution_id);
 	    return $http({
 				method  : 'delete',
 				url     : '/api/contributions/' + contribution_id,
@@ -297,6 +299,21 @@ angular.module('studionet')
 			throw error;
 	    })		
 	
+	}
+
+	o.updateContribtuion = function(data){
+		return $http({
+			  method  : 'PUT',
+			  url     : '/api/groups/' + data.id,
+			  data    : data,  // pass in data as strings
+			  headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
+			 })
+			.success(function(data) {
+
+				console.log("Contribution edited", data);
+
+				return (data);
+			})
 	}
 
 	o.updateViewCount = function(id){
