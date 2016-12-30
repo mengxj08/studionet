@@ -91,7 +91,40 @@ router.route('/:userId')
 
   // return a user
   .get(auth.ensureAuthenticated, function(req, res){
-    res.send('Placeholder');
+        var query = [
+          'MATCH (u:user) WHERE ID(u)={userIdParam}',
+          'WITH u',
+          'OPTIONAL MATCH p1=(g:group)-[r:MEMBER]->(u)',
+          'WITH collect({id: id(g), name: g.name, role: r.role}) as groups, u',
+          'OPTIONAL MATCH p2=(c:contribution)<-[r1:CREATED]-(u)',
+          'WITH groups, collect({id: id(c), title: c.title}) as contributions, u',
+          'OPTIONAL MATCH p3=(t:tag)<-[r1:CREATED]-(u)',
+          'WITH groups, collect({id: id(t), name: t.name}) as tags, contributions, u',
+          'RETURN {\
+                    name: u.name,\
+                    avatar: u.avatar,\
+                    joinedOn: u.joinedOn,\
+                    lastLoggedIn: u.lastLoggedIn,\
+                    id: id(u),\
+                    groups: groups,\
+                    contributions: contributions,\
+                    tags: tags\
+          }'
+        ].join('\n');
+
+        var params = {
+          userIdParam: parseInt(req.params.userId)
+        };
+
+        db.query(query, params, function(error, result){
+          if (error){
+            res.send(error);
+            console.log('Error getting user profile: ' +  parseInt(req.params.userId) + ', ' + error);
+          }
+          else
+            // send back the profile with new login date
+            res.send(result[0]);
+        });
   })
 
   // update a user
