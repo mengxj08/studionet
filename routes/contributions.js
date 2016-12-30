@@ -249,7 +249,7 @@ router.route('/filters')
         'WITH c, collect(c) as filteredNodeList',
         'OPTIONAL MATCH pathToSuper=(c)-[*]->(contributionOnPathToSuper:contribution)',
         'WITH c, collect(distinct contributionOnPathToSuper) as intermediateNodeList, filteredNodeList',
-        'OPTIONAL MATCH pathFromChildren=(c)<-[*1..1]-(children:contribution)',
+        'OPTIONAL MATCH pathFromChildren=(c)<-[*1..' + result.depthParam + ']-(children:contribution)',
         'WITH filteredNodeList + intermediateNodeList + collect(distinct children) as combinedList',
         'UNWIND combinedList as unwindedCombinedList',
         'WITH collect(distinct unwindedCombinedList) as distinctUnwindedCombinedList',
