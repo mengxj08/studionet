@@ -49,4 +49,76 @@ router.route('/')
 
 	});
 
+// route: /api/relationships/:relationshipId
+router.route('/:relationshipId')
+	.get(auth.ensureAuthenticated, function(req, res){
+		var query = [
+			'MATCH (:contribution)-[r]->(:contribution)',
+			'WHERE ID(r)={relationshipIdParam}',
+			'RETURN r'
+		].join('\n');
+
+		var params = {
+			relationshipIdParam: parseInt(req.params.relationshipId)
+		};
+
+		db.query(query, params, function(error, result){
+			if (error) {
+				console.log(error);
+				res.status(500);
+				return res.send('error');
+			}
+			res.status(200);
+			return res.send(result[0]);
+		});
+
+	})
+
+	.delete(auth.ensureAuthenticated, function(req, res, next){
+		// check if the relationship was created by the user
+		var query = [
+			'MATCH (:contribution)-[r]->(:contribution)',
+			'WHERE ID(r)={relationshipIdParam}',
+			'RETURN {createdBy: r.createdBy}'
+		].join('\n');
+
+		var params = {
+			relationshipIdParam: parseInt(req.params.relationshipId)
+		};
+
+		db.query(query, params, function(error, result){
+			if (error) {
+				console.log(error);
+				res.status(500);
+				return res.send('error');
+			}
+			if (parseInt(result[0].createdBy) !== parseInt(req.user.id)) {
+				res.status(500);
+				return res.send('relationship not created by you');
+			}
+			next();
+		});
+	}, function(req, res){
+
+		// delete the relationship here
+		var query = [
+			'MATCH (:contribution)-[r]->(:contribution)',
+			'WHERE ID(r)={relationshipIdParam}',
+			'DELETE r'
+		].join('\n');
+
+		var params = {
+			relationshipIdParam: parseInt(req.params.relationshipId)
+		};
+
+		db.query(query, params, function(error, result){
+			if (error) {
+				console.log(error);
+				res.status(500);
+				return res.send('error');
+			}
+			res.status(200);
+			return res.send('success in deleting relationship id: ' + req.params.relationshipId);
+		});
+	});
 module.exports = router;
