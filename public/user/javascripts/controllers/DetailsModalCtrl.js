@@ -1,6 +1,6 @@
 angular.module('studionet')
-.controller('DetailsModalCtrl', ['$scope', '$http', 'profile', 'users', '$location', '$anchorScroll', 'contribution', function($scope, $http, profile, users, $location, $anchorScroll, contribution){
-  $scope.user = profile.user;
+.controller('DetailsModalCtrl', ['$scope', '$http', 'profile', 'users', '$location', '$anchorScroll', 'contribution', 'contributions', 'relationships', 'tags', function($scope, $http, profile, users, $location, $anchorScroll, contribution, contributions, relationships, tags){
+  
 
   // contribution that was clicked
   $scope.activeContribution = null;
@@ -9,10 +9,10 @@ angular.module('studionet')
   $scope.contributionTree = [];  
 
   // general 
-  $scope.tags = [];
-  $scope.relationships= [];
-  $scope.contributions = [];
-
+  $scope.user = profile.user;
+  $scope.tags = tags.tags;
+  $scope.relationships = relationships.relationships;
+  $scope.contributions = contributions.contributions;
   $scope.users = users.usersById();
 
   /*
@@ -32,12 +32,10 @@ angular.module('studionet')
     })
   }
 
-
   /*
    * Attachments Code
    */
   $scope.getThumb = function(contributionId, attachment){
-
     if(attachment.thumb)
       return "/api/contributions/" + contributionId + /attachments/+ attachment.id + "/thumbnail";
     else
@@ -49,17 +47,9 @@ angular.module('studionet')
    * General
    */
   $scope.refresh = function(){
-      $http.get('/api/tags/').success(function(data){
-			  $scope.tags = data;
-	    });
-
-      $http.get('/api/relationships/').success(function(data){
-			  $scope.relationships = data;
-		  });
-
-      $http.get('/api/contributions/').success(function(data){
-			  $scope.contributions = data;
-		  });	
+      tags.getAll();
+      relationships.getAll();
+      contributions.getAll();
   }
 
   // setting data from scope calling ModalService
@@ -68,8 +58,13 @@ angular.module('studionet')
       $scope.activeContribution = activeContribution;
       console.log('Data output from DetailsModalCtrl');
       console.log(data);
+      $scope.refresh();
   }
   
+  $scope.getAllContributions = function(contributions){
+      $scope.contributions = contributions;
+  }
+
   //  This close function doesn't need to use jQuery or bootstrap, because
   //  the button has the 'data-dismiss' attribute.
   $scope.close = function() {
@@ -89,7 +84,7 @@ angular.module('studionet')
 
         //createContribution.author = profile.user.id;
         console.log(createContribution.ref);
-        createContribution.refType = "RELATED_TO";
+        //createContribution.refType = "RELATED_TO";
         createContribution.contentType = 'TEXT';
         
         $http({
@@ -101,7 +96,7 @@ angular.module('studionet')
         .success(function(data) {
           alert("Contribution Created");
           $scope.close();
-          //$scope.refresh(); 
+          $scope.refresh();
           $scope.$parent.graphInit();
         })
         .error(function(error){
@@ -114,12 +109,14 @@ angular.module('studionet')
 
       contribution.deleteContribution(contributionId).then(function(){
 
-        if($scope.$parent.filterStatus){
-          angular.element('#filterPanel').scope().filterRequest();  
-        }
-        else{
-          $scope.$parent.graphInit();
-        }
+      if($scope.$parent.filterStatus){
+        angular.element('#filterPanel').scope().filterRequest();  
+      }
+      else{
+        $scope.$parent.graphInit();
+      }
+
+      $scope.refresh();
 
       }, function(error){
           alert("Error occured while deleting contribution")
@@ -137,7 +134,7 @@ angular.module('studionet')
     .success(function(data) {
       alert("Contribution Updated");
       $scope.close();
-      //$scope.refresh(); 
+      $scope.refresh();
       $scope.$parent.graphInit();
     })
     .error(function(error){
@@ -168,7 +165,6 @@ angular.module('studionet')
         .success(function(data) {
           alert("Link Created");  
           $scope.close();
-          //$scope.refresh(); 
           $scope.$parent.graphInit(); 
         })
         .error(function(error){
@@ -188,8 +184,6 @@ angular.module('studionet')
     if(showUpdateContribution)
       $scope.updateContribution(contributionData);
   }
-
-  $scope.refresh();
 
   $scope.scrollTo = function (){
       // set the location.hash to the id of the element you wish to scroll to.

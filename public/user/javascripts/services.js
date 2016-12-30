@@ -553,7 +553,19 @@ angular.module('studionet')
 	return o;
 }])
 
+.factory('relationships', ['$http', function($http){
+	var o = {
+		relationships: []
+	};
 
+	o.getAll = function(){
+		$http.get('/api/relationships/').success(function(data){
+			angular.copy(data, o.relationships);
+		});
+	}
+
+	return o;
+}])
 
 .factory('modelsFactory', ['$http', function($http){
 	var o = {
