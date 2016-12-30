@@ -105,6 +105,7 @@ h5.tagline{
   padding: 10px 20px;
   margin-bottom: 15px;
   z-index: 100;
+  height: 120px;
 }
 
 .card:hover{
@@ -170,12 +171,14 @@ h5.tagline{
                 <!-- tab content-->
                 <div class='row tab-content no-margin-padding profile-tab-content'>
 
-                    <div class='tab-pane profile-tab-pane fade in active' id="contributions">
-                        <div ng-repeat="contribution in contributions">
-                          <div class='card'>
-                            <h4 class='contributionName'>{{contribution.title}}</h4>
-                            <h5> {{contribution.rating}} rating  |   Views: {{contribution.views}} views</h6>
-                          </div>
+                    <div class='tab-pane profile-tab-pane fade in active row' id="contributions">
+                        <div class='col-sm-4' ng-repeat="contribution in contributions">
+                          <a href='/user/#/contributions/{{contribution.id}}' target=_blank>
+                            <div class='card'>
+                              <h5>{{contribution.title}}</h5><hr>
+<!--                               <h6> {{contribution.rating}} rating  |   {{contribution.views}} views</h6> -->
+                            </div>
+                          </a>
                         </div>
                     </div>
 

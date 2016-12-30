@@ -34,22 +34,6 @@ angular.module('studionet')
       var target = document.getElementById('cy');
       var spinner = new Spinner(STUDIONET.GRAPH.spinner);
 
-
-      /*
-       * Filter Visibility Options
-       */
-      $scope.filterVisible = false;
-      $scope.toggleFilter = function(){
-        console.log($scope.filterVisible);
-        $scope.filterVisible = !$scope.filterVisible;
-      }
-
-      $scope.getFilterStatus = function(){
-        console.log($scope.filterVisible);
-        return $scope.filterVisible;
-      }
-
-
       /*
        *    Helper functions
        */

@@ -4,7 +4,7 @@
 <!-- Side Nav with Filters -->
 
 <div id='filterPanel' ng-controller="FilterCtrl" ng-init='init();' class="container-fluid" ng-show='filterVisible'>
-    
+
     <div id='filters' class='row'> 
       <div uib-accordion id="accordion" close-others=false>  
 
@@ -74,13 +74,18 @@
         <div class='col-sm-2'>
 
           <!-- Toggle Filter Button -->
-          <div class='col-sm-4 filter-btn  align-right' ng-click="$parent.panelsOpen = !$parent.panelsOpen" uib-tooltip='Toggle Panel' tooltip-placement='bottom'>
+<!--           <div class='col-sm-4 filter-btn  align-right' ng-click="$parent.panelsOpen = !$parent.panelsOpen" uib-tooltip='Toggle Panel' tooltip-placement='bottom'>
             <div class="icon"><i ng-class="$parent.panelsOpen ? 'fa fa-chevron-up' : 'fa fa-chevron-down'"  aria-hidden="true"></i></div>
-          </div>
+          </div> -->
 
           <!-- Reset Button -->
-          <div class='col-sm-4 filter-btn  align-right' ng-click="clearFilter()" uib-tooltip='Reset' tooltip-placement='bottom'>
+<!--           <div class='col-sm-4 filter-btn  align-right' ng-click="clearFilter()" uib-tooltip='Reset' tooltip-placement='bottom'>
             <div class="icon"><i class="fa fa-circle" aria-hidden="true"></i></div>
+          </div> -->
+
+          <!-- Close Button -->
+          <div class='col-sm-4 filter-btn  align-right' ng-click="$parent.filterToggle();" uib-tooltip='Close Filter' tooltip-placement='bottom'>
+            <div class="icon"><i class="fa fa-close" aria-hidden="true"></i></div>
           </div>
 
           <!-- Filter Button -->
@@ -89,10 +94,8 @@
           </div>
 
 
-
-
         </div>
-
     </div>
+
 </div>
 

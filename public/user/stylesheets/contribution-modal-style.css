@@ -2,7 +2,7 @@
  * General Styling for all Modals
  */
 .modal-backdrop {
-   background-color: rgba(0,0,0,0.2);
+   background-color: #EFEFEF;
 }
 
 .modal-backdrop .in {
