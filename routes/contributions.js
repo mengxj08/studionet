@@ -137,8 +137,6 @@ router.route('/filters')
         'RETURN collect(distinct id(u))'
       ].join('\n');
 
-      console.log(groupQuery);
-
       var groupQueryParam = {
         groupIdParam: groupIds
       };
@@ -176,8 +174,6 @@ router.route('/filters')
           queryDate,
           'RETURN collect(id(c)) as filteredIdList'
         ].join('\n');
-
-        console.log(query);
 
         db.query(query, function(error, result){
           if (error)
@@ -240,8 +236,6 @@ router.route('/filters')
         result.queryUserGroupTag,
         result.queryRating,
         result.queryDate,
-        'MATCH (c:contribution)',
-        'WHERE true',
         'WITH c, collect(c) as filteredNodeList',
         'OPTIONAL MATCH pathToSuper=(c)-[*]->(contributionOnPathToSuper:contribution)',
         'WITH c, collect(distinct contributionOnPathToSuper) as intermediateNodeList, filteredNodeList',
@@ -253,8 +247,6 @@ router.route('/filters')
         'MATCH p=(source)-[]->(target:contribution) WHERE target IN distinctUnwindedCombinedList',
         'RETURN p'
       ].join('\n');
-
-      console.log(query);
 
       graphQuery(query, function(data) {    
 
