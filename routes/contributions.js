@@ -232,7 +232,6 @@ router.route('/filters')
       */
 
       // avg complete query time: 700ms
-      
       var query = [
         result.queryUserGroupTag,
         result.queryRating,
@@ -248,10 +247,6 @@ router.route('/filters')
         'MATCH p=(source)-[]->(target:contribution) WHERE target IN distinctUnwindedCombinedList',
         'RETURN p'
       ].join('\n');
-      
-
-
-      console.log(query);
 
       graphQuery(query, function(data) {    
 
