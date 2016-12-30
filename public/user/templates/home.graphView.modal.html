@@ -1,61 +1,82 @@
-<link rel='stylesheet' href='/user/stylesheets/contribution-modal-style.css' />
-<link rel='stylesheet' href='/user/stylesheets/groups-modal-style.css' />
-<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
-<div class="modal fade" display='block'>
-  <div class='row'>
-<!--     <div class='col-sm-4'>
+<div class="modal fade">
+    <!--     <div class='col-sm-4'>
       <div class="modal-dialog sidebar">
         <div class='modal-content'>
           <p>This is the sub-graph to show the map. It should associate with the scrolling actions in the right canvas.</p>
         </div>
       </div>
     </div> -->
-    <div class='col-sm-12 modal-dialog-container'>
-      <div class="modal-dialog viewContributionContainer" ng-repeat='contribution in data'>
+
+<!--     <div class='col-sm-12 modal-dialog-container'> -->
+
+      <!-- Repeat for every contribution in tree -->
+      <div class="modal-dialog" ng-repeat='contribution in contributionTree'> 
+        
         <div id="{{ 'modal' + contribution.db_data.id }}" class="modal-content">
+          
           <div class="modal-header">
-            <button type="button" class="close" ng-click="close()" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h2 class='content-modal'>{{contribution.db_data.title}}</h2> 
+            <button type="button" class="close" data-dismiss="modal" ng-click='close()' aria-hidden="true">&times;</button>
+            <h4 class="modal-title">{{contribution.db_data.title}}</h4>
+
           </div>
+
           <div class="modal-body">
-            <div class='row'>
-              <div class='col-sm-12'>
+
+                <!-- Tabs -->
                 <div class='row'>
                   <ul class="nav nav-tabs pull-right">
-                    <li class="active"><a data-target="{{ '#content' + contribution.db_data.id}}" data-toggle="tab">Content</a></li>
-                    <li><a data-target="{{ '#statistics' + contribution.db_data.id}}"  data-toggle="tab">Statistics</a></li>
-                    <li><a data-target="{{ '#author' + contribution.db_data.id}}"  data-toggle="tab">Author</a></li><!-- Author -->
+                    <li class="active quarter-width"><a data-target="{{ '#content' + contribution.db_data.id}}" data-toggle="tab">Content</a></li>
+                    <li class='quarter-width'><a data-target="{{ '#statistics' + contribution.db_data.id}}"  data-toggle="tab">Data</a></li>
+                    <li class='quarter-width'><a data-target="{{ '#author' + contribution.db_data.id}}"  data-toggle="tab">Author</a></li>
                   </ul>
                 </div>
-                <div class='row'>
-                  <div class="tab-content">
-                      <div class='tab-pane fade in active' id="{{ 'content' + contribution.db_data.id}}">
-                          <p ng-bind-html="contribution.db_data.body"></p>
-                          <br><br>
-                      </div>
-                      <div class='tab-pane fade' id="{{ 'statistics' + contribution.db_data.id}}">
-                          <h3>This is the column for contributions' statistics.</h3>
-                          <p>Lorem ipsum Exercitation esse fugiat quis do consectetur eu dolore dolor nisi cupidatat dolore quis occaecat sed id aute tempor fugiat aute aute est veniam et tempor velit sint consectetur amet in dolor ea in elit voluptate dolor minim do commodo eiusmod pariatur in consectetur ea consectetur qui et ut esse ut veniam elit ad culpa tempor veniam cillum ut esse dolor qui aliquip Duis ullamco deserunt ullamco laboris proident minim eu eiusmod et dolor et tempor fugiat officia amet aliquip mollit ut reprehenderit ad eu irure aute sed quis do velit do sit sunt ut consectetur ad reprehenderit minim cupidatat ad consequat in et Excepteur cillum nulla enim ex veniam cillum esse veniam dolor eu deserunt eu pariatur ut ut adipisicing elit do consequat ullamco anim velit nulla proident do reprehenderit enim proident est sint ex in pariatur qui magna ad cupidatat commodo ad Excepteur sit exercitation consequat amet eu voluptate dolor cillum velit nulla cupidatat dolor sit in ea aliqua fugiat ut incididunt deserunt laboris adipisicing qui minim sunt deserunt ea Duis aliqua id mollit Ut consectetur nulla amet reprehenderit cillum cillum sunt deserunt non nostrud amet exercitation dolor elit irure eu in consectetur.</p>
-                      </div>
-                      <div class='tab-pane fade' id="{{ 'author' + contribution.db_data.id}}">
-                          <div class='row'>
-                            <div class='col-sm-4'>
-                              <!--<img src={{users[contribution.db_data.createdBy].avatar}} style='width: 100px; height: 100px;'>-->
-                            </div>
-                            <div class='col-sm-8'>
-                                <h3>{{ users[contribution.db_data.createdBy].name }}</h3>
-                                <p>{{ users[contribution.db_data.createdBy].nusOpenId }}</p>
-                                <p>{{user.id}}-{{contribution.db_data.createdBy}}</p>
-                            </div>
-                          </div>
-                      </div>
+
+                <div class='row tab-content'>
+
+                    <!-- Content -->
+                    <div class='tab-pane fade in active' id="{{ 'content' + contribution.db_data.id}}">
+
+                        <!-- content -->
+                        <p ng-bind-html="contribution.db_data.body"></p>
+
+                        <!-- rating -->
+                        <h4> Your rating: 
+                        <span id='rating' uib-rating ng-model="$parent.rate" max="$parent.max" read-only="false" on-hover="$parent.hoveringOver(value)" on-leave="overStar = null" ng-click='rateContribution($parent.rate, contribution.db_data.id)'></span>
+                        <pre style="margin:15px 0;">Rate: <b>{{$parent.rate}}</b> - Hovering over: <b>{{$parent.overStar || "none"}}</b></pre>
+                        </h4>
+                        
+                        <br><br>
                     </div>
-                  </div>
+
+                    <!-- Data -->
+                    <div class='tab-pane fade' id="{{ 'statistics' + contribution.db_data.id}}">
+                        <h3>Contribution Data</h3>
+                        <p>Rating: {{contribution.db_data.rating}}</p>
+                        <p>Total Rating: {{contribution.db_data.totalRating}}</p>
+                        <p>Last Updated: {{contribution.db_data.lastupdated}}</p>
+                        <p>Date Created: {{contribution.db_data.dateCreated}}</p>
+                        <p>Rate Count: {{contribution.db_data.rateCount}}</p>
+                        <p>Number of Views: {{contribution.db_data.views}}</p>
+                    </div>
+
+                    <!-- Author -->
+                    <div class='tab-pane fade' id="{{ 'author' + contribution.db_data.id}}">
+                        <div class='row'>
+                          <div class='col-sm-4'>
+                            <img src={{users[contribution.db_data.createdBy].avatar}} style='width: 100px; height: 100px;'>
+                          </div>
+                          <div class='col-sm-8'>
+                              <h3>{{ users[contribution.db_data.createdBy].name }}</h3>
+                              <p>{{ users[contribution.db_data.createdBy].nusOpenId }}</p>
+                              <p>{{user.id}}-{{contribution.db_data.createdBy}}</p>
+                          </div>
+                        </div>
+                    </div>
+
                 </div>
-<!-- Create a new contribution by replying to existing ones -->
-                <div class='editor reply' ng-show='showCreateContribution'>
+
+                <!-- Create a new contribution by replying to existing ones -->
+                <div class='row editor reply' ng-show='showCreateContribution'>
                     <hr>
                     <label>Replying to the above contribution:</label>
                     <br><br>
@@ -65,7 +86,10 @@
                     <br><br>
                     <label> Contribution Content: </label>
                     <br>
-                    <textarea class='wide' rows="10" cols="70" ng-model="contributionData.body"></textarea>
+                    <!-- <textarea class='wide' rows="10" cols="70" ng-model="contributionData.body"></textarea> -->
+
+                    <div text-angular class="textAngular" ng-model="contributionData.body"></div>
+
                     <br><br>
                     <label for="singleSelect"> Relationship: </label>
                     <select name="singleSelect" id="singleSelect" ng-model=contributionData.refType>
@@ -84,8 +108,9 @@
                     <span><b> Selected tag names:  </b></span> 
                     <span>{{ contributionData.tags }}</span>
                 </div>
-<!-- Update existing contributions -->
-                <div class='editor update' ng-show='showUpdateContribution'>
+
+                <!-- Update existing contributions -->
+                <div class='row editor update' ng-show='showUpdateContribution'>
                     <hr>
                     <label>Update the above contribution:</label>
                     <br><br>
@@ -107,8 +132,9 @@
                     <span><b> Selected tag names:  </b></span> 
                     <span>{{ contributionData.tags }}</span>
                 </div>
-<!-- Add cross links -->
-                <div class='editor Linking' ng-show='showLinkingContribution'>
+
+                <!-- Add cross links -->
+                <div class='row editor Linking' ng-show='showLinkingContribution'>
                     <hr>
                     <label> Link the above contribution to others:</label>
                     <br><br>
@@ -132,8 +158,9 @@
                       <option ng-repeat="tmp in contributions" value={{tmp.id}}>{{tmp.title}} ({{tmp.id}})</option>
                     </select>
                 </div>
-            </div>
+
           </div>
+
           <div class='modal-footer'>
               <div class='col-sm-12'>
                 <center>
@@ -143,7 +170,7 @@
                   <button type="button" ng-click="showUpdateContribution=true; hideReplyButton=true; contributionData=contribution.db_data;" class="btn btn-default modal-button"
                   ng-show="(user.id == contribution.db_data.createdBy)">Update</button>
                   <button type="button" ng-click="deleteContribution(contribution.db_data.id)" class="btn btn-default modal-button"
-                  ng-show="(user.id == contribution.db_data.createdBy)">Delete</button>
+                  ng-show="(user.id == contribution.db_data.createdBy)" data-dismiss='modal'>Delete</button>
                   </div>
                   <div ng-show='hideReplyButton'>
                     <button type="button" ng-click="submitContribution(showCreateContribution,showLinkingContribution,showUpdateContribution,contributionData,linkData);
@@ -153,8 +180,11 @@
                 </center>
               </div>
           </div>
-        </div>
-      </div>
-    </div>
-  </div>
+
+        </div><!-- single modal - modal-content ends -->
+
+      </div><!-- modal dialog  ng-Repeat ends -->
+    
+<!--     </div> -->
+
 </div>

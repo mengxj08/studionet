@@ -1,15 +1,40 @@
 angular.module('studionet')
-.controller('DetailsModalCtrl', ['$scope', '$http', 'profile', 'users', '$location', '$anchorScroll', function($scope, $http, profile, users, $location, $anchorScroll){
+.controller('DetailsModalCtrl', ['$scope', '$http', 'profile', 'users', '$location', '$anchorScroll', 'contribution', function($scope, $http, profile, users, $location, $anchorScroll, contribution){
   $scope.user = profile.user;
 
-  $scope.clickedContributionId = null;
-  $scope.data = [];
+  // contribution that was clicked
+  $scope.activeContribution = null;
+
+  // tree of the contribution clicked
+  $scope.contributionTree = [];  
+
+  // general 
   $scope.tags = [];
   $scope.relationships= [];
   $scope.contributions = [];
 
   $scope.users = users.usersById();
 
+  /*
+   * Rating-related Code
+   */
+  $scope.rate = 0;
+  $scope.max = 5;
+  $scope.overStar = null; 
+  $scope.percent = 0;
+  $scope.hoveringOver = function(value) {
+    $scope.overStar = value;
+    $scope.percent = 100 * (value / $scope.max);
+  };
+  $scope.rateContribution = function(rating, id){
+     contribution.rateContribution(id, rating).then(function(){
+        console.log("Contribution Rated Successfully");
+    })
+  }
+
+  /*
+   * General
+   */
   $scope.refresh = function(){
       $http.get('/api/tags/').success(function(data){
 			  $scope.tags = data;
@@ -24,9 +49,10 @@ angular.module('studionet')
 		  });	
   }
 
-  $scope.setData = function(data, clickedContributionId){
-      $scope.data = data;
-      $scope.clickedContributionId = clickedContributionId;
+  // setting data from scope calling ModalService
+  $scope.setData = function(data, activeContribution){
+      $scope.contributionTree = data;
+      $scope.activeContribution = activeContribution;
       console.log('Data output from DetailsModalCtrl');
       console.log(data);
   }
@@ -34,59 +60,61 @@ angular.module('studionet')
   //  This close function doesn't need to use jQuery or bootstrap, because
   //  the button has the 'data-dismiss' attribute.
   $scope.close = function() {
-    console.log("Close the medal");
-    //$('body').removeClass('modal-open');
-    $(".modal").remove();
-    $('.modal-backdrop').remove();
+
+      // increase viewcount for contribution
+      console.log("Updating view count");
+      contribution.updateViewCount($scope.activeContribution);
+
+      //$('body').removeClass('modal-open');
+      $(".modal").remove();
+      $('.modal-backdrop').remove();
+    
   };
 
   $scope.createContribution = function(createContribution){
-    if(!createContribution) return;
+        if(!createContribution) return;
 
-    //createContribution.author = profile.user.id;
-    console.log(createContribution.ref);
-    createContribution.refType = "RELATED_TO";
-    createContribution.contentType = 'TEXT';
-    
-    $http({
-      method  : 'POST',
-      url     : '/api/contributions/',
-      data    : createContribution,  // pass in data as strings
-      headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
-      })
-    .success(function(data) {
-      alert("Contribution Created");
-      $scope.close();
-      //$scope.refresh(); 
-      $scope.$parent.graphInit();
-    })
-    .error(function(error){
-      alert("Error Msg:" + error.message);
-      $scope.close();
-    })
+        //createContribution.author = profile.user.id;
+        console.log(createContribution.ref);
+        createContribution.refType = "RELATED_TO";
+        createContribution.contentType = 'TEXT';
+        
+        $http({
+          method  : 'POST',
+          url     : '/api/contributions/',
+          data    : createContribution,  // pass in data as strings
+          headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
+          })
+        .success(function(data) {
+          alert("Contribution Created");
+          $scope.close();
+          //$scope.refresh(); 
+          $scope.$parent.graphInit();
+        })
+        .error(function(error){
+          alert("Error Msg:" + error.message);
+          $scope.close();
+        })
    };
 
   $scope.deleteContribution = function(contributionId){
-    $http({
-      method  : 'delete',
-      url     : '/api/contributions/'+contributionId,
-      data    : {},  // pass in data as strings
-      headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
+
+      contribution.deleteContribution(contributionId).then(function(){
+
+        if($scope.$parent.filterStatus){
+          angular.element('#filterPanel').scope().filterRequest();  
+        }
+        else{
+          $scope.$parent.graphInit();
+        }
+
+      }, function(error){
+          alert("Error occured while deleting contribution")
       })
-    .success(function(data) {
-      alert("Contribution id:" + contributionId + " deleted");
-      $scope.close();
-      //$scope.refresh();  
-      $scope.$parent.graphInit();
-    })
-    .error(function(error){
-      alert("Error Msg:" + error.message);
-      $scope.close();
-    })
   }
 
   $scope.updateContribution = function(updateContribution){
-    console.log("This is output from update contribution");
+    console.log("This is output from update contribution", updateContribution);
     $http({
       method  : 'PUT',
       url     : '/api/contributions/'+ updateContribution.id,
@@ -152,7 +180,7 @@ angular.module('studionet')
 
   $scope.scrollTo = function (){
       // set the location.hash to the id of the element you wish to scroll to.
-      $location.hash('modal' + $scope.clickedContributionId);
+      $location.hash('modal' + $scope.activeContribution);
 
       // call $anchorScroll()
       $anchorScroll();

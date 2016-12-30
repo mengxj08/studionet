@@ -9,7 +9,7 @@
  *		General CSS
  */
 *{
-	padding: 0px;
+	/*padding: 0px;*/
 	margin: 0px; 
 }
 
@@ -26,8 +26,6 @@ body {
 	font-size: 12px;
 
 	background: white;
-
-	overflow-y: hidden;
 
 }
 
@@ -187,6 +185,11 @@ nav .navbar-nav{
 	border-radius: 50%;
 	font-size: 16px !important;
 
+	cursor: pointer;
+}
+
+.icon:hover{
+    transform: scale(1.1) rotate(7deg);
 }
 
 li.notification{
@@ -200,6 +203,13 @@ li.notification{
 .btn-link{
 	padding: 0px 0px !important;
 }
+
+.nav-tabs > li.active a, .nav-tabs > li.active a:focus, .nav-tabs > li.active a:hover{
+	border-bottom: 4px solid #4386D7 !important;
+	color: #4386D7 !important;
+}
+
+
 /*
  * qTip CSS
  */

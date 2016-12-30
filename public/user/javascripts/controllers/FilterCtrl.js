@@ -43,6 +43,7 @@ angular.module('studionet')
         console.log($scope.filterVisible);
         $scope.filterVisible = !$scope.filterVisible;
       }
+
       $scope.getFilterStatus = function(){
         console.log($scope.filterVisible);
         return $scope.filterVisible;
@@ -146,6 +147,13 @@ angular.module('studionet')
      
       }
 
+      var getTime = function(d){
+        d.setHours(0);
+        d.setMinutes(0);
+        d.setSeconds(0);
+        return d.getTime();
+      }
+
 
       /* Filter Functions */
       $scope.clearFilter = function(){
@@ -209,7 +217,7 @@ angular.module('studionet')
           }
           else{
               
-              var urlString = '/api/contributions?'; 
+              var urlString = '/api/contributions/filters'; 
 
               var groups = $scope.selectedGroups; //$scope.selectedAuthors.filter( function(g){ return (g.type == "group") });
               var users = $scope.selectedUsers; //$scope.selectedAuthors.filter( function(g){ return (g.type == "user") });
@@ -218,9 +226,17 @@ angular.module('studionet')
               var usersUrlSeg = ( users.length ? "[" + users.map( function(u){ return u.id } ).toString() + "]"  : ( groups.length > 0 ? "[]" : "-1" ) ) // users
 
 
+              var data = {};
+              data.g = groupsUrlSeg;
+              data.u = usersUrlSeg; 
+              data.tg = ( $scope.selectedTags.length ? "[" + $scope.selectedTags.map( function(g){ return g.id; }).toString() + "]" : "-1" );
+              data.r = "[" + $scope.ratingMin + "," + $scope.ratingMax + "]";
+              data.t = "[" + getTime($scope.startDate) + "," + getTime($scope.endDate) + "]"
+              data.d =  $scope.depthVal;
+
               //  Create the URL String
             
-              urlString +=  "g=" + groupsUrlSeg
+/*              urlString +=  "g=" + groupsUrlSeg
 
               + "&u=" + usersUrlSeg
 
@@ -228,21 +244,27 @@ angular.module('studionet')
 
               + "&r=[" + $scope.ratingMin + "," + $scope.ratingMax + "]"    // rating
 
-              + "&t=[" + $scope.startDate.getTime() + "," + $scope.endDate.getTime() + "]"   // time
+              + "&t=[" + getTime($scope.startDate) + "," + getTime($scope.endDate) + "]"   // time
 
-              + "&d=" + $scope.depthVal;   // depth
+              + "&d=" + $scope.depthVal;   // depth*/
 
-              console.log(urlString);
+              console.log(data);
 
               $(target).empty();
               spinner.spin(target);
 
-              $http.get(urlString).success(function(data){
+              $http({
+                method  : 'POST',
+                url     : '/api/contributions/filters',
+                headers : { 'Content-Type': 'application/json' }, 
+                data    : data
+              }).success(function(data){
 
                   $scope.filterActive = true;
                   spinner.stop();
 
-                  if(data.nodes.length == 0){
+                  console.log(data);
+                  if(data.nodes == undefined || data.nodes.length == 0){
                     $(target).append("<h3 style='position: absolute; top:40%; left: 40%;'>Oops. No Nodes found.</h3>");
                   }
                   else{

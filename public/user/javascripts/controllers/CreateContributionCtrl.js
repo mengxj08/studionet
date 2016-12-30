@@ -1,65 +1,51 @@
 angular.module('studionet')
-.controller('CreateContributionCtrl', ['$scope', '$http', 'profile', 'users', 'supernode', function($scope, $http, profile, users, supernode){
-  //$scope.user = profile.user;
+.controller('CreateContributionCtrl', ['$scope', 'supernode', 'contribution', function($scope, supernode, contribution){
 
-  //$scope.data = [];
-  $scope.tags = [];
-  $scope.relationships= [];
-  //$scope.users = users.usersById();
+      var all_tags = $scope.$parent.tags; 
+      $scope.file;
 
-  $scope.refresh = function(){
-      $http.get('/api/tags/').success(function(data){
-			  $scope.tags = data;
-        //console.log('refreshing tages');
-	    });
+      $scope.alert = {}; 
 
-      $http.get('/api/relationships/').success(function(data){
-			  $scope.relationships = data;
-		  });	
-  }
 
-  // $scope.setData = function(data, clickedContributionId){
-  //     $scope.data = data;
-  //     $scope.clickedContributionId = clickedContributionId;
-  //     console.log('Data output from DetailsModalCtrl');
-  //     console.log(data);
-  // }
-  
-  //  This close function doesn't need to use jQuery or bootstrap, because
-  //  the button has the 'data-dismiss' attribute.
-  $scope.close = function() {
-    $('body').removeClass('modal-open');
-    $('.modal-backdrop').remove();
-  };
+      $scope.loadTags = function($query){
+          return all_tags.filter(function(tag){
+            return tag.name.toLowerCase().search($query.toLowerCase()) != -1;
+          });
+      }
 
-  $scope.createContribution = function(createContribution){
+      //  This close function doesn't need to use jQuery or bootstrap, because
+      //  the button has the 'data-dismiss' attribute.
+      $scope.close = function() {
 
-    //createContribution.author = profile.user.id;
-    if(!createContribution) return;
+            $('body').removeClass('modal-open');
+            $('.modal-backdrop').remove();
 
-    createContribution.ref = supernode.contribution;
-    createContribution.contentType = 'TEXT';
-    console.log(createContribution.ref);
-    createContribution.refType = "RELATED_TO";
-    
-    $http({
-      method  : 'POST',
-      url     : '/api/contributions/',
-      data    : createContribution,  // pass in data as strings
-      headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
-      })
-    .success(function(data) {
-      alert("Contribution Created");  
-      $scope.close();
-      //$scope.refresh(); 
-      $scope.$parent.graphInit();
-    })
-    .error(function(error){
-      alert("Error Msg:" + error.message); 
-      $scope.close();
-    })
-   };
+            console.log($scope.alert.successId);
+            //$scope.$parent.highlightNode( null, $scope.alert.successId );
+
+      };
+
+            // for the new contribution
+      $scope.contributionData = { _tags: [], attachments: [], tags: [], refType: "RELATED_TO", contentType: "text", ref: supernode.contribution};
+      $scope.createContribution = function(){
+
+          $scope.contributionData._tags.map(function(t){
+             $scope.contributionData.tags.push(t.name);
+          });
+          delete $scope.contributionData._tags;
+
+          contribution.createContribution( $scope.contributionData ).then(function(res){
+                $scope.alert.success = true; 
+                $scope.alert.successMsg = "Contribution Id : " + res.data.id; 
+                $scope.alert.successId = res.data.id;
+                
+                $scope.$parent.graphInit();
+
+          }, function(error){
+                $scope.alert.error = true; 
+                $scope.alert.errorMsg = error;
+          }); 
+
+       };
    
-  $scope.refresh();
-
 }]);

@@ -48,7 +48,8 @@ storage.attachmentStorage = multer.diskStorage({
 		})
 	},
 	filename: function(req, file, cb) {
-		cb(null, file.originalname);
+		// e.g. 12313123_originalname.txt
+		cb(null, /*Date.now() + '_' + */file.originalname);
 	}
 }); 
 
