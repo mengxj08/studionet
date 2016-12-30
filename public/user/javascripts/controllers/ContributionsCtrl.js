@@ -15,10 +15,8 @@ angular.module('studionet')
   $scope.users = users.usersById();   // needed for hover to get user name - fix later
 
   var activeNode = null;
-
-
-
   var rootnode = supernode.contribution;
+
 
   /* 
    * Toggle Filter
@@ -95,6 +93,19 @@ angular.module('studionet')
 
   }
 
+
+  // function to generate qtip content
+  var generateQtipContent = function(extra_data){
+
+        var profile = "<b>" +  angular.element($('.graph-container')).scope().users[ extra_data.createdBy ].name  + "</b>";
+        var date = "<br><em>" + (new Date(extra_data.dateCreated)).toString().substr(0, 10) + "</em>" ;
+        var attachments = "<br><br><b><em>" + extra_data.attachments.length + " attachments</em></b>";
+        var textSnippet = "<br>" + extra_data.body.substr(0,300);
+
+        return profile + date + ( (extra_data.attachments[0].id == null) ? " " : attachments )  + textSnippet;                      
+                      
+  }
+
   /*
    *    Graph Creation & Interactions
    */
@@ -142,12 +153,10 @@ angular.module('studionet')
                 // fix me
                 var route = "/api/" + data.type + "s/" + data.id;
                 $.get( route , function( extra_data ) {
-                      var content = "<b>" +  angular.element($('.graph-container')).scope().users[ extra_data.createdBy ].name  + "</b>" +
-                                    "<br><em>" + (new Date(extra_data.dateCreated)).toString().substr(0, 10) + "</em>" +
-                                    "<br>" + extra_data.body.substr(0,300)
+
 
                       qtipFormat.content.title =  extra_data.title;
-                      qtipFormat.content.text = content;
+                      qtipFormat.content.text = generateQtipContent(extra_data);
 
                       node.qtip(qtipFormat, evt);   
                       node.data('db_data', extra_data);
@@ -164,77 +173,6 @@ angular.module('studionet')
 
         // remove supernode
         cy.getElementById(supernode.contribution).remove();
-
-      /*  cy.onRender( function(){
-
-            $scope.zoomLevel = (100*cy.zoom()).toPrecision(4);
-            $scope.$apply();
-
-            //console.log("Zoom: ", graph.zoom());
-            // console.log( "Nodes: ", STUDIONET.GRAPH.getVisibleNodes(cy).length );
-            //var nodes = STUDIONET.GRAPH.getVisibleNodes(graph); 
-
-            var vw = $scope.graph.extent();
-            var filter =   cy.filter(function(i, n){
-                  if( ( n.position().x > vw.x1 && n.position().x < vw.x2 ) && ( n.position().y > vw.y1 && n.position().y < vw.y2  ) )
-                    return true;
-                
-                  return false;
-            });
-
-            if( filter.length < cy.nodes().length )
-                filter.addClass('highlighted');
-            else
-                filter.removeClass('highlighted');
-
-            //console.log(filter.length);
-
-        }); */
-
-       /* cy.nodes().map(function(node){
-
-              var count = node.successors().length;
-
-              //node.css({ 'width': 20 + 2*(count/3), 'height': 20 + 2*(count/3) });
-              
-              if(count > 30)
-                  node.addClass('primary');
-
-              return node;
-
-        })*/
-
-        /*     Deactivate graph interactions   
-        cy.on('mouseover','node', function(evt){
-
-              var node = evt.cyTarget;
-
-              cy.batch(function(){
-
-                  cy.elements()
-                    .removeClass('highlighted')
-                    .removeClass('selected')
-                    .addClass('faded');
-
-                  node.addClass('selected')
-                      .removeClass('faded')
-                      .successors().addClass('highlighted')
-                      .successors().removeClass('faded')
-                      .predecessors().addClass('highlighted')
-                      .predecessors().removeClass('faded')
-              });
-        });
-
-        cy.on('mouseout','node', function(evt){
-
-          cy.batch(function(){
-            cy.elements().removeClass('faded')
-                          .removeClass('selected')
-                          .removeClass('highlighted')
-          });
-        });
-
-        */
 
         // Show whole name of node 
         cy.on('mouseover','node', function(evt){
@@ -275,7 +213,28 @@ angular.module('studionet')
                       angular.element($('.graph-container')).scope().showDetailsModal( nodeTree, node.data('id'));
                     }
                     else{
-                      console.log("fetch data");
+                      
+                      // fix later - repeated code
+                      console.warn("Data not defined for double-clicked node;");
+                      contribution.getContribution(node.id()).then(function(res){
+                            
+                            // define qtip first
+                            var extra_data = res.data;
+
+                            qtipFormat.content.title =  extra_data.title;
+                            qtipFormat.content.text = generateQtipContent(extra_data);
+
+                            // append qtip and extra data
+                            node.data('qtip', qtipFormat);
+                            node.data('db_data', extra_data);
+
+                            node.qtip(qtipFormat, evt);   
+
+                            // open details modal
+                            angular.element($('.graph-container')).scope().showDetailsModal( nodeTree, node.data('id'));
+                            
+                      });
+
                     }
 
                     /*
@@ -352,12 +311,9 @@ angular.module('studionet')
                   contribution.getContribution(data.id).then(function(res){
 
                         var extra_data = res.data;
-                        var content = "<b>" +  angular.element($('.graph-container')).scope().users[ extra_data.createdBy ].name  + "</b>" +
-                                      "<br><em>" + (new Date(extra_data.dateCreated)).toString().substr(0, 10) + "</em>" +
-                                      "<br>" + extra_data.body.substr(0,300)
 
                         qtipFormat.content.title =  extra_data.title;
-                        qtipFormat.content.text = content;
+                        qtipFormat.content.text = generateQtipContent(extra_data);
 
                         node.data('qtip', qtipFormat);
                         node.data('db_data', extra_data);
@@ -382,8 +338,6 @@ angular.module('studionet')
 
 
       }
-
-
 
   }
 

@@ -246,3 +246,13 @@ li.notification{
 	overflow: auto;
 }
 
+
+.card{
+  padding: 10px 20px;
+  margin-bottom: 15px;
+  z-index: 100;
+}
+
+.card:hover{
+  background-color: #BBBBBB;
+}

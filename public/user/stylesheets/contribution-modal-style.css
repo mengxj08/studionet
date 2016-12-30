@@ -152,3 +152,10 @@ tags-input .tags{
   max-height: 35px;
   overflow-y: auto;
 }
+
+.attachment-thumb{
+  background-size: cover; 
+  min-height: 100px;
+  background-position: center;
+  background-repeat: no-repeat;
+}

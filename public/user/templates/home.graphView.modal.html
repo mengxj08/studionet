@@ -25,9 +25,10 @@
                 <!-- Tabs -->
                 <div class='row'>
                   <ul class="nav nav-tabs pull-right">
-                    <li class="active quarter-width"><a data-target="{{ '#content' + contribution.db_data.id}}" data-toggle="tab">Content</a></li>
-                    <li class='quarter-width'><a data-target="{{ '#statistics' + contribution.db_data.id}}"  data-toggle="tab">Data</a></li>
-                    <li class='quarter-width'><a data-target="{{ '#author' + contribution.db_data.id}}"  data-toggle="tab">Author</a></li>
+                    <li class="active"><a data-target="{{ '#content' + contribution.db_data.id}}" data-toggle="tab">Content</a></li>
+                    <li><a data-target="{{ '#statistics' + contribution.db_data.id}}"  data-toggle="tab">Statistics</a></li>
+                    <li><a data-target="{{ '#author' + contribution.db_data.id}}"  data-toggle="tab">Author</a></li>
+                    <li ng-if='contribution.db_data.attachments[0].id!=null'><a data-target="{{ '#attachments' + contribution.db_data.id}}"  data-toggle="tab">Attachments</a></li>
                   </ul>
                 </div>
 
@@ -38,19 +39,22 @@
 
                         <!-- content -->
                         <p ng-bind-html="contribution.db_data.body"></p>
-
-                        <!-- rating -->
-                        <h4> Your rating: 
-                        <span id='rating' uib-rating ng-model="$parent.rate" max="$parent.max" read-only="false" on-hover="$parent.hoveringOver(value)" on-leave="overStar = null" ng-click='rateContribution($parent.rate, contribution.db_data.id)'></span>
-                        <pre style="margin:15px 0;">Rate: <b>{{$parent.rate}}</b> - Hovering over: <b>{{$parent.overStar || "none"}}</b></pre>
-                        </h4>
                         
                         <br><br>
                     </div>
 
                     <!-- Data -->
                     <div class='tab-pane fade' id="{{ 'statistics' + contribution.db_data.id}}">
+                        
                         <h3>Contribution Data</h3>
+                        <h5>Contribution ID: {{contribution.db_data.id}}</h5>
+
+                        <!-- rating -->
+                        <h4> Your rating: 
+                        <span id='rating' uib-rating ng-model="$parent.rate" max="$parent.max" read-only="false" on-hover="$parent.hoveringOver(value)" on-leave="overStar = null" ng-click='rateContribution($parent.rate, contribution.db_data.id)'></span>
+                        <pre style="margin:15px 0;">Rate: <b>{{$parent.rate}}</b> - Hovering over: <b>{{$parent.overStar || "none"}}</b></pre>
+                        </h4>
+
                         <p>Rating: {{contribution.db_data.rating}}</p>
                         <p>Total Rating: {{contribution.db_data.totalRating}}</p>
                         <p>Last Updated: {{contribution.db_data.lastupdated}}</p>
@@ -72,6 +76,24 @@
                           </div>
                         </div>
                     </div>
+
+                    <!-- Attachments - if present -->
+                    <div class='tab-pane fade' id="{{ 'attachments' + contribution.db_data.id}}" ng-if='contribution.db_data.attachments[0].id!=null'> 
+                        <div class='row'>
+                            <div ng-repeat="attachment in contribution.db_data.attachments">
+                              <div class='card row'>
+                                <div class='col-sm-3 attachment-thumb' style='background-image: url({{getThumb(contribution.db_data.id, attachment.attachment)}});'>
+                                </div>
+                                <div class='col-sm-9'>
+                                  <h3 class='contributionName'>{{attachment.attachment.name}}</h3>
+                                  <h6> Size: {{ attachment.attachment.size/1000 }} MB </h6>
+                                  <h6><a href="/api/contributions/{{contribution.db_data.id}}/attachments/{{attachment.id}}" target=_blank>Download </a></h6>
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+
 
                 </div>
 

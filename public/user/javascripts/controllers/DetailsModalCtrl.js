@@ -32,6 +32,19 @@ angular.module('studionet')
     })
   }
 
+
+  /*
+   * Attachments Code
+   */
+  $scope.getThumb = function(contributionId, attachment){
+
+    if(attachment.thumb)
+      return "/api/contributions/" + contributionId + /attachments/+ attachment.id + "/thumbnail";
+    else
+      return "http://placehold.it/200x200"; // replace with image for particular extension
+
+  }
+
   /*
    * General
    */
