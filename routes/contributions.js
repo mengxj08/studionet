@@ -331,6 +331,7 @@ router.route('/:contributionId')
   })
 
   .put(auth.ensureAuthenticated, function(req, res){
+    console.log(req.body);
 
     var query = [
       'MATCH (c:contribution) WHERE ID(c)=' + req.params.contributionId,
@@ -389,7 +390,6 @@ router.route('/:contributionId')
         newTags = [newTags];
       }
 
-
       var tagsToRemove = _.difference(oldTags, newTags);
       var tagsToAdd = _.difference(newTags, oldTags);
 
@@ -438,11 +438,13 @@ router.route('/:contributionId')
       db.query(query, params, function(error, result){
         if (error){
           console.log(error);
+          res.status(500);
           res.send('[ERROR] Cannot edit the given contribution with id: ' + req.params.contributionId);
         }
         else{
+          res.status(200);
+          res.send(result[0]);
           console.log('[SUCCESS] Success in editing the contribution with id: ' + req.params.contributionId);
-          res.send('Success in editing the contribution');
         }
       });
 

@@ -284,9 +284,9 @@ angular.module('studionet')
 				data    : {},  // pass in data as strings
 				headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
 				})
-	    .success(function(data) {
+	    .success(function(res) {
 			
-			alert(data);
+			alert(res);
 			// $scope.close();
 			// $scope.refresh();  
 			// $scope.$parent.graphInit();
@@ -301,19 +301,36 @@ angular.module('studionet')
 	
 	}
 
-	o.updateContribtuion = function(data){
+	o.updateContribtuion = function(update_contribution){
+		var formData = new FormData();
+		formData.append('title', update_contribution.title);
+		formData.append('body', update_contribution.body);
+		formData.append('tags', update_contribution.tags);
+		//formData.append('refType', update_contribution.refType);
+		formData.append('contentType', update_contribution.contentType);
+		formData.append('ref', update_contribution.ref);
+
+		update_contribution.attachments.map(function(file){
+			formData.append('attachments', file, file.name);
+		})
+		for (var key of formData.entries()) {
+        	console.log(key[0] + ', ' + key[1]);
+    	}
+
 		return $http({
 			  method  : 'PUT',
-			  url     : '/api/groups/' + data.id,
-			  data    : data,  // pass in data as strings
-			  headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
+			  url     : '/api/contributions/'+ update_contribution.id,
+			  headers : { 'Content-Type': undefined, 'enctype':'multipart/form-data; charset=utf-8' },
+      	      processData: false,
+              data: formData
 			 })
-			.success(function(data) {
-
-				console.log("Contribution edited", data);
-
-				return (data);
+			.success(function(res) {
+				console.log("Contribution edited", res);
+				return (res);
 			})
+		    .error(function(error){
+				throw error;
+	   	 	})	
 	}
 
 	o.updateViewCount = function(id){

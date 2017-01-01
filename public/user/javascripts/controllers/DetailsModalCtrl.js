@@ -1,6 +1,7 @@
 angular.module('studionet')
 .controller('DetailsModalCtrl', ['$scope', '$http', 'profile', 'users', '$location', '$anchorScroll', 'contribution', 'contributions', 'relationships', 'tags', function($scope, $http, profile, users, $location, $anchorScroll, contribution, contributions, relationships, tags){
-  
+  //initial
+  if(relationships.relationships.length == 0)relationships.getAll();
 
   // contribution that was clicked
   $scope.activeContribution = null;
@@ -15,6 +16,7 @@ angular.module('studionet')
   $scope.contributions = contributions.contributions;
   $scope.users = users.usersById();
 
+  $scope.alert = {}; 
   /*
    * Rating-related Code
    */
@@ -52,13 +54,18 @@ angular.module('studionet')
       contributions.getAll();
   }
 
+  $scope.loadTags = function($query){
+      return $scope.tags.filter(function(tag){
+        return tag.name.toLowerCase().search($query.toLowerCase()) != -1;
+      });
+  }
+
   // setting data from scope calling ModalService
   $scope.setData = function(data, activeContribution){
       $scope.contributionTree = data;
       $scope.activeContribution = activeContribution;
       console.log('Data output from DetailsModalCtrl');
       console.log(data);
-      $scope.refresh();
   }
   
   $scope.getAllContributions = function(contributions){
@@ -82,27 +89,42 @@ angular.module('studionet')
   $scope.createContribution = function(createContribution){
         if(!createContribution) return;
 
-        //createContribution.author = profile.user.id;
-        console.log(createContribution.ref);
-        //createContribution.refType = "RELATED_TO";
+        createContribution._tags.map(function(t){
+            createContribution.tags.push(t.name);
+        });
+
         createContribution.contentType = 'TEXT';
-        
-        $http({
-          method  : 'POST',
-          url     : '/api/contributions/',
-          data    : createContribution,  // pass in data as strings
-          headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
-          })
-        .success(function(data) {
-          alert("Contribution Created");
-          $scope.close();
-          $scope.refresh();
-          $scope.$parent.graphInit();
-        })
-        .error(function(error){
-          alert("Error Msg:" + error.message);
-          $scope.close();
-        })
+
+        contribution.createContribution( createContribution).then(function(res){
+              $scope.alert.success = true; 
+              $scope.alert.successMsg = "Contribution Id : " + res.id + " has been created.";
+              $scope.$parent.graphInit();
+              $scope.refresh();
+
+        }, function(error){
+              $scope.alert.error = true; 
+              $scope.alert.errorMsg = error;
+        }); 
+
+        // $http({
+        //   method  : 'POST',
+        //   url     : '/api/contributions/',
+        //   data    : createContribution,  // pass in data as strings
+        //   headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
+        //   })
+        // .success(function(res) {
+        //   //alert("Contribution Created");
+        //   //$scope.close();
+        //   $scope.alert.success = true; 
+        //   $scope.alert.successMsg = "Contribution Id : " + res.id + " has been created.";
+        //   //$scope.alert.successId = res.data.id;
+        //   $scope.$parent.graphInit();
+        //   $scope.refresh();
+        // })
+        // .error(function(error){
+        //   $scope.alert.error = true; 
+        //   $scope.alert.errorMsg = error;
+        // })
    };
 
   $scope.deleteContribution = function(contributionId){
@@ -124,23 +146,42 @@ angular.module('studionet')
   }
 
   $scope.updateContribution = function(updateContribution){
+    
+    updateContribution.tags = [];
+    updateContribution._tags.map(function(t){
+      updateContribution.tags.push(t.name);
+    });
+    delete updateContribution._tags;
+    
     console.log("This is output from update contribution", updateContribution);
-    $http({
-      method  : 'PUT',
-      url     : '/api/contributions/'+ updateContribution.id,
-      data    : updateContribution,  // pass in data as strings
-      headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
-      })
-    .success(function(data) {
-      alert("Contribution Updated");
-      $scope.close();
-      $scope.refresh();
-      $scope.$parent.graphInit();
-    })
-    .error(function(error){
-      alert("Error Msg:" + error.message);
-      $scope.close();
-    })
+
+    contribution.updateContribtuion(updateContribution).then(function(res){
+          $scope.alert.success = true; 
+          $scope.alert.successMsg = "Contribution Id : " + res.id + " has been updated.";
+          $scope.$parent.graphInit();
+          $scope.refresh();
+
+    }, function(error){
+          $scope.alert.error = true; 
+          $scope.alert.errorMsg = error.data;
+    }); 
+
+    // $http({
+    //   method  : 'PUT',
+    //   url     : '/api/contributions/'+ updateContribution.id,
+    //   data    : updateContribution,  // pass in data as strings
+    //   headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
+    //   })
+    // .success(function(data) {
+    //   alert("Contribution Updated");
+    //   $scope.close();
+    //   $scope.refresh();
+    //   $scope.$parent.graphInit();
+    // })
+    // .error(function(error){
+    //   alert("Error Msg:" + error.message);
+    //   $scope.close();
+    // })
   }
 
   $scope.createLink = function(linkData){
