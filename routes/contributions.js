@@ -84,12 +84,12 @@ router.route('/')
 		 *	!! Remove in production
 		 * 
 		 */
-		if(auth.ensureSuperAdmin && req.body.author && req.body.createdAt){
+/*		if(auth.ensureSuperAdmin && req.body.author && req.body.createdAt){
 
 			params.createdByParam = parseInt(req.body.author);		// remove in production
 			params.dateCreatedParam = new Date(req.body.createdAt).getTime();
 			params.lastUpdatedParam = new Date(req.body.createdAt).getTime();
-		}
+		}*/
 
 		
 		db.query(query, params, function(error, result){
@@ -322,126 +322,124 @@ router.route('/:contributionId')
 
   })
 
-  .put(auth.ensureAuthenticated, function(req, res){
-    console.log(req.body);
+  .put(auth.ensureAuthenticated, contributionUtil.initTempFileDest, multer({storage: storage.attachmentStorage}).array('attachments'), function(req, res){
+        var query = [
+          'MATCH (c:contribution) WHERE ID(c)=' + req.params.contributionId,
+          'RETURN c'
+        ].join('\n');
 
-    var query = [
-      'MATCH (c:contribution) WHERE ID(c)=' + req.params.contributionId,
-      'RETURN c'
-    ].join('\n');
+        var params;
+        var oldRef; // previous ref of the contribution
 
-    var params;
-    var oldRef; // previous ref of the contribution
+        // Check the current contribution ref
+        var contributionPromise =  new Promise(function(resolve, reject){
+          db.query(query, function(error, result){
+            if (error){
+              return reject();
+            }
+            else {
+              return resolve(result[0]);
+            }
+          });
+        });
 
-    // Check the current contribution ref
-    var contributionPromise =  new Promise(function(resolve, reject){
-      db.query(query, function(error, result){
-        if (error){
-          return reject();
-        }
-        else {
-          return resolve(result[0]);
-        }
-      });
-    });
+        contributionPromise
+        .then(function(result){
+          var oldRef = result.ref;
+          var newRef = req.body.ref;
 
-    contributionPromise
-    .then(function(result){
-      var oldRef = result.ref;
-      var newRef = req.body.ref;
+          var oldTags = result.tags;
+          var newTags = req.body.tags || [];
 
-      var oldTags = result.tags;
-      var newTags = req.body.tags || [];
+          var createdBy = result.createdBy;
+          var changeRelationQuery = [];
+          var changeTagsQuery = [];
+          var tagsAddQuery = [];
+          var tagsRemoveQuery = [];
 
-      var createdBy = result.createdBy;
-      var changeRelationQuery = [];
-      var changeTagsQuery = [];
-      var tagsAddQuery = [];
-      var tagsRemoveQuery = [];
+          if (createdBy !== parseInt(req.user.id)) {
+            return res.send('Cannot edit contribution that was not created by you');
+          }
 
-      if (createdBy !== parseInt(req.user.id)) {
-        return res.send('Cannot edit contribution that was not created by you');
-      }
+          editContributionDetailsQuery = [
+            'MATCH (c3:contribution) WHERE ID(c3)={contributionIdParam}',
+            'SET c3.title = {contributionTitleParam}',
+            'SET c3.body = {contributionBodyParam}',
+            'SET c3.tags = {tagsParam}',
+            'SET c3.ref = {contributionRefParam}',
+            'SET c3.lastUpdated = {lastUpdatedParam}',
+            'SET c3.edited = {editedParam}',
+            'SET c3.contentType = {contentTypeParam}',
+          ];
 
-      editContributionDetailsQuery = [
-        'MATCH (c3:contribution) WHERE ID(c3)={contributionIdParam}',
-        'SET c3.title = {contributionTitleParam}',
-        'SET c3.body = {contributionBodyParam}',
-        'SET c3.tags = {tagsParam}',
-        'SET c3.ref = {contributionRefParam}',
-        'SET c3.lastUpdated = {lastUpdatedParam}',
-        'SET c3.edited = {editedParam}',
-        'SET c3.contentType = {contentTypeParam}',
-      ];
+          if (!(oldTags instanceof Array)) {
+            oldTags = [oldTags];
+          }
 
-      if (!(oldTags instanceof Array)) {
-        oldTags = [oldTags];
-      }
+          if (!(newTags instanceof Array)) {
+            newTags = [newTags];
+          }
 
-      if (!(newTags instanceof Array)) {
-        newTags = [newTags];
-      }
+          var tagsToRemove = _.difference(oldTags, newTags);
+          var tagsToAdd = _.difference(newTags, oldTags);
 
-      var tagsToRemove = _.difference(oldTags, newTags);
-      var tagsToAdd = _.difference(newTags, oldTags);
+          // remove old tags
+          if (tagsToRemove.length > 0) {
+            tagsRemoveQuery = [
+              'WITH c3',
+              'UNWIND {tagsToRemoveParam} as tagToRemove',
+              'OPTIONAL MATCH (c3)-[r1:TAGGED]->(t1:tag {name: tagToRemove})',
+              'DELETE r1',
+              'WITH c3,t1',
+              'OPTIONAL MATCH (t1)<-[r2:TAGGED]-()',
+              'WITH c3, t1, CASE WHEN count(r2)>0 THEN [] ELSE [1] END as array',
+              'FOREACH (x in array | DELETE t1)',
+            ];
+          }
 
-      // remove old tags
-      if (tagsToRemove.length > 0) {
-        tagsRemoveQuery = [
-          'WITH c3',
-          'UNWIND {tagsToRemoveParam} as tagToRemove',
-          'OPTIONAL MATCH (c3)-[r1:TAGGED]->(t1:tag {name: tagToRemove})',
-          'DELETE r1',
-          'WITH c3,t1',
-          'OPTIONAL MATCH (t1)<-[r2:TAGGED]-()',
-          'WITH c3, t1, CASE WHEN count(r2)>0 THEN [] ELSE [1] END as array',
-          'FOREACH (x in array | DELETE t1)',
-        ];
-      }
+          // add new tags
+          if (tagsToAdd.length > 0) {
+            tagsAddQuery = [
+              'WITH c3',
+              'UNWIND {tagsToAddParam} as tagToAdd',
+              'MERGE (t2:tag {name: tagToAdd})',
+              'ON CREATE SET t2.createdBy = {createdByParam}',
+              'CREATE UNIQUE (c3)-[:TAGGED]->(t2)'
+            ];
+          }
 
-      // add new tags
-      if (tagsToAdd.length > 0) {
-        tagsAddQuery = [
-          'WITH c3',
-          'UNWIND {tagsToAddParam} as tagToAdd',
-          'MERGE (t2:tag {name: tagToAdd})',
-          'ON CREATE SET t2.createdBy = {createdByParam}',
-          'CREATE UNIQUE (c3)-[:TAGGED]->(t2)'
-        ];
-      }
+          var query = changeRelationQuery.concat(editContributionDetailsQuery, tagsRemoveQuery, tagsAddQuery).join('\n');
 
-      var query = changeRelationQuery.concat(editContributionDetailsQuery, tagsRemoveQuery, tagsAddQuery).join('\n');
+          var params = {
+            tagsToRemoveParam: tagsToRemove,
+            tagsToAddParam: tagsToAdd,
+            contributionIdParam: parseInt(req.params.contributionId),
+            tagsParam: newTags,
+            contributionTitleParam: req.body.title,
+            contributionBodyParam: req.body.body,
+            contributionRefParam: parseInt(req.body.ref), 
+            lastUpdatedParam: Date.now(),
+            //refTypeParam: req.body.refType,
+            editedParam: true,
+            createdByParam: req.user.id,
+            contentTypeParam: req.body.contentType,
+          };
 
-      var params = {
-        tagsToRemoveParam: tagsToRemove,
-        tagsToAddParam: tagsToAdd,
-        contributionIdParam: parseInt(req.params.contributionId),
-        tagsParam: newTags,
-        contributionTitleParam: req.body.title,
-        contributionBodyParam: req.body.body,
-        contributionRefParam: parseInt(req.body.ref), 
-        lastUpdatedParam: Date.now(),
-        //refTypeParam: req.body.refType,
-        editedParam: true,
-        createdByParam: req.user.id,
-        contentTypeParam: req.body.contentType,
-      };
+          db.query(query, params, function(error, result){
+            if (error){
+              console.log(error);
+              res.status(500);
+              res.send('[ERROR] Cannot edit the given contribution with id: ' + req.params.contributionId);
+            }
+            else{
+              res.status(200);
+              res.send(result[0]);
+              console.log('[SUCCESS] Success in editing the contribution with id: ' + req.params.contributionId);
+            }
+          });
 
-      db.query(query, params, function(error, result){
-        if (error){
-          console.log(error);
-          res.status(500);
-          res.send('[ERROR] Cannot edit the given contribution with id: ' + req.params.contributionId);
-        }
-        else{
-          res.status(200);
-          res.send(result[0]);
-          console.log('[SUCCESS] Success in editing the contribution with id: ' + req.params.contributionId);
-        }
-      });
-
-    });
-  }) 
+        });
+  }, contributionUtil.updateDatabaseWithAttachmentsAndGenerateThumbnails)
 
   .delete(auth.ensureAuthenticated, function(req, res){
 
