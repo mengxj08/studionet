@@ -137,8 +137,6 @@ router.route('/filters')
         'RETURN collect(distinct id(u))'
       ].join('\n');
 
-      console.log(groupQuery);
-
       var groupQueryParam = {
         groupIdParam: groupIds
       };
@@ -176,8 +174,6 @@ router.route('/filters')
           queryDate,
           'RETURN collect(id(c)) as filteredIdList'
         ].join('\n');
-
-        console.log(query);
 
         db.query(query, function(error, result){
           if (error)
@@ -240,8 +236,6 @@ router.route('/filters')
         result.queryUserGroupTag,
         result.queryRating,
         result.queryDate,
-        'MATCH (c:contribution)',
-        'WHERE true',
         'WITH c, collect(c) as filteredNodeList',
         'OPTIONAL MATCH pathToSuper=(c)-[*]->(contributionOnPathToSuper:contribution)',
         'WITH c, collect(distinct contributionOnPathToSuper) as intermediateNodeList, filteredNodeList',
@@ -253,8 +247,6 @@ router.route('/filters')
         'MATCH p=(source)-[]->(target:contribution) WHERE target IN distinctUnwindedCombinedList',
         'RETURN p'
       ].join('\n');
-
-      console.log(query);
 
       graphQuery(query, function(data) {    
 
@@ -331,6 +323,7 @@ router.route('/:contributionId')
   })
 
   .put(auth.ensureAuthenticated, function(req, res){
+    console.log(req.body);
 
     var query = [
       'MATCH (c:contribution) WHERE ID(c)=' + req.params.contributionId,
@@ -389,7 +382,6 @@ router.route('/:contributionId')
         newTags = [newTags];
       }
 
-
       var tagsToRemove = _.difference(oldTags, newTags);
       var tagsToAdd = _.difference(newTags, oldTags);
 
@@ -438,11 +430,13 @@ router.route('/:contributionId')
       db.query(query, params, function(error, result){
         if (error){
           console.log(error);
+          res.status(500);
           res.send('[ERROR] Cannot edit the given contribution with id: ' + req.params.contributionId);
         }
         else{
+          res.status(200);
+          res.send(result[0]);
           console.log('[SUCCESS] Success in editing the contribution with id: ' + req.params.contributionId);
-          res.send('Success in editing the contribution');
         }
       });
 

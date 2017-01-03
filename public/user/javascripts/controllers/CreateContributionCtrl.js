@@ -22,7 +22,6 @@ angular.module('studionet')
 
             console.log($scope.alert.successId);
             //$scope.$parent.highlightNode( null, $scope.alert.successId );
-
       };
 
             // for the new contribution
@@ -36,8 +35,8 @@ angular.module('studionet')
 
           contribution.createContribution( $scope.contributionData ).then(function(res){
                 $scope.alert.success = true; 
-                $scope.alert.successMsg = "Contribution Id : " + res.data.id; 
-                $scope.alert.successId = res.data.id;
+                $scope.alert.successMsg = "Contribution Id : " + res.id; 
+                $scope.alert.successId = res.id;
                 
                 $scope.$parent.graphInit();
 

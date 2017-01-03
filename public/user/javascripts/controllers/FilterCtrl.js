@@ -10,8 +10,8 @@ angular.module('studionet')
             users : [],
             groups: [],
             tags : [],
-            startDate: new Date( (new Date()).setDate((new Date().getDate()) - 2) ),
-            endDate : new Date( (new Date()).setDate((new Date().getDate()) + 2) ),
+            startDate: new Date( (new Date()).setDate((new Date().getDate()) - 8) ),
+            endDate : new Date( (new Date()).setDate((new Date().getDate()) + 1) ),
             ratingMin : 0, 
             ratingMax : 5, 
             depthVal : 0

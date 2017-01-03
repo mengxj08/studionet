@@ -341,6 +341,8 @@ angular.module('studionet')
 
         /// set data
         modal.scope.setData(data,clickedContributionId);
+        //modal.scope.getAllContributions(contributions.contributions);
+        //modal.scope.refresh();
         
         // modal.close.then(function(result) {
         //   //$scope.complexResult  = "Name: " + result.name + ", age: " + result.age;
