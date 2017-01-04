@@ -63,7 +63,7 @@ router.route('/')
 		var currentDate = Date.now();
 		var params = {
 			createdByParam: parseInt(req.user.id),
-			tagsParam: req.body.tags,
+			tagsParam: req.body.tags.split(","), //because form data has text string for tags   
 			contributionTitleParam: req.body.title,
 			contributionBodyParam: req.body.body,
 			contributionRefParam: parseInt(req.body.ref), 
@@ -78,20 +78,6 @@ router.route('/')
 			viewsParam: 0
 		};
 
-		/*
-		 *	Only to allow creationg of synthetic data; 
-		 *	Changes creating user from actual user to user specified;
-		 *	!! Remove in production
-		 * 
-		 */
-/*		if(auth.ensureSuperAdmin && req.body.author && req.body.createdAt){
-
-			params.createdByParam = parseInt(req.body.author);		// remove in production
-			params.dateCreatedParam = new Date(req.body.createdAt).getTime();
-			params.lastUpdatedParam = new Date(req.body.createdAt).getTime();
-		}*/
-
-		
 		db.query(query, params, function(error, result){
 			if (error){
 				console.log('[ERROR] Error creating new contribution for user : ', error);
@@ -323,6 +309,9 @@ router.route('/:contributionId')
   })
 
   .put(auth.ensureAuthenticated, contributionUtil.initTempFileDest, multer({storage: storage.attachmentStorage}).array('attachments'), function(req, res){
+
+        req.body.tags = req.body.tags.split(","); //because form data has text string for tags   
+
         var query = [
           'MATCH (c:contribution) WHERE ID(c)=' + req.params.contributionId,
           'RETURN c'
@@ -432,9 +421,10 @@ router.route('/:contributionId')
               res.send('[ERROR] Cannot edit the given contribution with id: ' + req.params.contributionId);
             }
             else{
-              res.status(200);
-              res.send(result[0]);
               console.log('[SUCCESS] Success in editing the contribution with id: ' + req.params.contributionId);
+              res.status(200);
+              //res.send( req.params.contributionId ); 
+              next();
             }
           });
 

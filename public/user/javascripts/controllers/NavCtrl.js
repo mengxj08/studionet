@@ -3,17 +3,13 @@ angular.module('studionet')
 /*
  * Controller for Filters
  */
-.controller('NavCtrl', ['AppContextService', '$scope', 'profile', 'ModalService', function(AppContextService, $scope, profile, ModalService){
-
-		$scope.graph = AppContextService.graph;
+.controller('NavCtrl', ['$scope', 'profile', 'ModalService', function($scope, profile, ModalService){
 
 		//console.log($scope.graph);
 
 		$scope.user = profile.user;
 		$scope.filters = profile.user.filterNames || []; 
 		$scope.filters_ref = profile.user.filters || []; 
-
-		$scope.simple = true;
 
 		$scope.toggleFilter = function(){
 			angular.element('.graph-container').scope().showFilter = !angular.element('.graph-container').scope().showFilter;

@@ -336,8 +336,8 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
 
     // if cytoscape canvas is defined, assign that
     if(arguments[1] != undefined)
-      graph_style.container = document.getElementById(arguments[1]);
-
+      graph_style.container = arguments[1]; // assign raw DOM element
+    
     if(arguments[2] != undefined)
       graph_style = graphLayout; 
 

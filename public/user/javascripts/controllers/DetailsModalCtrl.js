@@ -1,25 +1,50 @@
 angular.module('studionet')
 .controller('DetailsModalCtrl', ['$scope', '$http', 'profile', 'users', '$location', '$anchorScroll', 'contribution', 'contributions', 'relationships', 'tags', function($scope, $http, profile, users, $location, $anchorScroll, contribution, contributions, relationships, tags){
-  //initial
-  if(relationships.relationships.length == 0)relationships.getAll();
-
-  // contribution that was clicked
-  $scope.activeContribution = null;
-
-  // tree of the contribution clicked
-  $scope.contributionTree = [];  
 
   // general 
   $scope.user = profile.user;
   $scope.tags = tags.tags;
   $scope.relationships = relationships.relationships;
   $scope.contributions = contributions.contributions;
-  $scope.users = users.usersById();
+  $scope.users = users.users.hash();
 
   $scope.alert = {}; 
-  /*
-   * Rating-related Code
-   */
+  
+  // --- Modal Opening and Closing
+  $scope.clickedContribution = null;
+  $scope.contributionTree = [];  
+
+  // setting data from scope calling ModalService
+  $scope.setData = function(data, activeContribution){
+      $scope.contributionTree = data; // contribution tree
+      $scope.clickedContribution = activeContribution;  // contribution clicked initially
+      $scope.activeContribution = activeContribution; // contribution currently in view (when scroll is implemented)
+      console.log(data);
+  }
+
+  //  This close function doesn't need to use jQuery or bootstrap, because
+  //  the button has the 'data-dismiss' attribute.
+  $scope.close = function() {
+
+      // increase viewcount for contribution
+      console.log("Updating view count");
+      contribution.updateViewCount($scope.activeContribution);
+
+      $(".modal").remove();
+      $('.modal-backdrop').remove();
+    
+  };
+
+  // PlugIns Functionality
+
+  // Tags
+  $scope.loadTags =  function($query){
+          return tags.tags.filter(function(tag){
+            return tag.name.toLowerCase().search($query.toLowerCase()) != -1;
+          });
+  }
+
+  //  Ratings
   $scope.rate = 0;
   $scope.max = 5;
   $scope.overStar = null; 
@@ -34,9 +59,7 @@ angular.module('studionet')
     })
   }
 
-  /*
-   * Attachments Code
-   */
+  // Attachments
   $scope.getThumb = function(contributionId, attachment){
     if(attachment.thumb)
       return "/api/contributions/" + contributionId + /attachments/+ attachment.id + "/thumbnail";
@@ -45,105 +68,33 @@ angular.module('studionet')
 
   }
 
-  /*
-   * General
-   */
-  $scope.refresh = function(){
-      tags.getAll();
-      relationships.getAll();
-      contributions.getAll();
-  }
 
-  $scope.loadTags = function($query){
-      return $scope.tags.filter(function(tag){
-        return tag.name.toLowerCase().search($query.toLowerCase()) != -1;
-      });
-  }
-
-  // setting data from scope calling ModalService
-  $scope.setData = function(data, activeContribution){
-      $scope.contributionTree = data;
-      $scope.activeContribution = activeContribution;
-      console.log('Data output from DetailsModalCtrl');
-      console.log(data);
-  }
+  // -------- Contribution Viewer Functionality (Read, Update, Delete)
   
-  $scope.getAllContributions = function(contributions){
-      $scope.contributions = contributions;
-  }
+  // REPLY - QUESTION, COMMENT, ANSWER, RESOURCE, RELATED_TO (generic) 
+  // Should have different buttons for the above relationships instead of dropdown
+  $scope.createContribution = function( createContribution ){
 
-  //  This close function doesn't need to use jQuery or bootstrap, because
-  //  the button has the 'data-dismiss' attribute.
-  $scope.close = function() {
-
-      // increase viewcount for contribution
-      console.log("Updating view count");
-      contribution.updateViewCount($scope.activeContribution);
-
-      //$('body').removeClass('modal-open');
-      $(".modal").remove();
-      $('.modal-backdrop').remove();
-    
-  };
-
-  $scope.createContribution = function(createContribution){
         if(!createContribution) return;
 
-        createContribution._tags.map(function(t){
-            createContribution.tags.push(t.name);
-        });
+        createContribution.contentType = 'text'; /// default
+        createContribution.tags = [];
 
-        createContribution.contentType = 'TEXT';
+        // if _tags is defined
+        if(createContribution._tags)
+            createContribution._tags.map(function(t){
+                createContribution.tags.push(t.name.trim());
+            });
 
-        contribution.createContribution( createContribution).then(function(res){
+        contribution.createContribution( createContribution ).then(function(res){
               $scope.alert.success = true; 
-              $scope.alert.successMsg = "Contribution Id : " + res.id + " has been created.";
-              $scope.$parent.graphInit();
-              $scope.refresh();
-
+              $scope.alert.successMsg = "Contribution Id : " + res.data.id + " has been created.";
         }, function(error){
               $scope.alert.error = true; 
               $scope.alert.errorMsg = error;
         }); 
-
-        // $http({
-        //   method  : 'POST',
-        //   url     : '/api/contributions/',
-        //   data    : createContribution,  // pass in data as strings
-        //   headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
-        //   })
-        // .success(function(res) {
-        //   //alert("Contribution Created");
-        //   //$scope.close();
-        //   $scope.alert.success = true; 
-        //   $scope.alert.successMsg = "Contribution Id : " + res.id + " has been created.";
-        //   //$scope.alert.successId = res.data.id;
-        //   $scope.$parent.graphInit();
-        //   $scope.refresh();
-        // })
-        // .error(function(error){
-        //   $scope.alert.error = true; 
-        //   $scope.alert.errorMsg = error;
-        // })
    };
 
-  $scope.deleteContribution = function(contributionId){
-
-      contribution.deleteContribution(contributionId).then(function(){
-
-      if($scope.$parent.filterStatus){
-        angular.element('#filterPanel').scope().filterRequest();  
-      }
-      else{
-        $scope.$parent.graphInit();
-      }
-
-      $scope.refresh();
-
-      }, function(error){
-          alert("Error occured while deleting contribution")
-      })
-  }
 
   $scope.updateContribution = function(updateContribution){
     
@@ -153,37 +104,32 @@ angular.module('studionet')
     });
     delete updateContribution._tags;
     
-    console.log("This is output from update contribution", updateContribution);
+    //console.log("This is output from update contribution", updateContribution);
 
     contribution.updateContribtuion(updateContribution).then(function(res){
+          
           $scope.alert.success = true; 
-          $scope.alert.successMsg = "Contribution Id : " + res.id + " has been updated.";
-          $scope.$parent.graphInit();
-          $scope.refresh();
+          $scope.alert.successMsg = "Contribution Id : " + updateContribution.id + " has been updated.";
 
     }, function(error){
           $scope.alert.error = true; 
           $scope.alert.errorMsg = error.data;
     }); 
-
-    // $http({
-    //   method  : 'PUT',
-    //   url     : '/api/contributions/'+ updateContribution.id,
-    //   data    : updateContribution,  // pass in data as strings
-    //   headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
-    //   })
-    // .success(function(data) {
-    //   alert("Contribution Updated");
-    //   $scope.close();
-    //   $scope.refresh();
-    //   $scope.$parent.graphInit();
-    // })
-    // .error(function(error){
-    //   alert("Error Msg:" + error.message);
-    //   $scope.close();
-    // })
   }
 
+
+  // Delete the contribution
+  $scope.deleteContribution = function(contributionId){
+
+      contribution.deleteContribution(contributionId).then(function(){
+
+      }, function(error){
+          alert("Error occured while deleting contribution")
+      })
+  }
+
+
+  // deprecated
   $scope.createLink = function(linkData){
     linkData.createdBy = $scope.user.id;
 
@@ -226,6 +172,10 @@ angular.module('studionet')
       $scope.updateContribution(contributionData);
   }
 
+
+  /*
+   * Contribution Tree Related
+   */
   $scope.scrollTo = function (){
       // set the location.hash to the id of the element you wish to scroll to.
       $location.hash('modal' + $scope.activeContribution);
@@ -233,4 +183,6 @@ angular.module('studionet')
       // call $anchorScroll()
       $anchorScroll();
   };
+
+
 }]);
