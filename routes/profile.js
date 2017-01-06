@@ -14,12 +14,12 @@ router.get('/', auth.ensureAuthenticated, function(req, res){
     'MATCH (u:user) WHERE ID(u)={userIdParam}',
     'WITH u',
     'OPTIONAL MATCH p1=(g:group)-[r:MEMBER]->(u)',
-    'WITH collect({id: id(g), name: g.name, role: r.role, joinedOn: r.joinedOn, restricted: g.restricted, description: g.description}) as groups, u',
+    'WITH collect({id: id(g), role: r.role, joinedOn: r.joinedOn}) as groups, u',
     'OPTIONAL MATCH p2=(c:contribution)<-[r1:CREATED]-(u)',
     //'WITH groups, collect({id: id(c), title: c.title, lastUpdated: c.lastUpdated, contentType: c.contentType, rating: c.rating, rateCount: c.rateCount, views: c.views, tags: c.tags}) as contributions, u',
-    'WITH groups, collect({id: id(c), title: c.title}) as contributions, u',
+    'WITH groups, collect({id: id(c)}) as contributions, u',
     'OPTIONAL MATCH p3=(t:tag)<-[r1:CREATED]-(u)',
-    'WITH groups, collect({id: id(t), name: t.name}) as tags, contributions, u',
+    'WITH groups, collect({id: id(t)}) as tags, contributions, u',
     'RETURN {\
               nusOpenId: u.nusOpenId,\
               canEdit: u.canEdit,\

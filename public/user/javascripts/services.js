@@ -1,25 +1,5 @@
 angular.module('studionet')
 
-// todo
-.service('AppContextService', function(){
-    
-    var o = {
-    	graph: null
-    }
-
-    o.getGraph = function(){
-    	//console.log("getting graph");
-    	return o.graph;
-    }
-
-    o.setGraph = function( graph_value ){
-    	o.graph = graph_value;
-    	//console.log("setting graph");
-    }
-
-    return o; 
-})
-
 .factory('supernode', ['$http', function($http){
 	var o ={
 		group: -1, 
@@ -47,6 +27,7 @@ angular.module('studionet')
 	o.getUser = function(){
 		return $http.get('/api/profile/').success(function(data){
 			angular.copy(data, o.user);
+			console.log("Profile Refreshed");
 		});
 	};
 
@@ -87,69 +68,29 @@ angular.module('studionet')
 	return o;
 }])
 
-/*
-.factory('graphs', ['$http', 'groups', function($http, groups){
-
-	var o = {
-		contribution: {},
-		groups: {}
-	};
-
-	o.getContributionsGraph = function(){
-		return $http.get("/graph/all").success(function(data){
-			angular.copy(data, o.contribution);
-		});
-	};
-
-	o.filterContributions = function(){
-		return $http.get(urlString).success(function(data){
-			//$scope.graphInit(data);
-		});
-	}
-
-	o.getGroupsGraph = function(user_context){
-		return $http.get('/graph/all/groups').success(function(data){
-			// replace the nodes with the groups that already hold data about the user status in each group
-			data.nodes = groups.groups;
-			// copy data
-			angular.copy(data, o.groups);
-		});
-	};
-
-	o.drawGraph = function(){
-
-	}
-
-
-}])*/
-
-
 .factory('users', ['$http', function($http){
 
 	var o = {
 		users: [],
-		usersById: {}
+		usersHash: []
 	};
 
 	o.getAll = function(){
 		return $http.get('/api/users').success(function(data){
 			angular.copy(data, o.users);
+			o.usersHash = o.users.hash();
+			console.log("Users Refreshed");
 		});
 	};
 
-	o.usersById = function(){
-
-			var arr = {};
-			o.users.map(function(user){
-				arr[user.id] = user;
-			})
-
-			return arr;
+	o.getUser = function(user_id){
+		return o.usersHash[user_id];
 	}
 
 	o.createNewUser = function(user){
 		return $http.post('/api/users', user).success(function(data){
 			o.users.push(data);
+			o.usersHash[data.id] = data;
 		});
 	}
 
@@ -166,59 +107,40 @@ angular.module('studionet')
 		return $http.get('/api/tags').success(function(data){
 			// order according to contribution count
 			angular.copy($filter('orderBy')(data, 'contributionCount', true) , o.tags);
+			console.log("Tags Refreshed");
 		});
 	};
 
+	// filtering function for tags plugin
+	o.loadTags = function(tags, $query){
+      return (tags || o.tags).filter(function(tag){
+        return tag.name.toLowerCase().search($query.toLowerCase()) != -1;
+      });
+ 	}
+
+
 	return o;
 }])
-
 
 .factory('contributions', ['$http', 'profile', function($http, profile){
 
 	var o = {
 		contributions: [],
-		graph: {},
-		marked: []
+		graph: {}
 	};
 
 	o.getAll = function(){
 		return $http.get('/api/contributions').success(function(data){
 			angular.copy(data, o.contributions);
+			console.log("Contributions Refreshed");
 		});
 	};
 
-	o.getGraph = function(){
-		return $http.get("/graph/all").success(function(data){
-
-			// mark the nodes owned by the user
-			var contributionHash = o.contributions.hash();
-			data.nodes = data.nodes.map(function(node){
-
-					// find if contribution is owned by user
-					if( contributionHash[node.id].createdBy == profile.user.id ){
-						node.owner = true;
-					}
-					else
-						node.owner = false;
-
-					// check if contribution was recently created and hence marked 
-					if( o.marked.indexOf( node.id ) > -1)
-						node.marked = true;
-					else
-						node.marked = false;
-
-					return node;
-			})
-
-			angular.copy(data, o.graph);
-
-		});
-	};
 
 	return o;
 }])
 
-.factory('contribution', ['$http', 'profile', 'contributions', function($http, profile, contributions){
+.factory('contribution', ['$http', 'profile', 'contributions', 'tags', 'graph', function($http, profile, contributions, tags, graph){
 
 	var o = {
 		contribution: {}
@@ -240,40 +162,83 @@ angular.module('studionet')
 		formData.append('contentType', new_contribution.contentType);
 		formData.append('ref', new_contribution.ref);
 
-		new_contribution.attachments.map(function(file){
-			formData.append('attachments', file, file.name);
-		})
+		new_contribution.attachments.map(function(file){	formData.append('attachments', file, file.name); 	})
 
 	    return $http({
-	      method  : 'POST',
-	      url     : '/api/contributions',
-	      headers : { 'Content-Type': undefined, 'enctype':'multipart/form-data; charset=utf-8' },
-      	  processData: false,
-          data: formData
+				method  : 'POST',
+				url     : '/api/contributions',
+				headers : { 'Content-Type': undefined, 'enctype':'multipart/form-data; charset=utf-8' },
+				processData: false,
+				data: formData
 	    })
 	    .success(function(res) {
 
 	    	// mark in graph
-	    	contributions.marked.push(res.id);
-	    	console.log(res.id);
+	    	console.log("Selecting in graph", res.id, res.id);
 
 			// refresh graph
-			
-			// refresh tags
-			
+			graph.getGraph().then(function(){	graph.selectNode(res.id);	});
 
+			// refresh tags
+			tags.getAll();
+			
 			// refresh profile
+			profile.getUser();
 
 			// refresh contributions
-			
+			contributions.getAll();
 
 			// send success
-			return res;  
+			return;  
 	    })
 	    .error(function(error){
 			throw error;
 	    }) 
 	}
+
+
+	o.updateContribtuion = function(update_contribution){
+
+		var formData = new FormData();
+		formData.append('title', update_contribution.title);
+		formData.append('body', update_contribution.body);
+		formData.append('tags', update_contribution.tags);
+		formData.append('contentType', update_contribution.contentType);
+		formData.append('ref', update_contribution.ref);
+
+		update_contribution.attachments.map(function(file){
+			formData.append('attachments', file, file.name);
+		})
+
+		return $http({
+			  method  : 'PUT',
+			  url     : '/api/contributions/'+ update_contribution.id,
+			  headers : { 'Content-Type': undefined, 'enctype':'multipart/form-data; charset=utf-8' },
+      	      processData: false,
+              data: formData
+			 })
+			.success(function(res) {
+		    	
+				// refresh graph
+				graph.getGraph().then(function(){	graph.selectNode(update_contribution.id);	});
+
+				// refresh tags
+				tags.getAll();
+				
+				// refresh profile
+				profile.getUser();
+
+				// refresh contributions
+				contributions.getAll();
+
+				// send success
+				return;  
+			})
+		    .error(function(error){
+				throw error;
+	   	 	})	
+	}
+
 
 	o.deleteContribution = function(contribution_id){
 
@@ -285,15 +250,7 @@ angular.module('studionet')
 				headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
 				})
 	    .success(function(res) {
-			
 			alert(res);
-			// $scope.close();
-			// $scope.refresh();  
-			// $scope.$parent.graphInit();
-			// 
-			// if filter active, re-render filter
-			// else render entire graph
-			
 	    })
 	    .error(function(error){
 			throw error;
@@ -301,42 +258,10 @@ angular.module('studionet')
 	
 	}
 
-	o.updateContribtuion = function(update_contribution){
-		var formData = new FormData();
-		formData.append('title', update_contribution.title);
-		formData.append('body', update_contribution.body);
-		formData.append('tags', update_contribution.tags);
-		//formData.append('refType', update_contribution.refType);
-		formData.append('contentType', update_contribution.contentType);
-		formData.append('ref', update_contribution.ref);
-
-		update_contribution.attachments.map(function(file){
-			formData.append('attachments', file, file.name);
-		})
-		for (var key of formData.entries()) {
-        	console.log(key[0] + ', ' + key[1]);
-    	}
-
-		return $http({
-			  method  : 'PUT',
-			  url     : '/api/contributions/'+ update_contribution.id,
-			  headers : { 'Content-Type': undefined, 'enctype':'multipart/form-data; charset=utf-8' },
-      	      processData: false,
-              data: formData
-			 })
-			.success(function(res) {
-				console.log("Contribution edited", res);
-				return (res);
-			})
-		    .error(function(error){
-				throw error;
-	   	 	})	
-	}
 
 	o.updateViewCount = function(id){
 		return $http.post('/api/contributions/' + id + '/view').success(function(data){
-			o.contribution.views += 1;
-			console.log(data);
+			o.contribution.views++;
 		});
 	};
 
@@ -361,6 +286,7 @@ angular.module('studionet')
 	o.getAll = function(){
 		return $http.get('/api/groups').success(function(data){
 			angular.copy(data, o.groups);
+			console.log("Groups Refreshed");
 		});
 	};
 
@@ -578,25 +504,119 @@ angular.module('studionet')
 	o.getAll = function(){
 		$http.get('/api/relationships/').success(function(data){
 			angular.copy(data, o.relationships);
+			console.log("Relationships Refreshed");
 		});
 	}
 
 	return o;
 }])
 
-.factory('modelsFactory', ['$http', function($http){
+.factory('graph', ['$http', function($http){
+	
 	var o = {
-		userModels: []
+		activeNode: {},
+		url: "/graph/all",  // either graph/all or filters Url
+		graph_data: {}, // graph-data
+		graph : {} // cytoscape-graph
 	};
 
-	o.getUserModels = function(nusOpenId){
-		return $http.get('/uploads/' + nusOpenId + '/models').success(function(data){
-			angular.copy(data, o.userModels);
+	var observerCallbacks = [];
+
+	// register an observer
+	o.registerObserverCallback = function(callback){
+	   observerCallbacks.push(callback);
+	};
+
+	// call this when you know 'foo' has been changed
+	var notifyObservers = function(){
+		angular.forEach(observerCallbacks, function(callback){
+	    	 callback();
+	    });
+	};
+
+	// make the graph
+	var makeGraph = function( container ){
+
+		// takes either data from filters or contribution.graph data
+		o.graph = STUDIONET.GRAPH.makeGraph( o.graph_data, container ); // defaults to cy
+		var cy = o.graph;
+
+		// notify any controller watching of the updated graph
+		notifyObservers();
+	}
+
+	// get the graph from the URL
+	o.getGraph = function( container ){
+
+		return $http.get(o.url).success(function(data){
+			
+			// copy data
+			angular.copy(data, o.graph_data);
+			console.log("Graph Refreshed");
+
+			// make graph with the data - could provide a container id
+			makeGraph( container );
+
 		});
 	}
 
+	// Styling Options
+	o.removeAdditionalStyles = function(){
+	  	o.graph.batch(function(){
+
+	      o.graph.elements()
+	        .removeClass('highlighted')
+	        .removeClass('selected')
+	        .removeClass('faded');
+	  	});          
+
+	  	o.activeNode = {};
+	}
+
+	o.selectNode = function( node ){
+
+		// node is either a cytoscape node or an id 
+		if(node.id)
+			o.activeNode = node.id();
+		else
+			o.activeNode = node;
+
+		if( node.isNode == undefined )
+		node = o.graph.getElementById(node);
+
+		o.graph.batch(function(){
+		o.graph.elements()
+		  .removeClass('highlighted')
+		  .removeClass('selected')
+		  .addClass('faded');
+
+		  node.removeClass('faded')
+		      .addClass('selected');
+		  
+		  node.predecessors().removeClass('faded')
+		                     .addClass('highlighted');
+		  
+		  node.successors().removeClass('faded')  
+		                   .addClass('highlighted');
+		});
+
+	}
+
+	o.resetGraph = function(){
+	  o.graph.fit();
+	  removeAdditionalStyles();
+	}
+
+	o.runLayout = function(){
+	  o.graph.layout().stop(); 
+	  layout = o.graph.elements().makeLayout({ 'name': 'cola'}); 
+	  layout.start();  	
+	}
+
+
 	return o;
-}]);
+}])
+
 
 
 /*

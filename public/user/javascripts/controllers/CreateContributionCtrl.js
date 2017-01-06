@@ -1,14 +1,10 @@
 angular.module('studionet')
-.controller('CreateContributionCtrl', ['$scope', 'supernode', 'contribution', function($scope, supernode, contribution){
+.controller('CreateContributionCtrl', ['$scope', 'supernode', 'contribution', 'tags', function($scope, supernode, contribution, tags){
 
-      var all_tags = $scope.$parent.tags; 
       $scope.file;
-
       $scope.alert = {}; 
-
-
       $scope.loadTags = function($query){
-          return all_tags.filter(function(tag){
+          return tags.tags.filter(function(tag){
             return tag.name.toLowerCase().search($query.toLowerCase()) != -1;
           });
       }
@@ -20,31 +16,29 @@ angular.module('studionet')
             $('body').removeClass('modal-open');
             $('.modal-backdrop').remove();
 
-            console.log($scope.alert.successId);
-            //$scope.$parent.highlightNode( null, $scope.alert.successId );
       };
 
-            // for the new contribution
+      // for the new contribution
       $scope.contributionData = { _tags: [], attachments: [], tags: [], refType: "RELATED_TO", contentType: "text", ref: supernode.contribution};
       $scope.createContribution = function(){
 
           $scope.contributionData._tags.map(function(t){
-             $scope.contributionData.tags.push(t.name);
+              $scope.contributionData.tags.push(t.name.trim());
           });
           delete $scope.contributionData._tags;
 
           contribution.createContribution( $scope.contributionData ).then(function(res){
                 $scope.alert.success = true; 
-                $scope.alert.successMsg = "Contribution Id : " + res.id; 
-                $scope.alert.successId = res.id;
-                
-                $scope.$parent.graphInit();
+                $scope.alert.successMsg = "Your contribution was created." // res.data.id; 
+                $scope.alert.successId = res.data.id;
 
           }, function(error){
                 $scope.alert.error = true; 
                 $scope.alert.errorMsg = error;
           }); 
 
-       };
+      };
    
 }]);
+
+

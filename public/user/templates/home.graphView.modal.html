@@ -164,6 +164,9 @@
                     </div>
                 </div>
 
+
+
+
                 <!-- Update existing contributions -->
                 <div class='row editor update' ng-show='showUpdateContribution'>
                     <hr>
@@ -209,7 +212,8 @@
 
                     <!-- attachments -->
                     <div class='form-section'>
-                      <label> Attachments <small>({{contributionData.attachments.length}} file(s) uploaded)</small> </label>
+                      <!-- should be different from create / reply editor -->
+                      <label> Attachments <small>({{ contributionData.attachments.length - (contributionData.attachments[0].id == null ? -1 : 0) }} file(s) uploaded)</small> </label>
                       <div class="button" ngf-select ng-model="contributionData.attachments" ngf-multiple="true">Choose File</div>
                     </div>
                     
