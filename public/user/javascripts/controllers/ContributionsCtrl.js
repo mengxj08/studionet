@@ -24,8 +24,10 @@ angular.module('studionet')
   var onNodeSingleClick = function(evt){
 
         var node = evt.cyTarget;
-        graph.selectNode(node);
+        
         // select the node
+        graph.selectNode(node);
+        
         // preview
         if(node.data('qtip') == undefined){
           
