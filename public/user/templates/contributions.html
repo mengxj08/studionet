@@ -9,7 +9,7 @@
 <div class='graph-container' ng-init='graphInit()'> 
 
   <!--Nav Bar with Filters-->
-  <ng-include src="'templates/filters.html'"></ng-include>
+  <!-- <ng-include src="'templates/filters.html'"></ng-include> -->
 
   <div id='cy'></div>
 
@@ -23,8 +23,11 @@
 		<i class="graph-nav-control icon fa fa-arrows-alt" ng-click='resetGraph()' uib-tooltip='Fit Graph'  tooltip-placement='left'></i>
 
     <!-- filter toggle -->
-    <i ng-class="filterVisible ? 'graph-nav-control icon fa fa-search btn-active' : 'graph-nav-control icon fa fa-search'" 
-       ng-click='filterToggle()' uib-tooltip='{{filterVisible ? "Clear Filters" : "Filter Mode"}}'  tooltip-placement='left'></i>
+<!--     <i ng-class="filterVisible ? 'graph-nav-control icon fa fa-search btn-active' : 'graph-nav-control icon fa fa-search'" 
+       ng-click='filterToggle()' uib-tooltip='{{filterVisible ? "Clear Filters" : "Filter Mode"}}'  tooltip-placement='left'></i> -->
+
+    <i class="graph-nav-control icon fa fa-search"
+       ng-click='filterToggle()' uib-tooltip='Filter'  tooltip-placement='left'></i>
 
 		<!-- create a contribution -->
 		<i class="graph-nav-control icon fa fa-plus" ng-click='createNewContribution()' uib-tooltip='New Contribution'  tooltip-placement='left'></i>

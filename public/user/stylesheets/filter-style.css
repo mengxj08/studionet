@@ -1,27 +1,44 @@
+/*Filter Modal Overrride */
+.filterModal .modal-header{
+	height: 30px !important;
+	padding: 0px !important;
+	border-bottom: none !important;
+}
+.filterModal .modal-footer{
+	height: 50px !important;
+	padding: 0px !important;
+	border-top: none !important;
+}
+.filterModal h4, .filterModal h5{
+	font-weight: normal;
+	font-family: 'Open Sans', sans-serif;
+
+}
 /*
  *	Graph Filters 
  */
 
- #filters{
+/* #filters{
  	position: fixed;
  	top: 50px;
  	width: 80%;
  	padding: 5px 5px;
  	background-color: #E3E8EE;
 
- 	z-index: 4;
  	margin-left: 10% !important;
  }
-
+*/
 .filter-panel{
 	background-color: #F8F8F8;
 	margin-bottom: 0px !important;
 }
 
-
 .filter-heading{
 	cursor: pointer;
 	line-height: 30px;
+}
+.filter-heading h5{
+	font-family: sans-serif;
 }
 
 .panel-heading{
@@ -40,7 +57,7 @@ div.tree-control{
 
 /* */
 div.tree-control .tree-view{
-	max-height: 60vh;
+	max-height: 42vh;
 	overflow: scroll;
 	margin-left: -15px;
 }
@@ -58,7 +75,7 @@ div.tree-control .tree-view li{
 }
 
 .tree-control .tree-view ul .item-details{
-	font-size: 14px; 
+	font-size: 13px; 
 	line-height: 22px;
 }
 
@@ -76,12 +93,11 @@ input[type="checkbox"] .tree-checkbox{
 	padding-left: 5px;
 	width: 100%;
 }
-/* */
 
-.tree-control .tree-view ul{
-	//max-height: 15vh;
+/*.tree-control .tree-view ul{
+	max-height: 15vh;
 }
-
+*/
 /*
  *
  *	For the slider
@@ -104,17 +120,17 @@ input[type="checkbox"] .tree-checkbox{
 	float: right;
 }
 
-.filter-btn{
+/*.filter-btn{
 	color: #4A95EF;
 	text-align: center;
 	background-color: white;
-	width: 30px; 
-	height: 30px;
+	width: 35px; 
+	height: 35px;
 	line-height: 30px !important;
 	border-radius: 50% !important;
 	margin: 2.5px 10px !important;
 	padding: 0px !important;
-}
+}*/
 .align-right{
 	float: right;
 } 

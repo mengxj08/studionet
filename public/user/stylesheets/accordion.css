@@ -1,32 +1,19 @@
-.col-sm-2{
-	padding-right: 0px;
-    padding-left: 0px;
-}
-
 .panel .panel-heading {
 	background-color: #C1BCBC;
-	padding-top: 0px;
-	padding-bottom: 0px;
-	padding-left: 10px;
-	padding-right: 15px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	padding-left: 15px;
 }
 
 .panel .panel-body {
-	padding-top: 0px;
-	padding-bottom: 10px;
-	padding-left: 10px;
-	padding-right: 10px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	padding-left: 15px;
+	padding-right: 0px;
+	background-color: white;
 }
 
-.panel-group .panel + .panel {
-	margin-top: 0px;
-}
+/*.panel-group .panel-heading + .panel-collapse > .panel-body, .panel-group .panel-heading + .panel-collapse > .list-group{
+	border-top: 1px solid #ddd;
+}*/
 
-.panel-group .panel-heading + .panel-collapse > .panel-body, .panel-group .panel-heading + .panel-collapse > .list-group{
-	border-top: 0px;
-}
-
-#accordion {
-	padding-top: 1px !important;
-	margin-top: -1px !important;
-}

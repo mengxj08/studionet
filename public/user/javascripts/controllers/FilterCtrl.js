@@ -298,5 +298,11 @@ angular.module('studionet')
 
       }
 
+      $scope.close = function() {
+
+        $('body').removeClass('modal-open');
+        $('.modal-backdrop').remove();
+
+      };
 
 }]);

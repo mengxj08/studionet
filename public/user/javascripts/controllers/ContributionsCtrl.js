@@ -20,11 +20,32 @@ angular.module('studionet')
 
   /*
    * Filter Visibilitiy Options controlled in this parent container for filter;
-   */
   $scope.filterVisible = false;
   $scope.filterToggle = function(){
     $scope.filterVisible = !$scope.filterVisible;
   }
+   */
+  
+  $scope.filterToggle = function(){
+
+      ModalService.showModal({
+
+        templateUrl: "/user/templates/filterModal.html",
+        controller: "FilterCtrl", 
+        scope: $scope
+
+      }).then(function(modal) {
+
+          // activate modal
+          modal.element.modal({ backdrop: 'static' });
+
+          /// set data
+          //modal.scope.setData(data,clickedContributionId);
+        
+      });
+
+  }
+
 
   /*
    * Zooming Code
