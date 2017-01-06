@@ -24,10 +24,8 @@ angular.module('studionet')
   var onNodeSingleClick = function(evt){
 
         var node = evt.cyTarget;
-
-        // select the node
         graph.selectNode(node);
-
+        // select the node
         // preview
         if(node.data('qtip') == undefined){
           
@@ -185,6 +183,30 @@ angular.module('studionet')
       });
   };
 
+    /*
+   * Filter Visibilitiy Options controlled in this parent container for filter;
+  $scope.filterVisible = false;
+  $scope.filterToggle = function(){
+    $scope.filterVisible = !$scope.filterVisible;
+  }
+   */
+  $scope.filterToggle = function(){
+
+      ModalService.showModal({
+
+        templateUrl: "/user/templates/filterModal.html",
+        controller: "FilterCtrl", 
+        scope: $scope
+
+      }).then(function(modal) {
+
+          // activate modal
+          modal.element.modal({ backdrop: 'static' });
+
+          /// set data
+          //modal.scope.setData(data,clickedContributionId);
+      });
+  }
 
 }])
 
