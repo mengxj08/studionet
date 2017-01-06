@@ -14,8 +14,19 @@
   <div id='cy'></div>
 
   <div class='info-pane'>
+
+    <div id='filter-shortcuts'>
+      <h5>Active Filters</h5> 
+      <h6 class='clear-filter-shortcut'>Authors (1) </h6>
+      <h6 class='clear-filter-shortcut'>Tags (2) </h6>
+      <h6 class='clear-filter-shortcut'>Dates (1)</h6>
+    </div>
+
+    <br><br>
+
     <!-- Zoom Level -->
-    <h5>Zoom Level</h5> <h6>{{zoomLevel}} &nbsp; %</h6>
+    <h5>Zoom Level</h5> <h6>{{zoomLevel}} &nbsp; %</h6> 
+
   </div>
   
   <div class='graph-controls'>
@@ -26,8 +37,8 @@
 <!--     <i ng-class="filterVisible ? 'graph-nav-control icon fa fa-search btn-active' : 'graph-nav-control icon fa fa-search'" 
        ng-click='filterToggle()' uib-tooltip='{{filterVisible ? "Clear Filters" : "Filter Mode"}}'  tooltip-placement='left'></i> -->
 
-    <i class="graph-nav-control icon fa fa-search"
-       ng-click='filterToggle()' uib-tooltip='Filter'  tooltip-placement='left'></i>
+    <i class="graph-nav-control icon fa fa-search" ng-click='filterToggle()' uib-tooltip='Filter'  tooltip-placement='left'></i>
+
 
 		<!-- create a contribution -->
 		<i class="graph-nav-control icon fa fa-plus" ng-click='openNewContributionModal()' uib-tooltip='New Contribution'  tooltip-placement='left'></i>

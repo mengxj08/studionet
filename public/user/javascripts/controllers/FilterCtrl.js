@@ -244,6 +244,9 @@ angular.module('studionet')
                 data    : data
               }).success(function(data){
 
+
+                  
+
                   $scope.filterActive = true;
                   spinner.stop();
 

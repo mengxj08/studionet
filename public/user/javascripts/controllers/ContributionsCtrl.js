@@ -4,10 +4,16 @@ angular.module('studionet')
  *  Main Contribution Graph Page
  * 
  */
-.controller('ContributionsCtrl', ['$scope', '$stateParams', 'graph', 'users', 'supernode', 'ModalService', 'contribution', function($scope, $stateParams, graph, users, supernode, ModalService, contribution){
+.controller('ContributionsCtrl', ['$scope', '$stateParams', 'graph', 'filter',  'users', 'supernode', 'ModalService', 'contribution', function($scope, $stateParams, graph, filter, users, supernode, ModalService, contribution){
 
   // Initializations
-  $scope.filterStatus = false; 
+  $scope.filterStatus = filter.filterStatus; 
+
+  var updateFilter = function(){
+    $scope.filterStatus = filter.filterStatus; 
+  }
+  filter.registerObserverCallback(updateFilter);
+
 
   // ----------------- Graphs
   // First Initialization of the graph on page-refresh
@@ -133,7 +139,7 @@ angular.module('studionet')
   graph.registerObserverCallback(updateGraph);
 
 
-  // ------------- Zooming
+  // ------------- Zooming & Nav Controls
   $scope.zoomLevel = "Calibrating...";
   var updateZoom = function(){
     if($scope.graph){
@@ -144,16 +150,9 @@ angular.module('studionet')
   setTimeout(updateZoom, 1000);
   document.getElementById("cy").addEventListener("wheel", updateZoom);
 
-
-  /*
-   * Deprecated - After filter changed to Dialog
-   * Filter Visibilitiy Options controlled in this parent container for filter;
-   */
-  $scope.filterVisible = false;
-  $scope.filterToggle = function(){
-    $scope.filterVisible = !$scope.filterVisible;
+  $scope.resetGraph = function(){
+    $scope.graph.fit();
   }
-
 
 
   //  ------------- Modals
@@ -171,6 +170,7 @@ angular.module('studionet')
   } 
 
   var showDetailsModal = function(data, clickedContributionId) {
+
       ModalService.showModal({
         templateUrl: "/user/templates/home.graphView.modal.html",
         controller: "DetailsModalCtrl",

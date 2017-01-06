@@ -617,6 +617,48 @@ angular.module('studionet')
 	return o;
 }])
 
+.factory('filter', ['$http', function($http){
+	
+	var o = {
+		filterActive: false,
+		url: undefined, 
+		data: {} // store filter url
+	};
+
+	var observerCallbacks = [];
+
+	// register an observer
+	o.registerObserverCallback = function(callback){
+	   observerCallbacks.push(callback);
+	};
+
+	// call this when you know 'foo' has been changed
+	var notifyObservers = function(){
+		angular.forEach(observerCallbacks, function(callback){
+	    	 callback();
+	    });
+	};
+
+	o.toggleFilter = function( url, data ){
+
+		if(url == undefined){
+			o.filterActive = false; 
+			o.url = undefined;
+			o.data = {}
+		}
+		else{
+			o.filterActive = true; 
+			o.url =  url;
+			o.data = data; 
+		}
+
+		notifyObservers();
+	}
+
+	return o;
+
+
+}])
 
 
 /*
