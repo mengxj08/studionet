@@ -9,13 +9,13 @@
 
 <!--     <div class='col-sm-12 modal-dialog-container'> -->
 
-      <button type="button" class="close" data-dismiss="modal" ng-click='close()' aria-hidden="true">&times;</button>
 
       <!-- Repeat for every contribution in tree -->
 
       <div class="modal-dialog" ng-repeat='contribution in contributionTree'> 
         
         <div id="{{ 'modal' + contribution.db_data.id }}" class="modal-content">
+        <button type="button" class="close" data-dismiss="modal" ng-click='close()' aria-hidden="true">&times;</button>
           
           <div class="modal-header">
             <h4 class="modal-title">{{contribution.db_data.title}}</h4>

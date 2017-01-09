@@ -120,17 +120,6 @@ input[type="checkbox"] .tree-checkbox{
 	float: right;
 }
 
-/*.filter-btn{
-	color: #4A95EF;
-	text-align: center;
-	background-color: white;
-	width: 35px; 
-	height: 35px;
-	line-height: 30px !important;
-	border-radius: 50% !important;
-	margin: 2.5px 10px !important;
-	padding: 0px !important;
-}*/
 .align-right{
 	float: right;
 } 
@@ -145,17 +134,3 @@ input[type="checkbox"] .tree-checkbox{
 }
 
 
-h6.clear-filter-shortcut{
-	background-color: #87D8F3;
-	display: inline;
-	margin-left: 20px;
-	padding: 8px;
-	border-radius: 5px;
-}
-
-h6.clear-filter-shortcut:after{
-	margin-left: 10px;
-	content: "x";
-	font-weight: lighter;
-	color: #6D60EF;
-}

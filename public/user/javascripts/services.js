@@ -514,6 +514,7 @@ angular.module('studionet')
 .factory('graph', ['$http', function($http){
 	
 	var o = {
+		container : {},
 		activeNode: {},
 		url: "/graph/all",  // either graph/all or filters Url
 		graph_data: {}, // graph-data
@@ -545,11 +546,16 @@ angular.module('studionet')
 		notifyObservers();
 	}
 
+
 	// get the graph from the URL
 	o.getGraph = function( container ){
 
+		o.container = container;
+
 		return $http.get(o.url).success(function(data){
 			
+			filterUrl = "";
+
 			// copy data
 			angular.copy(data, o.graph_data);
 			console.log("Graph Refreshed");
@@ -582,7 +588,7 @@ angular.module('studionet')
 			o.activeNode = node;
 
 		if( node.isNode == undefined )
-		node = o.graph.getElementById(node);
+			node = o.graph.getElementById(node);
 
 		o.graph.batch(function(){
 		o.graph.elements()
@@ -602,9 +608,78 @@ angular.module('studionet')
 
 	}
 
-	o.resetGraph = function(){
-	  o.graph.fit();
-	  removeAdditionalStyles();
+	o.markNode = function( node ){
+
+		o.graph.batch(function(){
+		o.graph.elements()
+			.removeClass('highlighted')
+			.removeClass('selected')
+			.addClass('faded');
+
+
+		// Array of Ids
+		if(node instanceof Array){
+
+			var selector = [];
+			node.map(function(id){
+				selector.push('node[id="' + id + '"]')
+			})
+
+			var selectorQuery = selector.join(", ");
+
+			o.graph.elements().addClass('unmarked');
+
+			o.graph.$(selectorQuery)
+				.removeClass('faded')
+				.removeClass('unmarked')
+				.addClass('marked');
+
+			o.graph.$(selectorQuery).predecessors()
+								.removeClass('unmarked')
+								.removeClass('faded')
+								.addClass('marked-parent');
+
+			o.graph.$(selectorQuery).successors()
+							.removeClass('faded')  
+							.removeClass('unmarked')
+							.addClass('marked-children');
+
+		}
+
+		// node is either a cytoscape node or an id 
+		if(node.id)
+			o.activeNode = node.id();
+		else
+			o.activeNode = node;
+
+		if( node.isNode == undefined )
+			node = o.graph.getElementById(node);
+
+			node.removeClass('faded')
+				.addClass('marked');
+
+			node.predecessors().removeClass('faded')
+								.addClass('marked-parent');
+
+			node.successors().removeClass('faded')  
+							.addClass('marked-children');
+
+		});
+
+	}
+
+	o.unmarkNodes = function(){
+
+		o.graph.batch(function(){
+		o.graph.elements()
+			.removeClass('unmarked')
+			.removeClass('marked')
+			.removeClass('marked-children')
+			.removeClass('marked-parent');
+		});
+
+		o.removeAdditionalStyles();
+
 	}
 
 	o.runLayout = function(){
@@ -616,50 +691,6 @@ angular.module('studionet')
 
 	return o;
 }])
-
-.factory('filter', ['$http', function($http){
-	
-	var o = {
-		filterActive: false,
-		url: undefined, 
-		data: {} // store filter url
-	};
-
-	var observerCallbacks = [];
-
-	// register an observer
-	o.registerObserverCallback = function(callback){
-	   observerCallbacks.push(callback);
-	};
-
-	// call this when you know 'foo' has been changed
-	var notifyObservers = function(){
-		angular.forEach(observerCallbacks, function(callback){
-	    	 callback();
-	    });
-	};
-
-	o.toggleFilter = function( url, data ){
-
-		if(url == undefined){
-			o.filterActive = false; 
-			o.url = undefined;
-			o.data = {}
-		}
-		else{
-			o.filterActive = true; 
-			o.url =  url;
-			o.data = data; 
-		}
-
-		notifyObservers();
-	}
-
-	return o;
-
-
-}])
-
 
 /*
  *   General Function

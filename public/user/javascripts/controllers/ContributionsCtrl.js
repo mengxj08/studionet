@@ -4,15 +4,19 @@ angular.module('studionet')
  *  Main Contribution Graph Page
  * 
  */
-.controller('ContributionsCtrl', ['$scope', '$stateParams', 'graph', 'filter',  'users', 'supernode', 'ModalService', 'contribution', function($scope, $stateParams, graph, filter, users, supernode, ModalService, contribution){
+.controller('ContributionsCtrl', ['$scope', '$stateParams', 'graph', 'users', 'supernode', 'ModalService', 'contribution', function($scope, $stateParams, graph, users, supernode, ModalService, contribution){
 
-  // Initializations
-  $scope.filterStatus = filter.filterStatus; 
-
-  var updateFilter = function(){
-    $scope.filterStatus = filter.filterStatus; 
+  // ---------------- Filters
+  $scope.filters = [];
+  $scope.updateFilter = function(filter_req){
+    $scope.filters = filter_req;
   }
-  filter.registerObserverCallback(updateFilter);
+
+  $scope.clearFilter = function(code){
+    console.log(code)
+    angular.element('#filterModal').scope().clearIndividualFilter(code);
+  }
+  
 
 
   // ----------------- Graphs
@@ -102,7 +106,7 @@ angular.module('studionet')
 
       // remove supernode
       $scope.graph.getElementById(supernode.contribution).remove();
-
+    
       // Display the entire node name
       $scope.graph.on('mouseover','node', function(evt){
         $scope.graph.elements().removeClass('fullname');
@@ -116,8 +120,9 @@ angular.module('studionet')
 
 
       $scope.graph.on('tap', function(evt){
-        if( !( evt.cyTarget.isNode && evt.cyTarget.isNode() ) )
+        if( !( evt.cyTarget.isNode && evt.cyTarget.isNode() ) ){
             graph.removeAdditionalStyles();
+        }
         else if( evt.cyTarget.isNode && evt.cyTarget.id() == graph.activeNode )
             onNodeDoubleClick(evt);
         else if( evt.cyTarget.isNode() )
@@ -183,13 +188,6 @@ angular.module('studionet')
       });
   };
 
-    /*
-   * Filter Visibilitiy Options controlled in this parent container for filter;
-  $scope.filterVisible = false;
-  $scope.filterToggle = function(){
-    $scope.filterVisible = !$scope.filterVisible;
-  }
-   */
   $scope.filterToggle = function(){
 
       ModalService.showModal({

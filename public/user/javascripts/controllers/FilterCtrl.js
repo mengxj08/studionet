@@ -3,7 +3,7 @@ angular.module('studionet')
 /*
  * Controller for Filters
  */
-.controller('FilterCtrl', ['$scope', 'supernode', 'users', 'tags', 'groups', '$http', '$filter', function($scope, supernode, users, tags, groups, $http, $filter){ 
+.controller('FilterCtrl', ['$scope', 'supernode', 'users', 'tags', 'groups', '$http', '$filter', 'graph', function($scope, supernode, users, tags, groups, $http, $filter, graph){ 
 
       // defaults
       var DEFAULTS = {
@@ -115,19 +115,19 @@ angular.module('studionet')
       }
 
       var checkDefaults = function(){
-        if (  $scope.selectedUsers.length == DEFAULTS.users.length &&
-              $scope.selectedGroups.length == DEFAULTS.groups.length &&
-              $scope.selectedTags.length == DEFAULTS.tags.length && 
-              $scope.startDate == DEFAULTS.startDate &&
-              $scope.endDate == DEFAULTS.endDate && 
-              $scope.ratingMin == DEFAULTS.ratingMin &&
-              $scope.ratingMax == DEFAULTS.ratingMax &&
-              $scope.depthVal == DEFAULTS.depthVal ){
-          alert("No Filter Active");
-          return true;
-        }
-        else
-          return false;
+          if (  $scope.selectedUsers.length == DEFAULTS.users.length &&
+                $scope.selectedGroups.length == DEFAULTS.groups.length &&
+                $scope.selectedTags.length == DEFAULTS.tags.length && 
+                $scope.startDate == DEFAULTS.startDate &&
+                $scope.endDate == DEFAULTS.endDate && 
+                $scope.ratingMin == DEFAULTS.ratingMin &&
+                $scope.ratingMax == DEFAULTS.ratingMax &&
+                $scope.depthVal == DEFAULTS.depthVal ){
+            alert("Filters set to default.");
+            return true;
+          }
+          else
+            return false;
      
       }
 
@@ -139,54 +139,59 @@ angular.module('studionet')
       }
 
 
+      // -- Function called by parent container to clear individual filters;
+      var USERS_FILTER_CODE = 0; 
+      var GROUPS_FILTER_CODE = 1; 
+      var TAGS_FILTER_CODE = 2; 
+      var DATE_FILTER_CODE = 3; 
+      var RATING_FILTER_CODE = 4; 
+      var DEPTH_FILTER_CODE = 5; 
+      $scope.clearIndividualFilter = function(code){
+
+        // clear code filter
+        switch (code){
+
+          case USERS_FILTER_CODE:
+            $scope.selectedUsers = DEFAULTS.users; 
+            break;
+          case GROUPS_FILTER_CODE:
+            $scope.selectedGroups = DEFAULTS.groups; 
+            break;
+          case TAGS_FILTER_CODE:
+            $scope.startDate == DEFAULTS.startDate 
+            $scope.endDate == DEFAULTS.endDate  
+            break;
+          case DATE_FILTER_CODE:
+            $scope.selectedUsers = DEFAULTS.users; 
+            break;
+          case RATING_FILTER_CODE:
+            $scope.ratingMin == DEFAULTS.ratingMin 
+            $scope.ratingMax == DEFAULTS.ratingMax 
+            break;
+          case DEPTH_FILTER_CODE:
+            $scope.depthVal == DEFAULTS.depthVal 
+            break;
+        }
+
+
+        // filter request
+        $scope.filterRequest();
+
+      }
+
+
       /* Filter Functions */
       $scope.clearFilter = function(){
 
             // reset defaults
             resetDefaults();
 
-            $scope.filterActive = false; 
+            graph.unmarkNodes();
 
-            $scope.graphInit();
+            // remove in parent
+            $scope.updateFilter([])
 
       }
-
-      /*
-       * Check if filter is active and send the required output
-       */  
-      $scope.checkFilterActive = function( filtername ){
-          //
-          //    Fix later
-          //
-          switch (filtername) {
-            /*              case "authors":
-                    if(!($scope.selectedAuthors.equals(default_selectedAuthors)))
-                      return $scope.selectedAuthors.length;
-                    break; 
-              case "tags":
-                    if($scope.selectedTags === default_selectedTags)
-                      return $scope.selectedTags.length; 
-                    break;
-              case "date":
-                    if ($scope.startDate === default_startDate && $scope.endDate === default_endDate)
-                      return  (endDate - startDate) / 86400000 ; 
-                    break;
-              case "rating":
-                    if($scope.ratingMin == default_ratingMin && $scope.ratingMax == default_ratingMax)
-                      return  $scope.ratingMin + "-" + $scope.ratingMax; 
-                    break;
-              case "depth":
-                    if($scope.depthVal === default_depthVal)
-                      return $scope.depthVal;  
-                    break;*/
-              default:     
-                    return "-";
-          }
-
-          return "-";
-
-      };
-
 
       /*
        *  Composes FilterURL to send to server & modifies graph
@@ -218,23 +223,7 @@ angular.module('studionet')
               data.t = "[" + getTime($scope.startDate) + "," + getTime($scope.endDate) + "]"
               data.d =  $scope.depthVal;
 
-              //  Create the URL String
-            
-/*              urlString +=  "g=" + groupsUrlSeg
-
-              + "&u=" + usersUrlSeg
-
-              + "&tg=" + ( $scope.selectedTags.length ? "[" + $scope.selectedTags.map( function(g){ return g.id; }).toString() + "]" : "-1" )  // tags
-
-              + "&r=[" + $scope.ratingMin + "," + $scope.ratingMax + "]"    // rating
-
-              + "&t=[" + getTime($scope.startDate) + "," + getTime($scope.endDate) + "]"   // time
-
-              + "&d=" + $scope.depthVal;   // depth*/
-
-              console.log(data);
-
-              $(target).empty();
+              //$(target).empty();
               spinner.spin(target);
 
               $http({
@@ -242,20 +231,50 @@ angular.module('studionet')
                 url     : '/api/contributions/filters',
                 headers : { 'Content-Type': 'application/json' }, 
                 data    : data
-              }).success(function(data){
-
-
-                  
+              }).success(function(filter_data){
 
                   $scope.filterActive = true;
                   spinner.stop();
 
-                  console.log(data);
-                  if(data.nodes == undefined || data.nodes.length == 0){
-                    $(target).append("<h3 style='position: absolute; top:40%; left: 40%;'>Oops. No Nodes found.</h3>");
+                  console.log(filter_data);
+
+                  if(filter_data.nodes == undefined || filter_data.nodes.length == 0){
+                    //$('').append("<h3 style='position: absolute; top:40%; left: 40%;'>Oops. No Nodes found.</h3>");
                   }
                   else{
-                    $scope.graphInit(data);
+
+                    var filters = [];
+                    // --- setting the shortcut option in parent container
+                    if ($scope.selectedGroups.length != DEFAULTS.groups.length)
+                        filters.push({ 'name' : 'Groups', value: $scope.selectedGroups.length + " group(s) selected", code: GROUPS_FILTER_CODE });
+                    if ($scope.selectedUsers.length != DEFAULTS.users.length)
+                        filters.push({ 'name' : 'Users', value: $scope.selectedUsers.length + " user(s) selected", code: USERS_FILTER_CODE });                    
+                    if ($scope.selectedTags.length != DEFAULTS.tags.length)
+                        filters.push({ 'name' : 'Tags', value: $scope.selectedTags.length + " tag(s) selected", code: TAGS_FILTER_CODE });
+                    if ($scope.startDate != DEFAULTS.startDate && $scope.startDate != DEFAULTS.endDate )
+                        filters.push({ 'name' : 'Time Range', value: ( $scope.startDate - $scope.endDate ) + " days", code: DATE_FILTER_CODE  });
+                    if ($scope.minRating != DEFAULTS.minRating && $scope.maxRating != DEFAULTS.maxRating)
+                        filters.push({ 'name' : 'Rating', value: ( $scope.startDate + " - " + $scope.endDate ), code: RATING_FILTER_CODE });
+                    if ($scope.depthVal != DEFAULTS.depthVal)
+                        filters.push({ 'name' : 'Depth', value: $scope.depthVal, code: DEPTH_FILTER_CODE });
+                    $scope.updateFilter(filters);
+
+                    // --- mark the nodes in the graph
+                    var nodes = [];
+                    filter_data.nodes.map(function(node){
+                      if(node.match){
+                            nodes.push(node.id);
+
+                      }
+                      
+                      $('#filter-nodes-count').empty();
+                      $('#filter-nodes-count').append( nodes.length + " matching nodes found");
+
+
+                    })
+
+                    graph.markNode(nodes);
+                  
                   }
 
               });

@@ -73,8 +73,8 @@ var graphQuery = function (query, callback){
 
       links = links.concat(row.graph.relationships.map(function(r) {
           return {
-              target: idIndex(nodes, r.startNode).id,   // should not be a case where start or end is null.
-              source: idIndex(nodes, r.endNode).id,
+              source: idIndex(nodes, r.startNode).id,   // should not be a case where start or end is null.
+              target: idIndex(nodes, r.endNode).id,
               name: r.type
           };
       }));

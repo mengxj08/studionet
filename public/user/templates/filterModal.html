@@ -1,7 +1,7 @@
 <link rel='stylesheet' href='./stylesheets/filter-style.css' />
 <link rel='stylesheet' href='./stylesheets/accordion.css' />
 
-<div class="modal fade filterModal" role="dialog" ng-controller="FilterCtrl" ng-init='init()'>
+<div class="modal fade filterModal" id='filterModal' role="dialog" ng-controller="FilterCtrl" ng-init='init()'>
   
   <div class="modal-dialog">
 
@@ -88,11 +88,13 @@
         </div>
 
         <div class="modal-footer">
-          <center>
 
+          <center>
             <i class="graph-nav-control icon fa fa-filter" data-dismiss='modal' ng-click="filterRequest();close()" uib-tooltip='Filter' tooltip-placement='top'></i>
-            
+            <i class="graph-nav-control icon fa fa-remove" data-dismiss='modal' ng-click="clearFilter();close();" uib-tooltip='Clear Filter' tooltip-placement='top'></i>
+            <i class="graph-nav-control icon fa fa-window-close" data-dismiss='modal' ng-click="close();" uib-tooltip='Close' tooltip-placement='top'></i>
           </center>
+            
         </div>
     </div>
   </div>

@@ -65,6 +65,42 @@
 
 }
 
+.filter-controls{
+
+  position: fixed;
+  top: 70px !important; 
+
+  width: auto !important;
+  max-width: 250px;
+  height: auto !important;
+  min-height: 10px;
+  margin-left: 30px !important;
+  margin-right: 30px !important;
+
+  z-index: 3;
+}
+
+h6.clear-filter-shortcut{
+  background-color: #87D8F3;
+  display: inline-block;
+  margin-right: 20px;
+  padding: 8px;
+  border-radius: 5px;
+
+}
+
+h6.clear-filter-shortcut:hover{
+  background-color: #17ACDD;
+  cursor: pointer;
+}
+
+h6.clear-filter-shortcut:after{
+  margin-left: 10px;
+  content: "x";
+  font-weight: lighter;
+  color: #6D60EF;
+}
+
 
 .graph-nav-control{
 
@@ -84,6 +120,8 @@
 
   //border: 1px solid black;
 }
+
+
 
 .btn-active{
   background-color: #4A4AEF !important;
