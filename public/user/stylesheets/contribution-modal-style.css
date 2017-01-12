@@ -159,3 +159,12 @@ tags-input .tags{
   background-position: center;
   background-repeat: no-repeat;
 }
+
+/*
+ * Editing attachment
+ */
+
+ .attachments {
+   display: inline-block;
+   width: 100%;
+ }
