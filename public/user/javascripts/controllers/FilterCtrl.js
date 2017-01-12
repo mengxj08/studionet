@@ -31,7 +31,7 @@ angular.module('studionet')
 
       $scope.panelsOpen = true;
 
-      var target = document.getElementById('cy');
+      
       var spinner = new Spinner(STUDIONET.GRAPH.spinner);
 
       /*
@@ -224,6 +224,7 @@ angular.module('studionet')
               data.d =  $scope.depthVal;
 
               //$(target).empty();
+              target = document.getElementById('cy');
               spinner.spin(target);
 
               $http({
@@ -235,8 +236,6 @@ angular.module('studionet')
 
                   $scope.filterActive = true;
                   spinner.stop();
-
-                  console.log(filter_data);
 
                   if(filter_data.nodes == undefined || filter_data.nodes.length == 0){
                     //$('').append("<h3 style='position: absolute; top:40%; left: 40%;'>Oops. No Nodes found.</h3>");
@@ -262,9 +261,9 @@ angular.module('studionet')
                     // --- mark the nodes in the graph
                     var nodes = [];
                     filter_data.nodes.map(function(node){
+                      
                       if(node.match){
                             nodes.push(node.id);
-
                       }
                       
                       $('#filter-nodes-count').empty();

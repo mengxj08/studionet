@@ -35,7 +35,7 @@ h1, h2, h3, h4, h5 ,h6{
 }
 
 a {
-  color: #00B7FF;
+  color: #000000;
 }
 
 a:hover, a:visited, a:focus{
@@ -87,6 +87,9 @@ label{
 	font-family: 'Open Sans', sans-serif;
 }
 
+.modal-backdrop.in{
+	opacity: 0.1 !important;
+}
 
 /*
  *  Top Nav CSS
@@ -209,6 +212,9 @@ li.notification{
 	color: #4386D7 !important;
 }
 
+#cy{
+	background-color: black;
+}
 
 /*
  * qTip CSS

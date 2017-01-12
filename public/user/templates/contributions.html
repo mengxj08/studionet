@@ -51,6 +51,19 @@
 
 <!-- Chips Template for Create / Edit / Reply Contributions -->
 <script type="text/ng-template" id="tags-template">
-  <span>{{data.name}} ( <i>{{data.contributionCount}}</i> )</span>
+  <div style="border-bottom: 1px solid #C2BDBD; margin-bottom: 3px;">
+        <i class="data.restricted ? icon fa fa-lock : icon fa fa-unlock" ng-if='data.group'></i> 
+        <i class="icon fa fa-tag" ng-if='!data.group'></i> 
+        <span ng-if='!data.group'>#</span>{{data.name}}{{data.name}}( <small><i>{{data.contributionCount}} contributions</i></small> )
+  </div>
+</script>
+
+<!-- Chips Template for Create / Edit / Reply Contributions -->
+<script type="text/ng-template" id="tag-item-template">
+  <div>
+        <i class="data.restricted ? icon fa fa-lock : icon fa fa-unlock" ng-if='data.group'></i> 
+        <i class="icon fa fa-tag" ng-if='!data.group'></i> 
+        <span ng-if='!data.group'>#</span>{{data.name}}
+  </div>
 </script>
 

@@ -6,7 +6,7 @@
 }
 
 .padding{
-  padding: 20px 0px !important;
+  padding: 10px 0px !important;
 }
 
 .full-height{
@@ -19,17 +19,17 @@
 }
 
 .profile-header{
-  min-height: 200px;
+  min-height: 150px;
   width: 100%;
-  padding: 0px 20px; 
-  background-color: #366DAE !important;
+  padding: 0px 0p 
+  background-color: #FFFFFF !important;
 
-  color: white !important;
+  color: #444444 !important;
 }
 
 .profile-img-container{
-  border-radius: 50%; 
-  border: 3px solid #BAB8B8;
+  border-radius: 0px; 
+  border: 1px solid #BAB8B8;
   background-size: cover !important;
   background-position: center !important;
 
@@ -44,7 +44,7 @@
 
 
 h5.tagline{
-  color: #C9C8C8;
+  color: #444444;
 }
 
 .lastlogged{
@@ -52,14 +52,11 @@ h5.tagline{
 }
 
 .stat{
-  border-right: 1px solid #DDDADA;
-  margin-top: 20px !important;
+  //border-right: 1px solid #DDDADA;
 }
 
 .stat-name{
-  
   font-weight: 600;
-
 }
 
 .stat-value{
@@ -69,15 +66,13 @@ h5.tagline{
 .profile-tabs-nav{
   position: fixed;
   height: 60px !important; 
-  background-color: #CFCECE;
-  width: 100%;
+  background-color: #F0F0F0;
 }
 
 
 .profile-tab{
-  width: 33%;
   text-align: center;
-  color: white;
+  color: #444444;
 }
 
 .profile-body{
@@ -85,7 +80,7 @@ h5.tagline{
 }
 
 .profile-close{
-  color: white !important;
+  color: #444444 !important;
 }
 
 
@@ -100,14 +95,7 @@ h5.tagline{
   height: 100%; 
 }
 
-.card{
-  padding: 10px 20px;
-  margin-bottom: 15px;
-  z-index: 100;
-  height: 120px;
-}
-
-.card:hover{
+.hover-effect:hover{
   background-color: #BBBBBB;
 }
 
@@ -126,31 +114,33 @@ h5.tagline{
 
             <div class='row no-margin-padding full-height padding'>
               
-              <div class='col-xs-4 profile-img-container' style='background: url({{user.avatar}})'></div>
+              <!-- Profile Name -->
+              <div class='col-xs-3 profile-img-container' style='background: url({{user.avatar}})'></div>
 
-              <div class='col-xs-8 profile-details-container no-margin-padding'>
+              <div class='col-xs-7 profile-details-container no-margin-padding'>
                 
                 <div class='row no-margin-padding'>
-                    <h2 class='username no-margin-padding'>{{ user.name }}</h2>
-                    <h5 class='tagline'>Last Logged In: {{user.lastLoggedIn | date: 'medium'}}.</h5>
+                    <h4 class='username no-margin-padding'>{{ user.name }}</h4>
+                    <h6 class='tagline'>Last Logged In: {{user.lastLoggedIn | date: 'medium'}}</h6>
                 </div>
                 
-                <div class='row stats no-margin-padding'>
-                  <div class='col-sm-4  no-margin-padding stat'>              
-                      <p class='stat-name no-margin-padding'>Total Views</p>
-                      <small class='stat-value'>43</small>
-                  </div>
-
-                  <div class='col-sm-4  no-margin-padding stat'>              
-                      <p class='stat-name no-margin-padding'>&nbsp;&nbsp;&nbsp;Total Ratings</p>
-                      <small class='stat-value'>&nbsp;&nbsp;&nbsp;23</small>
-                  </div>
-
-                  <div class='col-sm-4  no-margin-padding stat'>              
-                      <p class='stat-name no-margin-padding'>&nbsp;&nbsp;&nbsp;Level</p>
-                      <small class='stat-value'>&nbsp;&nbsp;&nbsp;34</small>
-                  </div>
+                <br>
+                <!--Stats -->
+                <div class='col-sm-4  no-margin-padding stat'>              
+                    <h6 class='stat-name no-margin-padding'>Total Views</h6>
+                    <small class='stat-value'>{{views}}</small>
                 </div>
+
+                <div class='col-sm-4  no-margin-padding stat'>              
+                    <h6 class='stat-name no-margin-padding'>Average Rating</h6>
+                    <small class='stat-value'>{{rating}}</small>
+                </div>
+
+                <div class='col-sm-4  no-margin-padding stat'>              
+                    <h6 class='stat-name no-margin-padding'>&nbsp;&nbsp;&nbsp;Level</h6>
+                    <small class='stat-value'>&nbsp;&nbsp;&nbsp;{{level}}</small>
+                </div>
+
               </div>
 
 
@@ -159,35 +149,54 @@ h5.tagline{
 
         <div class="modal-body profile-body">
                 <!--tabs -->
-                <div class='row profile-tabs-nav no-margin-padding'>
+                <div class='row profile-tabs-nav no-margin-padding pull-right'>
                   <ul class="nav nav-tabs full-width">
                     <li class='profile-tab active'><a data-target="#contributions"  data-toggle="tab">Contributions</a></li>
                     <li class='profile-tab'><a data-target="#tags"  data-toggle="tab">Tags</a></li>
-                    <li class="profile-tab"><a data-target="#activity" data-toggle="tab">Activity</a></li>
+                    <li class="profile-tab"><a data-target="#activity" data-toggle="tab">Groups</a></li>
                   </ul>
                 </div>
 
                 <!-- tab content-->
                 <div class='row tab-content no-margin-padding profile-tab-content'>
 
-                    <div class='tab-pane profile-tab-pane fade in active row' id="contributions">
-                        <div class='col-sm-4' ng-repeat="contribution in contributions">
-                          <a href='/user/#/contributions/{{contribution.id}}' target=_blank>
-                            <div class='card'>
-                              <h5>{{contribution.title}}</h5><hr>
-<!--                               <h6> {{contribution.rating}} rating  |   {{contribution.views}} views</h6> -->
-                            </div>
-                          </a>
+                    <div class='tab-pane profile-tab-pane fade in active' id="contributions">
+                        <div class='col-sm-12 hover-effect' ng-repeat="contribution in user.contributions | orderBy : '-views' ">
+                          <h5><a href='/user/#/contributions/{{contribution.id}}' target=_blank>{{ contributionsRef[ contribution.id ].title }}</a></h5>
+                          <small>Views: {{ contribution.views }} &nbsp;&nbsp;Rating: {{ contribution.rating }} from {{ contribution.rateCount }} ratings</small>
+                          <hr/>
                         </div>
                     </div>
 
                     <div class='tab-pane profile-tab-pane fade in' id="tags">
-                        <b> Lorem ipsum Irure aute sunt eu officia commodo nulla ut amet enim in reprehenderit. </b>
+                        <div class='col-sm-12 hover-effect' ng-repeat="tag in tags | filter: {createdBy : user.id}">
+                          <h5>{{ tag.name }}</h5>
+                          <small>Number of Contributions with this tag: {{ tag.contributionCount }}</small>
+                          <hr/>
+                        </div>
                     </div>
 
                     <!-- Content -->
                     <div class='tab-pane profile-tab-pane fade in' id="activity">
-                        <b> Lorem ipsum Irure aute sunt eu officia commodo nulla ut amet enim in reprehenderit. </b>
+
+                        <button class='btn btn-default' ng-click='createGroup()'><i class="icon fa fa-pencil"></i>Create a New Group</button>
+
+                        <h5>
+                        
+                        <div class='col-sm-12 hover-effect' ng-repeat="group in groups | orderBy: ['requestingUserStatus'] ">
+                          <small>{{group.requestingUserStatus ? group.requestingUserStatus : "Not a Member of this group"}}</small>
+                          <h5>{{ group.name }}</h5>
+                          <p>{{ group.description }} </p>
+                          <h6 class='tagline'>Joined On: {{group.joinedOn | date: 'medium'}}</h6>
+                          <i class="icon fa fa-users" ng-if='group.requestingUserStatus="Admin"'></i> 
+                          <i class="icon fa fa-remove" ng-if='group.requestingUserStatus="Admin"'></i> 
+                          <i class="icon fa fa-user-times" ng-if='!group.requestingUserStatus="Member"'></i> 
+                          <i class="icon fa fa-user-plus" ng-if='!group.requestingUserStatus'></i> 
+                          <hr/>
+                        </div>
+
+                        
+
                     </div>
                 </div>
         </div>

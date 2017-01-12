@@ -3,6 +3,7 @@ angular.module('studionet')
 
       $scope.file;
       $scope.alert = {}; 
+
       $scope.loadTags = function($query){
           return tags.tags.filter(function(tag){
             return tag.name.toLowerCase().search($query.toLowerCase()) != -1;

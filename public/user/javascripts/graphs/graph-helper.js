@@ -31,7 +31,7 @@ STUDIONET.GRAPH.spinner = {
  */
 STUDIONET.GRAPH.qtipFormat = function(evt){
   return {
-     content: { title: "", text:""  },
+     content: { title: "", text:"", button: 'Close'  },
      show: {
         evt: evt.type,
         ready: true,
@@ -84,7 +84,7 @@ var COSE_GRAPH_LAYOUT = {
   ready: function(){ },
 
   // Called on `layoutstop`
-  stop: function(){  reposition(); console.log("stopped");  },
+  stop: function(){  /*reposition(); console.log("stopped");*/  },
 
   // Whether to animate while running the layout
   animate: true,
@@ -110,10 +110,10 @@ var COSE_GRAPH_LAYOUT = {
   randomize: true,
 
   // Extra spacing between components in non-compound graphs
-  componentSpacing: function( node ){ return 300 + node.successors().length*100; },
+  componentSpacing: function( node ){ return 300 + node.incomers().length*100; },
 
   // Node repulsion (non overlapping) multiplier
-  nodeRepulsion: function( node ){ return node.successors().length*1000000; },
+  nodeRepulsion: function( node ){ return node.incomers().length*1000000; },
 
   // Node repulsion (overlapping) multiplier
   nodeOverlap: 50000,
@@ -150,9 +150,11 @@ var COSE_GRAPH_LAYOUT = {
 
 var computeSizeFn = function(node){
 
-  var successors = node.successors().length;
-  var basic = 40;
+  var incomers = node.incomers().length;
+  var basic = 20;
   var final = basic; 
+
+
 
   if(node.data('marked') == true)
     return basic + 30;
@@ -160,21 +162,21 @@ var computeSizeFn = function(node){
 
   switch(true){
 
-      case (successors < 10):
+      case (incomers < 10):
           break;
-      case (successors < 30):
-          final = basic + 30; 
+      case (incomers < 30):
+          final = basic + 50; 
           break;
-      case (successors < 50):
-          final = basic + 70; 
-          break;
-      case (successors > 50):
+      case (incomers < 50):
           final = basic + 100; 
+          break;
+      case (incomers > 50):
+          final = basic + 150; 
           break;
 
   }
 
-  return final+'px'; 
+  return final + incomers + 'px'; 
 
 }
 
@@ -191,20 +193,20 @@ var computeBgColorFn = function(node){
       return "#F3CB17";
 
 
-    var successors = node.successors().length;
+    var incomers = node.incomers().length;
     var final = "#989BB4"; 
 
     switch(true){
 
-        case (successors < 10):
+        case (incomers < 10):
             break;
-        case (successors < 30):
+        case (incomers < 30):
             final = "#6B73B4"; 
             break;
-        case (successors < 50):
+        case (incomers < 50):
             final = "#4551B4"; 
             break;
-        case (successors > 50):
+        case (incomers > 50):
             final = "#2030B4"; 
             break;
 
@@ -216,7 +218,7 @@ var computeBgColorFn = function(node){
 
 var computeFontFn = function(node){
 
-    var successors = node.successors().length;
+    var incomers = node.incomers().length;
     var basic = 0.3;
     var final = basic; 
 
@@ -226,15 +228,15 @@ var computeFontFn = function(node){
 
     switch(true){
 
-        case (successors < 10):
+        case (incomers < 10):
             break;
-        case (successors < 30):
+        case (incomers < 30):
             final = basic + 0.2; 
             break;
-        case (successors < 50):
+        case (incomers < 50):
             final = basic + 1.2; 
             break;
-        case (successors > 50):
+        case (incomers > 50):
             final = basic + 4; 
             break;
 
@@ -245,7 +247,7 @@ var computeFontFn = function(node){
 }
 
 var computeLabel = function(ele){
-   return ele.data().name;//ele.data().name.substr(0,5)+"...";
+   return ele.data().name + " (" +  ele.incomers().length/2 + ")";//ele.data().name.substr(0,5)+"...";
 }
 
 /*
@@ -266,7 +268,7 @@ var graph_style = {
               'height': computeSizeFn,
               'background-color': computeBgColorFn,
               'label' : computeLabel,
-              'text-valign': 'top',
+              'text-valign': 'center',
               //'text-margin-y': '0.1em',
               'font-size': computeFontFn,
               'line-height': '1em',
@@ -281,34 +283,33 @@ var graph_style = {
           .selector('edge')
             .css({
               'curve-style': 'haystack',
-              'line-color': '#868585',
-              'width': 0.7
+              'line-color': '#DDD6D6',
+              'width': 0.7,
+              'font-size': '0.3em',
             })     
 
           .selector('node.onTop')
             .css({
-              'background-color' : '#1186F3',
-              'z-index': 100,
-              'margin': '1000px'
+              'border-width': '2',
+              'border-color': 'black'
             })
 
           .selector('node.selected')
             .css({
               'background-color' : '#F0F311',
-              'border-width': '2',
+              'border-width': '1',
               'border-color': 'black'
             })
 
           .selector('node.highlighted')
             .css({
               'content' : 'data(name)',
-              'font-size': '1em',
+              'font-size': '0.4em',
               'font-weight': '600',
               'text-wrap': 'wrap',
               'text-max-width': '300px',
               'min-zoomed-font-size': '1em',
               'z-index': 5
-
             })
           .selector('.unmarked')
             .css({
@@ -338,11 +339,15 @@ var graph_style = {
             .css({
               'curve-style': 'bezier',
               'target-arrow-shape': 'triangle',
-              'line-color': '#000000',
-              'target-arrow-color':'black',
+              'line-color': '#999999',
+              'target-arrow-color':'#CFCACA',
               'content' : 'data(name)',
+              //'source-label' : 'data(name)',
+              //'source-text-offset' : '1',
+              //'target-label' : 'data(name)',
+              'text-rotation' : 'autorotate',
               'width': 1.2,
-              'font-size': '1em',
+              //'font-size': '0.7em',
               'font-weight': '400',
               'z-index': 5
             })
@@ -396,12 +401,12 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
     if(arguments[4] != undefined)
       createGraphEdge = edgeFn;
 
-    for(var i=0; i < data.links.length; i++){
+/*    for(var i=0; i < data.links.length; i++){
         var link = data.links[i];
         var s = link.target; 
         link.target = link.source;
         link.source = s;
-    }
+    }*/
 
 /*
     var node_key = [];
@@ -490,12 +495,14 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
     topNodes.addClass('onTop');
     var sum=0;
     topNodes.map(function(node){
-        sum =+ node.successors().length; 
+        sum =+ node.incomers().length; 
     })
     console.log(sum);*/
 
 
     //setTimeout(reposition, 2000);
+    
+
 
     return graph;
 
@@ -508,95 +515,102 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
  * Helper Functions
  * Stackoverflow source
  */
+var threshold = 5;
 var reposition = function(){
 
-    var topNodesLength = 15;
-    var style = 'CIRCULAR';
+      console.log("Reposition Started");
 
-    var colors = randomColors(topNodesLength);
+      var topNodesLength = graph.nodes().length;
 
-    var topNodes = graph.nodes().sort(function (ele1, ele2) {
-        return ( ele1.successors().length > ele2.successors().length ? -1 : 1);
-    });
+      var topNodes = graph.nodes().sort(function (ele1, ele2) {
+          return ( ele1.incomers().length > ele2.incomers().length ? -1 : 1);
+      });
 
-    topNodes = topNodes.slice(0, topNodesLength);
-    console.log(topNodes);
+      // on the spiral if atleast 5 comments / links to your node 
+      topNodes = topNodes.filter(function(i, node){
+            return node.incomers().length > threshold
+      })
 
-
-    if(style == 'CIRCULAR'){
-      
       var angle = 2 * Math.PI / topNodes.length;
-      var radius = 1.5*window.innerWidth;
-      
+      var radius = 1.2*window.innerWidth;
 
       var initX = $(window).height()/2;
       var initY = $(window).width()/2;
 
-      for(var i=0; i<topNodes.length; i++){
+      makeGalaxy( topNodes,  radius, initX, initY, undefined, 0, 2);
 
-        var node = topNodes[i];
-        var color = colors[i];
-
-        node.data()['originalPosition']  = [ node.position().x, node.position().y];
-
-        var x = radius * Math.cos( angle*i ) + initX;
-        var y = radius * Math.sin( angle*i ) + initY;
-
-        node.animate({    position : {x: x, y: y} , style: { backgroundColor: color }  }, {duration: 1000 });
-
-        console.log(node.data('name'));
-
-        node.outgoers().map(function(subnode, index){
-          
-            var angle = 2 * Math.PI / node.outgoers().length;
-            var radius = 180 + 2*(node.outgoers().length + subnode.outgoers().length);
-
-            var subX = x + radius*Math.cos(angle*index); 
-            var subY = y + radius*Math.sin(angle*index); 
-
-            subnode.animate({ position : {x: subX, y: subY }, style: { backgroundColor: color } }, {duration: 1000 });
-
-            subnode.outgoers().map(function(s, index){
-          
-                var angle = 2 * Math.PI / subnode.outgoers().length;
-                var radius = 150 + 2*(subnode.outgoers().length + s.outgoers().length);
-
-                s.animate({ position : {x: subX + radius*Math.cos(angle*index) , y: subY + radius*Math.sin(angle*index) }, style: { backgroundColor: color }   }, {duration: 1000 });
-
-            });
-
-        })
-
-
-      }
+      arrangeIsolatedNodes(   graph.nodes().filter(function(i, node){
+            return ( node.incomers().length <= 1 && node.outgoers().length <= 1);
+      }) ); 
     
-    }
-/*    else{
+}
 
-      var initX = window.innerWidth/3;
-      var initY = window.innerHeight/2;
-      var spacing = window.innerHeight / topNodesLength;
+var arrangeNodesBelowThreshold = function(){
 
-      for(var i=0; i<topNodes.length; i++){
+}
 
-        var node = topNodes[i];
-
-        var x = initX;
-        var y = initY + spacing*i;
-
-        if( i > topNodes.length/2 )
+var arrangeIsolatedNodes = function( nodes ){
+    console.log(nodes.length);
+    nodes.map(function(node, index){
+        node.animate({    renderedPosition : {x: 100*Math.random(), y: 100*Math.random() } , style: { backgroundColor: '#AFAFAF' }  }, { duration: 1000 } );
+    })
+}
 
 
 
-        node.animate({    position : {x: x, y: y}     }, {duration: 1000 });
+var makeGalaxy = function( nodes, radius, initX, initY, color, count, max_count, init_angle ){
+
+      var trend = "circular"; 
+
+      // if first iteration
+      if(count == 0)
+        trend = "spiralIn"
+
+      var angle = (trend =='spiralIn') ? 2*Math.PI / 9: (2 * Math.PI / (nodes.length) );
+      //var radius =  ( radius - 2*(max_count - count) > 0 )? (radius - 2*(max_count - count) ) : 50; 
+
+      var colors = randomColors(nodes.length);
+      var cluster_color;
+      
+      for(var i=0; i< nodes.length; i++){
+
+          var node = nodes[i];
+
+          if(trend === "spiralIn"){
+            radius = 0.97*radius; // increase radius with every node placed
+            //angle = angle + (node.incomers().length/10)
+            angle = 0.98*angle;
+          }
+
+          var x = radius * Math.cos( (init_angle || 0 ) + angle*i ) + initX + node.incomers().length;
+          var y = radius * Math.sin( (init_angle || 0 ) +  angle*i ) + initY + node.incomers().length;
+
+          if(color == undefined)
+            cluster_color = colors[i];
+          else
+            cluster_color = color; 
+
+          node.animate({    position : {x: x, y: y} , style: { backgroundColor: cluster_color }  }, { duration: 1000 });
+          node.data('placed', true);
+
+          if(count < max_count){
+
+            var incomers = node.incomers().filter(function(i, n){
+               return n.incomers().length < node.incomers().length && n.incomers().length < threshold; 
+            })
+
+            var outgoers = node.outgoers().filter(function(i, n){
+                return n.incomers().length < threshold; 
+            });
+            
+            incomers = incomers.add(outgoers);
+
+            makeGalaxy( incomers, 30 + 2*incomers.length /*(12.5*incomers.length)/Math.PI*/ , x, y, cluster_color, count+1, max_count, (init_angle || 0 ) + angle*i );
+          }
 
       }
 
-    }*/
-
-
-  }
-
+}
 
 
 function randomColors(total){
@@ -700,4 +714,54 @@ STUDIONET.GRAPH.getVisibleNodes = function(cy){
 
 function viewportContainsNode(vw, n){
     return ( ( n.position().x > vw.x1 && n.position().x < vw.x2 ) && ( n.position().y > vw.y1 && n.position().y < vw.y2  ) )
+}
+
+// 9684
+// 968
+
+function luckyNumber8(line){
+
+    var getCombinations = function( word ){
+
+      var subs = [];
+
+      subs.push(word);
+
+      for(var j=0; j<word.length; j++){
+        var subword = word.substr(0, j) + word.substr(j+1, word.length);
+        if(subword.length > 0 )
+          subs = subs.concat( getCombinations(subword) );
+      }
+
+      return subs;
+    }
+
+    Array.prototype.getUnique = function(){
+       var u = {}, a = [];
+       for(var i = 0, l = this.length; i < l; ++i){
+          if(u.hasOwnProperty(this[i])) {
+             continue;
+          }
+          a.push(this[i]);
+          u[this[i]] = 1;
+       }
+       return a;
+    }
+
+    var combinations = getCombinations(line).getUnique();
+    var count = 0; 
+
+    console.log(combinations);
+
+    combinations.map(function(number){
+
+      if( parseInt(number) % 8 == 0){
+        console.log(number);
+        count++;
+      }
+     
+    })
+
+    console.log( count % ( Math.pow(10, 9) + 9 ))
+
 }

@@ -37,7 +37,8 @@
                   ng-model="contributionData._tags"
                   display-property='name'
                   placeholder="Add a tag"
-                  replace-spaces-with-dashes="false">
+                  replace-spaces-with-dashes="false"
+                  template='tag-item-template'>
                 <auto-complete source="loadTags($query)"
                                min-length="0"
                                debounce-delay="0"
