@@ -13,7 +13,6 @@ angular.module('studionet')
       //  This close function doesn't need to use jQuery or bootstrap, because
       //  the button has the 'data-dismiss' attribute.
       $scope.close = function() {
-
             $('body').removeClass('modal-open');
             $('.modal-backdrop').remove();
 
@@ -21,6 +20,23 @@ angular.module('studionet')
 
       // for the new contribution
       $scope.contributionData = { _tags: [], attachments: [], tags: [], refType: "RELATED_TO", contentType: "text", ref: supernode.contribution};
+
+      //Uploaded files
+      $scope.uplodateFiles = function (file){
+            console.log('Testing');
+            if(file){
+                  $scope.contributionData.attachments.push(file);
+            }   
+      }
+      //remove files
+      $scope.removeFiles = function (attachment) {
+            var index = $scope.contributionData.attachments.indexOf(attachment);
+            if(index > -1){
+                  $scope.contributionData.attachments.splice(index, 1);
+            }
+      }
+
+
       $scope.createContribution = function(){
 
           $scope.contributionData._tags.map(function(t){

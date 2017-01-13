@@ -68,6 +68,21 @@ angular.module('studionet')
 
   }
 
+  //Uploaded files
+  $scope.uplodateFiles = function (file, contributionData){
+        console.log('Testing');
+        if(file){
+              contributionData.attachments.push(file);
+        }   
+  }
+
+  //remove files
+  $scope.removeFiles = function (attachment, contributionData) {
+        var index = contributionData.attachments.indexOf(attachment);
+        if(index > -1){
+              contributionData.attachments.splice(index, 1);
+        }
+  }
 
   // -------- Contribution Viewer Functionality (Read, Update, Delete)
   

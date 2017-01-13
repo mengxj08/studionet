@@ -97,7 +97,7 @@
                                 </div>
                                 <div class='col-sm-9'>
                                   <h3 class='contributionName'>{{attachment.attachment.name}}</h3>
-                                  <h6> Size: {{ attachment.attachment.size/1000 }} MB </h6>
+                                  <h6> Size: {{ attachment.attachment.size/1000 }} KB </h6>
                                   <h6><a href="/api/contributions/{{contribution.db_data.id}}/attachments/{{attachment.id}}" target=_blank>Download </a></h6>
                                 </div>
                               </div>
@@ -151,10 +151,21 @@
                       </select>
                     </div>
 
-                    <!-- attachments -->
+                     <!--attachments 
                     <div class='form-section'>
                       <label> Attachments <small>({{contributionData.attachments.length}} file(s) uploaded)</small> </label>
                       <div class="button" ngf-select ng-model="contributionData.attachments" ngf-multiple="true">Choose File</div>
+                    </div>-->
+
+                    <!-- attachments -->
+                    <div class='form-section'>
+                      <label> Attachments <small>({{contributionData.attachments.length}} file(s) uploaded)</small> </label>
+                      <!--<input type="file" ngf-select="showUplodatedFiles" ng-model="contributionData.attachments" name="file" ngf-multiple="true">-->
+                      <button type="button" class="btn btn-default modal-button" ngf-select="uplodateFiles($file, contributionData)" ngf-multiple="true">Choose File</button>
+                      <div class="attachments" ng-repeat="attachment in contributionData.attachments">
+                        <h5 style="color: blue; width: 70%; display: inline-block;"><u>{{ attachment.name }} ({{ attachment.size/1000 }} KB)</u></h5>
+                        <button style='float: right; display: inline-block;' class="btn btn-xs" ng-click="removeFiles(attachment, contributionData)">X</button>
+                      </div>
                     </div>
 
                     <!-- selected tags: -->
@@ -163,9 +174,6 @@
                       <span>{{ contributionData }}</span>
                     </div>
                 </div>
-
-
-
 
                 <!-- Update existing contributions -->
                 <div class='row editor update' ng-show='showUpdateContribution'>
@@ -262,7 +270,7 @@
               <div class='col-sm-12'>
                 <center>
                   <div ng-hide='hideReplyButton || alert.success'>
-                  <button type="button" ng-click="showCreateContribution=true; hideReplyButton=true; contributionData={};contributionData.tags=[];contributionData.ref=contribution.db_data.id" class="btn btn-default modal-button">Reply</button>
+                  <button type="button" ng-click="showCreateContribution=true; hideReplyButton=true; contributionData={};contributionData.tags=[];contributionData.attachments=[]; contributionData.ref=contribution.db_data.id" class="btn btn-default modal-button">Reply</button>
                   <button type="button" ng-click="showLinkingContribution=true; hideReplyButton=true; linkData={}; linkData.currentContributionId=contribution.db_data.id" class="btn btn-default modal-button">Link</button>
                   <button type="button" ng-click="showUpdateContribution=true; hideReplyButton=true; contributionData=contribution.db_data; contributionData._tags = contributionData.tags;" class="btn btn-default modal-button"
                   ng-show="(user.id == contribution.db_data.createdBy)">Update</button>

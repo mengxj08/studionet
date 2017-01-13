@@ -59,9 +59,19 @@
               <!-- attachments -->
               <div class='form-section'>
                 <label> Attachments <small>({{contributionData.attachments.length}} file(s) uploaded)</small> </label>
-                <div class="button" ngf-select ng-model="contributionData.attachments" ngf-multiple="true">Choose File</div>
+                <!--<input type="file" ngf-select="showUplodatedFiles" ng-model="contributionData.attachments" name="file" ngf-multiple="true">-->
+                <button type="button" class="btn btn-default modal-button" ngf-select="uplodateFiles($file)" ngf-multiple="true">Choose File</button>
+                <div class="attachments" ng-repeat="attachment in contributionData.attachments">
+                  <h5 style="color: blue; width: 70%; display: inline-block;"><u>{{ attachment.name }} ({{ attachment.size/1000 }} KB)</u></h5>
+                  <button style='float: right; display: inline-block;' class="btn btn-xs" ng-click="removeFiles(attachment)">X</button>
+                </div>
               </div>
 
+              <!-- selected tags: -->
+              <!--<div class='form-section'>
+                <span><b> Selected tag names:  </b></span> 
+                <span>{{ contributionData }}</span>
+              </div>-->
           </div>
 
         </div>
