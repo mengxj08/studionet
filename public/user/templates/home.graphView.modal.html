@@ -91,7 +91,7 @@
                     <!-- Attachments - if present -->
                     <div class='tab-pane fade' id="{{ 'attachments' + contribution.db_data.id}}" ng-if='contribution.db_data.attachments[0].id!=null'> 
                         <div class='row'>
-                            <div ng-repeat="attachment in contribution.db_data.attachments">
+                            <div ng-repeat="attachment in contribution.db_data.attachments" ng-if='attachment.attachment'>
                               <div class='card row'>
                                 <div class='col-sm-3 attachment-thumb' style='background-image: url({{getThumb(contribution.db_data.id, attachment.attachment)}});'>
                                 </div>
@@ -151,17 +151,11 @@
                       </select>
                     </div>
 
-                     <!--attachments 
-                    <div class='form-section'>
-                      <label> Attachments <small>({{contributionData.attachments.length}} file(s) uploaded)</small> </label>
-                      <div class="button" ngf-select ng-model="contributionData.attachments" ngf-multiple="true">Choose File</div>
-                    </div>-->
-
                     <!-- attachments -->
                     <div class='form-section'>
                       <label> Attachments <small>({{contributionData.attachments.length}} file(s) uploaded)</small> </label>
                       <!--<input type="file" ngf-select="showUplodatedFiles" ng-model="contributionData.attachments" name="file" ngf-multiple="true">-->
-                      <button type="button" class="btn btn-default modal-button" ngf-select="uplodateFiles($file, contributionData)" ngf-multiple="true">Choose File</button>
+                      <button type="button" class="btn btn-default modal-button" ngf-select="uplodateFiles($files, contributionData)" ngf-multiple="true">Choose File</button>
                       <div class="attachments" ng-repeat="attachment in contributionData.attachments">
                         <h5 style="color: blue; width: 70%; display: inline-block;"><u>{{ attachment.name }} ({{ attachment.size/1000 }} KB)</u></h5>
                         <button style='float: right; display: inline-block;' class="btn btn-xs" ng-click="removeFiles(attachment, contributionData)">X</button>
@@ -220,11 +214,21 @@
 
                     <!-- attachments -->
                     <div class='form-section'>
-                      <!-- should be different from create / reply editor -->
-                      <label> Attachments <small>({{ contributionData.attachments.length - (contributionData.attachments[0].id == null ? -1 : 0) }} file(s) uploaded)</small> </label>
-                      <div class="button" ngf-select ng-model="contributionData.attachments" ngf-multiple="true">Choose File</div>
+                      <label> Attachments <small>({{contributionData.attachments.length}} file(s) uploaded)</small> </label>
+                      <!--<input type="file" ngf-select="showUplodatedFiles" ng-model="contributionData.attachments" name="file" ngf-multiple="true">-->
+                      <button type="button" class="btn btn-default modal-button" ngf-select="uplodateFiles($files, contributionData)" ngf-multiple="true">Choose File</button>
+                      <div class="attachments" ng-repeat="attachment in contributionData.attachments">
+                        <div ng-if='!attachment.attachment'>
+                          <h5 style="color: blue; width: 70%; display: inline-block;"><u>{{ attachment.name }} ({{ attachment.size/1000 }} KB)</u></h5>
+                          <button style='float: right; display: inline-block;' class="btn btn-xs" ng-click="removeFiles(attachment, contributionData)">X</button>
+                        </div>
+                        <div ng-if='attachment.attachment'>
+                          <h5 style="color: blue; width: 70%; display: inline-block;"><u>{{ attachment.attachment.name }} ({{ attachment.attachment.size/1000 }} KB)</u></h5>
+                          <button style='float: right; display: inline-block;' class="btn btn-xs" ng-click="removeFilesAndfromDB(attachment, contributionData)">X</button>
+                        </div>
+                      </div>
                     </div>
-                    
+
                     <!-- selected tags: -->
                     <div class='form-section'>
                       <span><b> Selected tag names:  </b></span> 
@@ -272,7 +276,7 @@
                   <div ng-hide='hideReplyButton || alert.success'>
                   <button type="button" ng-click="showCreateContribution=true; hideReplyButton=true; contributionData={};contributionData.tags=[];contributionData.attachments=[]; contributionData.ref=contribution.db_data.id" class="btn btn-default modal-button">Reply</button>
                   <button type="button" ng-click="showLinkingContribution=true; hideReplyButton=true; linkData={}; linkData.currentContributionId=contribution.db_data.id" class="btn btn-default modal-button">Link</button>
-                  <button type="button" ng-click="showUpdateContribution=true; hideReplyButton=true; contributionData=contribution.db_data; contributionData._tags = contributionData.tags;" class="btn btn-default modal-button"
+                  <button type="button" ng-click="showUpdateContribution=true; hideReplyButton=true; contributionData={}; contributionData.oldData=contribution.db_data; contributionData._tags=contribution.db_data.tags; contributionData.attachments=contribution.db_data.attachments" class="btn btn-default modal-button"
                   ng-show="(user.id == contribution.db_data.createdBy)">Update</button>
                   <button type="button" ng-click="deleteContribution(contribution.db_data.id)" class="btn btn-default modal-button"
                   ng-show="(user.id == contribution.db_data.createdBy)" data-dismiss='modal'>Delete</button>

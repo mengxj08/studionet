@@ -308,8 +308,7 @@ router.route('/:contributionId')
 
   })
 
-  .put(auth.ensureAuthenticated, contributionUtil.initTempFileDest, multer({storage: storage.attachmentStorage}).array('attachments'), function(req, res){
-
+  .put(auth.ensureAuthenticated, contributionUtil.initTempFileDest, multer({storage: storage.attachmentStorage}).array('attachments'), function(req, res, next){
         req.body.tags = req.body.tags.split(","); //because form data has text string for tags   
 
         var query = [
