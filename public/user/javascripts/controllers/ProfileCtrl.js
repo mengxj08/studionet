@@ -89,24 +89,9 @@ angular.module('studionet')
 	    });
    	}
 
-/*  	$scope.uploadModel = function(model){
-	    model.upload = Upload.upload({
-	      url: '/uploads/models',
-	      data: {username: $scope.username, model: model},
-	    });
-
-    	model.upload.then(function (response) {
-		      $timeout(function () {
-		        model.result = response.data;
-		      });
-		    }, function (response) {
-		      if (response.status > 0)
-		        $scope.errorMsg = response.status + ': ' + response.data;
-		    }, function (evt) {
-		      // Math.min is to fix IE which reports 200% sometimes
-		      model.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-		    });
-  	};*/
+   	$scope.updateUser = function(){
+   		alert("User Update")
+   	}
 
   	$scope.changeName = function($event){
   		if($event.keyCode==13){
@@ -128,7 +113,19 @@ angular.module('studionet')
 	      });
 	}
 
+	$scope.editProfile = function(){
 
+		ModalService.showModal({
+		        templateUrl: "/user/templates/editProfile.html",
+		        controller: "ProfileCtrl",
+		        scope: $scope
+	      }).then(function(modal) {
+		        modal.element.modal({
+		          backdrop: 'static'
+		        });
+	      });
+	
+	}	
 
 
 }])

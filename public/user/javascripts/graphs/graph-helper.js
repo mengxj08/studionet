@@ -70,10 +70,10 @@ var COSE_GRAPH_LAYOUT = {
                 };
 var CONCENTRIC_GRAPH_LAYOUT = {  name: 'concentric', 
                                   concentric: function( node ){
-                                    return node.degree();
+                                    return node.incomers();
                                   },
                                   levelWidth: function( nodes ){
-                                    return 1;
+                                    return 50;
                                   }};
 
 
@@ -84,7 +84,7 @@ var COSE_GRAPH_LAYOUT = {
   ready: function(){ },
 
   // Called on `layoutstop`
-  stop: function(){  /*reposition(); console.log("stopped");*/  },
+  stop: function(){   },
 
   // Whether to animate while running the layout
   animate: true,
@@ -515,7 +515,7 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
  * Helper Functions
  * Stackoverflow source
  */
-var threshold = 5;
+var threshold = 3;
 var reposition = function(){
 
       console.log("Reposition Started");

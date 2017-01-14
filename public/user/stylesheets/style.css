@@ -207,9 +207,25 @@ li.notification{
 	padding: 0px 0px !important;
 }
 
+.nav-tabs{
+	border: 0px; 
+}
+
+.nav-tabs > li a, .nav-tabs > li a:focus, .nav-tabs > li a:hover{
+	padding: 5px 20px !important; 
+}
+
+
 .nav-tabs > li.active a, .nav-tabs > li.active a:focus, .nav-tabs > li.active a:hover{
-	border-bottom: 4px solid #4386D7 !important;
-	color: #4386D7 !important;
+	border-bottom: 4px solid #787C80 !important;
+	color: #787C80 !important;
+}
+
+.nav-tabs > li > a{
+	padding: 5px 20px; 
+	margin: 10px;
+	border: 1px solid #787C80 !important;
+	border-radius: 0px !important;
 }
 
 #cy{

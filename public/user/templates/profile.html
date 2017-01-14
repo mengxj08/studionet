@@ -1,5 +1,5 @@
 <style>
-
+/*
 .no-margin-padding{
   margin: 0px !important;
   padding: 0px !important;
@@ -17,15 +17,15 @@
 .full-width{
   width: 100% !important;
 }
-
-.profile-header{
+*/
+/*.profile-header{
   min-height: 150px;
   width: 100%;
   padding: 0px 0p 
   background-color: #FFFFFF !important;
 
   color: #444444 !important;
-}
+}*/
 
 .profile-img-container{
   border-radius: 0px; 
@@ -66,29 +66,23 @@ h5.tagline{
 .profile-tabs-nav{
   position: fixed;
   height: 60px !important; 
-  background-color: #F0F0F0;
+  border: 0px;
 }
-
 
 .profile-tab{
   text-align: center;
-  color: #444444;
 }
 
 .profile-body{
   overflow-y: hidden;
 }
 
-.profile-close{
-  color: #444444 !important;
-}
-
-
 .profile-tab-content{
   margin-top: 60px !important; 
   height: 100%; 
   max-height: 80%;
   overflow-y: auto !important;
+  background-color: #FFFFFF;
 }
 
 .profile-tab-pane{
@@ -108,49 +102,49 @@ h5.tagline{
     <!-- Modal content-->
     <div class="modal-content">
       
-        <div class="modal-header profile-header">
-
-            <button type="button" class="close profile-close" data-dismiss="modal" ng-click='close()' aria-hidden="true">&times;</button>
-
-            <div class='row no-margin-padding full-height padding'>
-              
-              <!-- Profile Name -->
-              <div class='col-xs-3 profile-img-container' style='background: url({{user.avatar}})'></div>
-
-              <div class='col-xs-7 profile-details-container no-margin-padding'>
-                
-                <div class='row no-margin-padding'>
-                    <h4 class='username no-margin-padding'>{{ user.name }}</h4>
-                    <h6 class='tagline'>Last Logged In: {{user.lastLoggedIn | date: 'medium'}}</h6>
-                </div>
-                
-                <br>
-                <!--Stats -->
-                <div class='col-sm-4  no-margin-padding stat'>              
-                    <h6 class='stat-name no-margin-padding'>Total Views</h6>
-                    <small class='stat-value'>{{views}}</small>
-                </div>
-
-                <div class='col-sm-4  no-margin-padding stat'>              
-                    <h6 class='stat-name no-margin-padding'>Average Rating</h6>
-                    <small class='stat-value'>{{rating}}</small>
-                </div>
-
-                <div class='col-sm-4  no-margin-padding stat'>              
-                    <h6 class='stat-name no-margin-padding'>&nbsp;&nbsp;&nbsp;Level</h6>
-                    <small class='stat-value'>&nbsp;&nbsp;&nbsp;{{level}}</small>
-                </div>
-
-              </div>
-
-
-            </div>
+        <div class="modal-header">
+              <h4 class="modal-title">Your Profile</h4>
+              <button type="button" class="close profile-close" data-dismiss="modal" ng-click='close()' aria-hidden="true">&times;</button>
         </div>
 
-        <div class="modal-body profile-body">
+        <div class="modal-body">
+
+            <div class='editor'>
+
+                <div class='row no-margin-padding'>
+                  
+                  <div class='col-xs-3 profile-img-container' style='background: url({{user.avatar}})'></div>
+
+                  <div class='col-xs-7 profile-details-container no-margin-padding'>
+                    
+                    <div class='row no-margin-padding'>
+                        <h4 class='username no-margin-padding'>{{ user.name }}</h4>
+                        <h6 class='tagline'>Last Logged In: {{user.lastLoggedIn | date: 'medium'}}</h6>
+                    </div>
+                    
+                    <br>
+
+                    <div class='col-sm-4  no-margin-padding stat'>              
+                        <h6 class='stat-name no-margin-padding'>Total Views</h6>
+                        <small class='stat-value'>{{views}}</small>
+                    </div>
+
+                    <div class='col-sm-4  no-margin-padding stat'>              
+                        <h6 class='stat-name no-margin-padding'>Average Rating</h6>
+                        <small class='stat-value'>{{rating}}</small>
+                    </div>
+
+                    <div class='col-sm-4  no-margin-padding stat'>              
+                        <h6 class='stat-name no-margin-padding'>&nbsp;&nbsp;&nbsp;Level</h6>
+                        <small class='stat-value'>&nbsp;&nbsp;&nbsp;{{level}}</small>
+                    </div>
+
+                  </div>
+                </div>
+
                 <!--tabs -->
-                <div class='row profile-tabs-nav no-margin-padding pull-right'>
-                  <ul class="nav nav-tabs full-width">
+                <div class='profile-tabs-nav no-margin-padding pull-right'>
+                  <ul class="nav nav-tabs">
                     <li class='profile-tab active'><a data-target="#contributions"  data-toggle="tab">Contributions</a></li>
                     <li class='profile-tab'><a data-target="#tags"  data-toggle="tab">Tags</a></li>
                     <li class="profile-tab"><a data-target="#activity" data-toggle="tab">Groups</a></li>
@@ -158,7 +152,7 @@ h5.tagline{
                 </div>
 
                 <!-- tab content-->
-                <div class='row tab-content no-margin-padding profile-tab-content'>
+                <div class='tab-content no-margin-padding profile-tab-content'>
 
                     <div class='tab-pane profile-tab-pane fade in active' id="contributions">
                         <div class='col-sm-12 hover-effect' ng-repeat="contribution in user.contributions | orderBy : '-views' ">
@@ -181,9 +175,7 @@ h5.tagline{
 
                         <button class='btn btn-default' ng-click='createGroup()'><i class="icon fa fa-pencil"></i>Create a New Group</button>
 
-                        <h5>
-                        
-                        <div class='col-sm-12 hover-effect' ng-repeat="group in groups | orderBy: ['requestingUserStatus'] ">
+                        <div class='col-sm-12 hover-effect' ng-repeat="group in groups | orderBy: 'requestingUserStatus' ">
                           <small>{{group.requestingUserStatus ? group.requestingUserStatus : "Not a Member of this group"}}</small>
                           <h5>{{ group.name }}</h5>
                           <p>{{ group.description }} </p>
@@ -195,10 +187,19 @@ h5.tagline{
                           <hr/>
                         </div>
 
-                        
-
                     </div>
                 </div>
+
+            </div> 
+
+
+        </div>
+
+        <div class="modal-footer">
+          <center>
+          <button type="button" class="btn btn-default modal-button" ng-click='editProfile()'>Edit Profile</button>
+          <button type="button" class="btn btn-default modal-button" data-dismiss='modal' ng-click='close()'>{{ alert.success ? "Close" : "Cancel" }}</button>
+          </center>
         </div>
 
     </div>
