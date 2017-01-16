@@ -1,20 +1,38 @@
+var GRAPH_CONTAINER = document.getElementById('cy');
+
+var BROADCAST_FILTER_ACTIVE = "filter-started";
+var BROADCAST_CLEAR_FILTER = "filter-cleared";
+var BROADCAST_CLEAR_ALL_FILTERS = "filter-clear-all";
+
+
 angular.module('studionet')
 
 /*
  *  Main Contribution Graph Page
  * 
  */
-.controller('ContributionsCtrl', ['$scope', '$stateParams', 'graph', 'users', 'supernode', 'ModalService', 'contribution', function($scope, $stateParams, graph, users, supernode, ModalService, contribution){
+.controller('ContributionsCtrl', ['$scope', '$stateParams', '$rootScope', 'graph', 'users', 'supernode', 'ModalService', 'contribution', function($scope, $stateParams, $rootScope, graph, users, supernode, ModalService, contribution){
 
   // ---------------- Filters
   $scope.filters = [];
-  $scope.updateFilter = function(filter_req){
-    $scope.filters = filter_req;
-  }
+  $scope.matchingNodes = [];
 
-  $scope.clearFilter = function(code){
-    console.log(code)
-    angular.element('#filterModal').scope().clearIndividualFilter(code);
+  // when filter is active
+  $scope.$on( BROADCAST_FILTER_ACTIVE, function(event, args) {
+      $scope.matchingNodes = args.nodes;
+      $scope.filters = args.data;
+  });
+
+  // when filter is cleared
+  $scope.$on( BROADCAST_CLEAR_ALL_FILTERS, function(event, args) {
+      $scope.matchingNodes = [];
+      $scope.filters = [];
+  });
+
+
+  $scope.clearFilter = function(code, optional_value){
+    ///$scope.filterModal.scope.clearFilterFromGraph( null, { 'code': code, 'value': optional_value } );
+    $rootScope.$broadcast(BROADCAST_CLEAR_FILTER, { 'code': code, 'value': optional_value });
   }
   
 
@@ -197,20 +215,31 @@ angular.module('studionet')
 
   $scope.filterToggle = function(){
 
-      ModalService.showModal({
+      if($scope.filterModal == undefined){
+          ModalService.showModal({
 
-        templateUrl: "/user/templates/filterModal.html",
-        controller: "FilterCtrl", 
-        scope: $scope
+            templateUrl: "/user/templates/filterModal.html",
+            controller: "FilterCtrl", 
+            scope: $scope
 
-      }).then(function(modal) {
+          }).then(function(modal) {
 
-          // activate modal
-          modal.element.modal({ backdrop: 'static' });
+              // activate modal
+              modal.element.modal({ backdrop: 'static' });
 
-          /// set data
-          //modal.scope.setData(data,clickedContributionId);
-      });
+              /// set data
+              modal.scope.init();
+
+              $scope.filterModal = modal; 
+
+          });
+        
+      }
+      else{
+          console.log($scope.filterModal.element);
+          $scope.filterModal.element.show();
+      }
+
   }
 
 }])

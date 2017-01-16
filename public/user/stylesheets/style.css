@@ -139,8 +139,11 @@ nav .navbar-nav{
 
 .navbar-title{
 	padding: 0px !important;
-	margin-right: 100px;
 	font-weight: 900 !important;
+}
+
+.nav > li > a{
+	padding: 15px 0px;
 }
 
 .navbar .navbar-collapse .navbar-nav > li.dropdown:hover .dropdown-menu {

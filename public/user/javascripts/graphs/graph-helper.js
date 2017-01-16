@@ -9,7 +9,7 @@ STUDIONET.GRAPH.spinner = {
   , radius: 42 // The radius of the inner circle
   , scale: 1 // Scales overall size of the spinner
   , corners: 1 // Corner roundness (0..1)
-  , color: '#000' // #rgb or #rrggbb or array of colors
+  , color: '#ddd' // #rgb or #rrggbb or array of colors
   , opacity: 0.25 // Opacity of the lines
   , rotate: 0 // The rotation offset
   , direction: 1 // 1: clockwise, -1: counterclockwise
@@ -271,6 +271,7 @@ var graph_style = {
               'text-valign': 'center',
               //'text-margin-y': '0.1em',
               'font-size': computeFontFn,
+              'color': '#FF71ED',
               'line-height': '1em',
               'font-weight': '400',  
               'text-wrap': 'wrap',
@@ -288,20 +289,16 @@ var graph_style = {
               'font-size': '0.3em',
             })     
 
-          .selector('node.onTop')
+          .selector('.selected')
             .css({
-              'border-width': '2',
-              'border-color': 'black'
-            })
-
-          .selector('node.selected')
-            .css({
-              'background-color' : '#F0F311',
+              'background-color' : '#F0F311 !important',
               'border-width': '1',
-              'border-color': 'black'
+              'border-color': '#FFFFFF',
+              'opacity': 1,
+              'text-opacity': 1
             })
 
-          .selector('node.highlighted')
+          .selector('.highlighted')
             .css({
               'content' : 'data(name)',
               'font-size': '0.4em',
@@ -309,30 +306,36 @@ var graph_style = {
               'text-wrap': 'wrap',
               'text-max-width': '300px',
               'min-zoomed-font-size': '1em',
-              'z-index': 5
+              'z-index': 5,
+              'opacity': 1,
+              'text-opacity': 1
             })
+
           .selector('.unmarked')
             .css({
               'opacity': 0.2,
-              'text-opacity': 0.2
+              'text-opacity': 0.2,
+              'label': ''
             })
           .selector('.marked')
             .css({
-              'background-color' : '#00FF06',
+              'background-color' : '#0F8612',
               'border-width': '2',
-              'border-color': 'black'
+              'border-color': 'white',
+              'label' : computeLabel,
+              'font-size': '2em'
             })
           .selector('.marked-parent')
             .css({
-              'background-color' : '#FF9292',
-              'border-width': '2',
-              'border-color': 'black'
+              'background-color' : '#5E865F',
+              'border-width': '1',
+              'border-color': 'white'
             })
           .selector('.marked-children')
             .css({
-              'background-color' : '#CC5B5B',
-              'border-width': '2',
-              'border-color': 'black'
+              'background-color' : '#868686',
+              'border-width': '1',
+              'border-color': 'white'
             })
 
           .selector('edge.highlighted')

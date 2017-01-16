@@ -1,21 +1,26 @@
+
+
 angular.module('studionet')
 
 /*
  * Controller for Filters
  */
-.controller('FilterCtrl', ['$scope', 'supernode', 'users', 'tags', 'groups', '$http', '$filter', 'graph', function($scope, supernode, users, tags, groups, $http, $filter, graph){ 
+.controller('FilterCtrl', ['$scope', '$rootScope', '$element', 'supernode', 'users', 'tags', 'groups', '$http', '$filter', 'graph', function($scope, $rootScope, $element, supernode, users, tags, groups, $http, $filter, graph){ 
 
-      // defaults
+      // Constants
+      var FILTER_URL = '/api/contributions/filters'; 
       var DEFAULTS = {
             users : [],
             groups: [],
             tags : [],
-            startDate: new Date( (new Date()).setDate((new Date().getDate()) - 8) ),
-            endDate : new Date( (new Date()).setDate((new Date().getDate()) + 1) ),
+            startDate: undefined,//new Date( (new Date()).setDate((new Date().getDate()) - 8) ),
+            endDate : undefined,//new Date( (new Date()).setDate((new Date().getDate()) + 1) ),
             ratingMin : 0, 
             ratingMax : 5, 
             depthVal : 0
       }
+      var spinner = new Spinner(STUDIONET.GRAPH.spinner);
+
 
       // Lists populating filters
       $scope.tags = [];
@@ -29,10 +34,9 @@ angular.module('studionet')
       $scope.depthVal;
 
 
-      $scope.panelsOpen = true;
+      // create a hashmap for the group for easy reference by id
+      var group_hash = groups.groups.hash();
 
-      
-      var spinner = new Spinner(STUDIONET.GRAPH.spinner);
 
       /*
        *    Helper functions
@@ -48,27 +52,37 @@ angular.module('studionet')
           $scope.ratingMax = DEFAULTS.ratingMax;
           $scope.depthVal = DEFAULTS.depthVal;
 
-          // clear actual filters
+          // reset actual filters - clear selections
           $scope.tags.map( function(tag) { tag.selected = false; return tag; });
           $scope.users.map( function(user) { user.selected = false; return user; });
           $scope.groups.map( function(group) { group.selected = false; return group; });
 
-          $scope.panelsOpen = false;
       };
 
       var populateTags = function(){
 
-        return tags.tags.map( function(tag){
+        return tags.tags.filter( function(tag){
 
-            // add properties required for tree-view plugin
-            tag.parentId = null;
-            tag.isExpanded = false; 
-            tag.children = [];
-            
-            // default 
-            tag.selected = false;
+            var access = true; 
 
-            return tag;
+            if( tag.restricted == true &&  group_hash[tag.group].requestingUserStatus == null )
+              access = false;
+
+            // check if tag restricted and if yes, if user has access to tag
+            if( access ){
+              // add properties required for tree-view plugin
+              tag.parentId = null;
+              tag.isExpanded = false; 
+              tag.children = [];
+              
+              // default 
+              tag.selected = false;
+
+              return tag; 
+            }
+            else{
+              return;
+            }
 
         }); 
 
@@ -76,33 +90,40 @@ angular.module('studionet')
 
       var populateGroups = function(){
 
-          // create a hashmap for the group for easy reference by id
-          var group_hash = {}; 
-          groups.groups.map( function(group){
-              group.type = "group";
-              //group.name = group.name + "</b>" //'&#xf0c0;' + " " + group.name; // append unicode for group
-              group.isExpanded = false;
-              group.children = [];
-              group_hash[group.id] = group;
-          })
-
           // if group has parentId, add group to that parent's children array
-          groups.groups =  groups.groups.map( function(group){
-              if(group.parentId)
-                  group_hash[group.parentId].children.push(group);
+          var all_groups =  groups.groups.map( function(group){
+
+              // check if group is the supernode because supernode has no parent
+              // or if group is not accessible by user
+              if(group.id == supernode.group || (group.requestingUserStatus == null && group.restricted == true))
+                return group;
+
+              var parent = group_hash[group.parentId];
+              
+              if( parent.children == undefined )
+                  parent.children = [];
+              
+              group.isExpanded = false;
+              group.type = "group";
+              parent.children.push(group);
+
               return group;
-          })
+          });
 
           // return groups connected to supernode
-          return groups.groups.filter(function(group){
-              return (group.parentId == supernode.group)
-          })
+          return all_groups.filter(function(group){
+
+            if(group.requestingUserStatus == null && group.restricted == true)
+              return false; 
+
+            return (group.parentId == supernode.group)
+          
+          });
 
       }
 
       var populateUsers = function(){
           return users.users.map(function(user){
-
               user.type = "user";
               user.parentId = null; 
               user.isExpanded = false; 
@@ -110,7 +131,6 @@ angular.module('studionet')
               user.selected = false;
 
               return user;
-
           });
       }
 
@@ -123,7 +143,7 @@ angular.module('studionet')
                 $scope.ratingMin == DEFAULTS.ratingMin &&
                 $scope.ratingMax == DEFAULTS.ratingMax &&
                 $scope.depthVal == DEFAULTS.depthVal ){
-            alert("Filters set to default.");
+            console.log("Filters set to default.");
             return true;
           }
           else
@@ -146,37 +166,60 @@ angular.module('studionet')
       var DATE_FILTER_CODE = 3; 
       var RATING_FILTER_CODE = 4; 
       var DEPTH_FILTER_CODE = 5; 
-      $scope.clearIndividualFilter = function(code){
 
-        // clear code filter
-        switch (code){
+      $scope.$on( BROADCAST_CLEAR_FILTER, function(event, args) {
+          $scope.clearFilterFromGraph(event, args);
+      });
 
-          case USERS_FILTER_CODE:
-            $scope.selectedUsers = DEFAULTS.users; 
-            break;
-          case GROUPS_FILTER_CODE:
-            $scope.selectedGroups = DEFAULTS.groups; 
-            break;
-          case TAGS_FILTER_CODE:
-            $scope.startDate == DEFAULTS.startDate 
-            $scope.endDate == DEFAULTS.endDate  
-            break;
-          case DATE_FILTER_CODE:
-            $scope.selectedUsers = DEFAULTS.users; 
-            break;
-          case RATING_FILTER_CODE:
-            $scope.ratingMin == DEFAULTS.ratingMin 
-            $scope.ratingMax == DEFAULTS.ratingMax 
-            break;
-          case DEPTH_FILTER_CODE:
-            $scope.depthVal == DEFAULTS.depthVal 
-            break;
-        }
+      var deselectListItem = function(value, list){
+          var selectedList = "selected" + list.substr(0, 1).toUpperCase() + list.substr(1, list.length);
+          $scope[selectedList] = $scope[selectedList].filter( function(ele){
+              return ele.id != value;
+          });
+
+          console.log($scope["selected" + list.substr(0, 1).toUpperCase() + list.substr(1, list.length) ]);
+
+          $scope[list] = $scope[list].map( function(ele){
+              if(ele.id == value)
+                ele.selected =  false; 
+               return ele;
+          });
+      
+      }
+
+      $scope.clearFilterFromGraph = function(event, args){
+          
+          var code = args.code;
+          var value = args.value;
+
+          // clear code filter
+          switch (code){
+
+            case USERS_FILTER_CODE:
+              deselectListItem( value, "users");
+              break;
+            case GROUPS_FILTER_CODE:
+              deselectListItem( value, "groups");
+              break;
+            case TAGS_FILTER_CODE:
+              deselectListItem( value, "tags");
+              break;
+            case DATE_FILTER_CODE:
+              $scope.startDate = DEFAULTS.startDate;
+              $scope.endDate = DEFAULTS.endDate;
+              break;
+            case RATING_FILTER_CODE:
+              $scope.ratingMin = DEFAULTS.ratingMin 
+              $scope.ratingMax = DEFAULTS.ratingMax 
+              break;
+            case DEPTH_FILTER_CODE:
+              $scope.depthVal = DEFAULTS.depthVal 
+              break;
+          }
 
 
-        // filter request
-        $scope.filterRequest();
-
+          // filter request
+          $scope.filterRequest();        
       }
 
 
@@ -189,7 +232,7 @@ angular.module('studionet')
             graph.unmarkNodes();
 
             // remove in parent
-            $scope.updateFilter([])
+            $rootScope.$broadcast(BROADCAST_CLEAR_ALL_FILTERS);
 
       }
 
@@ -205,95 +248,64 @@ angular.module('studionet')
             $scope.clearFilter();
           }
           else{
-              
-              var urlString = '/api/contributions/filters'; 
-
-              var groups = $scope.selectedGroups; //$scope.selectedAuthors.filter( function(g){ return (g.type == "group") });
-              var users = $scope.selectedUsers; //$scope.selectedAuthors.filter( function(g){ return (g.type == "user") });
-
-              var groupsUrlSeg = ( groups.length ? "[" + groups.map( function(g){ return g.id } ).toString() + "]" : ( users.length > 0 ? "[]" : "-1" ) )  // groups
-              var usersUrlSeg = ( users.length ? "[" + users.map( function(u){ return u.id } ).toString() + "]"  : ( groups.length > 0 ? "[]" : "-1" ) ) // users
-
 
               var data = {};
-              data.g = groupsUrlSeg;
-              data.u = usersUrlSeg; 
+              data.g =  ( $scope.selectedGroups.length ? "[" + $scope.selectedGroups.map( function(g){ return g.id } ).toString() + "]" : ( $scope.selectedUsers.length > 0 ? "[]" : "-1" ) ) ;
+              data.u = ( $scope.selectedUsers.length ? "[" + $scope.selectedUsers.map( function(u){ return u.id } ).toString() + "]"  : ( $scope.selectedGroups.length > 0 ? "[]" : "-1" ) ); 
               data.tg = ( $scope.selectedTags.length ? "[" + $scope.selectedTags.map( function(g){ return g.id; }).toString() + "]" : "-1" );
               data.r = "[" + $scope.ratingMin + "," + $scope.ratingMax + "]";
-              data.t = "[" + getTime($scope.startDate) + "," + getTime($scope.endDate) + "]"
-              data.d =  $scope.depthVal;
+              data.t = "[" + ( $scope.startDate ? getTime($scope.startDate) + " , " : "0, " )  +   ( $scope.endDate ? getTime($scope.endDate) : getTime( new Date() ) ) + "]";
+              data.d =  $scope.depthVal; 
 
               //$(target).empty();
-              target = document.getElementById('cy');
+              var target = GRAPH_CONTAINER;
               spinner.spin(target);
 
               $http({
                 method  : 'POST',
-                url     : '/api/contributions/filters',
+                url     : FILTER_URL,
                 headers : { 'Content-Type': 'application/json' }, 
                 data    : data
               }).success(function(filter_data){
 
-                  $scope.filterActive = true;
                   spinner.stop();
 
+                  var nodes = [];
+
                   if(filter_data.nodes == undefined || filter_data.nodes.length == 0){
-                    //$('').append("<h3 style='position: absolute; top:40%; left: 40%;'>Oops. No Nodes found.</h3>");
+                    nodes = [];
                   }
                   else{
-
-                    var filters = [];
-                    // --- setting the shortcut option in parent container
-                    if ($scope.selectedGroups.length != DEFAULTS.groups.length)
-                        filters.push({ 'name' : 'Groups', value: $scope.selectedGroups.length + " group(s) selected", code: GROUPS_FILTER_CODE });
-                    if ($scope.selectedUsers.length != DEFAULTS.users.length)
-                        filters.push({ 'name' : 'Users', value: $scope.selectedUsers.length + " user(s) selected", code: USERS_FILTER_CODE });                    
-                    if ($scope.selectedTags.length != DEFAULTS.tags.length)
-                        filters.push({ 'name' : 'Tags', value: $scope.selectedTags.length + " tag(s) selected", code: TAGS_FILTER_CODE });
-                    if ($scope.startDate != DEFAULTS.startDate && $scope.startDate != DEFAULTS.endDate )
-                        filters.push({ 'name' : 'Time Range', value: ( $scope.startDate - $scope.endDate ) + " days", code: DATE_FILTER_CODE  });
-                    if ($scope.minRating != DEFAULTS.minRating && $scope.maxRating != DEFAULTS.maxRating)
-                        filters.push({ 'name' : 'Rating', value: ( $scope.startDate + " - " + $scope.endDate ), code: RATING_FILTER_CODE });
-                    if ($scope.depthVal != DEFAULTS.depthVal)
-                        filters.push({ 'name' : 'Depth', value: $scope.depthVal, code: DEPTH_FILTER_CODE });
-                    $scope.updateFilter(filters);
-
-                    // --- mark the nodes in the graph
-                    var nodes = [];
-                    filter_data.nodes.map(function(node){
-                      
-                      if(node.match){
-                            nodes.push(node.id);
-                      }
-                      
-                      $('#filter-nodes-count').empty();
-                      $('#filter-nodes-count').append( nodes.length + " matching nodes found");
-
-
-                    })
-
-                    graph.markNode(nodes);
-                  
+                    nodes = filter_data.nodes.filter(function(node){   return ( node.match ? node.id : false );             });
                   }
+ 
+                  // --- mark the nodes in the graph
+                  graph.markNode( nodes.map(function(node){ return node.id } ) );
 
+                  var data = [];
+                  // --- setting the shortcut option in parent container
+                  // check if filter has default values and insert only if it doesn't
+                  if ($scope.selectedGroups.length != 0)
+                      data.push({ 'name' : 'Groups', value: $scope.selectedGroups, code: GROUPS_FILTER_CODE , type: 'Array'});
+                  if ($scope.selectedUsers.length != 0)
+                      data.push({ 'name' : 'Users', value: $scope.selectedUsers, code: USERS_FILTER_CODE, type: 'Array' });                    
+                  if ($scope.selectedTags.length != 0)
+                      data.push({ 'name' : 'Tags', value: $scope.selectedTags, code: TAGS_FILTER_CODE, type: 'Array' });
+                  if ($scope.startDate != DEFAULTS.startDate || $scope.startDate != DEFAULTS.endDate )
+                      data.push({ 'name' : 'Time Range', value: ( ($scope.endDate - $scope.startDate)/(1000*24*3600) ).toFixed() + " days", code: DATE_FILTER_CODE, type: 'Range'  });
+                  if ($scope.ratingMin != DEFAULTS.ratingMin || $scope.ratingMax != DEFAULTS.ratingMax)
+                      data.push({ 'name' : 'Rating', value: ( $scope.ratingMin + " - " + $scope.ratingMax ) + " rating", code: RATING_FILTER_CODE, type: 'Range' });
+
+
+                  // broadcast results
+                  $rootScope.$broadcast(BROADCAST_FILTER_ACTIVE, { 'nodes': nodes, 
+                                                                   'data': data });
               });
 
           }
 
-          $scope.panelsOpen = false;
 
       };
-
-      $scope.toggle = function( array ){
-
-          if($scope["selected" + array].length == 0){
-              $scope["selected" + array] = $scope[array.toLowerCase()];
-          }
-          else{
-              $scope["selected" + array] = [];
-          }
-
-      }
 
       $scope.CustomCallback = function (item, selectedItems) {
           if (selectedItems !== undefined && selectedItems.length >= 80) {
@@ -313,9 +325,9 @@ angular.module('studionet')
           resetDefaults();
 
           // populate filters 
-          $scope.tags = $filter('orderBy')(populateTags(), 'contributionCount', true) ;
+          $scope.tags = $filter('orderBy')(populateTags(), [ "name", "-contributionCount" ]) ;
           $scope.users = $filter('orderBy')(populateUsers(), 'name') ;
-          $scope.groups = $filter('orderBy')(populateGroups(), 'name') ;
+          $scope.groups = $filter('orderBy')(populateGroups(), [ "children.length" , "name" ]) ;
 
       }
 
@@ -323,6 +335,8 @@ angular.module('studionet')
 
         $('body').removeClass('modal-open');
         $('.modal-backdrop').remove();
+
+        $element.hide();
 
       };
 

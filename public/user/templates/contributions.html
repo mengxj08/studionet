@@ -30,21 +30,38 @@
 		<i class="graph-nav-control icon fa fa-plus" ng-click='openNewContributionModal()' uib-tooltip='New Contribution'  tooltip-placement='left'></i>
   </div>
 
-  <div class='filter-controls'>
 
-    <div id='filter-shortcuts' ng-show='filters.length>0'>
-      <h5>Filters Active </h5> <hr/>
-      <h6 id='filter-nodes-count'></h6> <hr/>
-      <h6 class='clear-filter-shortcut' ng-repeat="filter in filters" ng-click="clearFilter(filter.code)">{{filter.value}}</h6>
-    </div>
-
-  </div>
    
 </div>
 
-<!-- Modal -->
-<ui-view></ui-view>
+<div class='filter-controls'>
 
+  <div id='filter-shortcuts' ng-show='filters.length>0'>
+    <h5>Filters Active </h5> <hr/>
+    <h6 id='filter-nodes-count'>{{matchingNodes.length}} matching nodes found.</h6> <hr/>
+    <div class='filter-shortcut-container' ng-repeat="filter in filters">
+        
+        <!-- if filter is an array of values -->
+        <div ng-if='filter.type == "Array"'>
+            <h6 id='filter-nodes-count'>{{ filter.value.length }} {{filter.name}}(s) selected</h6>
+            <h6 class='clear-filter-shortcut' ng-repeat="fval in filter.value track by fval.id" ng-click="clearFilter(filter.code, fval.id)">{{fval.name}}</h6>
+        </div>
+        
+        <!-- if filter is a range -->
+        <div ng-if='filter.type == "Range"'>
+            <h6 id='filter-nodes-count' >{{filter.name}} selected</h6>
+            <h6 class='clear-filter-shortcut' ng-click="clearFilter(filter.code)">{{filter.value}}</h6>
+        </div>
+        
+        <hr/>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal -->
+<!-- <ui-view></ui-view>
+ -->
 
 
 

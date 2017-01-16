@@ -630,12 +630,17 @@ angular.module('studionet')
 		o.graph.batch(function(){
 		o.graph.elements()
 			.removeClass('highlighted')
-			.removeClass('selected')
+			.removeClass('highlighted')
+			.removeClass('marked')
 			.addClass('faded');
+
+		if(node instanceof Array && node.length == 0){
+			o.graph.elements().addClass('unmarked');
+		}
 
 
 		// Array of Ids
-		if(node instanceof Array){
+		if(node instanceof Array && node.length > 0){
 
 			var selector = [];
 			node.map(function(id){
@@ -651,7 +656,7 @@ angular.module('studionet')
 				.removeClass('unmarked')
 				.addClass('marked');
 
-			o.graph.$(selectorQuery).predecessors()
+/*			o.graph.$(selectorQuery).predecessors()
 								.removeClass('unmarked')
 								.removeClass('faded')
 								.addClass('marked-parent');
@@ -659,7 +664,7 @@ angular.module('studionet')
 			o.graph.$(selectorQuery).successors()
 							.removeClass('faded')  
 							.removeClass('unmarked')
-							.addClass('marked-children');
+							.addClass('marked-children');*/
 
 		}
 
@@ -674,12 +679,12 @@ angular.module('studionet')
 
 			node.removeClass('faded')
 				.addClass('marked');
-
+/*
 			node.predecessors().removeClass('faded')
 								.addClass('marked-parent');
 
 			node.successors().removeClass('faded')  
-							.addClass('marked-children');
+							.addClass('marked-children');*/
 
 		});
 

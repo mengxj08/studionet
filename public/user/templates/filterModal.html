@@ -1,6 +1,7 @@
 <link rel='stylesheet' href='./stylesheets/filter-modal.css'/>
 
-<div class="modal fade filterModal" id='filterModal' role="dialog" ng-controller="FilterCtrl" ng-init='init()'>
+
+<div id='filterModal' class="modal fade filterModal" role="dialog">
   
   <div class="modal-dialog">
 
@@ -62,23 +63,26 @@
                 <h4>Ranges</h4>  
               </uib-accordion-heading>
 
-              <div class='col-sm-4'>
+              <div class='col-sm-12'>
+
                 <div id='dateFilter'>
+                  <h5>Date Range <!-- <span class='filter-element-count'></span> --></h5>  
                   From: <input type="date" name="firstDate" ng-model='$parent.$parent.$parent.startDate'>
                   <br>
                   Till: <input type="date" name="lastDate" ng-model='$parent.$parent.$parent.endDate'>
                 </div>
               </div>
 
-              <div class='col-sm-4'>
-                <h5>Rating <span class='filter-element-count'></span></h5>  
+
+              <div class='col-sm-12'>
+                <h5>Rating <!-- <span class='filter-element-count'></span> --></h5>  
                 <angular-ranger id='ratingFilter' min="0" max="5" step="1" min-value=$parent.$parent.$parent.ratingMin max-value=$parent.$parent.$parent.ratingMax></angular-ranger>
               </div>
 
-              <div class='col-sm-4'>
-                <h5>Depth <span class='filter-element-count'></span></h5>  
+<!--               <div class='col-sm-12'>
+                <h5>Depth</h5>  
                 <angular-ranger id='depthFilter' min="0" max="3" value=$parent.$parent.$parent.depthVal></angular-ranger>
-              </div>
+              </div> -->
 
             </div>
 
@@ -89,9 +93,8 @@
         <div class="modal-footer">
 
           <center>
-            <i class="graph-nav-control icon fa fa-filter" data-dismiss='modal' ng-click="filterRequest();close()" uib-tooltip='Filter' tooltip-placement='top'></i>
-            <i class="graph-nav-control icon fa fa-remove" data-dismiss='modal' ng-click="clearFilter();close();" uib-tooltip='Clear Filter' tooltip-placement='top'></i>
-            <i class="graph-nav-control icon fa fa-window-close" data-dismiss='modal' ng-click="close();" uib-tooltip='Close' tooltip-placement='top'></i>
+            <i class="graph-nav-control icon fa fa-filter" ng-click="filterRequest();close()" uib-tooltip='Filter' tooltip-placement='top'></i>
+            <i class="graph-nav-control icon fa fa-remove" ng-click="clearFilter();close();" uib-tooltip='Clear Filter' tooltip-placement='top'></i>
           </center>
             
         </div>

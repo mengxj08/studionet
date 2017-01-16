@@ -78,19 +78,21 @@
   margin-right: 30px !important;
 
   z-index: 3;
+
+  color: #969696;
 }
 
 h6.clear-filter-shortcut{
-  background-color: #87D8F3;
+  background-color: #4A95EF;
+  color: #274F7F;
   display: inline-block;
-  margin-right: 20px;
+  margin-right: 10px;
   padding: 8px;
   border-radius: 5px;
-
 }
 
 h6.clear-filter-shortcut:hover{
-  background-color: #17ACDD;
+  background-color: #4A95EF;
   cursor: pointer;
 }
 
