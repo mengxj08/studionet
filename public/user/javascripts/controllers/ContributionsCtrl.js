@@ -30,12 +30,17 @@ angular.module('studionet')
          graph.selectNode( $scope.graph.getElementById( $stateParams.contributionId) );
   }
 
+  var onEdgeSingleClick = function(evt){
+    console.log("Edge clicked");
+  }
+
   // Interaction on Single Click
   var onNodeSingleClick = function(evt){
 
         var node = evt.cyTarget;
-        graph.selectNode(node);
         // select the node
+        graph.selectNode(node);
+        
         // preview
         if(node.data('qtip') == undefined){
           
@@ -120,7 +125,9 @@ angular.module('studionet')
 
 
       $scope.graph.on('tap', function(evt){
-        if( !( evt.cyTarget.isNode && evt.cyTarget.isNode() ) ){
+        if( evt.cyTarget.isEdge && evt.cyTarget.isEdge() )
+            onEdgeSingleClick(evt);
+        else if( !( (evt.cyTarget.isNode && evt.cyTarget.isNode()) ) ){
             graph.removeAdditionalStyles();
         }
         else if( evt.cyTarget.isNode && evt.cyTarget.id() == graph.activeNode )

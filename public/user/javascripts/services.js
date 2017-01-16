@@ -21,7 +21,8 @@ angular.module('studionet')
 		user: {},
 		groups: [],
 		contributions: [],
-		groupsById: {}
+		groupsById: {},
+
 	};
 
 	o.getUser = function(){
@@ -306,16 +307,10 @@ angular.module('studionet')
 
 			console.log("new group created", data);
 			
-			// add the group to the user profile
-			profile.groups.push({ id: data.id , name: data.name , role: "Admin" })
+			// refresh groups, the user
+			o.getAll();
 
-			// add group to groups array
-			o.groups.push(data);
-			
-			// correct nodes for graph
-			o.graph.nodes = o.groups;
-
-			// handle links for subgroups
+			profile.getUser();
 
 			return data; 
 		

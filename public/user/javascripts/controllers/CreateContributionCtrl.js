@@ -2,6 +2,7 @@ angular.module('studionet')
 .controller('CreateContributionCtrl', ['$scope', 'supernode', 'contribution', 'tags', function($scope, supernode, contribution, tags){
 
       $scope.alert = {}; 
+
       $scope.loadTags = function($query){
           return tags.tags.filter(function(tag){
             return tag.name.toLowerCase().search($query.toLowerCase()) != -1;

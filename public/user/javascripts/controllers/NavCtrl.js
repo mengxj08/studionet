@@ -29,6 +29,10 @@ angular.module('studionet')
 			      backdrop: 'static'
 			      // keyboard: false
 			    });
+
+			    // compute the stats for the user
+			    modal.scope.computeStats();
+			    
 			});
 
 		}
