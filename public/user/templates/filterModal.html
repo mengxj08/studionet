@@ -1,5 +1,4 @@
-<link rel='stylesheet' href='./stylesheets/filter-style.css' />
-<link rel='stylesheet' href='./stylesheets/accordion.css' />
+<link rel='stylesheet' href='./stylesheets/filter-modal.css'/>
 
 <div class="modal fade filterModal" id='filterModal' role="dialog" ng-controller="FilterCtrl" ng-init='init()'>
   
@@ -16,18 +15,18 @@
         <div class="modal-body">
 
 
-    		<div uib-accordion> 
+    		<div uib-accordion class="accordion"> 
 
             <!-- By Author Filter -->
-            <div uib-accordion-group class="filter-panel panel badge-success">
-              <uib-accordion-heading class="filter-heading"> 
+            <div uib-accordion-group>
+              <uib-accordion-heading> 
                 <h4>Authors</h4>
               </uib-accordion-heading>
 
-              <div uib-accordion> 
+              <div uib-accordion class="sub-accordion"> 
 
               	 <div uib-accordion-group>
-                    <uib-accordion-heading class="filter-heading"> 
+                    <uib-accordion-heading> 
                   		<h5>Individual Users</h5>
                     </uib-accordion-heading>
                     <multiselect-searchtree data-input-model="users" multi-select="true"
@@ -36,7 +35,7 @@
                   </div>
 
                   <div uib-accordion-group>
-                    <uib-accordion-heading class="filter-heading"> 
+                    <uib-accordion-heading> 
                       <h5>Group Members</h5>
                     </uib-accordion-heading>
                     <multiselect-searchtree data-input-model="groups" multi-select="true"
@@ -47,8 +46,8 @@
             </div>
 
             <!-- By Tags Filter -->
-            <div uib-accordion-group class="filter-panel panel badge-success">
-              <uib-accordion-heading class="filter-heading">
+            <div uib-accordion-group>
+              <uib-accordion-heading>
                 <h4>Tags</h4>
               </uib-accordion-heading>
               <multiselect-searchtree id='tagFilter' data-input-model="tags" multi-select="true"
@@ -57,9 +56,9 @@
             </div>
 
             <!-- By Ranges-->
-            <div uib-accordion-group class='filter-panel panel'>
+            <div uib-accordion-group id='range-panel'>
 
-              <uib-accordion-heading class="filter-heading">  
+              <uib-accordion-heading>  
                 <h4>Ranges</h4>  
               </uib-accordion-heading>
 
