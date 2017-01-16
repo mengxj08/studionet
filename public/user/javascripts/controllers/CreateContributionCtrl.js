@@ -1,7 +1,6 @@
 angular.module('studionet')
 .controller('CreateContributionCtrl', ['$scope', 'supernode', 'contribution', 'tags', function($scope, supernode, contribution, tags){
 
-      $scope.file;
       $scope.alert = {}; 
 
       $scope.loadTags = function($query){
@@ -22,10 +21,12 @@ angular.module('studionet')
       $scope.contributionData = { _tags: [], attachments: [], tags: [], refType: "RELATED_TO", contentType: "text", ref: supernode.contribution};
 
       //Uploaded files
-      $scope.uplodateFiles = function (file){
-            console.log('Testing');
-            if(file){
-                  $scope.contributionData.attachments.push(file);
+      $scope.uplodateFiles = function (files){
+            console.log(files.length + "files have been choosen.");
+            if(files){
+                  files.forEach(function(file){
+                        $scope.contributionData.attachments.push(file);
+                  });
             }   
       }
       //remove files
@@ -38,7 +39,6 @@ angular.module('studionet')
 
 
       $scope.createContribution = function(){
-
           $scope.contributionData._tags.map(function(t){
               $scope.contributionData.tags.push(t.name.trim());
           });

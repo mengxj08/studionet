@@ -506,6 +506,28 @@ angular.module('studionet')
 	return o;
 }])
 
+.factory('attachments', ['$http', function($http){
+	var o = {
+		attachments: []
+	}
+
+	o.deleteAttachmentbyId = function(contributionId, attachmentId){
+		return $http.delete('/api/contributions/'+contributionId+'/attachments/'+attachmentId)
+		.success(function(res) {
+			//log success
+			console.log("attachment id:" + attachmentId + " has been deleted");
+
+			// send success
+			return;  
+	    })
+	    .error(function(error){
+			throw error;
+	    })
+	}
+
+	return o;
+}])
+
 .factory('graph', ['$http', function($http){
 	
 	var o = {
