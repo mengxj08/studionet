@@ -188,7 +188,6 @@ angular.module('studionet')
   //  ------------- Modals
   $scope.openNewContributionModal = function(){
       ModalService.showModal({
-
         templateUrl: "/user/templates/createContributionModal.html",
         controller: "CreateContributionCtrl",
         scope: $scope.open
@@ -201,14 +200,17 @@ angular.module('studionet')
 
   var showDetailsModal = function(data, clickedContributionId) {
 
-    ModalService.showModal({
-      templateUrl: "/user/templates/home.graphView.modal.html",
-      controller: "DetailsModalCtrl",
-      scope: $scope.details
-    }).then(function(modal) {
-        modal.element.modal({   backdrop: 'static' });
+      ModalService.showModal({
+        templateUrl: "/user/templates/home.graphView.modal.html",
+        controller: "DetailsModalCtrl",
+        scope: $scope.details
+      }).then(function(modal) {
+        modal.element.modal({
+          backdrop: 'static'
+        });
         modal.scope.setData(data, clickedContributionId);
-    });
+        console.log('show the modal');
+      });
 
   };
 
