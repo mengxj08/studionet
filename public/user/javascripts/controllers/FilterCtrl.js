@@ -103,12 +103,12 @@ angular.module('studionet')
                   return group;
 
               // check if group is the supernode because supernode has no parent
-              // or if group is not accessible by user
-              if(group.id == supernode.group || (group.requestingUserStatus == null && group.restricted == true))
-                return group;
+              if(group.id == supernode.group){
+                  return group;
+              }
 
 
-              var parent = group_hash[group.parentId];
+              var parent = group_hash[group.parentId]; 
               
               if( parent.children == undefined )
                   parent.children = [];
@@ -120,15 +120,25 @@ angular.module('studionet')
               return group;
           });
 
-          // return groups connected to supernode
-          return all_groups.filter(function(group){
+          all_groups = all_groups.filter(function(g){
 
-            if(group.requestingUserStatus == null && group.restricted == true)
-              return false; 
-
-            return (group.parentId == supernode.group)
+              if(g.requestingUserStatus == null && g.restricted == true){
+                console.log(g.requestingUserStatus, "Removing from list because not accessible")
+                return false; 
+              }
+              else if( g.id == supernode.group)
+                return false;
+              else if(g.parentId == supernode.group){
+                console.log(g.requestingUserStatus, "Adding to list")
+                return true;
+              }
           
           });
+
+          console.log(all_groups);
+
+          // return groups connected to supernode and accessible to the user
+          return all_groups;
 
       }
 
@@ -353,6 +363,7 @@ angular.module('studionet')
           $scope.tags = $filter('orderBy')(populateTags(), [ "name", "-contributionCount" ]) ;
           $scope.users = $filter('orderBy')(populateUsers(), 'name') ;
           $scope.groups = $filter('orderBy')(populateGroups(), [ "children.length" , "name" ]) ;
+
 
       }
 

@@ -82,8 +82,14 @@
 
 
 
-<link rel='stylesheet' href='./stylesheets/filter-modal.css'/>
 
 
-<!--- Modals -->
+<!--- Filter Modal -->
 <ng-include src="'templates/filterModal.html'"></ng-include>
+
+<!--- Profile Modal  -->
+<!-- Should be placed here because this page gets loaded after resolving all promises for required data -->
+<ng-include src="'templates/profile.html'" ></ng-include>
+
+
+

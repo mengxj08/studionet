@@ -1,22 +1,20 @@
 angular.module('studionet')
 
-.controller('ProfileCtrl', ['$scope', 'ModalService', 'profile', '$http', 'tags', 'contributions', 'groups', function($scope, ModalService, profile, $http, tags, contributions, groups){
+.controller('ProfileCtrl', ['$scope', 'ModalService', 'profile', 'contributions', 'tags', 'groups', function($scope, ModalService, profile, contributions, tags, groups){
 
 	/*
 	 *	Functionality for User Profile Page
 	 */
 	$scope.contributionsRef = contributions.contributions.hash();
 	$scope.tags = tags.tags;
-	$scope.groups = groups.groups;
 
-
-
+	// warning: be wary of scope overlaps; wasn't working with $scope.groups
 	$scope.user = profile.user;
 	$scope.contributions = $scope.user.contributions;
-	$scope.userGroups = $scope.user.groups.hash();
+	$scope.groups = groups.groups; console.log($scope.groups);
 
 	$scope.lastLoggedIn = new Date($scope.user.lastLoggedIn);
-	
+
 
 	$scope.computeStats = function(){
 
@@ -60,10 +58,6 @@ angular.module('studionet')
 	    $('.modal-backdrop').remove();
   	};
   
-	$scope.isAdmin = profile.groups.reduce(function(res, curr){
-		return res || curr.role==='Admin';
-	}, false); 
-	
 	$scope.uploadPic = function(avatar) {
 	    avatar.upload = Upload.upload({
 	      url: '/uploads/avatar',

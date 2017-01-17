@@ -17,7 +17,7 @@ angular.module('studionet')
 
 		$scope.showProfile = function(){
 			
-			ModalService.showModal({
+/*			ModalService.showModal({
 				templateUrl: "/user/templates/profile.html",
 				controller: "ProfileCtrl",
 				inputs: {
@@ -34,7 +34,7 @@ angular.module('studionet')
 			    modal.scope.computeStats();
 			    
 			});
-
+*/
 		}
 
 		/*

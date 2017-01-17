@@ -34,7 +34,7 @@ angular.module('studionet')
 
 	// redundant
 	o.getGroups = function(){
-		console.warn("Shouldn't be using this");
+		console.warn("Warning: Usage of Profile Groups in Services");		
 		return $http.get('/api/profile/groups').success(function(data){
 			angular.copy(data, o.groups);
 		});
@@ -42,7 +42,7 @@ angular.module('studionet')
 
 	// redundant
 	o.getContributions = function(){
-		console.warn("Shouldn't be using this");		
+		console.warn("Warning: Usage of Profile Contributions in Services");		
 		return $http.get('/api/profile/contributions').success(function(data){
 			angular.copy(data, o.contributions);
 		});
