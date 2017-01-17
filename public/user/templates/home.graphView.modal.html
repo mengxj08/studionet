@@ -1,15 +1,4 @@
-<div class="modal fade">
-    <!--     <div class='col-sm-4'>
-      <div class="modal-dialog sidebar">
-        <div class='modal-content'>
-          <p>This is the sub-graph to show the map. It should associate with the scrolling actions in the right canvas.</p>
-        </div>
-      </div>
-    </div> -->
-
-<!--     <div class='col-sm-12 modal-dialog-container'> -->
-
-
+<div id="detailsModal" class="modal fade" role="dialog">
       <!-- Repeat for every contribution in tree -->
 
       <div class="modal-dialog" ng-repeat='contribution in contributionTree'> 
@@ -77,7 +66,7 @@
                     <div class='tab-pane fade' id="{{ 'author' + contribution.db_data.id}}">
                         <div class='row'>
                           <div class='col-sm-4'>
-                            <img src={{users[contribution.db_data.createdBy].avatar}} style='width: 100px; height: 100px;'>
+                            <!-- <img src={{users[contribution.db_data.createdBy].avatar}} style='width: 100px; height: 100px;'> -->
                           </div>
                           <div class='col-sm-8'>
                               <h3>{{ users[contribution.db_data.createdBy].name }}</h3>

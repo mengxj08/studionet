@@ -360,7 +360,6 @@ angular.module('studionet')
 
           $('body').removeClass('modal-open');
           $('.modal-backdrop').remove();
-          $('.modal-backdrop.in').remove();
 
           console.log("Closed Filters");
       };

@@ -190,7 +190,7 @@ angular.module('studionet')
       ModalService.showModal({
         templateUrl: "/user/templates/createContributionModal.html",
         controller: "CreateContributionCtrl",
-        scope: $scope.open
+        scope: $scope
 
       }).then(function(modal) {
           // activate modal
@@ -203,7 +203,7 @@ angular.module('studionet')
       ModalService.showModal({
         templateUrl: "/user/templates/home.graphView.modal.html",
         controller: "DetailsModalCtrl",
-        scope: $scope.details
+        scope: $scope
       }).then(function(modal) {
         modal.element.modal({
           backdrop: 'static'
@@ -214,34 +214,6 @@ angular.module('studionet')
 
   };
 
-  $scope.filterToggle = function(){
-
-    if($scope.filterModal == undefined){
-      
-        ModalService.showModal({
-
-          templateUrl: "/user/templates/filterModal.html",
-          controller: "FilterCtrl", 
-          scope: $scope.filter
-
-        }).then(function(modal) {
-
-            // activate modal
-            modal.element.modal({ backdrop: 'static' });
-
-            /// set data
-            modal.scope.init();
-
-            $scope.filterModal = modal;
-
-        });
-    }
-    else{
-       $scope.filterModal.element.modal();
-    }
-
-        
-  }
 
 }])
 
