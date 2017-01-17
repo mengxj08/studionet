@@ -8,6 +8,10 @@ angular.module('studionet')
   $scope.contributions = contributions.contributions;
   $scope.users = users.users.hash();
 
+  //shared parameters in different sub scopes
+  $scope.showReplyModal = null; //show the replying modal
+  $scope.contributionData = null; //store the data of replying information
+
   $scope.alert = {}; 
   
   // --- Modal Opening and Closing
@@ -68,7 +72,7 @@ angular.module('studionet')
   }
 
   //Uploaded files
-  $scope.uplodateFiles = function (files, contributionData){
+  $scope.uploadFiles = function (files, contributionData){
       console.log(files.length + " file(s) have been choosen.");
       if(files){
           files.forEach(function(file){
@@ -171,7 +175,6 @@ angular.module('studionet')
       })
   }
 
-
   // deprecated
   $scope.createLink = function(linkData){
     linkData.createdBy = $scope.user.id;
@@ -203,10 +206,9 @@ angular.module('studionet')
         })
 	}
 
-
-  $scope.submitContribution = function(showCreateContribution,showLinkingContribution,showUpdateContribution,contributionData,linkData){
-    if(showCreateContribution)
-      $scope.createContribution(contributionData);
+  $scope.submitContribution = function(showLinkingContribution,showUpdateContribution,contributionData,linkData){
+    // if($scope.showReplyModal)
+    //   $scope.createContribution(contributionData);
 
     if(showLinkingContribution)
       $scope.createLink(linkData);
@@ -215,6 +217,18 @@ angular.module('studionet')
       $scope.updateContribution(contributionData);
   }
 
+// Reply to an exising contribution
+  $scope.resetConbutionData = function (targetedContribution){
+    $scope.showReplyModal = true; 
+    $scope.contributionData = {};
+    $scope.contributionData.tags = [];
+    $scope.contributionData.attachments = [];
+    $scope.contributionData.ref = targetedContribution.db_data.id
+  }
+
+  $scope.replyingContribution = function (contributionData){
+    $scope.createContribution(contributionData);
+  }
 
   /*
    * Contribution Tree Related
@@ -226,6 +240,5 @@ angular.module('studionet')
       // call $anchorScroll()
       $anchorScroll();
   };
-
 
 }]);
