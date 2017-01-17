@@ -21,14 +21,25 @@ hr {
 
 .modal{
   height: 100%; 
+  /*height:1000px;*/
   width: 70% !important;
   margin-left: 15% !important;  
-  overflow-y: hidden !important;
+  overflow-y: scroll;
 }
 
 .modal-dialog{
   padding: 0px !important;
   height: 100%;
+  /*height: 500px;*/
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.reply-dialog{
+  padding: 0px !important;
+  /*height: 100%;*/
+  /*height: 500px;*/
+  height:auto;
 }
 
 .modal-content{
@@ -39,7 +50,6 @@ hr {
   border-radius: 0px !important;
   height: 90%; 
 }
-
 
 .createContribution{
     width: 70% !important;
@@ -168,3 +178,13 @@ tags-input .tags{
    display: inline-block;
    width: 100%;
  }
+
+/*Hide the scrollbar*/
+::-webkit-scrollbar {
+    width: 0px;  /* remove scrollbar space */
+    background: transparent;  /* optional: just make scrollbar invisible */
+}
+/* optional: show position indicator in red */
+/*::-webkit-scrollbar-thumb {
+    background: #FF0000;
+}*/
