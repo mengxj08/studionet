@@ -191,7 +191,7 @@ angular.module('studionet')
 
         templateUrl: "/user/templates/createContributionModal.html",
         controller: "CreateContributionCtrl",
-        scope: $scope
+        scope: $scope.open
 
       }).then(function(modal) {
           // activate modal
@@ -201,45 +201,44 @@ angular.module('studionet')
 
   var showDetailsModal = function(data, clickedContributionId) {
 
-      ModalService.showModal({
-        templateUrl: "/user/templates/home.graphView.modal.html",
-        controller: "DetailsModalCtrl",
-        scope: $scope
-      }).then(function(modal) {
-        modal.element.modal({
-          backdrop: 'static'
-        });
+    ModalService.showModal({
+      templateUrl: "/user/templates/home.graphView.modal.html",
+      controller: "DetailsModalCtrl",
+      scope: $scope.details
+    }).then(function(modal) {
+        modal.element.modal({   backdrop: 'static' });
         modal.scope.setData(data, clickedContributionId);
-      });
+    });
+
   };
 
   $scope.filterToggle = function(){
 
-      if($scope.filterModal == undefined){
-          ModalService.showModal({
+    if($scope.filterModal == undefined){
+      
+        ModalService.showModal({
 
-            templateUrl: "/user/templates/filterModal.html",
-            controller: "FilterCtrl", 
-            scope: $scope
+          templateUrl: "/user/templates/filterModal.html",
+          controller: "FilterCtrl", 
+          scope: $scope.filter
 
-          }).then(function(modal) {
+        }).then(function(modal) {
 
-              // activate modal
-              modal.element.modal({ backdrop: 'static' });
+            // activate modal
+            modal.element.modal({ backdrop: 'static' });
 
-              /// set data
-              modal.scope.init();
+            /// set data
+            modal.scope.init();
 
-              $scope.filterModal = modal; 
+            $scope.filterModal = modal;
 
-          });
+        });
+    }
+    else{
+       $scope.filterModal.element.modal();
+    }
+
         
-      }
-      else{
-          console.log($scope.filterModal.element);
-          $scope.filterModal.element.show();
-      }
-
   }
 
 }])

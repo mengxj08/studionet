@@ -15,6 +15,8 @@ angular.module('studionet')
             $('body').removeClass('modal-open');
             $('.modal-backdrop').remove();
 
+            console.log("Create Contribution Modal Closed");
+
       };
 
       // for the new contribution

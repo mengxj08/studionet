@@ -26,12 +26,15 @@ angular.module('studionet')
   //  the button has the 'data-dismiss' attribute.
   $scope.close = function() {
 
+
+      $('body').removeClass('modal-open');
+      $(".modal").remove();
+      $('.modal-backdrop').remove();
+      $('.modal-backdrop.in').remove();
+
       // increase viewcount for contribution
       console.log("Updating view count");
       contribution.updateViewCount($scope.activeContribution);
-
-      $(".modal").remove();
-      $('.modal-backdrop').remove();
     
   };
 

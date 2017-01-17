@@ -58,10 +58,14 @@ angular.module('studionet')
           $scope.groups.map( function(group) { group.selected = false; return group; });
 
       };
+      resetDefaults();
 
       var populateTags = function(){
 
         return tags.tags.filter( function(tag){
+
+            if (tag.isExpanded != undefined)
+                return tag;
 
             var access = true; 
 
@@ -93,10 +97,16 @@ angular.module('studionet')
           // if group has parentId, add group to that parent's children array
           var all_groups =  groups.groups.map( function(group){
 
+              // check if this procedure as already been done before
+              // todo: find better way
+              if (group.type != undefined)
+                  return group;
+
               // check if group is the supernode because supernode has no parent
               // or if group is not accessible by user
               if(group.id == supernode.group || (group.requestingUserStatus == null && group.restricted == true))
                 return group;
+
 
               var parent = group_hash[group.parentId];
               
@@ -123,7 +133,12 @@ angular.module('studionet')
       }
 
       var populateUsers = function(){
+
           return users.users.map(function(user){
+
+              if (user.type != undefined)
+                  return user;
+
               user.type = "user";
               user.parentId = null; 
               user.isExpanded = false; 
@@ -172,17 +187,30 @@ angular.module('studionet')
       });
 
       var deselectListItem = function(value, list){
+          
           var selectedList = "selected" + list.substr(0, 1).toUpperCase() + list.substr(1, list.length);
           $scope[selectedList] = $scope[selectedList].filter( function(ele){
               return ele.id != value;
           });
 
-          console.log($scope["selected" + list.substr(0, 1).toUpperCase() + list.substr(1, list.length) ]);
+          //console.log($scope["selected" + list.substr(0, 1).toUpperCase() + list.substr(1, list.length) ]);
 
           $scope[list] = $scope[list].map( function(ele){
-              if(ele.id == value)
-                ele.selected =  false; 
-               return ele;
+                if(ele.id == value)
+                  ele.selected =  false; 
+
+                // check if element has children (for groups)
+                if(ele.children !== undefined){
+
+                    ele.children.map(function(child){
+                      if(child.id == value)
+                        child.selected = false;
+                      return child;
+                    })
+                
+                }
+
+                return ele;
           });
       
       }
@@ -319,10 +347,7 @@ angular.module('studionet')
       /*
        *  Init function that refreshes all lists in the filters
        */
-      $scope.init = function(){
-
-          // filters to default values
-          resetDefaults();
+      $scope.init = function(reset){
 
           // populate filters 
           $scope.tags = $filter('orderBy')(populateTags(), [ "name", "-contributionCount" ]) ;
@@ -331,13 +356,13 @@ angular.module('studionet')
 
       }
 
-      $scope.close = function() {
+      $scope.closeFilter = function() {
 
-        $('body').removeClass('modal-open');
-        $('.modal-backdrop').remove();
+          $('body').removeClass('modal-open');
+          $('.modal-backdrop').remove();
+          $('.modal-backdrop.in').remove();
 
-        $element.hide();
-
+          console.log("Closed Filters");
       };
 
 }]);
