@@ -205,32 +205,20 @@ angular.module('studionet')
 
   var showDetailsModal = function(data, clickedContributionId) {
 
-      $rootScope.$broadcast(BROADCAST_CONTRIBUTION_CLICKED, {'data': data, 'clickedContributionId': clickedContributionId} );
-      
-
-
-/*    if($scope.detailsModal != undefined){
-        $scope.detailsModal.scope.setData(data, clickedContributionId);
-        $scope.detailsModal.element.modal();
-        console.log("Show the existing modal again");
-    }
-    else{
-
-      console.log("Creating new modal");
+      // show the details modal
       ModalService.showModal({
-          templateUrl: "/user/templates/home.graphView.modal.html",
+          templateUrl: "/user/templates/contributionDetailsModal.html",
           controller: "DetailsModalCtrl",
           scope: $scope
       }).then(function(modal) {
+
           modal.scope.setData(data, clickedContributionId);
+
           modal.element.modal({
             backdrop: 'static'
           });
-          $scope.detailsModal = modal;
+          
       });
-
-    }*/
-
 
   };
 

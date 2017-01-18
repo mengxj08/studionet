@@ -84,7 +84,7 @@ var COSE_GRAPH_LAYOUT = {
   ready: function(){ },
 
   // Called on `layoutstop`
-  stop: function(){   },
+  stop: function(){ reposition()  },
 
   // Whether to animate while running the layout
   animate: true,
@@ -271,7 +271,7 @@ var graph_style = {
               'text-valign': 'center',
               //'text-margin-y': '0.1em',
               'font-size': computeFontFn,
-              'color': '#FF71ED',
+              'color': '#474547',
               'line-height': '1em',
               'font-weight': '400',  
               'text-wrap': 'wrap',
@@ -284,18 +284,21 @@ var graph_style = {
           .selector('edge')
             .css({
               'curve-style': 'haystack',
-              'line-color': '#DDD6D6',
+              'line-color': '#303030',
               'width': 0.7,
               'font-size': '0.3em',
             })     
 
           .selector('.selected')
             .css({
-              'background-color' : '#F0F311 !important',
-              'border-width': '1',
-              'border-color': '#FFFFFF',
+              'background-color' : '#F0F311',
+              'border-width': '5',
+              'border-color': '#A4A4A4',
               'opacity': 1,
-              'text-opacity': 1
+              'text-opacity': 1,
+              'content' : 'data(name)',
+              'font-size': '3.5em',
+              'text-valign': 'top',
             })
 
           .selector('.highlighted')
@@ -540,7 +543,7 @@ var reposition = function(){
       var initX = $(window).height()/2;
       var initY = $(window).width()/2;
 
-      makeGalaxy( topNodes,  radius, initX, initY, undefined, 0, 2);
+      makeGalaxy( topNodes,  radius, initX, initY, undefined, 0, 4);
 
       arrangeIsolatedNodes(   graph.nodes().filter(function(i, node){
             return ( node.incomers().length <= 1 && node.outgoers().length <= 1);

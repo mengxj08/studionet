@@ -18,12 +18,6 @@ angular.module('studionet')
   $scope.clickedContribution = null;
   $scope.contributionTree = [];  
 
-  // --- Receive Broadcast and display the contribution 
-  $scope.$on( BROADCAST_CONTRIBUTION_CLICKED, function(event, args) {
-    console.log(args.data, args.clickedContributionId)
-      $scope.setData(args.data, args.clickedContributionId);
-  });
-
   // setting data from scope calling ModalService
   $scope.setData = function(data, activeContribution){
       
@@ -31,11 +25,6 @@ angular.module('studionet')
       $scope.clickedContribution = activeContribution;  // contribution clicked initially
       $scope.activeContribution = activeContribution; // contribution currently in view (when scroll is implemented)
 
-      $scope.$apply();
-
-      // open the modal
-      // TODO: change to directive
-      $('#detailsModal').modal('show');
   }
 
   //  This close function doesn't need to use jQuery or bootstrap, because
