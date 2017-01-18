@@ -54,7 +54,8 @@ router.route('/')
       restrictedParam: req.body.restricted,
       groupParentIdParam: parseInt(req.body.groupParentId),
       userIdParam: parseInt(req.user.id),
-      dateCreatedParam: Date.now()
+      dateCreatedParam: Date.now(),
+      tagParam: "@" + req.body.name
     };
 
     var countQuery = [
@@ -92,7 +93,7 @@ router.route('/')
         'WITH g',
         'MATCH (u:user) WHERE id(u)= {userIdParam}',
         'CREATE UNIQUE (g)-[r:MEMBER {role: "Admin", joinedOn: ' + params.dateCreatedParam + '}]->(u)',
-        'CREATE (t:tag {name: {nameParam}, createdBy: {userIdParam}})',
+        'CREATE (t:tag {name: {tagParam}, createdBy: {userIdParam}})',
         'WITH g, t, u',
         'CREATE UNIQUE (g)-[r1:TAGGED {createdBy: ' + parseInt(req.user.id) + '}]->(t)',
         'CREATE UNIQUE (u)-[:CREATED {createdOn: ' + Date.now() + '}]->(t)'

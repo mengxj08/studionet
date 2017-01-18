@@ -1,5 +1,5 @@
 angular.module('studionet')
-.controller('DetailsModalCtrl', ['$scope', '$http', 'profile', 'users', '$location', '$anchorScroll', 'contribution', 'contributions', 'relationships', 'tags', function($scope, $http, profile, users, $location, $anchorScroll, contribution, contributions, relationships, tags){
+.controller('DetailsModalCtrl', ['$scope', '$http', 'profile', 'users', '$location', 'attachments', 'contribution', 'contributions', 'relationships', 'tags', function($scope, $http, profile, users, $location, attachments, contribution, contributions, relationships, tags){
 
   // general 
   $scope.user = profile.user;
@@ -7,6 +7,10 @@ angular.module('studionet')
   $scope.relationships = relationships.relationships;
   $scope.contributions = contributions.contributions;
   $scope.users = users.users.hash();
+
+  //shared parameters in different sub scopes
+  $scope.showReplyModal = null; //show the replying modal
+  $scope.contributionData = null; //store the data of replying information
 
   $scope.alert = {}; 
   
@@ -26,13 +30,14 @@ angular.module('studionet')
   //  the button has the 'data-dismiss' attribute.
   $scope.close = function() {
 
+      $('body').removeClass('modal-open');
+      $('.modal-backdrop').remove();
+
+      console.log("View Contribution Modal Closed");
+
       // increase viewcount for contribution
-      console.log("Updating view count");
       contribution.updateViewCount($scope.activeContribution);
 
-      $(".modal").remove();
-      $('.modal-backdrop').remove();
-    
   };
 
   // PlugIns Functionality
@@ -61,19 +66,46 @@ angular.module('studionet')
 
   // Attachments
   $scope.getThumb = function(contributionId, attachment){
-    if(attachment.thumb)
-      return "/api/contributions/" + contributionId + /attachments/+ attachment.id + "/thumbnail";
-    else
-      return "http://placehold.it/200x200"; // replace with image for particular extension
-
+      if(attachment.thumb)
+        return "/api/contributions/" + contributionId + /attachments/+ attachment.id + "/thumbnail";
+      else
+        return "http://placehold.it/200x200"; // replace with image for particular extension
   }
 
+  //Uploaded files
+  $scope.uploadFiles = function (files, contributionData){
+      console.log(files.length + " file(s) have been choosen.");
+      if(files){
+          files.forEach(function(file){
+                contributionData.attachments.push(file);
+          });
+      }   
+  }
 
+  //remove files
+  $scope.removeFiles = function (attachment, contributionData) {
+        var index = contributionData.attachments.indexOf(attachment);
+        if(index > -1){
+              contributionData.attachments.splice(index, 1);
+        }
+  }
+
+  $scope.removeFilesAndfromDB = function (attachment, contributionData){
+        attachments.deleteAttachmentbyId(attachment.id, contributionData.oldData.id)
+          .then(function(res){
+            var index = contributionData.attachments.indexOf(attachment);
+            if(index > -1){
+                  contributionData.attachments.splice(index, 1);
+            }
+          }, function(error){
+            alert('[WARNING]: Deleting attachment is unsuccessful');
+          })
+  }
   // -------- Contribution Viewer Functionality (Read, Update, Delete)
   
   // REPLY - QUESTION, COMMENT, ANSWER, RESOURCE, RELATED_TO (generic) 
   // Should have different buttons for the above relationships instead of dropdown
-  $scope.createContribution = function( createContribution ){
+  $scope.createContribution = function(createContribution){
 
         if(!createContribution) return;
 
@@ -97,37 +129,52 @@ angular.module('studionet')
 
 
   $scope.updateContribution = function(updateContribution){
-    
+    if(!updateContribution.title || !updateContribution.body){
+      alert("Please input the title or content of the contribution!");
+      return;
+    }
+
     updateContribution.tags = [];
     updateContribution._tags.map(function(t){
       updateContribution.tags.push(t.name);
     });
     delete updateContribution._tags;
     
-    //console.log("This is output from update contribution", updateContribution);
+    //Assign other properties from oldContribution to the new updateContribtuion
+    updateContribution.id = updateContribution.oldData.id;
+    updateContribution.contentType = updateContribution.oldData.contentType;
+    updateContribution.ref = updateContribution.oldData.ref;
+    delete updateContribution.oldData;
 
+
+    //Remove the attachments that have already existed in the database
+    //Newly chosen attachment should not have the 'attachment' property
+    for(var i = 0; i < updateContribution.attachments; i++){
+      if(updateContribution.attachments[i].attachment){
+        updateContribution.attachments.splice(i--, 1);
+      }
+    }
+
+    console.log(updateContribution);
     contribution.updateContribtuion(updateContribution).then(function(res){
-          
+          console.log("success");
           $scope.alert.success = true; 
           $scope.alert.successMsg = "Contribution Id : " + updateContribution.id + " has been updated.";
 
     }, function(error){
+          console.log("failure");
           $scope.alert.error = true; 
           $scope.alert.errorMsg = error.data;
-    }); 
+    });
   }
-
 
   // Delete the contribution
   $scope.deleteContribution = function(contributionId){
-
       contribution.deleteContribution(contributionId).then(function(){
-
       }, function(error){
           alert("Error occured while deleting contribution")
       })
   }
-
 
   // deprecated
   $scope.createLink = function(linkData){
@@ -160,10 +207,9 @@ angular.module('studionet')
         })
 	}
 
-
-  $scope.submitContribution = function(showCreateContribution,showLinkingContribution,showUpdateContribution,contributionData,linkData){
-    if(showCreateContribution)
-      $scope.createContribution(contributionData);
+  $scope.submitContribution = function(showLinkingContribution,showUpdateContribution,contributionData,linkData){
+    // if($scope.showReplyModal)
+    //   $scope.createContribution(contributionData);
 
     if(showLinkingContribution)
       $scope.createLink(linkData);
@@ -172,6 +218,18 @@ angular.module('studionet')
       $scope.updateContribution(contributionData);
   }
 
+// Reply to an exising contribution
+  $scope.resetConbutionData = function (targetedContribution){
+    $scope.showReplyModal = true; 
+    $scope.contributionData = {};
+    $scope.contributionData.tags = [];
+    $scope.contributionData.attachments = [];
+    $scope.contributionData.ref = targetedContribution.db_data.id
+  }
+
+  $scope.replyingContribution = function (contributionData){
+    $scope.createContribution(contributionData);
+  }
 
   /*
    * Contribution Tree Related
@@ -183,6 +241,5 @@ angular.module('studionet')
       // call $anchorScroll()
       $anchorScroll();
   };
-
 
 }]);

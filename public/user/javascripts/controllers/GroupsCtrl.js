@@ -11,7 +11,7 @@ angular.module('studionet')
 	 */
 	$scope.user = profile.user;
 	$scope.groups = groups.groups;
-	$scope.users = users.usersById();
+	$scope.users = users.users.hash();
 
 	$scope.graph = {};
 
@@ -131,12 +131,12 @@ angular.module('studionet')
 		});*/
 
 		// takes either data from filters or contribution.graph data
-		$scope.graph = STUDIONET.GRAPH.makeGraph( graph_data || groups.graph, 'user-graph' );
+/*		$scope.graph = STUDIONET.GRAPH.makeGraph( graph_data || groups.graph, 'user-graph' );
 		var cy = $scope.graph;
 
 		cy.on('mouseover','node', function(evt){		onHover(evt);		});
 		cy.on('mouseout','node', function(evt){				});
-		cy.on('tap','node', function(evt){		onTap(evt);		});
+		cy.on('tap','node', function(evt){		onTap(evt);		});*/
 
 	}
 
@@ -188,11 +188,8 @@ angular.module('studionet')
 // Group Creation Controller
 angular.module('studionet').controller('CreateGroupCtrl', ['$scope', 'groups', 'supernode', function($scope, groups, supernode){
 
-	$scope.groupCreated = false; 
-	$scope.groupError = false;
-
 	$scope.newGroupId = undefined;
-
+	$scope.alert = { success: false, error: false };
 
 	$scope.group = {
 		groupParentId: supernode.group
@@ -206,13 +203,10 @@ angular.module('studionet').controller('CreateGroupCtrl', ['$scope', 'groups', '
 			// function present in container scope
 			console.log(data);
 			$scope.newGroupId = data.id; 
-			$scope.$parent.refreshGraph();
 			showSuccess();
 		
 		}, function(error){
-
-			showError();
-
+			showError(err);
 		});
 
 	}
@@ -233,14 +227,12 @@ angular.module('studionet').controller('CreateGroupCtrl', ['$scope', 'groups', '
 	}
 
 	var showSuccess = function(){
-
-		$scope.groupCreated = true;
-		$scope.groupError = false;
-		
+		$scope.alert.success = true;
+		$scope.alert.successMsg = "Group Created Successsfully";
 	}
 
-	var showError = function(){
-		$scope.groupError = true;
+	var showError = function(err){
+		$scope.alert.errorMsg = err;
 	}
 
 

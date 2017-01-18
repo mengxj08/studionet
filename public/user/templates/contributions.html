@@ -14,36 +14,82 @@
   <div id='cy'></div>
 
   <div class='info-pane'>
+
     <!-- Zoom Level -->
-    <h5>Zoom Level</h5> <h6>{{zoomLevel}} &nbsp; %</h6>
+    <h5>Zoom Level</h5> <h6>{{zoomLevel}} &nbsp; %</h6> 
+
   </div>
   
   <div class='graph-controls'>
 		<!-- reset graph -->
 		<i class="graph-nav-control icon fa fa-arrows-alt" ng-click='resetGraph()' uib-tooltip='Fit Graph'  tooltip-placement='left'></i>
 
-    <!-- filter toggle -->
-<!--     <i ng-class="filterVisible ? 'graph-nav-control icon fa fa-search btn-active' : 'graph-nav-control icon fa fa-search'" 
-       ng-click='filterToggle()' uib-tooltip='{{filterVisible ? "Clear Filters" : "Filter Mode"}}'  tooltip-placement='left'></i> -->
-
-    <i class="graph-nav-control icon fa fa-search"
-       ng-click='filterToggle()' uib-tooltip='Filter'  tooltip-placement='left'></i>
+    <!-- Using native bootstrap modal functionality - faster -->
+    <!-- <i class="graph-nav-control icon fa fa-search" data-toggle="modal" data-target="#filterModal" uib-tooltip='Filter'  tooltip-placement='left'></i> -->
+    <i class="graph-nav-control icon fa fa-search" data-toggle="modal" data-target="#filterModal" uib-tooltip='Filter'  tooltip-placement='left'></i>
 
 		<!-- create a contribution -->
 		<i class="graph-nav-control icon fa fa-plus" ng-click='openNewContributionModal()' uib-tooltip='New Contribution'  tooltip-placement='left'></i>
   </div>
+
+
    
 </div>
 
-<!-- Modal -->
-<ui-view></ui-view>
+<div class='filter-controls'>
 
+  <div id='filter-shortcuts' ng-show='filters.length>0'>
+    <h5>Filters Active </h5> <hr/>
+    <h6 id='filter-nodes-count'>{{matchingNodes.length}} matching nodes found.</h6> <hr/>
+    <div class='filter-shortcut-container' ng-repeat="filter in filters">
+        
+        <!-- if filter is an array of values -->
+        <div ng-if='filter.type == "Array"'>
+            <h6 id='filter-nodes-count'>{{ filter.value.length }} {{filter.name}}(s) selected</h6>
+            <h6 class='clear-filter-shortcut' ng-repeat="fval in filter.value track by fval.id" ng-click="clearFilter(filter.code, fval.id)">{{fval.name}}</h6>
+        </div>
+        
+        <!-- if filter is a range -->
+        <div ng-if='filter.type == "Range"'>
+            <h6 id='filter-nodes-count' >{{filter.name}} selected</h6>
+            <h6 class='clear-filter-shortcut' ng-click="clearFilter(filter.code)">{{filter.value}}</h6>
+        </div>
+        
+        <hr/>
+    </div>
+  </div>
 
-
+</div>
 
 
 <!-- Chips Template for Create / Edit / Reply Contributions -->
 <script type="text/ng-template" id="tags-template">
-  <span>{{data.name}} ( <i>{{data.contributionCount}}</i> )</span>
+  <div style="border-bottom: 1px solid #C2BDBD; margin-bottom: 3px;">
+        <i class="data.restricted ? icon fa fa-lock : icon fa fa-unlock" ng-if='data.group'></i> 
+        <i class="icon fa fa-tag" ng-if='!data.group'></i> 
+        <span ng-if='!data.group'>#</span>{{data.name}}( <small><i>{{data.contributionCount}} contributions</i></small> )
+  </div>
 </script>
+
+<!-- Chips Template for Create / Edit / Reply Contributions -->
+<script type="text/ng-template" id="tag-item-template">
+  <div>
+        <i class="data.restricted ? icon fa fa-lock : icon fa fa-unlock" ng-if='data.group'></i> 
+        <i class="icon fa fa-tag" ng-if='!data.group'></i> 
+        <span ng-if='!data.group'>#</span>{{data.name}}
+  </div>
+</script>
+
+
+
+
+
+<!--- Filter Modal -->
+<ng-include src="'templates/filterModal.html'"></ng-include>
+
+<!--- Profile Modal  -->
+<!-- Should be placed here because this page gets loaded after resolving all promises for required data -->
+<ng-include src="'templates/profile.html'" ></ng-include>
+
+
 

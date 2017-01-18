@@ -1,29 +1,28 @@
-<!--- 'Create' Modal -->
-<div class="modal fade" id="createGroupModal" tabindex="-1" role="dialog">
+
+<div class="modal fade createContribution" role="dialog">
+  
   <div class="modal-dialog">
-    
-   
+
+    <!-- Modal content-->
     <div class="modal-content">
-      <div class="modal-header">
-        <div class="modal-title">New Group</div>
-      </div>
-      <div class="modal-body">
 
-        <!-- alert -->
-        <div class="alert alert-danger" role="alert" id='errorMsg' ng-show='groupError'>
-                <strong>Oh snap! </strong>Change the group name and try submitting again.
-            </div>
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" ng-click='close()'>&times;</button>
+          <div class="modal-title">New Group</div>
+        </div>
 
-        <div class="alert alert-success" role="alert" id='successMsg' ng-show='groupCreated'>
-                <strong>Awesome! </strong>You created a group! 
-        </div>     
+        <div class="modal-body">
 
-        <!-- group creation form -->
-        <div class='row' ng-hide='groupCreated'>
-          <!-- Body for Creating -->         
-          <div class="section">
-              <div class="section-body">
+          <!-- alert -->
+          <div class="alert alert-danger" role="alert" id='errorMsg' ng-show='alert.error'>
+                  <strong>Oh snap! </strong>{{ alert.errorMsg }}
+          </div>
 
+          <div class="alert alert-success" role="alert" id='successMsg' ng-show='alert.success'>
+                  <strong>Awesome! </strong>{{ alert.successMsg }}
+          </div>   
+
+          <div class='editor' ng-hide='alert.success'>
                 <div class="form-group">
                   <div class="col-sm-12">
                     <label class="control-label">Name</label>
@@ -60,46 +59,20 @@
                     </div>
                   </div>
                 </div>
-
-
-              </div>
           </div>
 
         </div>
 
-      </div>
-
-      <div class="modal-footer">
-
-          <div class='button-group' ng-hide='groupCreated'>
-              <!-- buttons -->
-              <!-- Save -->
-              <button type="button" class="btn btn-default modal-button" ng-click=createGroup() ng-disabled='!(group.name && group.restricted)'>
-                  Create
-              </button>
-
-              <!-- Cancel -->
-              <button type="button" class="btn btn-default modal-button" data-dismiss="modal">
-                Cancel
-              </button>
-          </div>
-
-          <div class='button-group' id='groupSuccess' ng-show='groupCreated'>
-              <!-- buttons -->
-              <!-- Edit -->
-              <button type="button" class="btn btn-default modal-button" ng-click=editGroup() data-dismiss="modal">
-                  Edit Group
-              </button>
-
-              <!-- Cancel -->
-              <button type="button" class="btn btn-default modal-button" data-dismiss="modal">
-                Close
-              </button>
-          </div>
-
-      </div>
-
+        <div class="modal-footer">
+          <center>
+          <button type="button" class="btn btn-default modal-button" ng-if='!alert.success' ng-click='createGroup()' ng-disabled="!(group.name && group.restricted)">Submit</button>
+          <button type="button" class="btn btn-default modal-button" data-dismiss='modal' ng-click='close()'>{{ alert.success ? "Close" : "Cancel" }}</button>
+          </center>
+        </div>
+    
     </div>
 
   </div>
+
 </div>
+

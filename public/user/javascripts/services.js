@@ -21,7 +21,8 @@ angular.module('studionet')
 		user: {},
 		groups: [],
 		contributions: [],
-		groupsById: {}
+		groupsById: {},
+
 	};
 
 	o.getUser = function(){
@@ -33,7 +34,7 @@ angular.module('studionet')
 
 	// redundant
 	o.getGroups = function(){
-		console.warn("Shouldn't be using this");
+		console.warn("Warning: Usage of Profile Groups in Services");		
 		return $http.get('/api/profile/groups').success(function(data){
 			angular.copy(data, o.groups);
 		});
@@ -41,7 +42,7 @@ angular.module('studionet')
 
 	// redundant
 	o.getContributions = function(){
-		console.warn("Shouldn't be using this");		
+		console.warn("Warning: Usage of Profile Contributions in Services");		
 		return $http.get('/api/profile/contributions').success(function(data){
 			angular.copy(data, o.contributions);
 		});
@@ -306,16 +307,10 @@ angular.module('studionet')
 
 			console.log("new group created", data);
 			
-			// add the group to the user profile
-			profile.groups.push({ id: data.id , name: data.name , role: "Admin" })
+			// refresh groups, the user
+			o.getAll();
 
-			// add group to groups array
-			o.groups.push(data);
-			
-			// correct nodes for graph
-			o.graph.nodes = o.groups;
-
-			// handle links for subgroups
+			profile.getUser();
 
 			return data; 
 		
@@ -511,9 +506,32 @@ angular.module('studionet')
 	return o;
 }])
 
+.factory('attachments', ['$http', function($http){
+	var o = {
+		attachments: []
+	}
+
+	o.deleteAttachmentbyId = function(contributionId, attachmentId){
+		return $http.delete('/api/contributions/'+contributionId+'/attachments/'+attachmentId)
+		.success(function(res) {
+			//log success
+			console.log("attachment id:" + attachmentId + " has been deleted");
+
+			// send success
+			return;  
+	    })
+	    .error(function(error){
+			throw error;
+	    })
+	}
+
+	return o;
+}])
+
 .factory('graph', ['$http', function($http){
 	
 	var o = {
+		container : {},
 		activeNode: {},
 		url: "/graph/all",  // either graph/all or filters Url
 		graph_data: {}, // graph-data
@@ -545,11 +563,16 @@ angular.module('studionet')
 		notifyObservers();
 	}
 
+
 	// get the graph from the URL
 	o.getGraph = function( container ){
 
+		o.container = container;
+
 		return $http.get(o.url).success(function(data){
 			
+			filterUrl = "";
+
 			// copy data
 			angular.copy(data, o.graph_data);
 			console.log("Graph Refreshed");
@@ -582,7 +605,7 @@ angular.module('studionet')
 			o.activeNode = node;
 
 		if( node.isNode == undefined )
-		node = o.graph.getElementById(node);
+			node = o.graph.getElementById(node);
 
 		o.graph.batch(function(){
 		o.graph.elements()
@@ -602,9 +625,83 @@ angular.module('studionet')
 
 	}
 
-	o.resetGraph = function(){
-	  o.graph.fit();
-	  removeAdditionalStyles();
+	o.markNode = function( node ){
+
+		o.graph.batch(function(){
+		o.graph.elements()
+			.removeClass('highlighted')
+			.removeClass('highlighted')
+			.removeClass('marked')
+			.addClass('faded');
+
+		if(node instanceof Array && node.length == 0){
+			o.graph.elements().addClass('unmarked');
+		}
+
+
+		// Array of Ids
+		if(node instanceof Array && node.length > 0){
+
+			var selector = [];
+			node.map(function(id){
+				selector.push('node[id="' + id + '"]')
+			})
+
+			var selectorQuery = selector.join(", ");
+
+			o.graph.elements().addClass('unmarked');
+
+			o.graph.$(selectorQuery)
+				.removeClass('faded')
+				.removeClass('unmarked')
+				.addClass('marked');
+
+/*			o.graph.$(selectorQuery).predecessors()
+								.removeClass('unmarked')
+								.removeClass('faded')
+								.addClass('marked-parent');
+
+			o.graph.$(selectorQuery).successors()
+							.removeClass('faded')  
+							.removeClass('unmarked')
+							.addClass('marked-children');*/
+
+		}
+
+		// node is either a cytoscape node or an id 
+		if(node.id)
+			o.activeNode = node.id();
+		else
+			o.activeNode = node;
+
+		if( node.isNode == undefined )
+			node = o.graph.getElementById(node);
+
+			node.removeClass('faded')
+				.addClass('marked');
+/*
+			node.predecessors().removeClass('faded')
+								.addClass('marked-parent');
+
+			node.successors().removeClass('faded')  
+							.addClass('marked-children');*/
+
+		});
+
+	}
+
+	o.unmarkNodes = function(){
+
+		o.graph.batch(function(){
+		o.graph.elements()
+			.removeClass('unmarked')
+			.removeClass('marked')
+			.removeClass('marked-children')
+			.removeClass('marked-parent');
+		});
+
+		o.removeAdditionalStyles();
+
 	}
 
 	o.runLayout = function(){
@@ -616,8 +713,6 @@ angular.module('studionet')
 
 	return o;
 }])
-
-
 
 /*
  *   General Function

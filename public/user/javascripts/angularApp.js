@@ -60,7 +60,32 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 					return profile.getUser();
 				}]
 			}
-		});
+		})
+		.state('groups', {
+			url: '/groups',
+			templateUrl: '/user/templates/groups.html',
+			controller: 'GroupsCtrl',
+			resolve: {
+				supernodePromise: ['supernode', function(supernode){
+					return supernode.getSupernodes();
+				}],
+				tagsPromise: ['tags', function(tags){
+					return tags.getAll();
+				}],
+				groupsPromise: ['groups', function(groups){
+					return groups.getAll() && groups.getGraph();
+				}],
+				contributionsPromise: ['contributions', function(contributions){
+					return contributions.getAll();
+				}],
+				usersPromise: ['users', function(users){ 
+					return users.getAll();
+				}],
+				userProfile: ['profile', function(profile){
+					return profile.getUser();
+				}]
+			}
+		})
 
 	$urlRouterProvider.otherwise('/contributions');
 
@@ -73,7 +98,7 @@ app.config(function($provide) {
       	['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'pre', 'quote'],
       	['bold', 'italics', 'underline', 'strikeThrough', 'ul', 'ol', 'undo', 'redo', 'clear'],
       	['justifyLeft', 'justifyCenter', 'justifyRight', 'indent', 'outdent'],
-      	['html', 'insertImage','insertLink', 'insertVideo']
+      	['html','insertLink', 'insertVideo']
   		];
   		return taOptions;
     }]);

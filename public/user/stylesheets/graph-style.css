@@ -38,7 +38,7 @@
   right: 100px;
   bottom: 30px;
 
-  width: 100px; 
+  //width: 100px; 
   height: auto;
 
   padding: 0px 10px;
@@ -65,6 +65,44 @@
 
 }
 
+.filter-controls{
+
+  position: fixed;
+  top: 70px !important; 
+
+  width: auto !important;
+  max-width: 250px;
+  height: auto !important;
+  min-height: 10px;
+  margin-left: 30px !important;
+  margin-right: 30px !important;
+
+  z-index: 3;
+
+  color: #969696;
+}
+
+h6.clear-filter-shortcut{
+  background-color: #4A95EF;
+  color: #274F7F;
+  display: inline-block;
+  margin-right: 10px;
+  padding: 8px;
+  border-radius: 5px;
+}
+
+h6.clear-filter-shortcut:hover{
+  background-color: #4A95EF;
+  cursor: pointer;
+}
+
+h6.clear-filter-shortcut:after{
+  margin-left: 10px;
+  content: "x";
+  font-weight: lighter;
+  color: #6D60EF;
+}
+
 
 .graph-nav-control{
 
@@ -84,6 +122,8 @@
 
   //border: 1px solid black;
 }
+
+
 
 .btn-active{
   background-color: #4A4AEF !important;

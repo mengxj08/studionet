@@ -157,17 +157,6 @@ input[type="checkbox"] .tree-checkbox{
 	float: right;
 }
 
-/*.filter-btn{
-	color: #4A95EF;
-	text-align: center;
-	background-color: white;
-	width: 35px; 
-	height: 35px;
-	line-height: 30px !important;
-	border-radius: 50% !important;
-	margin: 2.5px 10px !important;
-	padding: 0px !important;
-}*/
 .align-right{
 	float: right;
 } 
@@ -180,3 +169,5 @@ input[type="checkbox"] .tree-checkbox{
 .subgroups{
 	margin-left: 20%;
 }
+
+

@@ -1,7 +1,7 @@
 <link rel='stylesheet' href='./stylesheets/filter-style.css' />
 <link rel='stylesheet' href='./stylesheets/accordion.css' />
 
-<!-- Side Nav with Filters -->
+<!-- Modal with Filters -->
 
 <div id='filterPanel' ng-controller="FilterCtrl" ng-init='init();' class="container-fluid" ng-show='filterVisible'>
 
@@ -83,12 +83,12 @@
             <div class="icon"><i class="fa fa-circle" aria-hidden="true"></i></div>
           </div> -->
 
-          <!-- Close Button -->
-          <div class='col-sm-4 filter-btn  align-right' ng-click="$parent.filterToggle();" uib-tooltip='Close Filter' tooltip-placement='bottom'>
+          <!-- Close Button | Data Dismiss -->
+          <div class='col-sm-4 filter-btn  align-right' uib-tooltip='Close Filter' tooltip-placement='bottom'>
             <div class="icon"><i class="fa fa-close" aria-hidden="true"></i></div>
           </div>
 
-          <!-- Filter Button -->
+          <!-- Filter Button | Data Dismiss -->
           <div class='col-sm-4 filter-btn  align-right' ng-click="filterRequest()" uib-tooltip='Filter Graph' tooltip-placement='bottom'>
             <div class="icon"><i class="fa fa-filter" aria-hidden="true"></i></div>
           </div>

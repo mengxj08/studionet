@@ -1,196 +1,159 @@
 <style>
-
-
-.no-margin-padding{
-  margin: 0px !important;
-  padding: 0px !important;
-}
-
-.padding{
-  padding: 20px 0px !important;
-}
-
-.full-height{
-  height: 100%;
-}
-
-
-.full-width{
-  width: 100% !important;
-}
-
-.profile-header{
-  min-height: 200px;
-  width: 100%;
-  padding: 0px 20px; 
-  background-color: #366DAE !important;
-
-  color: white !important;
-}
-
 .profile-img-container{
-  border-radius: 50%; 
-  border: 3px solid #BAB8B8;
+  border-radius: 0px; 
+  border: 1px solid #BAB8B8;
   background-size: cover !important;
   background-position: center !important;
 
-  max-width: 125px; 
-  max-height: 125px;
+  width: 150px; 
+  height: 150px;
+
+  max-width: 150px; 
+  max-height: 150px;
+
+  margin-left: 40px;
 }
 
 .profile-details-container{
   height: 100%; 
-  margin-left: 40px !important;
+  margin-left: 20px !important;
 }
 
 
 h5.tagline{
-  color: #C9C8C8;
+  color: #444444;
 }
-
-.lastlogged{
-  font-size: 10px
-}
-
-.stat{
-  border-right: 1px solid #DDDADA;
-  margin-top: 20px !important;
-}
-
-.stat-name{
-  
-  font-weight: 600;
-
-}
-
-.stat-value{
-
-}
-
-.profile-tabs-nav{
-  position: fixed;
-  height: 60px !important; 
-  background-color: #CFCECE;
-  width: 100%;
-}
-
 
 .profile-tab{
-  width: 33%;
   text-align: center;
-  color: white;
+  text-transform: uppercase;
+  font-size: 14px;
+  line-height: 20px;
 }
-
-.profile-body{
-  overflow-y: hidden;
-}
-
-.profile-close{
-  color: white !important;
-}
-
 
 .profile-tab-content{
+  width: 100%; 
   margin-top: 60px !important; 
   height: 100%; 
   max-height: 80%;
   overflow-y: auto !important;
+
+  font-size: 12px;
 }
 
-.profile-tab-pane{
-  height: 100%; 
+p.details{ 
+  line-height: 35px;
 }
 
-.card{
-  padding: 10px 20px;
-  margin-bottom: 15px;
-  z-index: 100;
-  height: 120px;
-}
-
-.card:hover{
+.hover-effect:hover{
   background-color: #BBBBBB;
 }
 
 </style>
 
 
-<div class="modal fade" role="dialog">
+<div id="profileModal" class="modal fade" role="dialog" ng-controller='ProfileCtrl' ng-init='computeStats()'>
   <div class="modal-dialog">
 
     <!-- Modal content-->
     <div class="modal-content">
-      
-        <div class="modal-header profile-header">
 
-            <button type="button" class="close profile-close" data-dismiss="modal" ng-click='close()' aria-hidden="true">&times;</button>
-
-            <div class='row no-margin-padding full-height padding'>
-              
-              <div class='col-xs-4 profile-img-container' style='background: url({{user.avatar}})'></div>
-
-              <div class='col-xs-8 profile-details-container no-margin-padding'>
-                
-                <div class='row no-margin-padding'>
-                    <h2 class='username no-margin-padding'>{{ user.name }}</h2>
-                    <h5 class='tagline'>Last Logged In: {{user.lastLoggedIn | date: 'medium'}}.</h5>
-                </div>
-                
-                <div class='row stats no-margin-padding'>
-                  <div class='col-sm-4  no-margin-padding stat'>              
-                      <p class='stat-name no-margin-padding'>Total Views</p>
-                      <small class='stat-value'>43</small>
-                  </div>
-
-                  <div class='col-sm-4  no-margin-padding stat'>              
-                      <p class='stat-name no-margin-padding'>&nbsp;&nbsp;&nbsp;Total Ratings</p>
-                      <small class='stat-value'>&nbsp;&nbsp;&nbsp;23</small>
-                  </div>
-
-                  <div class='col-sm-4  no-margin-padding stat'>              
-                      <p class='stat-name no-margin-padding'>&nbsp;&nbsp;&nbsp;Level</p>
-                      <small class='stat-value'>&nbsp;&nbsp;&nbsp;34</small>
-                  </div>
-                </div>
-              </div>
-
-
-            </div>
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" ng-click='close()' aria-hidden="true">&times;</button>
+            <h4 class="modal-title">Your Profile</h4>
         </div>
 
-        <div class="modal-body profile-body">
+        <div class="modal-body">
+
+            <div class='editor'>
+
+                <!-- Profile Details -->
+                <div class='row'>
+                  <div class='col-xs-3 profile-img-container' style='background: url({{user.avatar}})'></div>
+                  <div class='col-xs-7 profile-details-container no-margin-padding'>
+                        <h4 class='username no-margin-padding'>{{ user.name }}</h4>
+                        <h6 class='tagline'>Last Logged In: {{user.lastLoggedIn | date: 'medium'}}</h6>
+                        <hr>
+                        <h6 class='stat-name no-margin-padding'>Total Views:  <b>{{views}}</b> </h6>
+                        <h6 class='stat-name no-margin-padding'>Average Rating:  <b>{{rating}}</b> </h6>
+                        <h6 class='stat-name no-margin-padding'>Level:  <b>{{level}}</b> </h6>
+                  </div>
+                </div>
+
+
+                <hr/>
+
                 <!--tabs -->
-                <div class='row profile-tabs-nav no-margin-padding'>
-                  <ul class="nav nav-tabs full-width">
-                    <li class='profile-tab active'><a data-target="#contributions"  data-toggle="tab">Contributions</a></li>
-                    <li class='profile-tab'><a data-target="#tags"  data-toggle="tab">Tags</a></li>
-                    <li class="profile-tab"><a data-target="#activity" data-toggle="tab">Activity</a></li>
+                <div class='profile-tabs-nav no-margin-padding pull-right'>
+                  <ul class="nav nav-tabs">
+                    <li class='profile-tab active'><a data-target="#contributions"  data-toggle="tab">Contributions ({{ contributions.length }}) </a></li>
+                    <li class='profile-tab'><a data-target="#tags"  data-toggle="tab">Tags ({{ tags.length  }})</a></li>
+                    <li class="profile-tab"><a data-target="#activity" data-toggle="tab">Groups ({{ raw_groups.length }}) </a></li>
                   </ul>
                 </div>
 
                 <!-- tab content-->
-                <div class='row tab-content no-margin-padding profile-tab-content'>
+                <div class='tab-content no-margin-padding profile-tab-content'>
 
-                    <div class='tab-pane profile-tab-pane fade in active row' id="contributions">
-                        <div class='col-sm-4' ng-repeat="contribution in contributions">
-                          <a href='/user/#/contributions/{{contribution.id}}' target=_blank>
-                            <div class='card'>
-                              <h5>{{contribution.title}}</h5><hr>
-<!--                               <h6> {{contribution.rating}} rating  |   {{contribution.views}} views</h6> -->
-                            </div>
-                          </a>
+                    <div class='tab-pane profile-tab-pane fade in active' id="contributions">
+                        <div class='col-sm-12 hover-effect' ng-repeat="contribution in user.contributions | orderBy : '-views' ">
+                          <div class='col-sm-4'>
+                            <h5><a href='/user/#/contributions/{{contribution.id}}' target=_blank>{{ contributionsRef[ contribution.id ].title }}</a></h5>
+                          </div>
+                          <div class='col-sm-8'>
+                            <p class='details'>Views: {{ contribution.views }} | Rating: {{ contribution.rating }} from {{ contribution.rateCount }} ratings</p>
+                          </div>
                         </div>
                     </div>
 
                     <div class='tab-pane profile-tab-pane fade in' id="tags">
-                        <b> Lorem ipsum Irure aute sunt eu officia commodo nulla ut amet enim in reprehenderit. </b>
+                        <div class='col-sm-12 hover-effect' ng-repeat="tag in tags | filter: {createdBy : user.id}">
+
+                          <div class='col-sm-5'>
+                            <h5>{{ tag.name }}</h5>
+                          </div>
+                          <div class='col-sm-7'>
+                             <p class='details'>Number of Contributions: {{ tag.contributionCount }}</p>
+                          </div>
+                          
+                        </div>
                     </div>
 
                     <!-- Content -->
                     <div class='tab-pane profile-tab-pane fade in' id="activity">
-                        <b> Lorem ipsum Irure aute sunt eu officia commodo nulla ut amet enim in reprehenderit. </b>
+
+                        <button class='btn btn-default' ng-click='createGroup()'><i class="icon fa fa-pencil"></i>Create a New Group</button>
+
+                        <div class='col-sm-12 hover-effect' ng-repeat="group in groups">
+                          <hr>
+                          <div class='col-sm-9'>
+                            <h5>{{ group.name }}</h5>
+                            {{ group.description.substr(0, 100) + "..." }}{{group.requestingUserStatus}}
+                          </div>
+                          <div class='col-sm-3'>
+                              <small>Role: {{ group.requestingUserStatus ? group.requestingUserStatus : "Not a Member of this group"}}</small>
+                              <h6 class='tagline'>Joined On: {{group.joinedOn | date: 'medium'}}</h6>
+                              <i class="icon fa fa-users" ng-if='group.requestingUserStatus="Admin"'></i> 
+                              <i class="icon fa fa-remove" ng-if='group.requestingUserStatus="Admin"'></i> 
+                              <i class="icon fa fa-user-times" ng-if='!group.requestingUserStatus="Member"'></i> 
+                              <i class="icon fa fa-user-plus" ng-if='!group.requestingUserStatus'></i> 
+                          </div>
+
+                        </div>
+
                     </div>
                 </div>
+
+            </div> 
+
+
+        </div>
+
+        <div class="modal-footer">
+          <center>
+          <button type="button" class="btn btn-default modal-button" ng-click='editProfile()'>Edit Profile</button>
+          <button type="button" class="btn btn-default modal-button" data-dismiss='modal' ng-click='close()'>{{ alert.success ? "Close" : "Cancel" }}</button>
+          </center>
         </div>
 
     </div>

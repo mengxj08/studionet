@@ -1,13 +1,41 @@
+var GRAPH_CONTAINER = document.getElementById('cy');
+
+var BROADCAST_FILTER_ACTIVE = "filter-started";
+var BROADCAST_CLEAR_FILTER = "filter-cleared";
+var BROADCAST_CLEAR_ALL_FILTERS = "filter-clear-all";
+
+
 angular.module('studionet')
 
 /*
  *  Main Contribution Graph Page
  * 
  */
-.controller('ContributionsCtrl', ['$scope', '$stateParams', 'graph', 'users', 'supernode', 'ModalService', 'contribution', function($scope, $stateParams, graph, users, supernode, ModalService, contribution){
+.controller('ContributionsCtrl', ['$scope', '$stateParams', '$rootScope', 'graph', 'users', 'supernode', 'ModalService', 'contribution', function($scope, $stateParams, $rootScope, graph, users, supernode, ModalService, contribution){
 
-  // Initializations
-  $scope.filterStatus = false; 
+  // ---------------- Filters
+  $scope.filters = [];
+  $scope.matchingNodes = [];
+
+  // when filter is active
+  $scope.$on( BROADCAST_FILTER_ACTIVE, function(event, args) {
+      $scope.matchingNodes = args.nodes;
+      $scope.filters = args.data;
+  });
+
+  // when filter is cleared
+  $scope.$on( BROADCAST_CLEAR_ALL_FILTERS, function(event, args) {
+      $scope.matchingNodes = [];
+      $scope.filters = [];
+  });
+
+
+  $scope.clearFilter = function(code, optional_value){
+    ///$scope.filterModal.scope.clearFilterFromGraph( null, { 'code': code, 'value': optional_value } );
+    $rootScope.$broadcast(BROADCAST_CLEAR_FILTER, { 'code': code, 'value': optional_value });
+  }
+  
+
 
   // ----------------- Graphs
   // First Initialization of the graph on page-refresh
@@ -20,11 +48,14 @@ angular.module('studionet')
          graph.selectNode( $scope.graph.getElementById( $stateParams.contributionId) );
   }
 
+  var onEdgeSingleClick = function(evt){
+    console.log("Edge clicked");
+  }
+
   // Interaction on Single Click
   var onNodeSingleClick = function(evt){
 
         var node = evt.cyTarget;
-        
         // select the node
         graph.selectNode(node);
         
@@ -98,7 +129,7 @@ angular.module('studionet')
 
       // remove supernode
       $scope.graph.getElementById(supernode.contribution).remove();
-
+    
       // Display the entire node name
       $scope.graph.on('mouseover','node', function(evt){
         $scope.graph.elements().removeClass('fullname');
@@ -112,8 +143,11 @@ angular.module('studionet')
 
 
       $scope.graph.on('tap', function(evt){
-        if( !( evt.cyTarget.isNode && evt.cyTarget.isNode() ) )
+        if( evt.cyTarget.isEdge && evt.cyTarget.isEdge() )
+            onEdgeSingleClick(evt);
+        else if( !( (evt.cyTarget.isNode && evt.cyTarget.isNode()) ) ){
             graph.removeAdditionalStyles();
+        }
         else if( evt.cyTarget.isNode && evt.cyTarget.id() == graph.activeNode )
             onNodeDoubleClick(evt);
         else if( evt.cyTarget.isNode() )
@@ -135,7 +169,7 @@ angular.module('studionet')
   graph.registerObserverCallback(updateGraph);
 
 
-  // ------------- Zooming
+  // ------------- Zooming & Nav Controls
   $scope.zoomLevel = "Calibrating...";
   var updateZoom = function(){
     if($scope.graph){
@@ -146,22 +180,14 @@ angular.module('studionet')
   setTimeout(updateZoom, 1000);
   document.getElementById("cy").addEventListener("wheel", updateZoom);
 
-
-  /*
-   * Deprecated - After filter changed to Dialog
-   * Filter Visibilitiy Options controlled in this parent container for filter;
-   */
-  $scope.filterVisible = false;
-  $scope.filterToggle = function(){
-    $scope.filterVisible = !$scope.filterVisible;
+  $scope.resetGraph = function(){
+    $scope.graph.fit();
   }
-
 
 
   //  ------------- Modals
   $scope.openNewContributionModal = function(){
       ModalService.showModal({
-
         templateUrl: "/user/templates/createContributionModal.html",
         controller: "CreateContributionCtrl",
         scope: $scope
@@ -173,6 +199,7 @@ angular.module('studionet')
   } 
 
   var showDetailsModal = function(data, clickedContributionId) {
+
       ModalService.showModal({
         templateUrl: "/user/templates/home.graphView.modal.html",
         controller: "DetailsModalCtrl",
@@ -182,33 +209,11 @@ angular.module('studionet')
           backdrop: 'static'
         });
         modal.scope.setData(data, clickedContributionId);
+        console.log('show the modal');
       });
+
   };
 
-    /*
-   * Filter Visibilitiy Options controlled in this parent container for filter;
-  $scope.filterVisible = false;
-  $scope.filterToggle = function(){
-    $scope.filterVisible = !$scope.filterVisible;
-  }
-   */
-  $scope.filterToggle = function(){
-
-      ModalService.showModal({
-
-        templateUrl: "/user/templates/filterModal.html",
-        controller: "FilterCtrl", 
-        scope: $scope
-
-      }).then(function(modal) {
-
-          // activate modal
-          modal.element.modal({ backdrop: 'static' });
-
-          /// set data
-          //modal.scope.setData(data,clickedContributionId);
-      });
-  }
 
 }])
 

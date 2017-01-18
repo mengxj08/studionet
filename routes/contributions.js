@@ -308,8 +308,7 @@ router.route('/:contributionId')
 
   })
 
-  .put(auth.ensureAuthenticated, contributionUtil.initTempFileDest, multer({storage: storage.attachmentStorage}).array('attachments'), function(req, res){
-
+  .put(auth.ensureAuthenticated, contributionUtil.initTempFileDest, multer({storage: storage.attachmentStorage}).array('attachments'), function(req, res, next){
         req.body.tags = req.body.tags.split(","); //because form data has text string for tags   
 
         var query = [
@@ -473,7 +472,14 @@ router.route('/:contributionId')
           return res.send('Cannot delete contribution that was not created by you');
         }
 
-        deleteAttachmentsFromFileAndDbAsync(parseInt(req.params.contributionId));
+        // Donot allow deletion of non leaf nodes
+        if( incomingRelsCount > 0){
+          return res.send('Cannot delete non-leaf contributions');
+        }
+        else{
+          deleteAttachmentsFromFileAndDbAsync(parseInt(req.params.contributionId));
+        }
+        /*
         if (incomingRelsCount > 0) {
           var query = [
             'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
@@ -496,7 +502,7 @@ router.route('/:contributionId')
               console.log(error);
           })
           return res.send('Deleted non-leaf node attachments and marked contribution as deleted');
-        }
+        } */
         resolve();
       })
 
