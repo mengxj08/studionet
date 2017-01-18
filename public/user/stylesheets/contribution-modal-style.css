@@ -2,14 +2,19 @@
  * General Styling for all Modals
  */
 .modal-backdrop {
-   background-color: #EFEFEF;
+  background-color: #EFEFEF;
 }
 
 .modal-backdrop .in {
     opacity: 0.4 !important;
 }
 
-hr { 
+.modal-header .close { /*to flush close buttn to the side */
+  margin-top: -5px;
+  margin-right: -5px;
+}
+
+hr {
     display: block;
     margin-top: 0.5em;
     margin-bottom: 0.5em;
@@ -68,6 +73,7 @@ hr {
     height: 45px;
     padding: 10px 30px 10px 30px !important;
     border-bottom: 1px solid #B6B6B6 !important;
+    overflow-x: hidden !important; /*important*/
 }
 
 .close{ 
