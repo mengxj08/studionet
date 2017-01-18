@@ -44,13 +44,22 @@ angular.module('studionet')
 
   // Highlight any state params
   var highlightStateParams = function(){
+
       // highlight node, if any in route params
-      if($stateParams.contributionId && $scope.graph.getElementById( $stateParams.contributionId ) )
-         graph.selectNode( $scope.graph.getElementById( $stateParams.contributionId) );
+      if($stateParams.contributionId && $scope.graph.getElementById( $stateParams.contributionId ) ){
+
+        var node = $scope.graph.getElementById( $stateParams.contributionId)
+        graph.selectNode( node );
+
+        // fit the graph
+        $scope.graph.fit( '#' + node.id() )
+
+      }
   }
 
   var onEdgeSingleClick = function(evt){
-    console.log("Edge clicked");
+    var edge = evt.cyTarget;
+    showEdgesModal(edge.data());
   }
 
   // Interaction on Single Click
@@ -133,7 +142,7 @@ angular.module('studionet')
       // ---- Reattach interactions to the graph
 
       // remove supernode
-      $scope.graph.getElementById(supernode.contribution).remove();
+      // $scope.graph.getElementById(supernode.contribution).remove();
     
       // Display the entire node name
       $scope.graph.on('mouseover','node', function(evt){
@@ -202,6 +211,24 @@ angular.module('studionet')
           modal.element.modal({ backdrop: 'static' });
       });*/
   } 
+
+  var showEdgesModal = function(link_data){
+
+      ModalService.showModal({
+          templateUrl: "/user/templates/linksModal.html",
+          controller: "LinksCtrl",
+          scope: $scope
+      }).then(function(modal) {
+
+          modal.scope.setData(link_data);
+
+          modal.element.modal({
+            backdrop: 'static'
+          });
+          
+      });
+
+  }
 
   var showDetailsModal = function(data, clickedContributionId) {
 

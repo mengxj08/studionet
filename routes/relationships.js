@@ -37,7 +37,7 @@ router.route('/')
 			'MATCH (c:contribution) WHERE ID(c)=' + parseInt(req.body.source),
 			'MATCH (c1:contribution) WHERE ID(c1)=' + parseInt(req.body.target),
 			'MERGE (c)-[r:' + req.body.relationshipName + ']->(c1)',
-			'SET r.createdBy=' + createdByParam + ', r.lastUpdated = ' + Date.now()
+			'SET r.createdBy=' + createdByParam + ', r.lastUpdated = ' + Date.now() + ', r.likes = 0, r.note=' + "\'" + req.body.note + "\'" 
 		].join('\n');
 
 		db.query(query, function(error, result){

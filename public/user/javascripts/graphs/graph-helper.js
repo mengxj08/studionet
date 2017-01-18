@@ -62,7 +62,7 @@ STUDIONET.GRAPH.qtipFormat = function(evt){
  * Layout options
  */
 var COLA_GRAPH_LAYOUT = { name : 'cola', padding: 10 };
-var GRID_GRAPH_LAYOUT = { name : 'grid' };
+var GRID_GRAPH_LAYOUT = { name : 'grid', padding: 40 };
 var DAGRE_GRAPH_LAYOUT = { name : 'dagre' };
 var CIRCLE_GRAPH_LAYOUT = { name : 'circle' };
 var COSE_GRAPH_LAYOUT = { 
@@ -153,7 +153,6 @@ var computeSizeFn = function(node){
   var incomers = node.incomers().length;
   var basic = 20;
   var final = basic; 
-
 
 
   if(node.data('marked') == true)
@@ -250,6 +249,14 @@ var computeLabel = function(ele){
    return ele.data().name + " (" +  ele.incomers().length/2 + ")";//ele.data().name.substr(0,5)+"...";
 }
 
+
+var edgeColorFn = function(ele){
+    if(ele.data().properties.createdBy != undefined)
+      return '#00FF60';
+    else
+      return '#303030';
+}
+
 /*
  * Cytoscape Specific Styles
  */
@@ -284,9 +291,9 @@ var graph_style = {
           .selector('edge')
             .css({
               'curve-style': 'haystack',
-              'line-color': '#303030',
+              'line-color': edgeColorFn,
               'width': 0.7,
-              'font-size': '0.3em',
+              'font-size': '1.5em',
             })     
 
           .selector('.selected')
@@ -480,7 +487,7 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
 
     // disable zooming
     //graph_style.zoomingEnabled = false;
-    graph_style.minZoom = 0.1;
+    graph_style.minZoom = 0.05;
     graph_style.wheelSensitivity = 0.1;
 
     // performance options
@@ -507,14 +514,34 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
 
 
     //setTimeout(reposition, 2000);
-    
 
 
     return graph;
-
     
 }
 
+
+var formation = function(){
+
+      var topNodesLength = graph.nodes().length;
+
+      var topNodes = graph.nodes().sort(function (ele1, ele2) {
+          return ( ele1.incomers().length > ele2.incomers().length ? -1 : 1);
+      });
+
+      // on the spiral if atleast 5 comments / links to your node 
+      topNodes = topNodes.filter(function(i, node){
+            return node.incomers().length > threshold
+      })
+
+      var angle = 2 * Math.PI / topNodes.length;
+      var radius = 1.2*window.innerWidth;
+
+      var initX = $(window).height()/2;
+      var initY = $(window).width()/2;
+
+      makeGalaxy( topNodes,  radius, initX, initY, undefined, 0, 4);
+}
 
 
 /*
