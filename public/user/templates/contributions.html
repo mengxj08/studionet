@@ -29,7 +29,8 @@
     <i class="graph-nav-control icon fa fa-search" data-toggle="modal" data-target="#filterModal" uib-tooltip='Filter'  tooltip-placement='left'></i>
 
 		<!-- create a contribution -->
-		<i class="graph-nav-control icon fa fa-plus" ng-click='openNewContributionModal()' uib-tooltip='New Contribution'  tooltip-placement='left'></i>
+		<!-- <i class="graph-nav-control icon fa fa-plus" ng-click='openNewContributionModal()' uib-tooltip='New Contribution'  tooltip-placement='left'></i> -->
+    <i class="graph-nav-control icon fa fa-plus" data-toggle="modal" data-target="#createContribution" uib-tooltip='New Contribution'  tooltip-placement='left'></i> 
   </div>
 
 
@@ -81,7 +82,7 @@
 </script>
 
 
-
+<!--- Normal Bootstrap Modals : These modals are faster to load since the same template is being reused again and again -->
 
 
 <!--- Filter Modal -->
@@ -90,6 +91,12 @@
 <!--- Profile Modal  -->
 <!-- Should be placed here because this page gets loaded after resolving all promises for required data -->
 <ng-include src="'templates/profile.html'" ></ng-include>
+
+<!-- Create Contribution Modal -->
+<ng-include src="'templates/createContributionModal.html'" ></ng-include>
+
+<!-- Details Modal -->
+<ng-include src="'templates/contributionDetailsModal.html'" ></ng-include>
 
 
 

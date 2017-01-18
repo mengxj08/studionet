@@ -123,19 +123,15 @@ angular.module('studionet')
           all_groups = all_groups.filter(function(g){
 
               if(g.requestingUserStatus == null && g.restricted == true){
-                console.log(g.requestingUserStatus, "Removing from list because not accessible")
                 return false; 
               }
               else if( g.id == supernode.group)
                 return false;
               else if(g.parentId == supernode.group){
-                console.log(g.requestingUserStatus, "Adding to list")
                 return true;
               }
           
           });
-
-          console.log(all_groups);
 
           // return groups connected to supernode and accessible to the user
           return all_groups;

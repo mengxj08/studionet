@@ -38,7 +38,7 @@ STUDIONET.GRAPH.qtipFormat = function(evt){
         solo: true
      },
      hide: {
-        evt: 'mouseout',
+        evt: 'mouseout'
      },
      position: {
         //container: $('div.graph-container'),

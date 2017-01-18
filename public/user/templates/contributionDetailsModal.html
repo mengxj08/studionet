@@ -1,4 +1,4 @@
-<div id="detailsModal" class="modal fade" role="dialog">
+<div id="detailsModal" class="modal fade" role="dialog" ng-controller="DetailsModalCtrl" ng-cloak>
       <!-- Repeat for every contribution in tree -->
 
       <div class="modal-dialog" ng-repeat='contribution in contributionTree'> 
@@ -19,7 +19,9 @@
                   <strong>Awesome! </strong>{{ alert.successMsg }}
           </div>   
 
-          <div class="modal-body" ng-hide='alert.success'>
+          <!--- ng-if preferable to ng-show -->
+          <!--- ng-if removes DOM element -->
+          <div class="modal-body" ng-if='alert.success == undefined'>
 
                 <!-- Tabs -->
                 <div class='row'>
@@ -93,8 +95,9 @@
                         </div>
                     </div>
                 </div>
+                
                 <!-- Update existing contributions -->
-                <div class='row editor update' ng-show='showUpdateContribution'>
+                <div class='row editor update' ng-if='showUpdateContribution'>
                     <hr>
                     <label>Update the above contribution:</label>
                     <br><br>
@@ -160,8 +163,8 @@
                     </div>
                 </div>
 
-                <!-- Add cross links -->
-                <div class='row editor Linking' ng-show='showLinkingContribution'>
+                <!-- Add cross links --> 
+                <div class='row editor Linking' ng-if='showLinkingContribution' >
                     <hr>
                     <label> Link the above contribution to others:</label>
                     <br><br>
@@ -220,7 +223,7 @@
 
       <!--Reply modal-->
       <!--<div class="modal-dialog reply-dialog">-->
-      <div class="modal-dialog reply-dialog" ng-show='showReplyModal'>
+      <div class="modal-dialog reply-dialog" ng-if='showReplyModal'>
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title">Please fill in your reply:</h4>
@@ -294,6 +297,5 @@
         </div>
       </div>
     
-<!--     </div> -->
 
 </div>

@@ -3,6 +3,7 @@ var GRAPH_CONTAINER = document.getElementById('cy');
 var BROADCAST_FILTER_ACTIVE = "filter-started";
 var BROADCAST_CLEAR_FILTER = "filter-cleared";
 var BROADCAST_CLEAR_ALL_FILTERS = "filter-clear-all";
+var BROADCAST_CONTRIBUTION_CLICKED = "contribution-clicked";
 
 
 angular.module('studionet')
@@ -71,13 +72,17 @@ angular.module('studionet')
 
                 var extra_data = res.data;
 
+                qtipFormat.id = "qTip-" +  data.id;
                 qtipFormat.content.title =  extra_data.title;
                 qtipFormat.content.text = generateQtipContent(extra_data);
+
+                qtipFormat.content.button = 'Close';
 
                 node.data('qtip', qtipFormat);
                 node.data('db_data', extra_data);
 
-                node.qtip(qtipFormat, evt);   
+                node.qtip(qtipFormat, evt);  
+
           });
 
         }
@@ -187,7 +192,7 @@ angular.module('studionet')
 
   //  ------------- Modals
   $scope.openNewContributionModal = function(){
-      ModalService.showModal({
+/*      ModalService.showModal({
         templateUrl: "/user/templates/createContributionModal.html",
         controller: "CreateContributionCtrl",
         scope: $scope
@@ -195,22 +200,37 @@ angular.module('studionet')
       }).then(function(modal) {
           // activate modal
           modal.element.modal({ backdrop: 'static' });
-      });
+      });*/
   } 
 
   var showDetailsModal = function(data, clickedContributionId) {
 
+      $rootScope.$broadcast(BROADCAST_CONTRIBUTION_CLICKED, {'data': data, 'clickedContributionId': clickedContributionId} );
+      
+
+
+/*    if($scope.detailsModal != undefined){
+        $scope.detailsModal.scope.setData(data, clickedContributionId);
+        $scope.detailsModal.element.modal();
+        console.log("Show the existing modal again");
+    }
+    else{
+
+      console.log("Creating new modal");
       ModalService.showModal({
-        templateUrl: "/user/templates/home.graphView.modal.html",
-        controller: "DetailsModalCtrl",
-        scope: $scope
+          templateUrl: "/user/templates/home.graphView.modal.html",
+          controller: "DetailsModalCtrl",
+          scope: $scope
       }).then(function(modal) {
-        modal.element.modal({
-          backdrop: 'static'
-        });
-        modal.scope.setData(data, clickedContributionId);
-        console.log('show the modal');
+          modal.scope.setData(data, clickedContributionId);
+          modal.element.modal({
+            backdrop: 'static'
+          });
+          $scope.detailsModal = modal;
       });
+
+    }*/
+
 
   };
 
