@@ -142,7 +142,7 @@ angular.module('studionet')
       // ---- Reattach interactions to the graph
 
       // remove supernode
-      // $scope.graph.getElementById(supernode.contribution).remove();
+      $scope.graph.getElementById(supernode.contribution).remove();
     
       // Display the entire node name
       $scope.graph.on('mouseover','node', function(evt){

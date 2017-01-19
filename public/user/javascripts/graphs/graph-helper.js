@@ -84,7 +84,7 @@ var COSE_GRAPH_LAYOUT = {
   ready: function(){ },
 
   // Called on `layoutstop`
-  stop: function(){ reposition()  },
+  stop: function(){   reposition()  },
 
   // Whether to animate while running the layout
   animate: true,
@@ -323,9 +323,9 @@ var graph_style = {
 
           .selector('.unmarked')
             .css({
-              'opacity': 0.2,
+              'opacity': 0.1,
               'text-opacity': 0.2,
-              'label': ''
+              'label': computeLabel
             })
           .selector('.marked')
             .css({
@@ -333,7 +333,6 @@ var graph_style = {
               'border-width': '2',
               'border-color': 'white',
               'label' : computeLabel,
-              'font-size': '2em'
             })
           .selector('.marked-parent')
             .css({
@@ -414,75 +413,28 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
     if(arguments[4] != undefined)
       createGraphEdge = edgeFn;
 
-/*    for(var i=0; i < data.links.length; i++){
-        var link = data.links[i];
-        var s = link.target; 
-        link.target = link.source;
-        link.source = s;
-    }*/
+    var nodes = data.nodes.map( function(node){ return createGraphNode(node) } );
+    var edges = data.links.map( function(edge){ return createGraphEdge(edge) } );
+    
+    nodes = nodes.filter(function(data){
+        if(data.id == 5)
+          return false; 
+        else 
+          return true;
+    });
+    edges = edges.filter(function(data){
+        if(data.source == 5 || data.target == 5)
+          return false; 
+        else 
+          return true;
+    });
+        //nodes: data.nodes.map( function(node){ return createGraphNode(node) } ), 
+        //edges: data.links.map( function(edge){ return createGraphEdge(edge) } )
 
-/*
-    var node_key = [];
-    for(var i=0; i < data.nodes.length; i++){
 
-      if(node_key[data.nodes[i].id] === undefined)
-        node_key[data.nodes[i].id] = data.nodes[i];
-
-    }
-
-    for(var i=0; i< data.links.length; i++){
-
-        var link = data.links[i];
-
-        var src = link.source; 
-        var trgt = link.target; 
-
-        node_key[src].parent = trgt;
-
-    }
-*/
-/*    for(var i=0; i < data.nodes.length; i++){
-      data.nodes[i].position = { x : 2000*i, y: 0 };
-    }*/
-
-    // Assigning weights to the relationships
-/*    for(var i=0; i<data.links.length; i++){
-
-      var type = data.links[i].name; 
-
-      if(type == "QUESTION_FOR"){
-        data.links[i].weight = 20; 
-        node_key[ data.links[i].source ].parent = data.links[i].target;
-      }
-      else if(type == "ANSWER_FOR"){
-        data.links[i].weight = 20; 
-        node_key[ data.links[i].source ].parent = data.links[i].target;
-      }
-      else if(type == "COMMENT_FOR"){
-        data.links[i].weight = 15; 
-        node_key[ data.links[i].source ].parent = data.links[i].target;
-      }
-      else if(type == "RESOURCE_FOR"){
-        data.links[i].weight = 10; 
-      }
-      else if(type == "INSPIRED_FROM"){
-        data.links[i].weight = 5; 
-      }
-      else if(type == "RELATED_TO"){
-        data.links[i].weight = 5;         
-      }
-
-      console.log( data.links[i].source );
-      console.log( data.links[i].target );
-
-      
-
-      //console.log(data.links[i].weight);
-    }
-*/
     graph_style.elements = {
-        nodes: data.nodes.map( function(node){ return createGraphNode(node) } ), 
-        edges: data.links.map( function(edge){ return createGraphEdge(edge) } )
+        nodes: nodes,//data.nodes.filter( function(node){ if(node.id != 5) return createGraphNode(node) } ), 
+        edges: edges//data.links.filter( function(edge){ if(edge.source !== 5 && edge.target != 5) return createGraphEdge(edge) else return false } )
     }
 
     // disable zooming
@@ -499,50 +451,9 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
 
     graph.fit();
 
-    // topNodes
-/*    var topNodesLength = 20;
-    var topNodes = graph.nodes().sort(function (ele1, ele2) {
-        return ( ele1.degree() > ele2.degree() ? -1 : 1);
-    });
-    topNodes = topNodes.slice(0, topNodesLength);
-    topNodes.addClass('onTop');
-    var sum=0;
-    topNodes.map(function(node){
-        sum =+ node.incomers().length; 
-    })
-    console.log(sum);*/
-
-
-    //setTimeout(reposition, 2000);
-
-
     return graph;
     
 }
-
-
-var formation = function(){
-
-      var topNodesLength = graph.nodes().length;
-
-      var topNodes = graph.nodes().sort(function (ele1, ele2) {
-          return ( ele1.incomers().length > ele2.incomers().length ? -1 : 1);
-      });
-
-      // on the spiral if atleast 5 comments / links to your node 
-      topNodes = topNodes.filter(function(i, node){
-            return node.incomers().length > threshold
-      })
-
-      var angle = 2 * Math.PI / topNodes.length;
-      var radius = 1.2*window.innerWidth;
-
-      var initX = $(window).height()/2;
-      var initY = $(window).width()/2;
-
-      makeGalaxy( topNodes,  radius, initX, initY, undefined, 0, 4);
-}
-
 
 /*
  * Helper Functions
@@ -551,18 +462,19 @@ var formation = function(){
 var threshold = 3;
 var reposition = function(){
 
-      console.log("Reposition Started");
-
       var topNodesLength = graph.nodes().length;
 
       var topNodes = graph.nodes().sort(function (ele1, ele2) {
-          return ( ele1.incomers().length > ele2.incomers().length ? -1 : 1);
+          return ( ele1.incomers().length < ele2.incomers().length ? -1 : 1);
       });
 
-      // on the spiral if atleast 5 comments / links to your node 
+      /*   Criteria : On the spiral if atleast 5 comments / links to your node  */
       topNodes = topNodes.filter(function(i, node){
             return node.incomers().length > threshold
       })
+
+      /*   Criteria : On the spiral if in top topNodesLength */
+      //topNodes = topNodes.slice(0, topNodesLength)
 
       var angle = 2 * Math.PI / topNodes.length;
       var radius = 1.2*window.innerWidth;
@@ -570,7 +482,7 @@ var reposition = function(){
       var initX = $(window).height()/2;
       var initY = $(window).width()/2;
 
-      makeGalaxy( topNodes,  radius, initX, initY, undefined, 0, 4);
+      makeGalaxy( topNodes,  radius, initX, initY, undefined, 0, 6);
 
       arrangeIsolatedNodes(   graph.nodes().filter(function(i, node){
             return ( node.incomers().length <= 1 && node.outgoers().length <= 1);
@@ -578,18 +490,12 @@ var reposition = function(){
     
 }
 
-var arrangeNodesBelowThreshold = function(){
-
-}
 
 var arrangeIsolatedNodes = function( nodes ){
-    console.log(nodes.length);
     nodes.map(function(node, index){
         node.animate({    renderedPosition : {x: 100*Math.random(), y: 100*Math.random() } , style: { backgroundColor: '#AFAFAF' }  }, { duration: 1000 } );
     })
 }
-
-
 
 var makeGalaxy = function( nodes, radius, initX, initY, color, count, max_count, init_angle ){
 
@@ -624,7 +530,6 @@ var makeGalaxy = function( nodes, radius, initX, initY, color, count, max_count,
             cluster_color = color; 
 
           node.animate({    position : {x: x, y: y} , style: { backgroundColor: cluster_color }  }, { duration: 1000 });
-          node.data('placed', true);
 
           if(count < max_count){
 
@@ -747,54 +652,4 @@ STUDIONET.GRAPH.getVisibleNodes = function(cy){
 
 function viewportContainsNode(vw, n){
     return ( ( n.position().x > vw.x1 && n.position().x < vw.x2 ) && ( n.position().y > vw.y1 && n.position().y < vw.y2  ) )
-}
-
-// 9684
-// 968
-
-function luckyNumber8(line){
-
-    var getCombinations = function( word ){
-
-      var subs = [];
-
-      subs.push(word);
-
-      for(var j=0; j<word.length; j++){
-        var subword = word.substr(0, j) + word.substr(j+1, word.length);
-        if(subword.length > 0 )
-          subs = subs.concat( getCombinations(subword) );
-      }
-
-      return subs;
-    }
-
-    Array.prototype.getUnique = function(){
-       var u = {}, a = [];
-       for(var i = 0, l = this.length; i < l; ++i){
-          if(u.hasOwnProperty(this[i])) {
-             continue;
-          }
-          a.push(this[i]);
-          u[this[i]] = 1;
-       }
-       return a;
-    }
-
-    var combinations = getCombinations(line).getUnique();
-    var count = 0; 
-
-    console.log(combinations);
-
-    combinations.map(function(number){
-
-      if( parseInt(number) % 8 == 0){
-        console.log(number);
-        count++;
-      }
-     
-    })
-
-    console.log( count % ( Math.pow(10, 9) + 9 ))
-
 }

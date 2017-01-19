@@ -20,7 +20,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-;(function(){ 'use strict'; 
+;(function(){ 'use strict';
 
   // registers the extension on a cytoscape lib ref
   var register = function( cytoscape, dagre ){
