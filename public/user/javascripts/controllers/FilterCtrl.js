@@ -123,19 +123,15 @@ angular.module('studionet')
           all_groups = all_groups.filter(function(g){
 
               if(g.requestingUserStatus == null && g.restricted == true){
-                console.log(g.requestingUserStatus, "Removing from list because not accessible")
                 return false; 
               }
               else if( g.id == supernode.group)
                 return false;
               else if(g.parentId == supernode.group){
-                console.log(g.requestingUserStatus, "Adding to list")
                 return true;
               }
           
           });
-
-          console.log(all_groups);
 
           // return groups connected to supernode and accessible to the user
           return all_groups;
@@ -177,9 +173,9 @@ angular.module('studionet')
       }
 
       var getTime = function(d){
-        d.setHours(0);
-        d.setMinutes(0);
-        d.setSeconds(0);
+        d.setHours(23);
+        d.setMinutes(59);
+        d.setSeconds(59);
         return d.getTime();
       }
 
@@ -290,10 +286,12 @@ angular.module('studionet')
               var data = {};
               data.g =  ( $scope.selectedGroups.length ? "[" + $scope.selectedGroups.map( function(g){ return g.id } ).toString() + "]" : ( $scope.selectedUsers.length > 0 ? "[]" : "-1" ) ) ;
               data.u = ( $scope.selectedUsers.length ? "[" + $scope.selectedUsers.map( function(u){ return u.id } ).toString() + "]"  : ( $scope.selectedGroups.length > 0 ? "[]" : "-1" ) ); 
-              data.tg = ( $scope.selectedTags.length ? "[" + $scope.selectedTags.map( function(g){ return g.id; }).toString() + "]" : "-1" );
+              data.tg = ( $scope.selectedTags.length ? "[" + $scope.selectedTags.map( function(g){ return parseInt(g.id); }).toString() + "]" : "-1" );
               data.r = "[" + $scope.ratingMin + "," + $scope.ratingMax + "]";
-              data.t = "[" + ( $scope.startDate ? getTime($scope.startDate) + " , " : "0, " )  +   ( $scope.endDate ? getTime($scope.endDate) : getTime( new Date() ) ) + "]";
+              data.t = "[" + ( $scope.startDate ? getTime($scope.startDate)  : 0 )  + " ,"  + ( $scope.endDate ? getTime($scope.endDate) : getTime( new Date() ) ) + "]";
               data.d =  $scope.depthVal; 
+
+              console.log("Filter Request", data);
 
               //$(target).empty();
               var target = GRAPH_CONTAINER;
@@ -307,6 +305,8 @@ angular.module('studionet')
               }).success(function(filter_data){
 
                   spinner.stop();
+
+                  console.log("Filter Results", filter_data);
 
                   var nodes = [];
 

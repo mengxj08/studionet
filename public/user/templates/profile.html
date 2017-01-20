@@ -88,7 +88,7 @@ p.details{
                   <ul class="nav nav-tabs">
                     <li class='profile-tab active'><a data-target="#contributions"  data-toggle="tab">Contributions ({{ contributions.length }}) </a></li>
                     <li class='profile-tab'><a data-target="#tags"  data-toggle="tab">Tags ({{ tags.length  }})</a></li>
-                    <li class="profile-tab"><a data-target="#activity" data-toggle="tab">Groups ({{ raw_groups.length }}) </a></li>
+                    <li class="profile-tab"><a data-target="#activity" data-toggle="tab">Groups ({{ groups.length }}) </a></li>
                   </ul>
                 </div>
 
@@ -122,20 +122,21 @@ p.details{
                     <!-- Content -->
                     <div class='tab-pane profile-tab-pane fade in' id="activity">
 
-                        <button class='btn btn-default' ng-click='createGroup()'><i class="icon fa fa-pencil"></i>Create a New Group</button>
+                        <button class='btn btn-default' ng-click='createGroup()'><i class="icon fa fa-pencil"></i>New Group</button>
 
-                        <div class='col-sm-12 hover-effect' ng-repeat="group in groups">
+                        <div class='col-sm-12 hover-effect' ng-repeat="group in groups | orderBy : 'requestingUserStatus' ">
                           <hr>
-                          <div class='col-sm-9'>
+                          <div class='col-sm-8'>
                             <h5>{{ group.name }}</h5>
-                            {{ group.description.substr(0, 100) + "..." }}{{group.requestingUserStatus}}
+                            {{ group.description.substr(0, 100) + "..." }}
                           </div>
-                          <div class='col-sm-3'>
-                              <small>Role: {{ group.requestingUserStatus ? group.requestingUserStatus : "Not a Member of this group"}}</small>
-                              <h6 class='tagline'>Joined On: {{group.joinedOn | date: 'medium'}}</h6>
-                              <i class="icon fa fa-users" ng-if='group.requestingUserStatus="Admin"'></i> 
-                              <i class="icon fa fa-remove" ng-if='group.requestingUserStatus="Admin"'></i> 
-                              <i class="icon fa fa-user-times" ng-if='!group.requestingUserStatus="Member"'></i> 
+                          <div class='col-sm-4'>
+                              <small>Role: {{ group.requestingUserStatus ? group.requestingUserStatus : "--"}}</small>
+                              <h6 class='tagline' ng-if='group.requestingUserStatus!=null'>Joined On: {{group.joinedOn | date: 'medium'}}</h6>
+                              <br>
+                              <i class="icon fa fa-users" ng-if='group.requestingUserStatus=="Admin"'></i> 
+                              <i class="icon fa fa-remove" ng-if='group.requestingUserStatus=="Admin"'></i> 
+                              <i class="icon fa fa-user-times" ng-if='!group.requestingUserStatus=="Member"'></i> 
                               <i class="icon fa fa-user-plus" ng-if='!group.requestingUserStatus'></i> 
                           </div>
 
@@ -152,6 +153,7 @@ p.details{
         <div class="modal-footer">
           <center>
           <button type="button" class="btn btn-default modal-button" ng-click='editProfile()'>Edit Profile</button>
+          <button type="button" class="btn btn-default modal-button" ng-click='createNewGroup()'>New Group</button>
           <button type="button" class="btn btn-default modal-button" data-dismiss='modal' ng-click='close()'>{{ alert.success ? "Close" : "Cancel" }}</button>
           </center>
         </div>

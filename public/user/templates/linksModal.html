@@ -1,0 +1,42 @@
+<div id="linksModal" class="modal fade createContribution" role="dialog" ng-controller="LinksCtrl">
+  
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" ng-click='close()'>&times;</button>
+          <h4 class="modal-title">Link Details</h4>
+        </div>
+
+        <div class="modal-body">
+
+          <!-- alert -->
+          <div class="alert alert-danger" role="alert" id='errorMsg' ng-show='alert.error'>
+                  <strong>Oh snap! </strong>{{ alert.errorMsg }}
+          </div>
+
+          <div class="alert alert-success" role="alert" id='successMsg' ng-show='alert.success'>
+                  <strong>Awesome! </strong>{{ alert.successMsg }}
+          </div>   
+
+          <div class='editor' ng-hide='alert.success'>
+                {{ linkData }}
+          </div>
+
+        </div>
+
+        <div class="modal-footer">
+          <center>
+          <button type="button" class="btn btn-default modal-button" ng-if='!alert.success'>Submit</button>
+          <button type="button" class="btn btn-default modal-button" data-dismiss='modal' ng-click='close()'>{{ alert.success ? "Close" : "Cancel" }}</button>
+          </center>
+        </div>
+    
+    </div>
+
+  </div>
+
+</div>
+

@@ -10,11 +10,9 @@ angular.module('studionet')
 
 	// warning: be wary of scope overlaps; wasn't working with $scope.groups
 	$scope.user = profile.user;
-	$scope.contributions = $scope.user.contributions;
-	$scope.groups = groups.groups; console.log($scope.groups);
-
 	$scope.lastLoggedIn = new Date($scope.user.lastLoggedIn);
-
+	$scope.contributions = $scope.user.contributions;
+	$scope.groups = groups.groups;
 
 	$scope.computeStats = function(){
 

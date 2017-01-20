@@ -20,10 +20,11 @@ angular.module('studionet')
 
   // setting data from scope calling ModalService
   $scope.setData = function(data, activeContribution){
+      
       $scope.contributionTree = data; // contribution tree
       $scope.clickedContribution = activeContribution;  // contribution clicked initially
       $scope.activeContribution = activeContribution; // contribution currently in view (when scroll is implemented)
-      console.log(data);
+
   }
 
   //  This close function doesn't need to use jQuery or bootstrap, because
