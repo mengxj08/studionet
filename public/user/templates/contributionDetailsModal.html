@@ -11,186 +11,164 @@
 <!--     <div class='col-sm-12 modal-dialog-container'> -->
 
       <!-- Repeat for every contribution in tree -->
-
       <div class="modal-dialog" ng-repeat='contribution in contributionTree'> 
         
         <div id="{{ 'modal' + contribution.db_data.id }}" class="modal-content">
           
-          <div class="modal-header">
-              <h4>Parents
-              <i class="pop simpleIcon icon fa fa-bar-chart text-right" uib-popover-template="'/user/templates/statistics.html'" popover-trigger="'outsideClick'"popover-placement="bottom"></i>
-              </h4>
-              <button type="button" class="close" data-dismiss="modal" ng-click='close()' aria-hidden="true">&times;</button>
-          </div>
+            <div class="modal-header">
+                Previous 
+                <!-- <button type="button" class="close" data-dismiss="modal" ng-click='close()' aria-hidden="true">&times;</button> -->
+            </div>
 
-          <!-- alert -->
-          <div class="alert alert-danger" role="alert" id='errorMsg' ng-show='alert.error'>
-                  <strong>Oh snap! </strong>{{ alert.errorMsg }}
-          </div>
+            <!-- alert -->
+            <div class="alert alert-danger" role="alert" id='errorMsg' ng-show='alert.error'>
+                    <strong>Oh snap! </strong>{{ alert.errorMsg }}
+            </div>
 
-          <div class="alert alert-success" role="alert" id='successMsg' ng-show='alert.success'>
-                  <strong>Awesome! </strong>{{ alert.successMsg }}
-          </div>   
+            <div class="alert alert-success" role="alert" id='successMsg' ng-show='alert.success'>
+                    <strong>Awesome! </strong>{{ alert.successMsg }}
+            </div>   
 
+            <!--- ng-if preferable to ng-show -->
+            <!--- ng-if removes DOM element -->
+            <div class="modal-body contributionView" ng-if='alert.success == undefined'>
 
-<!--           <div class='titleBar'>
-              <p class='title'>{{contribution.db_data.title}}</p>
-
-              <i class="pop simpleIcon icon fa fa-star" uib-popover-template="'/user/templates/rating.html'" popover-trigger="'outsideClick'"popover-placement="bottom"></i>
-
-              <i class="pop simpleIcon icon fa fa-bar-chart" uib-popover-template="'/user/templates/statistics.html'" popover-trigger="'outsideClick'"popover-placement="bottom"></i>
-          </div> -->
-
-          <!--- ng-if preferable to ng-show -->
-          <!--- ng-if removes DOM element -->
-          <div class="modal-body contributionView" ng-if='alert.success == undefined'>
-
-                <div class="authorBar row">
-                    
-                    <div class="col-sm-8">
-                        <div class = "authorInfo">
-                          <h3 class='title'>{{contribution.db_data.title}}</h3>
-                          <b><p>Contributed By:</b> {{ users[contribution.db_data.createdBy].name }}</p>
-                          <p><b>Last Updated:</b> {{ contribution.db_data.lastUpdated | date: 'longDate' }}</p>
-                        </div>
-                    </div>
-
-                    <div class="col-sm-4">
-                        <div class='titleBar'>
-                            <i class="pop simpleIcon icon fa fa-bar-chart" uib-popover-template="'/user/templates/statistics.html'" popover-trigger="'outsideClick'"popover-placement="bottom"></i>
-                        </div>        
-                    </div>
-
-                </div>
-
-                <hr/>
-
-                <!-- Content -->
-<!--                 <div class='tab-pane fade in active'> -->
-
-
-
-                    <!-- content -->
-                    <p class='text-justify' ng-bind-html="contribution.db_data.body"></p>
-                    <br><br>
-                    <hr/>
-                    <p><b>Your Rating:</b> <ng-include src="'/user/templates/rating.html'"></ng-include></p>
-<!--                 </div> -->
-
-                <!-- Attachments - if present -->
-<!--                 <div class='tab-pane fade' id="{{ 'attachments' + contribution.db_data.id}}" >  -->
-                <div class='row' ng-if='contribution.db_data.attachments[0].id!=null'>
-                    <div ng-repeat="attachment in contribution.db_data.attachments">
-                      <div class='card row'>
-                        <div class='col-sm-3 attachment-thumb' style='background-image: url({{getThumb(contribution.db_data.id, attachment.attachment)}});'>
-                        </div>
-                        <div class='col-sm-9'>
-                          <h3 class='contributionName'>{{attachment.attachment.name}}</h3>
-                          <h6> Size: {{ attachment.attachment.size/1000 }} MB </h6>
-                          <h6><a href="/api/contributions/{{contribution.db_data.id}}/attachments/{{attachment.id}}" target=_blank>Download </a></h6>
-                        </div>
-                      </div>
-                    </div>
-                </div>
-<!--                 </div> -->
-
-
-               <!-- Tabs -->
-<!--                 <div class='row'>
-                  <ul class="nav nav-tabs pull-right">
-                    <li><a data-target="{{ '#statistics' + contribution.db_data.id}}"  data-toggle="tab">Statistics</a></li>
-                    <li><a data-target="{{ '#reply' + contribution.db_data.id}}"  data-toggle="tab" ng-click='showReplyModal=true'>Reply</a></li>
-                    <li><a data-target="{{ '#link' + contribution.db_data.id}}"  data-toggle="tab">Link</a></li>
-                    <li ng-if='contribution.db_data.attachments[0].id!=null'><a data-target="{{ '#attachments' + contribution.db_data.id}}"  data-toggle="tab">Attachments</a></li>
-                  </ul>
-                </div> -->
-
-
-                <!-- Update existing contributions -->
-                <div class='row editor update' ng-if='showUpdateContribution'>
-                    <hr>
-                    <label>Update the above contribution:</label>
-                    <br><br>
-                    <!-- Title -->
-                    <div class='form-section'>
-                      <label> Title </label>
-                      <input class='wide' value='Title' ng-model="contributionData.title">
-                    </div>
-                    <!-- tags -->
-                    <div class='form-section'>
-                      <label> Tags <small>( {{ contributionData._tags.length || 0 }} tag(s) added) </small></label>
-                      <tags-input class='tags-input' class="bootstrap"
-                        type='text'
-                        ng-model="contributionData._tags"
-                        display-property='name'
-                        placeholder="Add a tag"
-                        replace-spaces-with-dashes="false">
-                      <auto-complete source="loadTags($query)"
-                                    min-length="0"
-                                    debounce-delay="0"
-                                    max-results-to-show="10000"
-                                    load-on-down-arrow="true"
-                                    load-on-focus="true"
-                                    template="tags-template"></auto-complete>
-                      </tags-input>
-                    </div>
-                    <!-- Content -->
-                    <div class='form-section'>
-                      <label> Content </label>
-                      <div text-angular ng-model="contributionData.body" class="textAngular"></div>
-
-
-                      </div>
-
-
-                      <!-- attachments -->
-                      <div class='form-section'>
-                        <!-- should be different from create / reply editor -->
-                        <label> Attachments <small>({{ contributionData.attachments.length - (contributionData.attachments[0].id == null ? -1 : 0) }} file(s) uploaded)</small> </label>
-                        <div class="button" ngf-select ng-model="contributionData.attachments" ngf-multiple="true">Choose File</div>
-                      </div>
+                  <div class="authorBar row">
                       
-                      <!-- selected tags: -->
-                      <div class='form-section'>
-                        <span><b> Selected tag names:  </b></span> 
-                        <span>{{ contributionData }}</span>
+                      <div class="col-sm-8">
+                          <div class = "authorInfo">
+                            <h3 class='title'>{{contribution.db_data.title}}</h3>
+                            <b><p>Contributed By:</b> {{ users[contribution.db_data.createdBy].name }}</p>
+                            <p><b>Last Updated:</b> {{ contribution.db_data.lastUpdated | date: 'longDate' }}</p>
+                          </div>
                       </div>
 
-                      <button type="button" ng-click="submitContribution(showCreateContribution,showLinkingContribution,showUpdateContribution,contributionData,linkData);
-                    showCreateContribution=false; showUpdateContribution=false; showLinkingContribution=false; hideReplyButton=false" class="btn btn-default modal-button">Submit</button>
-                    
+                      <div class="col-sm-4">
+                          <div class='titleBar'>
+                              <ng-include src="'/user/templates/rating.html'" ng-if="(user.id != contribution.db_data.createdBy)"></ng-include>
+                              <i class="pop simpleIcon icon fa fa-bar-chart" uib-popover-template="'/user/templates/statistics.html'" popover-trigger="'outsideClick'"popover-placement="bottom"></i>
+                          </div>        
+                      </div>
+
+                  </div>
+
+                  <hr/>
+
+
+                  <!-- content -->
+                  <p class='text-justify' ng-bind-html="contribution.db_data.body"></p>
+                  <br><br>
+                  <hr/>
+                      
+
+                  <!-- Attachments - if present -->
+                  <div class='row' ng-if='contribution.db_data.attachments[0].id!=null'>
+                      <div ng-repeat="attachment in contribution.db_data.attachments">
+                        <div class='card row'>
+                          <div class='col-sm-3 attachment-thumb' style='background-image: url({{getThumb(contribution.db_data.id, attachment.attachment)}});'>
+                          </div>
+                          <div class='col-sm-9'>
+                            <h3 class='contributionName'>{{attachment.attachment.name}}</h3>
+                            <h6> Size: {{ attachment.attachment.size/1000 }} MB </h6>
+                            <h6><a href="/api/contributions/{{contribution.db_data.id}}/attachments/{{attachment.id}}" target=_blank>Download </a></h6>
+                          </div>
+                        </div>
+                      </div>
+                  </div>
+
+
+                  <div class='row'>
+
+                    <div ng-hide='hideReplyButton || alert.success'>
+
+                        <button type="button" ng-click="showCreateContribution=true; showReplyModal=true;contributionData={};contributionData.tags=[];contributionData.ref=contribution.db_data.id" class="btn btn-default modal-button">Reply</button>
+                        
+                        <!-- if author -->
+                        <button type="button" ng-click="showUpdateContribution=true; hideReplyButton=true; contributionData=contribution.db_data; contributionData._tags = contributionData.tags;" class="btn btn-default modal-button"
+                        ng-if="(user.id == contribution.db_data.createdBy)">Update</button>
+                        <button type="button" ng-click="deleteContribution(contribution.db_data.id)" class="btn btn-default modal-button"
+                        ng-if="(user.id == contribution.db_data.createdBy)" data-dismiss='modal'>Delete</button>
+
                     </div>
-                </div>
 
-          </div> <!-- modal body ends -->
+                    <div ng-show='hideReplyButton && !alert.success'>
+                        <button type="button" ng-click="submitContribution(showCreateContribution,showLinkingContribution,showUpdateContribution,contributionData,linkData);
+                        showCreateContribution=false; showUpdateContribution=false; showLinkingContribution=false; hideReplyButton=false" class="btn btn-default modal-button">Submit</button>
+                        <button type="button" ng-click="showCreateContribution=false; showUpdateContribution=false; showLinkingContribution=false; hideReplyButton=false" class="btn btn-default modal-button">Cancel</button>
+                    </div>
 
-          <div class='modal-footer'>
-              <div class='col-sm-12'>
-                <center>
-                  <div ng-hide='hideReplyButton || alert.success'>
-                  <button type="button" ng-click="showCreateContribution=true; showReplyModal=true; contributionData={};contributionData.tags=[];contributionData.ref=contribution.db_data.id" class="btn btn-default modal-button">Reply</button>
-                  <button type="button" ng-click="showLinkingContribution=true; hideReplyButton=true; linkData={}; linkData.currentContributionId=contribution.db_data.id" class="btn btn-default modal-button">Link</button>
-                  <button type="button" ng-click="showUpdateContribution=true; hideReplyButton=true; contributionData=contribution.db_data; contributionData._tags = contributionData.tags;" class="btn btn-default modal-button"
-                  ng-show="(user.id == contribution.db_data.createdBy)">Update</button>
-                  <button type="button" ng-click="deleteContribution(contribution.db_data.id)" class="btn btn-default modal-button"
-                  ng-show="(user.id == contribution.db_data.createdBy)" data-dismiss='modal'>Delete</button>
                   </div>
-                  <div ng-show='hideReplyButton && !alert.success'>
-                    <button type="button" ng-click="submitContribution(showCreateContribution,showLinkingContribution,showUpdateContribution,contributionData,linkData);
-                    showCreateContribution=false; showUpdateContribution=false; showLinkingContribution=false; hideReplyButton=false" class="btn btn-default modal-button">Submit</button>
-                    <button type="button" ng-click="showCreateContribution=false; showUpdateContribution=false; showLinkingContribution=false; hideReplyButton=false" class="btn btn-default modal-button">Cancel</button>
-                  </div>
-                  <button type="button" class="btn btn-default modal-button" ng-show='alert.success' data-dismiss='modal' ng-click='close()'>Close</button>
-                </center>
-              </div>
-          </div>
 
-        </div><!-- single modal - modal-content ends -->
-      </div><!-- modal dialog  ng-Repeat ends -->
+                  <!-- Update existing contributions -->
+                  <div class='row editor update' ng-if='showUpdateContribution'>
+                      <hr>
+                      <label>Update the above contribution:</label>
+                      <br><br>
+                      <!-- Title -->
+                      <div class='form-section'>
+                        <label> Title </label>
+                        <input class='wide' value='Title' ng-model="contributionData.title">
+                      </div>
+                      <!-- tags -->
+                      <div class='form-section'>
+                        <label> Tags <small>( {{ contributionData._tags.length || 0 }} tag(s) added) </small></label>
+                        <tags-input class='tags-input' class="bootstrap"
+                          type='text'
+                          ng-model="contributionData._tags"
+                          display-property='name'
+                          placeholder="Add a tag"
+                          replace-spaces-with-dashes="false"
+                          template='tag-item-template'>
+                        <auto-complete source="loadTags($query)"
+                                      min-length="0"
+                                      debounce-delay="0"
+                                      max-results-to-show="10000"
+                                      load-on-down-arrow="true"
+                                      load-on-focus="true"
+                                      template="tags-template"></auto-complete>
+                        </tags-input>
+                      </div>
+
+                      <!-- Content -->
+                      <div class='form-section'>
+                        <label> Content </label>
+                        <div text-angular ng-model="contributionData.body" class="textAngular"></div>
+
+
+                      </div>
+
+
+                        <!-- attachments -->
+                        <div class='form-section'>
+                          <!-- should be different from create / reply editor -->
+                          <label> Attachments <small>({{ contributionData.attachments.length - (contributionData.attachments[0].id == null ? -1 : 0) }} file(s) uploaded)</small> </label>
+                          <div class="button" ngf-select ng-model="contributionData.attachments" ngf-multiple="true">Choose File</div>
+                        </div>
+                        
+                        <!-- selected tags: -->
+                        <div class='form-section'>
+                          <span><b> Selected tag names:  </b></span> 
+                          <span>{{ contributionData }}</span>
+                        </div>
+
+                        <button type="button" ng-click="submitContribution(showCreateContribution,showLinkingContribution,showUpdateContribution,contributionData,linkData);
+                      showCreateContribution=false; showUpdateContribution=false; showLinkingContribution=false; hideReplyButton=false" class="btn btn-default modal-button">Submit</button>
+                      
+                      </div>
+                  </div>
+
+            <div class='modal-footer'>
+                <button type="button" class="btn btn-default modal-button" data-dismiss='modal' ng-click='close()'>Close</button>
+            </div>
+
+        </div> <!-- modal content ends -->
+
+
+
 
       <!--Reply modal-->
       <!--<div class="modal-dialog reply-dialog">-->
-      <div class="modal-dialog reply-dialog" ng-if='showReplyModal'>
+      <div class="modal-dialog reply-dialog" ng-show='showReplyModal'>
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title">Please fill in your reply:</h4>
@@ -211,7 +189,8 @@
                     ng-model="contributionData._tags"
                     display-property='name'
                     placeholder="Add a tag"
-                    replace-spaces-with-dashes="false">
+                    replace-spaces-with-dashes="false"
+                    template='tag-item-template'>
                   <auto-complete source="loadTags($query)"
                                 min-length="0"
                                 debounce-delay="0"
@@ -236,6 +215,9 @@
                   </select>
                 </div>
 
+      </div><!-- modal dialog  ng-Repeat ends -->
+
+        </div><!-- single modal - modal-content ends -->
       </div><!-- modal dialog  ng-Repeat ends -->
     
 

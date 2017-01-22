@@ -84,7 +84,7 @@ var COSE_GRAPH_LAYOUT = {
   ready: function(){ },
 
   // Called on `layoutstop`
-  stop: function(){   reposition()  },
+  stop: function(){   /*reposition() */ },
 
   // Whether to animate while running the layout
   animate: true,
@@ -448,7 +448,7 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
     graph_style.motionBlur = true;
 
     graph = cytoscape( graph_style );
-    reposition();
+    //reposition();
 
     graph.fit();
 

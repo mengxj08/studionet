@@ -25,7 +25,7 @@ body {
 	font-family: 'Open Sans', sans-serif;
 	font-size: 12px;
 
-	background: white;
+	background: #000623;;
 
 }
 
@@ -115,6 +115,12 @@ nav .navbar-nav{
 	padding: 0px !important;
 	height: auto;
 
+}
+
+.navbar .navbar-collapse{
+	border: 0px !important;
+	box-shadow: none;
+	background-color: transparent;
 }
 
 .nav.navbar-nav{

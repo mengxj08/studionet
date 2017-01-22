@@ -25,6 +25,8 @@ angular.module('studionet')
       $scope.clickedContribution = activeContribution;  // contribution clicked initially
       $scope.activeContribution = activeContribution; // contribution currently in view (when scroll is implemented)
 
+      $scope.parents = ["parent1", "parent2", "parent3"];
+
   }
 
   //  This close function doesn't need to use jQuery or bootstrap, because
