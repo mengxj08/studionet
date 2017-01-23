@@ -8,6 +8,17 @@ angular.module('studionet')
   $scope.contributions = contributions.contributions;
   $scope.users = users.users.hash();
 
+  //todo: check why promise doesn't always get resolved
+  $scope.relationships = [{"src_type":"contribution","target_type":"contribution","name":"QUESTION_FOR"},
+                          {"src_type":"contribution","target_type":"contribution","name":"ANSWER_FOR"},
+                          {"src_type":"contribution","target_type":"contribution","name":"COMMENT_FOR"},
+                          {"src_type":"contribution","target_type":"contribution","name":"RESOURCE_FOR","createdBy":"__"},
+                          {"src_type":"contribution","target_type":"contribution","name":"INSPIRED_FROM","createdBy":"__"},
+                          {"src_type":"contribution","target_type":"contribution","name":"RELATED_TO","createdBy":"__","note":"__"},
+                          {"src_type":"user","target_type":"contribution","name":"LIKED","properties":[{"name":"count","type":0}]},
+                          {"src_type":"user","target_type":"contribution","name":"VIEWED","properties":[{"name":"count","type":0},
+                          {"name":"last_viewed","type":"2017-01-23T07:31:43.857Z"}]}];
+
   //shared parameters in different sub scopes
   $scope.showReplyModal = null; //show the replying modal
   $scope.contributionData = null; //store the data of replying information
@@ -76,7 +87,7 @@ angular.module('studionet')
   }
 
   //Uploaded files
-  $scope.uploadFiles = function (files, contributionData){
+  $scope.uplodateFiles = function (files, contributionData){
       console.log(files.length + " file(s) have been choosen.");
       if(files){
           files.forEach(function(file){
@@ -104,6 +115,29 @@ angular.module('studionet')
             alert('[WARNING]: Deleting attachment is unsuccessful');
           })
   }
+
+  $scope.getFormattedTags = function(contribution_tags){
+
+    var all_tags = [];
+    tags.tags.map(function(t){
+      all_tags[t.name] = t;
+    });
+
+    if(contribution_tags instanceof Array){
+      return contribution_tags.map(function(t){
+
+          if(all_tags[t] !== undefined)
+            return all_tags[t];
+          else
+            console.warn("Contribution tag not available in database. Something is wrong.")
+      })
+    }
+    else{
+      return [ all_tags[contribution_tags] ]; 
+    }
+
+  }
+
   // -------- Contribution Viewer Functionality (Read, Update, Delete)
   
   // REPLY - QUESTION, COMMENT, ANSWER, RESOURCE, RELATED_TO (generic) 
@@ -114,6 +148,11 @@ angular.module('studionet')
 
         createContribution.contentType = 'text'; /// default
         createContribution.tags = [];
+
+        console.log(createContribution);
+
+        if(createContribution.attachments == undefined)
+          createContribution.attachments = [];
 
         // if _tags is defined
         if(createContribution._tags)
@@ -130,8 +169,8 @@ angular.module('studionet')
         }); 
    };
 
-
   $scope.updateContribution = function(updateContribution){
+
     if(!updateContribution.title || !updateContribution.body){
       alert("Please input the title or content of the contribution!");
       return;
@@ -144,10 +183,10 @@ angular.module('studionet')
     delete updateContribution._tags;
     
     //Assign other properties from oldContribution to the new updateContribtuion
-    updateContribution.id = updateContribution.oldData.id;
-    updateContribution.contentType = updateContribution.oldData.contentType;
-    updateContribution.ref = updateContribution.oldData.ref;
-    delete updateContribution.oldData;
+    //updateContribution.id = updateContribution.oldData.id;
+    //updateContribution.contentType = updateContribution.oldData.contentType;
+    //updateContribution.ref = updateContribution.oldData.ref;
+    //delete updateContribution.oldData;
 
 
     //Remove the attachments that have already existed in the database
@@ -173,10 +212,18 @@ angular.module('studionet')
 
   // Delete the contribution
   $scope.deleteContribution = function(contributionId){
+
+    var r = confirm("Are you sure you want to delete your contribution? This action cannot be undone");
+    if (r == true) {
       contribution.deleteContribution(contributionId).then(function(){
-      }, function(error){
-          alert("Error occured while deleting contribution")
-      })
+        }, function(error){
+            alert("Error occured while deleting contribution")
+        });
+    } else {
+        x = "You pressed Cancel!";
+    }
+
+
   }
 
   // deprecated
@@ -211,8 +258,9 @@ angular.module('studionet')
 	}
 
   $scope.submitContribution = function(showLinkingContribution,showUpdateContribution,contributionData,linkData){
-    // if($scope.showReplyModal)
-    //   $scope.createContribution(contributionData);
+
+    if($scope.showReplyModal)
+      $scope.createContribution(contributionData);
 
     if(showLinkingContribution)
       $scope.createLink(linkData);

@@ -63,6 +63,27 @@
 </div>
 
 
+
+<!--- Normal Bootstrap Modals : These modals are faster to load since the same template is being reused again and again -->
+
+<!--- Filter Modal -->
+<!--- Included here to ensure everything is set up and modal loading is fast -->
+<ng-include src="'templates/filterModal.html'"></ng-include>
+
+<!--- Profile Modal  -->
+<!-- Should be placed here because this page gets loaded after resolving all promises for required data -->
+<ng-include src="'templates/profile.html'" ></ng-include>
+
+<!-- Create Contribution Modal -->
+<ng-include src="'templates/createContributionModal.html'"></ng-include>
+
+
+
+
+
+
+
+<!--- Tags Templates -->
 <!-- Chips Template for Create / Edit / Reply Contributions -->
 <script type="text/ng-template" id="tags-template">
   <div style="border-bottom: 1px solid #C2BDBD; margin-bottom: 3px;">
@@ -80,22 +101,3 @@
         <span ng-if='!data.group'>#</span>{{data.name}}
   </div>
 </script>
-
-
-<!--- Normal Bootstrap Modals : These modals are faster to load since the same template is being reused again and again -->
-
-
-<!--- Filter Modal -->
-<!--- Included here to ensure everything is set up and modal loading is fast -->
-<ng-include src="'templates/filterModal.html'"></ng-include>
-
-<!--- Profile Modal  -->
-<!-- Should be placed here because this page gets loaded after resolving all promises for required data -->
-<ng-include src="'templates/profile.html'" ></ng-include>
-
-<!-- Create Contribution Modal -->
-<ng-include src="'templates/createContributionModal.html'" ></ng-include>
-
-
-
-

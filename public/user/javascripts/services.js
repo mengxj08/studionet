@@ -499,7 +499,7 @@ angular.module('studionet')
 	o.getAll = function(){
 		$http.get('/api/relationships/').success(function(data){
 			angular.copy(data, o.relationships);
-			console.log("Relationships Refreshed");
+			console.log("Relationships Refreshed", data);
 		});
 	}
 

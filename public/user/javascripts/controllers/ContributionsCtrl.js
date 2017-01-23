@@ -59,7 +59,7 @@ angular.module('studionet')
 
   var onEdgeSingleClick = function(evt){
     
-    console.log("Edge clicked");
+    console.log("Edge clicked", evt.cyTarget.data());
     //var edge = evt.cyTarget;
     //showEdgesModal(edge.data());
   }
