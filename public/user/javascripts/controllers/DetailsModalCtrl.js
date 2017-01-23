@@ -20,37 +20,87 @@ angular.module('studionet')
                           {"name":"last_viewed","type":"2017-01-23T07:31:43.857Z"}]}];
 
   //shared parameters in different sub scopes
-  $scope.showReplyModal = null; //show the replying modal
-  $scope.contributionData = null; //store the data of replying information
-
   $scope.alert = {}; 
   
+  $scope.contributionData = { attachments: [], tags: []}; //store the data of replying information
+  $scope.replyMode = false;
+  $scope.updateMode = false;
+
+
+  var all_tags = [];
+  for(var i=0; i<$scope.tags.length; i++){
+    all_tags[$scope.tags[i].name] = $scope.tags[i];
+  }
+
+
+  $scope.showReplyModal = function(id){
+    $scope.replyMode = true;
+  }
+
+  $scope.showUpdateModal = function(id){
+    $scope.updateMode = true;
+    $scope.contributionData = jQuery.extend({}, $scope.contribution.db_data);
+
+    console.log("updating", $scope.contributionData);
+
+    if($scope.contributionData.attachments[0].id == null){
+      $scope.contributionData.attachments = [];
+    }
+
+    if($scope.contributionData.tags instanceof Array){
+        $scope.contributionData._tags = $scope.contributionData.tags.map(function(t){
+            return all_tags[t];
+        })
+    }  
+    else if($scope.contributionData.tags == null){
+      $scope.contributionData._tags = [];
+    }
+    else{
+      $scope.contributionData._tags = [ all_tags[$scope.contributionData.tags] ]
+    }
+
+    $scope.contributionData._attachments = $scope.contributionData.attachments;
+    $scope.contributionData.attachments = [];
+
+
+  }
+
+
   // --- Modal Opening and Closing
-  $scope.clickedContribution = null;
-  $scope.contributionTree = [];  
+  /*  $scope.clickedContribution = null;
+    $scope.contributionTree = [];  */
 
   // setting data from scope calling ModalService
   $scope.setData = function(data, activeContribution){
       
-      $scope.contributionTree = data; // contribution tree
-      $scope.clickedContribution = activeContribution;  // contribution clicked initially
-      $scope.activeContribution = activeContribution; // contribution currently in view (when scroll is implemented)
+      //$scope.contributionTree = data; // contribution tree
+      //$scope.clickedContribution = activeContribution;  // contribution clicked initially
+      //$scope.activeContribution = activeContribution; // contribution currently in view (when scroll is implemented)
+
+      $scope.contribution = data[0];
 
       $scope.parents = ["parent1", "parent2", "parent3"];
 
+  }
+
+  $scope.cancel = function(){
+      $scope.contributionData = { attachments: [], tags: []}; //store the data of replying information
+      $scope.replyMode = false;
+      $scope.updateMode = false;
   }
 
   //  This close function doesn't need to use jQuery or bootstrap, because
   //  the button has the 'data-dismiss' attribute.
   $scope.close = function() {
 
+      // increase viewcount for contribution
+      contribution.updateViewCount($scope.contribution);
+
       $('body').removeClass('modal-open');
       $('.modal-backdrop').remove();
 
       console.log("View Contribution Modal Closed");
-
-      // increase viewcount for contribution
-      contribution.updateViewCount($scope.activeContribution);
+      $('#contributionViewModal').modal('hide');
 
   };
 
@@ -142,27 +192,34 @@ angular.module('studionet')
   
   // REPLY - QUESTION, COMMENT, ANSWER, RESOURCE, RELATED_TO (generic) 
   // Should have different buttons for the above relationships instead of dropdown
-  $scope.createContribution = function(createContribution){
+  $scope.replyToContribution = function(contributionData, parentId){
 
-        if(!createContribution) return;
+        if(!contributionData) return;
 
-        createContribution.contentType = 'text'; /// default
-        createContribution.tags = [];
+        contributionData.ref = parentId;
 
-        console.log(createContribution);
+        contributionData.contentType = 'text'; /// default
+        contributionData.tags = [];
 
-        if(createContribution.attachments == undefined)
-          createContribution.attachments = [];
+        console.log(contributionData);
+
+        if(contributionData.attachments == undefined)
+          contributionData.attachments = [];
 
         // if _tags is defined
-        if(createContribution._tags)
-            createContribution._tags.map(function(t){
-                createContribution.tags.push(t.name.trim());
+        if(contributionData._tags)
+            contributionData._tags.map(function(t){
+                contributionData.tags.push(t.name.trim());
             });
 
-        contribution.createContribution( createContribution ).then(function(res){
+        contribution.createContribution( contributionData ).then(function(res){
               $scope.alert.success = true; 
               $scope.alert.successMsg = "Contribution Id : " + res.data.id + " has been created.";
+
+              $scope.replyMode = false; 
+              $scope.updateMode = false;
+
+
         }, function(error){
               $scope.alert.error = true; 
               $scope.alert.errorMsg = error;
@@ -170,6 +227,8 @@ angular.module('studionet')
    };
 
   $scope.updateContribution = function(updateContribution){
+
+    updateContribution.contentType = 'text'; /// default
 
     if(!updateContribution.title || !updateContribution.body){
       alert("Please input the title or content of the contribution!");
@@ -181,13 +240,6 @@ angular.module('studionet')
       updateContribution.tags.push(t.name);
     });
     delete updateContribution._tags;
-    
-    //Assign other properties from oldContribution to the new updateContribtuion
-    //updateContribution.id = updateContribution.oldData.id;
-    //updateContribution.contentType = updateContribution.oldData.contentType;
-    //updateContribution.ref = updateContribution.oldData.ref;
-    //delete updateContribution.oldData;
-
 
     //Remove the attachments that have already existed in the database
     //Newly chosen attachment should not have the 'attachment' property
@@ -197,7 +249,6 @@ angular.module('studionet')
       }
     }
 
-    console.log(updateContribution);
     contribution.updateContribtuion(updateContribution).then(function(res){
           console.log("success");
           $scope.alert.success = true; 
@@ -216,81 +267,15 @@ angular.module('studionet')
     var r = confirm("Are you sure you want to delete your contribution? This action cannot be undone");
     if (r == true) {
       contribution.deleteContribution(contributionId).then(function(){
-        }, function(error){
+          $scope.alert.success = true; 
+          $scope.alert.successMsg = "Contribution Id : " + $scope.contribution.id + " was successfully deleted.";
+      }, function(error){
             alert("Error occured while deleting contribution")
-        });
+      });
     } else {
         x = "You pressed Cancel!";
     }
-
-
   }
 
-  // deprecated
-  $scope.createLink = function(linkData){
-    linkData.createdBy = $scope.user.id;
-
-    if(linkData.currentContributionType == 'source'){
-      linkData.source = linkData.currentContributionId;
-      linkData.target = linkData.linkedtoContributionId;
-    }
-    else{
-      linkData.source = linkData.linkedtoContributionId;
-      linkData.target = linkData.currentContributionId;
-    }
-
-    console.log(linkData);
-    $http({
-          method  : 'POST',
-          url     : '/api/relationships/',
-          data    : linkData,  
-          headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
-          })
-        .success(function(data) {
-          alert("Link Created");  
-          $scope.close();
-          $scope.$parent.graphInit(); 
-        })
-        .error(function(error){
-          alert("Error Msg:" + error.message);
-          $scope.close();
-        })
-	}
-
-  $scope.submitContribution = function(showLinkingContribution,showUpdateContribution,contributionData,linkData){
-
-    if($scope.showReplyModal)
-      $scope.createContribution(contributionData);
-
-    if(showLinkingContribution)
-      $scope.createLink(linkData);
-
-    if(showUpdateContribution)
-      $scope.updateContribution(contributionData);
-  }
-
-// Reply to an exising contribution
-  $scope.resetConbutionData = function (targetedContribution){
-    $scope.showReplyModal = true; 
-    $scope.contributionData = {};
-    $scope.contributionData.tags = [];
-    $scope.contributionData.attachments = [];
-    $scope.contributionData.ref = targetedContribution.db_data.id
-  }
-
-  $scope.replyingContribution = function (contributionData){
-    $scope.createContribution(contributionData);
-  }
-
-  /*
-   * Contribution Tree Related
-   */
-  $scope.scrollTo = function (){
-      // set the location.hash to the id of the element you wish to scroll to.
-      $location.hash('modal' + $scope.activeContribution);
-
-      // call $anchorScroll()
-      $anchorScroll();
-  };
 
 }]);

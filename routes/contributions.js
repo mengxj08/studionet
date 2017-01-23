@@ -421,10 +421,12 @@ router.route('/:contributionId')
             }
             else{
               console.log('[SUCCESS] Success in editing the contribution with id: ' + req.params.contributionId);
+              req.contributionId = result[0].id;
               res.status(200);
-              //res.send( req.params.contributionId ); 
+              res.send( result[0] );
               next();
             }
+            
           });
 
         });
@@ -474,6 +476,7 @@ router.route('/:contributionId')
 
         // Donot allow deletion of non leaf nodes
         if( incomingRelsCount > 0){
+          res.status(500);
           return res.send('Cannot delete non-leaf contributions');
         }
         else{
