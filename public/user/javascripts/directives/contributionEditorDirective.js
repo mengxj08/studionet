@@ -4,7 +4,10 @@ angular.module('contributionEditorDirective', [])
       $scope.alert = {}; 
 
       // for the new contribution
-      $scope.contributionData = { _tags: [], attachments: [], tags: [], refType: "RELATED_TO", contentType: "text", ref: supernode.contribution};
+      $scope.contributionData = {};
+
+      if($scope.isNewContribution)
+        $scope.contributionData = { _tags: [], attachments: [], tags: [], refType: "RELATED_TO", contentType: "text", ref: supernode.contribution};
 
       $scope.loadTags = function($query){
           return tags.tags.filter(function(tag){
@@ -59,5 +62,15 @@ angular.module('contributionEditorDirective', [])
 
       };
    
-}]);
+}])
+.directive('contributionEditor', function() {
+  return {
+    restrict: 'E',
+    scope: {
+      type: '=',
+      contributionData: '=data'
+    },
+    templateUrl: "user/templates/contribution-editor.html"
+  };
+});
 

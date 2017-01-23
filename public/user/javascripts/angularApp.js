@@ -1,4 +1,7 @@
-var app = angular.module('studionet', ['ngAnimate', 'ngSanitize','ui.router','ui.bootstrap', 'ngTagsInput', 'ngFileUpload', 'angularModalService', 'multiselect-searchtree', 'angular-ranger','textAngular'])
+var app = angular.module('studionet', ['ngAnimate', 'ngSanitize','ui.router','ui.bootstrap', 
+										'ngTagsInput', 'ngFileUpload', 'angularModalService', 'multiselect-searchtree', 
+										'angular-ranger','textAngular',
+										'contributionEditorDirective'])
 
 app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', function($stateProvider, $urlRouterProvider, tagsInputConfigProvider){
 

@@ -88,7 +88,7 @@ p.details{
                   <ul class="nav nav-tabs">
                     <li class='profile-tab active'><a data-target="#contributions"  data-toggle="tab">Contributions ({{ contributions.length }}) </a></li>
                     <li class='profile-tab'><a data-target="#tags"  data-toggle="tab">Tags ({{ tags.length  }})</a></li>
-                    <li class="profile-tab"><a data-target="#activity" data-toggle="tab">Groups ({{ groups.length }}) </a></li>
+                    <!-- <li class="profile-tab"><a data-target="#activity" data-toggle="tab">Groups ({{ groups.length }}) </a></li> -->
                   </ul>
                 </div>
 
@@ -120,7 +120,7 @@ p.details{
                     </div>
 
                     <!-- Content -->
-                    <div class='tab-pane profile-tab-pane fade in' id="activity">
+<!--                     <div class='tab-pane profile-tab-pane fade in' id="activity">
 
                         <button class='btn btn-default' ng-click='createGroup()'><i class="icon fa fa-pencil"></i>New Group</button>
 
@@ -142,7 +142,7 @@ p.details{
 
                         </div>
 
-                    </div>
+                    </div> -->
                 </div>
 
             </div> 
@@ -153,7 +153,7 @@ p.details{
         <div class="modal-footer">
           <center>
           <button type="button" class="btn btn-default modal-button" ng-click='editProfile()'>Edit Profile</button>
-          <button type="button" class="btn btn-default modal-button" ng-click='createNewGroup()'>New Group</button>
+          <!-- <button type="button" class="btn btn-default modal-button" ng-click='createNewGroup()'>New Group</button> -->
           <button type="button" class="btn btn-default modal-button" data-dismiss='modal' ng-click='close()'>{{ alert.success ? "Close" : "Cancel" }}</button>
           </center>
         </div>

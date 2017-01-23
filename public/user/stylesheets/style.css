@@ -25,8 +25,6 @@ body {
 	font-family: 'Open Sans', sans-serif;
 	font-size: 12px;
 
-	background: white;
-
 }
 
 h1, h2, h3, h4, h5 ,h6{
@@ -117,6 +115,17 @@ nav .navbar-nav{
 
 }
 
+.navbar-default{
+	border: 0px;
+	border-color: none;
+}
+
+.navbar .navbar-collapse{
+	border: 0px !important;
+	box-shadow: none;
+	background-color: transparent;
+}
+
 .nav.navbar-nav{
 	height: 50px !important;   // top-bar height
 	margin: 0px 50px !important;
@@ -145,6 +154,10 @@ nav .navbar-nav{
 
 .nav > li > a{
 	padding: 15px 0px;
+}
+
+.navbar-default .navbar-nav > li > a{
+	color: #4a95ef;
 }
 
 .navbar .navbar-collapse .navbar-nav > li.dropdown:hover .dropdown-menu {
@@ -178,10 +191,12 @@ nav .navbar-nav{
 	position: relative !important; 
 
 	width: 100% !important; 
-	height: calc(100vh - 50px)
+	height: calc(100vh - 50px);
 
 	margin: 0px !important; 
 	padding: 0px !important;
+
+	background-color: #000623;
 
 }
 

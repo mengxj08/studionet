@@ -233,7 +233,7 @@ angular.module('studionet')
 				contributions.getAll();
 
 				// send success
-				return;  
+				return res;  
 			})
 		    .error(function(error){
 				throw error;
@@ -251,6 +251,19 @@ angular.module('studionet')
 				headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
 				})
 	    .success(function(res) {
+
+			// refresh graph
+			graph.getGraph();
+
+			// refresh tags
+			tags.getAll();
+			
+			// refresh profile
+			profile.getUser();
+
+			// refresh contributions
+			contributions.getAll();
+
 			alert(res);
 	    })
 	    .error(function(error){
@@ -499,7 +512,7 @@ angular.module('studionet')
 	o.getAll = function(){
 		$http.get('/api/relationships/').success(function(data){
 			angular.copy(data, o.relationships);
-			console.log("Relationships Refreshed");
+			console.log("Relationships Refreshed", data);
 		});
 	}
 
