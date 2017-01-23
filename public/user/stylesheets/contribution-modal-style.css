@@ -165,7 +165,7 @@ input{
 }
 
 tags-input .tags{
-  max-height: 35px;
+  //max-height: 35px;
   overflow-y: auto;
 }
 
