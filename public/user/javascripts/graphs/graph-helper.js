@@ -264,7 +264,7 @@ var graph_style = {
 
       hideLabelsOnViewport: false,
 
-      layout: {name: 'random'},
+      layout: COSE_GRAPH_LAYOUT,
       
       style: 
         cytoscape.stylesheet()
