@@ -12,7 +12,7 @@ var db = require('seraph')({
 router.route('/')
 
   // return all users
-  .get(auth.ensureAuthenticated, auth.ensureSuperAdmin, function(req, res){
+  .get(auth.ensureAuthenticated, function(req, res){
     var query = [
       'MATCH (u:user)',
       'RETURN {id: id(u), name: u.name, avatar: u.avatar}'
