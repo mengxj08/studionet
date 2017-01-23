@@ -154,6 +154,7 @@ var computeSizeFn = function(node){
   var basic = 20;
   var final = basic; 
 
+  return basic;
 
   if(node.data('marked') == true)
     return basic + 30;
@@ -264,7 +265,7 @@ var graph_style = {
 
       hideLabelsOnViewport: false,
 
-      layout: COSE_GRAPH_LAYOUT,
+      layout: COSE_GRAPH_LAYOUT, //{name: "null"},
       
       style: 
         cytoscape.stylesheet()
@@ -461,7 +462,7 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
  * Helper Functions
  * Stackoverflow source
  */
-var threshold = 6;
+var threshold = 25;
 var reposition = function(){
 
       var topNodesLength = graph.nodes().length;
@@ -474,29 +475,50 @@ var reposition = function(){
           return ( ele1.predecessors().length > ele2.predecessors().length ? -1 : 1);
       });
 
-      /*   Criteria : Everything is on the spiral initially  */
+      /*   Criteria : Nodes with parents more than threshold on the spiral
+       *            : Nodes with parents less than threshold but no children with parents more than threshold on the spiral
+       */
       topNodes = topNodes.filter(function(i, node){
 
+            /*if(node.successors().length <= 1 && node.predecessors().length <= 1){
+              console.log("zero on spiral");
+              return true;
+            }*/
+            if(node.incomers().length <= 1 && node.outgoers().length <= 1)
+              return true;
 
-            // if node has no trailing contributions, it's not placed on the spiral
-            if(node.predecessors().length == 0)
-              return false;
 
-            // evaluating the node's parents
-/*            var flag = true;
-            node.successors().map(function(parent){
-                if(parent.incomers().length > node.incomers().length)
-                  flag = false;
-            })  
+            if(node.predecessors().length >= threshold){
+              node.predecessors().map(function(pre){
+                pre.data('onSpiral', true);
+              })
+              return true; 
+            }
+            else if(node.predecessors().length < threshold){
+              var children = node.successors();
+              var flag = true; 
+              for(var i=0; i < children.length; i++){
 
-            return flag;
-*/
-            // anything with number incomers 
-            return node.predecessors().length >= threshold  // threshold = 0 for everything on the spiral - ensure equality
-      })
+                  var child = children[i];
 
-      /*   Criteria : On the spiral if in top topNodesLength */
-      //topNodes = topNodes.slice(0, topNodesLength)
+                  // means parent on the spiral 
+                  if(child.predecessors().length >= threshold){
+                      flag = false;
+                      break;
+                  }
+
+              }
+              return flag;
+            }
+
+
+      });
+
+      console.log(topNodes.length);
+
+/*            arrangeIsolatedNodes(   graph.nodes().filter(function(i, node){
+            return ( node.incomers().length <= 1 && node.outgoers().length <= 1);
+      }) ); */
 
       var angle = 2 * Math.PI / topNodes.length;
       var radius = 0.5*window.innerWidth;
@@ -506,9 +528,7 @@ var reposition = function(){
 
       makeGalaxy( topNodes,  radius, initX, initY, undefined, 0, 6);
 
-/*      arrangeIsolatedNodes(   graph.nodes().filter(function(i, node){
-            return ( node.incomers().length <= 1 && node.outgoers().length <= 1);
-      }) ); */
+
     
 }
 
@@ -538,9 +558,9 @@ var makeGalaxy = function( nodes, radius, initX, initY, color, count, max_count,
           var node = nodes[i];
 
           if(trend === "spiralIn"){
-            radius = radius + 20// increase radius with every node placed
+            radius = radius + radius/40 // increase radius with every node placed
             //angle = angle + (node.predecessors().length/10)
-            angle = 0.98*angle;
+            angle = 0.99*angle;
           }
 
           var x = radius * Math.cos( (init_angle || 0 ) + angle*i ) + initX + node.predecessors().length;
@@ -551,7 +571,7 @@ var makeGalaxy = function( nodes, radius, initX, initY, color, count, max_count,
           else
             cluster_color = color; 
 
-          node.animate({    position : {x: x, y: y} , style: { backgroundColor: "grey" }  }, { duration: 300 });
+          node.animate({    position : {x: x, y: y} , style: { backgroundColor: cluster_color }  }, { duration: 300 });
           node.data('color', cluster_color);
 
           if(count < max_count){
@@ -575,7 +595,7 @@ var makeGalaxy = function( nodes, radius, initX, initY, color, count, max_count,
             incomers = incomers.add(outgoers); */
             
             //console.log("Making Galaxy for node", i, "in Galaxy iteration: ", count);
-            makeGalaxy( incomers, /*100 +*/ incomers.length /*(12.5*incomers.length)/Math.PI*/ , x, y, cluster_color, count+1, max_count, (init_angle || 0 ) + angle*i );
+            //makeGalaxy( incomers, /*100 +*/ incomers.length /*(12.5*incomers.length)/Math.PI*/ , x, y, cluster_color, count+1, max_count, (init_angle || 0 ) + angle*i );
           }
 
       }
