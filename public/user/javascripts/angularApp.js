@@ -98,11 +98,8 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 app.config(function($provide) {
     $provide.decorator('taOptions', ['$delegate', function(taOptions) {
     	taOptions.toolbar = [
-      	['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'pre', 'quote'],
-      	['bold', 'italics', 'underline', 'strikeThrough', 'ul', 'ol', 'undo', 'redo', 'clear'],
-      	['justifyLeft', 'justifyCenter', 'justifyRight', 'indent', 'outdent'],
-      	['html','insertLink', 'insertVideo']
-  		];
+      	['h1', 'h2', 'h3', 'p', 'ul', 'ol',
+      	'justifyLeft', 'justifyCenter', 'justifyRight', 'indent', 'outdent', 'html','insertLink', 'insertVideo']];
   		return taOptions;
     }]);
 });

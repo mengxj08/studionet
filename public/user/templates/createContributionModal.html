@@ -22,11 +22,12 @@
 
         <div class='editor' ng-hide='alert.success'>
 
+            <h3>New Contribution</h3><br>
+
             <!-- Reference -->
-            <div class='form-section'>
-              <!-- <label> Title </label> -->
+            <!-- <div class='form-section'>
               <input class='wide' placeholder="Connected To: None" ng-disabled="true">
-            </div>
+            </div> -->
 
             <!-- Title -->
             <div class='form-section'>
@@ -73,16 +74,21 @@
               </tags-input>
             </div>
 
+            <br>
+
+            <div class='form-section text-right'>
+                <button type="button" class="btn btn-default modal-button" ng-if='!alert.success' ng-click='createContribution()' ng-disabled="!(contributionData.body && contributionData.title)">Submit</button>
+                <button type="button" class="btn btn-default modal-button" data-dismiss='modal' ng-click='close()'>{{ alert.success ? "Close" : "Cancel" }}</button>
+            </div>
+
         </div>
 
       </div>
 
-      <div class="modal-footer">
-        <center>
+<!--       <div class="modal-footer">
         <button type="button" class="btn btn-default modal-button" ng-if='!alert.success' ng-click='createContribution()' ng-disabled="!(contributionData.body && contributionData.title)">Submit</button>
         <button type="button" class="btn btn-default modal-button" data-dismiss='modal' ng-click='close()'>{{ alert.success ? "Close" : "Cancel" }}</button>
-        </center>
-      </div>
+      </div> -->
   
   </div>
 

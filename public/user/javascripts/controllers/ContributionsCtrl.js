@@ -84,8 +84,8 @@ angular.module('studionet')
                 var extra_data = res.data;
 
                 qtipFormat.id = "qTip-" +  data.id;
-                qtipFormat.content.title =  extra_data.title;
-                qtipFormat.content.text = generateQtipContent(extra_data);
+                //qtipFormat.content.title =  extra_data.title;
+                qtipFormat.content.text = "<h4 class='qtip-title'>" + extra_data.title + "</h4>" +  generateQtipContent(extra_data);
 
                 qtipFormat.content.button = 'Close';
 
@@ -129,13 +129,18 @@ angular.module('studionet')
   // Function to generate the QTip content
   var generateQtipContent = function(extra_data){
 
-      var profile = "<b>" +  users.getUser( extra_data.createdBy ).name  + "</b>";
+      function htmlToPlaintext(text) {
+        return text ? String(text).replace(/<[^>]+>/gm, '') : '';
+      }
+
+
+      var profile = "<em>By " +  users.getUser( extra_data.createdBy ).name  + "</em><br>";
       var date = "<br><em>" + (new Date(extra_data.dateCreated)).toString().substr(0, 10) + "</em>" ;
       var attachments = "<br><br><b><em>" + extra_data.attachments.length + " attachments</em></b>";
       var tags = "<br>" + JSON.stringify(extra_data.tags) + "<br>";
-      var textSnippet = "<hr/>" + extra_data.body.substr(0,300);
+      var textSnippet = "<br>" + htmlToPlaintext(extra_data.body).substr(0,150) + " ...";
 
-      return profile + date + tags +( (extra_data.attachments[0].id == null) ? " " : attachments )  + textSnippet;                      
+      return profile + /*date + tags +*/( (extra_data.attachments[0].id == null) ? " " : attachments )  + textSnippet;                      
   }
 
   // Add graph interactions

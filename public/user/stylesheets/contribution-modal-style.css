@@ -1,34 +1,21 @@
 /*
- * General Styling for all Modals
+ * Colors: 
+ *
+ * Borders: #B6B6B6
+ * Light Gray (for body): #F0F0F0
+ * White (for header): #000
+ * 
  */
-.modal-backdrop {
-  background-color: #EFEFEF;
-}
 
-.modal-backdrop .in {
-    opacity: 0.4 !important;
-}
 
-.modal-header .close { /*to flush close buttn to the side */
-  margin-top: -5px;
-  margin-right: -5px;
+.modal-header .close { 
+  float: right;
+  margin-right: 5px;
 }
-
-hr {
-    display: block;
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
-    margin-left: auto;
-    margin-right: auto;
-    border-style: inset;
-    border: 1px solid #B6B6B6 !important;
-} 
 
 .modal{
   height: 100%; 
-  /*height:1000px;*/
-  width: 70% !important;
-  margin-left: 15% !important;  
+  width: 100%;
   overflow-y: scroll;
 }
 
@@ -42,8 +29,6 @@ hr {
 
 .reply-dialog{
   padding: 0px !important;
-  /*height: 100%;*/
-  /*height: 500px;*/
   height:auto;
 }
 
@@ -53,27 +38,23 @@ hr {
   box-shadow: none !important;
   border: 1px solid #B6B6B6 !important;
   border-radius: 0px !important;
-  //height: 90%; 
 }
 
 .createContribution{
-    width: 70% !important;
-    margin-left: 15% !important; 
+    width: 100% !important;
+    margin-left: 0% !important; 
 }
 
-
-.wide{
-  width: 100% !important;
-}
 
 /*
  * Modal Header
  */
 .modal-header{
     height: 45px;
-    padding: 10px 30px 10px 30px !important;
+    padding: 10px 0px 10px 0px !important;
     border-bottom: 1px solid #B6B6B6 !important;
-    overflow-x: hidden !important; /*important*/
+    overflow: hidden !important; /*important*/
+    display: none;
 }
 
 .close{ 
@@ -86,6 +67,24 @@ h4.modal-title{
     font-size: 16px !important; 
 }
 
+
+/*
+ * Modal footer
+ */
+
+.modal-footer{
+  bottom: 0px;
+  width: 100%; 
+  height: 60px;
+  padding: 7.5px 30px !important;
+
+  //border-top: 1px solid #B6B6B6 !important;
+  background-color: #F0F0F0 !important;
+
+  display: none;
+}
+
+
 /*
  * Modal Body
  */
@@ -97,41 +96,9 @@ h4.modal-title{
     overflow-y: auto !important;
 }
 
-.tab-pane{
-   padding: 10px 30px !important;
-}
-
-.editor{
-   padding: 10px 30px !important;
-}
-
-.form-section{
-  margin: 10px 0px;
-}
-
-input{
-	width: 300px;
-  display: inline-block;
-}
-
-
-#rating .glyphicon{
-    font-size: 20px;
-    line-height: 20px;
-} 
-
-.modal-footer{
-  /*position: absolute;*/
-  bottom: 0px;
-  width: 100%; 
-  height: 60px !important;
-  line-height: 45px;
-  padding: 5px !important;
-  border-top: 1px solid #B6B6B6 !important;
-}
-
 .modal-button{
   margin: 0px !important;
+  margin-bottom: 20px !important; 
   min-width: 80px;
   height: 100% !important;
   font-size: 15px;
@@ -140,11 +107,127 @@ input{
   line-height: 40px; 
 }
 
+.authorBar{
+  margin-bottom: 10px;
+}
+
+.contribution-content{
+  padding-top: 20px; 
+  border-top: 2px solid #b6b6b6;
+}
 
 
-// textAngular
+/*
+ * Additional Functionality
+ */
+
+#rating .glyphicon{
+  font-size: 20px;
+  line-height: 20px;
+  margin-top: 20px;
+} 
+
+
+#avg_rating{
+  background-color: #343333;
+  padding: 2px 5px;
+  color: #BAB2B2;
+  border-radius: 2px;
+}
+
+
+/*
+ * Modal Editors
+ */
+
+.editor{
+   padding: 10px 30px !important;
+}
+
+.form-control{
+  border-radius: 0px;
+  background-color: #f0f0f0;
+  margin-top: 5px;
+  border-color: #b6b6b6;
+  color: #333;
+}
+
+.form-section{
+  margin-top: 15px;
+}
+
+
+input{
+  width: 300px;
+  display: inline-block;
+}
+
+
+
+/*
+ * Attachments
+ */
+
+.attachment-thumb{
+  background-size: cover; 
+  min-height: 100px;
+  background-position: center;
+  background-repeat: no-repeat;
+  margin-top: 15px;
+  padding: 5px;
+}
+
+.attachments {
+ display: inline-block;
+ width: 100%;
+}
+
+
+
+
+/*
+ * ng-tags CSS
+ */
+tags-input .tags .tag-item{
+  background: #f0f0f0 !important;
+  border-radius: 0px;
+}
+
+tags-input.tags.focused{
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+tags-input .tags .input{
+  height: 30px;
+  font-size: 12px;
+  font-family: 'Open Sans', sans-serif;
+  padding: 0 0 0 5px !important;
+}
+
+tags-input .tags{
+  padding: 0px;
+}
+
+tags-input .autocomplete{
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+tags-input .autocomplete .suggestion-list{
+  max-height: 60px;
+}
+
+tags-input .tags{
+  //max-height: 35px;
+  overflow-y: auto;
+}
+
+/*
+ * Text Angular
+ */
 .ta-editor.ta-html, .ta-scroll-window.form-control{
-  max-height: 300px;
+  max-height: 500px;
 }
 
 .textAngular .btn-default{
@@ -160,38 +243,15 @@ input{
   padding: 0px !important;
 }
 
+.ta-scroll-window > .ta-bind{
+  padding: 3px 3px !important; 
+  font-size: small;
+}
+
 .btn-toolbar > .btn, .btn-toolbar > .btn-group, .btn-toolbar > .input-group{
   margin-left: 0px !important;
 }
 
-tags-input .tags{
-  //max-height: 35px;
-  overflow-y: auto;
+.textAngular .btn-default{
+  border-color: #a9a9a9 !important;
 }
-
-.attachment-thumb{
-  background-size: cover; 
-  min-height: 100px;
-  background-position: center;
-  background-repeat: no-repeat;
-  margin: 15px;
-}
-
-/*
- * Editing attachment
- */
-
- .attachments {
-   display: inline-block;
-   width: 100%;
- }
-
-/*Hide the scrollbar*/
-::-webkit-scrollbar {
-    width: 0px;  /* remove scrollbar space */
-    background: transparent;  /* optional: just make scrollbar invisible */
-}
-/* optional: show position indicator in red */
-/*::-webkit-scrollbar-thumb {
-    background: #FF0000;
-}*/

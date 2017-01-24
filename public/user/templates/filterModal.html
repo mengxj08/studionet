@@ -12,8 +12,13 @@
           <h4 class="modal-title">Filters</h4>
         </div>
 
-        <div class="modal-body">
 
+        <div class="modal-body filter-container">
+
+            <h3>Filters</h3>
+
+            <br>
+            
             <div uib-accordion class="accordion"> 
 
                   <!-- By Author Filter -->
@@ -81,16 +86,22 @@
 
                   </div>
 
+                  <br>
+
+                  <div class='row text-right'>
+                      <button type="button" ng-click="filterRequest();closeFilter();" class="btn btn-default modal-button" data-dismiss="modal">Filter</button>
+                      <button type="button" ng-click='clearFilter();closeFilter();' class="btn btn-default modal-button" data-dismiss="modal">Clear</button>
+                      <button type="button" ng-click='closeFilter();' class="btn btn-default modal-button" data-dismiss="modal">Close</button>
+                  </div>
+
+
             </div>
 
         </div>
 
         <div class="modal-footer">
 
-          <center>
-            <i class="graph-nav-control icon fa fa-filter" ng-click="filterRequest();closeFilter();" uib-tooltip='Filter' tooltip-placement='top' data-dismiss="modal"></i>
-            <i class="graph-nav-control icon fa fa-remove" ng-click="clearFilter();closeFilter();" uib-tooltip='Clear Filter' tooltip-placement='top' data-dismiss="modal"></i>
-          </center>
+
             
         </div>
 

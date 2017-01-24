@@ -36,17 +36,19 @@
 
 .info-pane{
   position: fixed;
-  right: 100px;
-  bottom: 30px;
+  right: 30px;
+  top: 70px;
 
   //width: 100px; 
   height: auto;
 
-  padding: 0px 10px;
+  // padding: 0px 10px;
 
   text-align: right;
 
   z-index: 3;
+
+  color: #7A7B80;
 }
 
 
@@ -54,7 +56,7 @@
 
   position: fixed;
   bottom: 30px;
-  right: 25px;
+  right: 30px;
 
   width: 30px; 
   height: auto;
@@ -73,8 +75,8 @@
   position: fixed;
   top: 70px !important; 
 
-  width: auto !important;
-  max-width: 250px;
+  width: 200px;
+  max-width: 200px;
   height: auto !important;
   min-height: 10px;
   margin-left: 30px !important;
@@ -85,13 +87,28 @@
   color: #969696;
 }
 
+.filter-heading-button{
+  background-color: transparent;
+  color: #274F7F;
+  border-bottom: 1px solid;
+  padding: 8px 0px;
+  cursor: pointer;
+}
+
+.filter-heading-button:after{
+  float: right;
+  content: "\f14c";
+  font-family: FontAwesome;
+}
+
 h6.clear-filter-shortcut{
-  background-color: #4A95EF;
+  background-color: transparent;
   color: #274F7F;
   display: inline-block;
   margin-right: 10px;
   padding: 8px;
-  border-radius: 5px;
+  border: 1px solid;
+  font-weight: 600;
 }
 
 h6.clear-filter-shortcut:hover{

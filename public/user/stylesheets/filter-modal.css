@@ -1,13 +1,19 @@
 /*Filter Modal Overrride */
-.filterModal .modal-header{
-	height: 30px !important;
-	padding: 0px !important;
-	border-bottom: none !important;
+
+.modal-body.filter-container{
+	padding: 30px !important;
 }
 
-.filterModal .modal-body{
-	max-height: calc(100% - 70px);
-	background-color: white;
+.panel-group .panel{
+	border-radius: 0px;
+}
+
+.panel-heading{
+	padding: 0px 30px !important;
+}
+
+.panel-body{
+	background-color: #F0F0F0 !important;
 }
 
 .filterModal .modal-footer{
@@ -16,35 +22,24 @@
 	border-top: none !important;
 	background-color: white;
 }
+
 .filterModal h4, .filterModal h5{
 	font-weight: normal;
 	font-family: 'Open Sans', sans-serif;
 }
+
 .filterModal i{
-	margin:0px;
+	margin: 0px;
 }
+
 .filterModal center{
 	background-color: white;
 }
-/* #filters{
- 	position: fixed;
- 	top: 50px;
- 	width: 80%;
- 	padding: 5px 5px;
- 	background-color: #E3E8EE;
 
- 	margin-left: 10% !important;
- }
-*/
 
 /* Accordion CSS*/
 .filterModal .panel-group{
 	margin-bottom: 0px !important;
-}
-
-.accordion{
-	margin-left: 5px;
-	margin-right: 5px;
 }
 
 .sub-accordion{
@@ -59,12 +54,9 @@
 }
 
 .panel .panel-heading {
-	background-color: #add8f7 !important;
-	padding-top: 3px;
-	padding-bottom: 3px;
-	padding-left: 15px;
-	border-top-left-radius: 4px !important;
-	border-top-right-radius: 4px !important;
+	background-color: white !important;
+	border-top-left-radius: 0px !important;
+	border-top-right-radius: 0px !important;
 }
 
 .panel .panel-body {

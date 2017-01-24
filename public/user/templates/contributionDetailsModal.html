@@ -10,7 +10,6 @@
     <div id="{{ 'modal' + contribution.db_data.id }}"  class="modal-dialog modal-content reply-dialog">
           <!-- modal header -->
           <div class="modal-header">
-              Previous 
               <button type="button" class="close" data-dismiss="modal" ng-click='close()' aria-hidden="true">&times;</button>
           </div>
 
@@ -32,27 +31,22 @@
                     <div class="col-sm-8">
                         <div class = "authorInfo">
                           <h3 class='title'>{{contribution.db_data.title}}</h3>
-                          <p><b>Contributed By:</b> {{ users[contribution.db_data.createdBy].name }}</p>
-                          <p><b>Last Updated:</b> {{ contribution.db_data.lastUpdated | date: 'longDate' }}</p>
+                          <p><b>By:</b> {{ users[contribution.db_data.createdBy].name }}</p>
                         </div>
                     </div>
 
-                    <div class="col-sm-4">
-                        <div class='titleBar'>
-                            <ng-include src="'/user/templates/rating.html'" ng-if="(user.id != contribution.db_data.createdBy)"></ng-include>
-                            <i class="pop simpleIcon icon fa fa-bar-chart" uib-popover-template="'/user/templates/statistics.html'" popover-trigger="'outsideClick'"popover-placement="bottom">Stats</i>
-                        </div>        
+                    <div class="col-sm-4 text-right">
+                      <p id='rating' uib-rating ng-model="$parent.rate" max="$parent.max" read-only="false" on-hover="$parent.hoveringOver(value)" on-leave="overStar = null" ng-click='rateContribution($parent.rate, contribution.db_data.id)'></p>
+                      <span id='avg_rating' class="pop" uib-popover-template="'/user/templates/statistics.html'" popover-trigger="'outsideClick'" popover-placement="left">
+                      {{ contribution.db_data.rating / (contribution.db_data.rateCount || 0) }}  <i class='glyphicon glyphicon-star'></i></span>
                     </div>
 
                 </div>
 
-                <hr/>
-
 
                 <!-- content -->
-                <p class='text-justify' ng-bind-html="contribution.db_data.body"></p>
-                <br><br>
-                <hr/>
+                <p class='contribution-content text-justify' ng-bind-html="contribution.db_data.body"></p>
+
 
                 <!-- Attachments - if present -->
                 <div class='row' ng-if='contribution.db_data.attachments[0].id!=null'>
@@ -64,22 +58,24 @@
                         </div>
                     </div>
                 </div>
-          </div><!-- modal body ends-->
 
-          <div class='modal-footer'>
-              <div ng-hide='replyMode || updateMode || alert.success'>
-                  <button type="button" ng-click="showReplyModal(contribution.id)" class="btn btn-default modal-button">Reply</button>
-                  
-                  <!-- if author -->
-                  <button type="button" ng-click="showUpdateModal(contribution.id)" class="btn btn-default modal-button" ng-if="(user.id == contribution.db_data.createdBy)">Update</button>
+                <br>
 
-                  <button type="button" ng-click="deleteContribution(contribution.db_data.id)" class="btn btn-default modal-button"
-                  ng-if="(user.id == contribution.db_data.createdBy)">Delete</button>
+                <div class='row text-right'>
+                  <span ng-hide='replyMode || updateMode || alert.success'>
+                      <button type="button" ng-click="showReplyModal(contribution.id)" class="btn btn-default modal-button">Reply</button>
+                      
+                      <!-- if author -->
+                      <button type="button" ng-click="showUpdateModal(contribution.id)" class="btn btn-default modal-button" ng-if="(user.id == contribution.db_data.createdBy)">Update</button>
 
+                      <button type="button" ng-click="deleteContribution(contribution.db_data.id)" class="btn btn-default modal-button"
+                      ng-if="(user.id == contribution.db_data.createdBy)">Delete</button>
+                  </span>
+
+                  <button type="button" ng-click="close();" data-dismiss='modal' class="btn btn-default modal-button">Close</button>
               </div>
 
-              <button type="button" ng-click="close();" data-dismiss='modal' class="btn btn-default modal-button">Close</button>
-          </div>
+          </div><!-- modal body ends-->
 
     </div> <!-- modal content ends -->
 
@@ -105,11 +101,10 @@
                                           target_type: 'contribution'}" 
                                           value={{rel.name}}>{{rel.name}}</option>
                 </select>
-                <!-- Reference -->
-                  <div class='form-section'>
-                    <!-- <label> Title </label> -->
+                  <!-- Reference -->
+                  <!-- <div class='form-section'>
                     <input class='wide' placeholder="For: {{contribution.db_data.title}}" ng-disabled="true">
-                </div>
+                </div> -->
               </div>
 
 
@@ -157,13 +152,16 @@
                 </tags-input>
               </div>
 
+              <br>
+
+              <div class='row text-right'>
+                  <button type="button" ng-click="replyToContribution(contributionData, contribution.db_data.id);" class="btn btn-default modal-button">Submit</button>
+                  <button type="button" ng-click='cancel()' class="btn btn-default modal-button">Cancel</button>
+              </div>
+
           </div>
         </div>
 
-        <div class='modal-footer'>
-            <button type="button" ng-click="replyToContribution(contributionData, contribution.db_data.id);" class="btn btn-default modal-button">Submit</button>
-            <button type="button" ng-click='cancel()' class="btn btn-default modal-button">Cancel</button>
-        </div>
 
       </div><!-- reply modal content ends -->
     </div><!-- reply modal dialog ends -->

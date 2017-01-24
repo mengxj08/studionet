@@ -15,6 +15,9 @@ angular.module('contributionEditorDirective', [])
       //  This close function doesn't need to use jQuery or bootstrap, because
       //  the button has the 'data-dismiss' attribute.
       $scope.close = function() {
+
+            $scope.contributionData = { _tags: [], attachments: [], tags: [], refType: "RELATED_TO", contentType: "text", ref: supernode.contribution};
+
             $('body').removeClass('modal-open');
             $('.modal-backdrop').remove();
 

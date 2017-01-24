@@ -1,4 +1,4 @@
-@import 'https://fonts.googleapis.com/css?family=Roboto+Condensed:300, 600, 900|Open+Sans:300,900';
+@import 'https://fonts.googleapis.com/css?family=Roboto:300, 600, 900|Open+Sans:300,900';
 
 .border{ 
 	border: 1px solid black;
@@ -11,6 +11,15 @@
 *{
 	/*padding: 0px;*/
 	margin: 0px; 
+}
+
+.row{
+	margin-right: 0px !important;
+	margin-left: 0px !important;
+}
+
+.row > [class*="col-"]{
+	padding: 0px !important; 
 }
 
 html{
@@ -28,8 +37,14 @@ body {
 }
 
 h1, h2, h3, h4, h5 ,h6{
-	font-family: 'Roboto Condensed', sans-serif;
-	font-weight: 900;
+	font-family: 'Roboto', sans-serif;
+	font-weight: 400;
+	margin-bottom: 0px;
+}
+
+hr{
+	padding: 5px;
+	margin: 0px;
 }
 
 a {
@@ -138,7 +153,7 @@ nav .navbar-nav{
 }
 
 .navbar-right{
-	margin: 0px 25px;
+	margin: 0px 30px;
 	margin-left: 0px !important;
     border-bottom-width: 0px !important;
 }
@@ -256,22 +271,30 @@ li.notification{
  */
 
 .qtip-titlebar{
-	//height: 30px; 
-	line-height: 32px;
-	font-size: 16px; 
-	background-color: #DFDDDD !important; 
+
+	background-color: #FFF !important; 
 	padding: 0px 10px !important;
+	border-bottom: #B6B6B6;
+	padding: 10px 0px;
+}
+
+.qtip-title{
+	line-height: 20px;
+	font-size: 16px;
+	font-weight: 600; 
+	border-bottom: 1px solid #b6b6b6;
 }
 
 .qtip, .qtip-default{
-	background-color: #F7F7F7; 
+	background-color: #F0F0F0; 
 	border: 1px solid #8E8C8C;
-	font-size: 12px; 
-	line-height: 16px;
 }
 
-.qtip-btn{
-	padding: 0px !important; 
+.qtip-content{
+	font-size: 12px; 
+	line-height: 14px;
+	text-align: justify;
+	padding-bottom: 15px;	
 }
 
 .qtip-btn:focus{
@@ -287,6 +310,14 @@ li.notification{
 	overflow: auto;
 }
 
+.wide{
+  width: 100% !important;
+}
+
+
+/*
+ * Cards
+ */
 
 .card{
   padding: 10px 10px;
@@ -297,3 +328,16 @@ li.notification{
 .card:hover{
   background-color: #BBBBBB;
 }
+
+
+.btn.btn-default{
+	border-color: #b6b6b6;
+	height: 30px !important;
+	line-height: 30px;
+	margin: 0px !important;
+	border-radius: 0px !important;
+
+}
+
+
+
