@@ -19,6 +19,23 @@
   margin-left: 20px !important;
 }
 
+#profileModal .accordion{
+  margin-top: 20px;
+}
+
+#profileModal .panel .panel-heading{
+  background-color: #ccc !important;
+}
+
+#profileModal h4{
+  margin-top: 10px;
+  margin-bottom:3px;
+}
+
+#profileModal .panel .panel-body{
+  max-height: 90vh;
+  overflow-y: scroll;
+}
 
 h5.tagline{
   color: #444444;
@@ -41,12 +58,14 @@ h5.tagline{
   font-size: 12px;
 }
 
-p.details{ 
-  line-height: 35px;
+p.details{
+  line-height: 20px;
+  opacity: 0.6;
+  margin-bottom: 8px !important;
 }
 
 .hover-effect:hover{
-  background-color: #BBBBBB;
+  background-color: #eee;
 }
 
 </style>
@@ -80,19 +99,20 @@ p.details{
                   </div>
                 </div>
 
-                
+
+
                 <div uib-accordion class="accordion"> 
                    <div uib-accordion-group>
                     <uib-accordion-heading> 
                       <h4>Contributions</h4>
                     </uib-accordion-heading>
                     <div class='col-sm-12 hover-effect' ng-repeat="contribution in user.contributions | orderBy : '-views' ">
-                          <div class='col-sm-4'>
-                            <h5><a href='/user/#/contributions/{{contribution.id}}' target=_blank>{{ contributionsRef[ contribution.id ].title }}</a></h5>
-                          </div>
-                          <div class='col-sm-8'>
-                            <p class='details'>Views: {{ contribution.views }} | Rating: {{ contribution.rating }} from {{ contribution.rateCount }} ratings</p>
-                          </div>
+                        <div >
+                          <a href='/user/#/contributions/{{contribution.id}}' target=_blank>
+                          <h4>{{ contributionsRef[ contribution.id ].title }}</h4>
+                          <p class='details'>Views: {{ contribution.views }} | Rating: {{ contribution.rating }} from {{ contribution.rateCount }} ratings</p>
+                          </a>
+                        </div>
                     </div>
                   </div>
 
@@ -100,14 +120,11 @@ p.details{
                     <uib-accordion-heading> 
                       <h4>Tags</h4>
                     </uib-accordion-heading>
-                    <div class='col-sm-12 hover-effect' ng-repeat="tag in tags | filter: {createdBy : user.id}">
-                          <div class='col-sm-5'>
-                            <h5>{{ tag.name }}</h5>
-                          </div>
-                          <div class='col-sm-7'>
-                             <p class='details'>Number of Contributions: {{ tag.contributionCount }}</p>
-                          </div>
-                          
+                    <div class='col-sm-12' ng-repeat="tag in tags | filter: {createdBy : user.id}">
+                        <div >
+                          <h4>{{ tag.name }}</h4>
+                           <p class='details'>Number of Contributions: {{ tag.contributionCount }}</p>
+                        </div>
                       </div>
                   </div>
                 </div>
