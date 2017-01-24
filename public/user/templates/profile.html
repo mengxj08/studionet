@@ -1,94 +1,21 @@
-<style>
-.profile-img-container{
-  border-radius: 0px; 
-  border: 1px solid #BAB8B8;
-  background-size: cover !important;
-  background-position: center !important;
-
-  width: 150px; 
-  height: 150px;
-
-  max-width: 150px; 
-  max-height: 150px;
-
-  margin-left: 40px;
-}
-
-.profile-details-container{
-  height: 100%; 
-  margin-left: 20px !important;
-}
-
-#profileModal .accordion{
-  margin-top: 20px;
-}
-
-#profileModal .panel .panel-heading{
-  background-color: #ccc !important;
-}
-
-#profileModal h4{
-  margin-top: 10px;
-  margin-bottom:3px;
-}
-
-#profileModal .panel .panel-body{
-  max-height: 90vh;
-  overflow-y: scroll;
-}
-
-h5.tagline{
-  color: #444444;
-}
-
-.profile-tab{
-  text-align: center;
-  text-transform: uppercase;
-  font-size: 14px;
-  line-height: 20px;
-}
-
-.profile-tab-content{
-  width: 100%; 
-  margin-top: 60px !important; 
-  height: 100%; 
-  max-height: 80%;
-  overflow-y: auto !important;
-
-  font-size: 12px;
-}
-
-p.details{
-  line-height: 20px;
-  opacity: 0.6;
-  margin-bottom: 8px !important;
-}
-
-.hover-effect:hover{
-  background-color: #eee;
-}
-
-</style>
-
-
 <div id="profileModal" class="modal fade" role="dialog" ng-controller='ProfileCtrl' ng-init='computeStats()'>
+  
   <div class="modal-dialog">
 
     <!-- Modal content-->
     <div class="modal-content">
 
-        <div class="modal-header">
+        <!-- <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" ng-click='close()' aria-hidden="true">&times;</button>
             <h4 class="modal-title">Your Profile</h4>
-        </div>
+        </div> -->
 
         <div class="modal-body">
 
-            <div class='editor'>
+            <div class='profile-container'>
 
                 <!-- Profile Details -->
-                <div class='row'>
-                  <div class='col-xs-3 profile-img-container' style='background: url({{user.avatar}})'></div>
+                <div class='row profile-header'>
                   <div class='col-xs-7 profile-details-container no-margin-padding'>
                         <h4 class='username no-margin-padding'>{{ user.name }}</h4>
                         <h6 class='tagline'>Last Logged In: {{user.lastLoggedIn | date: 'medium'}}</h6>
@@ -97,54 +24,97 @@ p.details{
                         <h6 class='stat-name no-margin-padding'>Average Rating:  <b>{{rating}}</b> </h6>
                         <h6 class='stat-name no-margin-padding'>Level:  <b>{{level}}</b> </h6>
                   </div>
+                  <div class='col-xs-3 profile-img-container' style='background: url({{user.avatar}})'></div>
                 </div>
 
 
-
                 <div uib-accordion class="accordion"> 
-                   <div uib-accordion-group>
-                    <uib-accordion-heading> 
-                      <h4>Contributions</h4>
-                    </uib-accordion-heading>
-                    <div class='col-sm-12 hover-effect' ng-repeat="contribution in user.contributions | orderBy : '-views' ">
-                        <div >
-                          <a href='/user/#/contributions/{{contribution.id}}' target=_blank>
-                          <h4>{{ contributionsRef[ contribution.id ].title }}</h4>
-                          <p class='details'>Views: {{ contribution.views }} | Rating: {{ contribution.rating }} from {{ contribution.rateCount }} ratings</p>
-                          </a>
+                   
+                    <div uib-accordion-group class='profile-item-container'>
+                      <uib-accordion-heading> 
+                        <h4>Contributions</h4>
+                      </uib-accordion-heading>
+                      <div class='col-sm-12'  ng-repeat="contribution in user.contributions | orderBy : '-views' ">
+                          <div class='profile-item'>
+                            <a href='/user/#/contributions/{{contribution.id}}' target=_blank>
+                            <h4>{{ contributionsRef[ contribution.id ].title }}</h4>
+                            <p class='details'>Views: {{ contribution.views }} | Rating: {{ contribution.rating }} from {{ contribution.rateCount }} ratings</p>
+                            </a>
+                          </div>
+                      </div>
+                    </div>
+
+                    <div uib-accordion-group class='profile-item-container'>
+                        <uib-accordion-heading> 
+                          <h4>Tags</h4>
+                        </uib-accordion-heading>
+                        <div class='col-sm-12' ng-repeat="tag in tags | filter: {createdBy : user.id}">
+                            <div class='profile-item'>
+                              <h4>{{ tag.name }}</h4>
+                               <p class='details'>Number of Contributions: {{ tag.contributionCount }}</p>
+                            </div>
                         </div>
                     </div>
-                  </div>
+                </div>
 
-                  <div uib-accordion-group>
-                    <uib-accordion-heading> 
-                      <h4>Tags</h4>
-                    </uib-accordion-heading>
-                    <div class='col-sm-12' ng-repeat="tag in tags | filter: {createdBy : user.id}">
-                        <div >
-                          <h4>{{ tag.name }}</h4>
-                           <p class='details'>Number of Contributions: {{ tag.contributionCount }}</p>
-                        </div>
-                      </div>
-                  </div>
+                <br>
+
+                <div class='row text-right'>
+                  <button type="button" class="btn btn-default modal-button" ng-click='profileEdit=true'>Edit Profile</button>
+                  <button type="button" class="btn btn-default modal-button" data-dismiss='modal' ng-click='close()'>Close</button>
                 </div>
 
             </div> 
 
-
-        </div>
-
-        <div class="modal-footer">
-          <center>
-          <button type="button" class="btn btn-default modal-button" ng-click='editProfile()'>Edit Profile</button>
-          <!-- <button type="button" class="btn btn-default modal-button" ng-click='createNewGroup()'>New Group</button> -->
-          <button type="button" class="btn btn-default modal-button" data-dismiss='modal' ng-click='close()'>{{ alert.success ? "Close" : "Cancel" }}</button>
-          </center>
         </div>
 
     </div>
 
+
+    <!-- Edit Profile-->
+    <div class="modal-content modal-dialog" ng-show='profileEdit'>
+
+        <div class="modal-body">
+
+          <div class='editor'>
+              <div class="form-group">
+                <div class="col-sm-12">
+                  <label class="control-label">Name</label>
+                </div>
+                <div class="col-sm-12">
+                  <input type="text" class="form-control" placeholder="" ng-model='user.name' maxlength="20">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <div class="col-sm-12">
+                  <label class="control-label">Your Photo</label>
+                </div>
+                <div class="col-sm-12">
+                  
+                  <div class='col-xs-3 profile-img-container' style='background: url({{user.avatar}})'>
+                  </div>
+                  <button type="button" class="btn btn-default modal-button" ngf-select="uplodateFiles($file)" ngf-multiple="false">Change</button>
+                  <!--<input type="file" ngf-select="showUplodatedFiles" ng-model="contributionData.attachments" name="file" ngf-multiple="true">-->
+                </div>
+              </div>
+          
+              <div class='row text-right'>
+                <button type="button" class="btn btn-default modal-button" ng-click='profileEdit=false;'>Submit</button>
+                <button type="button" class="btn btn-default modal-button" ng-click='profileEdit=false;'>Cancel</button>
+              </div>
+
+
+          </div>
+
+        </div>
+    
+    </div>
+
   </div>
+
 </div>
+
+<link rel="stylesheet" href="/user/stylesheets/profile.css">
 
 
