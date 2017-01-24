@@ -1,5 +1,4 @@
 /*Filter Modal Overrride */
-
 .modal-body.filter-container{
 	padding: 30px !important;
 }
@@ -16,7 +15,7 @@
 	background-color: #F0F0F0 !important;
 }
 
-.filterModal .modal-footer{
+#filterModal .modal-footer{
 	height: 40px !important;
 	padding: 0px !important;
 	border-top: none !important;
@@ -38,7 +37,7 @@
 
 
 /* Accordion CSS*/
-.filterModal .panel-group{
+#filterModal .panel-group{
 	margin-bottom: 0px !important;
 }
 
