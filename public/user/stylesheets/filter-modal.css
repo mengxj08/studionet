@@ -1,6 +1,6 @@
 /*Filter Modal Overrride */
 .modal-body.filter-container{
-	padding: 30px !important;
+	padding: 15px !important;
 }
 
 #filterModal .modal-footer{

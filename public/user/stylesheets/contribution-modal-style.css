@@ -8,105 +8,6 @@
  */
 
 
-.modal-header .close { 
-  float: right;
-  margin-right: 5px;
-}
-
-.modal{
-  height: 100%; 
-  width: 100%;
-  overflow-y: scroll;
-}
-
-.modal-dialog{
-  padding: 0px !important;
-  //height: 100%;
-  /*height: 500px;*/
-  margin-top: 15px;
-  margin-bottom: 15px;
-}
-
-.reply-dialog{
-  padding: 0px !important;
-  height:auto;
-}
-
-.modal-content{
-  position: relative;
-  overflow-y: hidden !important;
-  box-shadow: none !important;
-  border: 1px solid #B6B6B6 !important;
-  border-radius: 0px !important;
-}
-
-.createContribution{
-    width: 100% !important;
-    margin-left: 0% !important; 
-}
-
-
-/*
- * Modal Header
- */
-.modal-header{
-    height: 45px;
-    padding: 10px 0px 10px 0px !important;
-    border-bottom: 1px solid #B6B6B6 !important;
-    overflow: hidden !important; /*important*/
-    display: none;
-}
-
-.close{ 
-    line-height: 25px !important;
-}
-
-h4.modal-title{
-    line-height: 25px;
-    text-align: center !important;
-    font-size: 16px !important; 
-}
-
-
-/*
- * Modal footer
- */
-
-.modal-footer{
-  bottom: 0px;
-  width: 100%; 
-  height: 60px;
-  padding: 7.5px 30px !important;
-
-  //border-top: 1px solid #B6B6B6 !important;
-  background-color: #F0F0F0 !important;
-
-  display: none;
-}
-
-
-/*
- * Modal Body
- */
-.modal-body{
-    height: 100%;
-    max-height: calc(100% - 105px);
-    padding: 0px !important;
-    background-color: #F0F0F0;
-    overflow-y: auto !important;
-}
-
-.modal-button{
-  margin: 0px !important;
-  margin-bottom: 20px !important; 
-  min-width: 80px;
-  height: 100% !important;
-  font-size: 15px;
-  font-family: 'Roboto Condensed', sans-serif;
-  padding: 0px; 
-  line-height: 40px; 
-}
-
 .authorBar{
   margin-bottom: 10px;
 }
@@ -141,7 +42,7 @@ h4.modal-title{
  */
 
 .editor{
-   padding: 10px 30px !important;
+   padding: 15px !important;
 }
 
 .form-control{
@@ -152,14 +53,10 @@ h4.modal-title{
   color: #333;
 }
 
-.form-section{
-  margin-top: 15px;
-}
-
-
 input{
   width: 300px;
   display: inline-block;
+  background-color: white;
 }
 
 

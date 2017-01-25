@@ -7,7 +7,7 @@
 
         <!-- <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" ng-click='close()' aria-hidden="true">&times;</button>
-            <h4 class="modal-title">Your Profile</h4>
+            <h5 class="modal-title">Your Profile</h5>
         </div> -->
 
         <div class="modal-body">
@@ -16,15 +16,20 @@
 
                 <!-- Profile Details -->
                 <div class='row profile-header'>
+                  
                   <div class='col-xs-7 profile-details-container no-margin-padding'>
-                        <h4 class='username no-margin-padding'>{{ user.name }}</h4>
+                        <h5 class='username no-margin-padding'>{{ user.name }}</h4>
                         <h6 class='tagline'>Last Logged In: {{user.lastLoggedIn | date: 'medium'}}</h6>
-                        <hr>
+
+                        <br>
+
                         <h6 class='stat-name no-margin-padding'>Total Views:  <b>{{views}}</b> </h6>
                         <h6 class='stat-name no-margin-padding'>Average Rating:  <b>{{rating}}</b> </h6>
                         <h6 class='stat-name no-margin-padding'>Level:  <b>{{level}}</b> </h6>
                   </div>
+
                   <div class='col-xs-3 profile-img-container' style='background: url({{user.avatar}})'></div>
+
                 </div>
 
 
@@ -32,34 +37,48 @@
                    
                     <div uib-accordion-group class='profile-item-container'>
                       <uib-accordion-heading> 
-                        <h4>Contributions</h4>
+                          <h5>Contributions</h5>
                       </uib-accordion-heading>
+                      
                       <div class='col-sm-12'  ng-repeat="contribution in user.contributions | orderBy : '-views' ">
                           <div class='profile-item'>
-                            <a href='/user/#/contributions/{{contribution.id}}' target=_blank>
-                            <h4>{{ contributionsRef[ contribution.id ].title }}</h4>
-                            <p class='details'>Views: {{ contribution.views }} | Rating: {{ contribution.rating }} from {{ contribution.rateCount }} ratings</p>
-                            </a>
+                            <div class='row'>
+                              <div class='col-sm-6'>
+                                <h6><a href='/user/#/contributions/{{contribution.id}}' target=_blank> {{ contributionsRef[ contribution.id ].title }} </a></h6>
+                              </div>
+                              <div class='col-sm-3'>
+                                <h6>{{ contribution.views }} views</h6>
+                              </div>
+                              <div class='col-sm-3'>
+                                <h6>Rating: {{ contribution.rating }} from {{ contribution.rateCount }} ratings</h6>
+                              </div>
+                            </div>
                           </div>
                       </div>
+
                     </div>
 
                     <div uib-accordion-group class='profile-item-container'>
                         <uib-accordion-heading> 
-                          <h4>Tags</h4>
+                          <h5>Tags</h5>
                         </uib-accordion-heading>
                         <div class='col-sm-12' ng-repeat="tag in tags | filter: {createdBy : user.id}">
                             <div class='profile-item'>
-                              <h4>{{ tag.name }}</h4>
-                               <p class='details'>Number of Contributions: {{ tag.contributionCount }}</p>
+                              <div class='row'>
+                                <div class='col-sm-6'>
+                                  <h6>{{tag.name }}</h6>
+                                </div>
+                                <div class='col-sm-6'>
+                                  <h6>{{ tag.contributionCount }} contributions with this tag</h6>
+                                </div>
+                              </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <br>
-
-                <div class='row text-right'>
+                <div class='row text-right modal-section'>
+                  <button type="button" class="btn btn-default modal-button" ng-click='profileEdit=true'>Edit Groups</button>
                   <button type="button" class="btn btn-default modal-button" ng-click='profileEdit=true'>Edit Profile</button>
                   <button type="button" class="btn btn-default modal-button" data-dismiss='modal' ng-click='close()'>Close</button>
                 </div>
@@ -79,7 +98,7 @@
           <div class='editor'>
               <div class="form-group">
                 <div class="col-sm-12">
-                  <label class="control-label">Name</label>
+                  <h5 class="control-label">Name</h5>
                 </div>
                 <div class="col-sm-12">
                   <input type="text" class="form-control" placeholder="" ng-model='user.name' maxlength="20">
@@ -88,7 +107,7 @@
 
               <div class="form-group">
                 <div class="col-sm-12">
-                  <label class="control-label">Your Photo</label>
+                  <h5 class="control-label">Your Photo</h5>
                 </div>
                 <div class="col-sm-12">
                   

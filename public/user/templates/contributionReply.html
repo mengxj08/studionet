@@ -1,0 +1,94 @@
+<!--Reply modal-->
+<div id='reply-modal' class="modal-dialog modal-content reply-dialog" ng-if='replyMode'>
+  
+  <div class="modal-content">
+
+    <div class="modal-body">
+      <!-- Create a new contribution by replying to existing ones -->
+      <div class='row editor reply'>
+
+          <!-- Relationship -->
+          <div class='modal-section'>
+            <h5 for="singleSelect"> Contribution is : </h5>
+            <select name="singleSelect" id="singleSelect" ng-model=contributionData.refType>
+              <option ng-repeat="rel in relationships | filter: { src_type: 'contribution', 
+                                      target_type: 'contribution'}" 
+                                      value={{rel.name}}>{{rel.name}}</option>
+            </select>
+              <!-- Reference -->
+              <!-- <div class='modal-section'>
+                <input class='wide' placeholder="For: {{contribution.db_data.title}}" ng-disabled="true">
+            </div> -->
+          </div>
+
+
+
+          <!-- Title -->
+          <div class='modal-section'>
+            <!-- <label> Title </label> -->
+            <input class='wide' value='Title' ng-model="contributionData.title" placeholder="Enter a title">
+          </div>
+
+          <!-- Content -->
+          <div class='modal-section'>
+            <!-- <label> Content </label> -->
+            <div text-angular ng-model="contributionData.body" class="textAngular"></div>
+          </div>
+          
+          <!-- attachments -->
+          <!-- <div class='modal-section'>
+            <label> Attachments <small>({{contributionData.attachments.length}} file(s) uploaded)</small> </label>
+            <button type="button" class="btn btn-default modal-button" ngf-select="uplodateFiles($files, contributionData)" ngf-multiple="true">Choose File</button>
+            <div class="attachments" ng-repeat="attachment in contributionData.attachments">
+              <h5 style="color: blue; width: 70%; display: inline-block;"><u>{{ attachment.name }} ({{ attachment.size/1000 }} KB)</u></h5>
+              <button style='float: right; display: inline-block;' class="btn btn-xs" ng-click="removeFiles(attachment)">X</button>
+            </div>
+          </div> -->
+
+          <!-- attachments -->
+          <div class='modal-section'>
+            <a type="button" ngf-select="uplodateFiles($files, contributionData)" ngf-multiple="true">
+            <i class='fa fa-paperclip'></i><h5 style='display: inline-block;'>&nbsp;&nbsp;&nbsp;&nbsp;Attachments <small>({{contributionData.attachments.length}} file(s) uploaded)</small></h5>
+            </a>
+            
+
+            <!--<input type="file" ngf-select="showUplodatedFiles" ng-model="contributionData.attachments" name="file" ngf-multiple="true">-->
+            <div class="attachments" ng-repeat="attachment in contributionData.attachments">
+              <h5 style="color: blue; width: 70%; display: inline-block;"><u>{{ attachment.name }} ({{ attachment.size/1000 }} KB)</u></h5>
+              <button style='float: right; display: inline-block;' class="btn btn-xs" ng-click="removeFiles(attachment)">X</button>
+            </div>
+          </div>
+
+          <!-- tags -->
+          <div class='modal-section'>
+            <h5> Tags <small>( {{ contributionData._tags.length || 0 }} tag(s) added) </small></h5>
+            <tags-input class='tags-input' class="bootstrap"
+              type='text'
+              ng-model="contributionData._tags"
+              display-property='name'
+              placeholder="Add a tag"
+              replace-spaces-with-dashes="false"
+              template='tag-item-template'>
+            <auto-complete source="loadTags($query)"
+                          min-length="0"
+                          debounce-delay="0"
+                          max-results-to-show="10000"
+                          load-on-down-arrow="true"
+                          load-on-focus="true"
+                          template="tags-template"></auto-complete>
+            </tags-input>
+          </div>
+
+          <br>
+
+          <div class='row text-right'>
+              <button type="button" ng-click="replyToContribution(contributionData, contribution.db_data.id);" class="btn btn-default modal-button">Submit</button>
+              <button type="button" ng-click='cancel()' class="btn btn-default modal-button">Cancel</button>
+          </div>
+
+      </div>
+    </div>
+
+
+  </div><!-- reply modal content ends -->
+</div><!-- reply modal dialog ends 

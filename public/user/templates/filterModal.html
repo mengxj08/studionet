@@ -7,24 +7,19 @@
     <!-- Modal content-->
     <div class="modal-content">
 
-        <div class="modal-header">
-          <button type="button" class="close" ng-click='closeFilter();' data-dismiss="modal" >&times;</button>
-          <h4 class="modal-title">Filters</h4>
-        </div>
-
-
         <div class="modal-body filter-container">
 
-            <h3>Filters</h3>
+            <div class='modal-info'>
+              <h5>Filters</h5>
+              <h6>Lorem ipsum Aliqua voluptate deserunt reprehenderit Ut laboris enim anim in est adipisicing aliqua aute aliqua laboris Ut reprehenderit laboris fugiat in.</h6>
+            </div>
 
-            <br>
-            
-            <div uib-accordion class="accordion"> 
+            <div uib-accordion class="accordion modal-section"> 
 
                   <!-- By Author Filter -->
                   <div uib-accordion-group>
                     <uib-accordion-heading> 
-                      <h4>Authors</h4>
+                      <h5>Authors</h5>
                     </uib-accordion-heading>
 
                     <div uib-accordion class="sub-accordion"> 
@@ -52,7 +47,7 @@
                   <!-- By Tags Filter -->
                   <div uib-accordion-group>
                     <uib-accordion-heading>
-                      <h4>Tags</h4>
+                      <h5>Tags</h5>
                     </uib-accordion-heading>
                     <multiselect-searchtree id='tagFilter' data-input-model="tags" multi-select="true"
                                   data-output-model="$parent.$parent.$parent.selectedTags" data-callback="CustomCallback(item, selectedItems)"
@@ -60,25 +55,25 @@
                   </div>
 
                   <!-- By Ranges-->
-                  <div uib-accordion-group id='range-panel'>
+                  <div uib-accordion-group id='range-panel' class='modal-section'>
 
                       <uib-accordion-heading>  
-                        <h4>Ranges</h4>  
+                        <h5>Ranges</h5>  
                       </uib-accordion-heading>
 
                       <div class='col-sm-12'>
 
                         <div id='dateFilter'>
-                          <h5>Date Range <!-- <span class='filter-element-count'></span> --></h5>  
-                          From: <input type="date" name="firstDate" ng-model='$parent.$parent.$parent.startDate'>
                           <br>
-                          Till: <input type="date" name="lastDate" ng-model='$parent.$parent.$parent.endDate'>
+                          <h6>Date Range <!-- <span class='filter-element-count'></span> --></h6>  
+                          <h6>Starting from: </h6><input type="date" name="firstDate" ng-model='$parent.$parent.$parent.startDate'>
+                          <br>
+                          <h6>Ending on </h6> <input type="date" name="lastDate" ng-model='$parent.$parent.$parent.endDate'>
                         </div>
 
-
-
-                        <div class='col-sm-12'>
-                          <h5>Rating <!-- <span class='filter-element-count'></span> --></h5>  
+                        <div id='rating'>
+                          <br>
+                          <h6>Ratings <!-- <span class='filter-element-count'></span> --></h6>  
                           <angular-ranger id='ratingFilter' min="0" max="5" step="1" min-value=$parent.$parent.$parent.ratingMin max-value=$parent.$parent.$parent.ratingMax></angular-ranger>
                         </div>
 
@@ -86,23 +81,14 @@
 
                   </div>
 
-                  <br>
-
-                  <div class='row text-right'>
+                  <div class='row text-right modal-section'>
                       <button type="button" ng-click="filterRequest();closeFilter();" class="btn btn-default modal-button" data-dismiss="modal">Filter</button>
                       <button type="button" ng-click='clearFilter();closeFilter();' class="btn btn-default modal-button" data-dismiss="modal">Clear</button>
                       <button type="button" ng-click='closeFilter();' class="btn btn-default modal-button" data-dismiss="modal">Close</button>
                   </div>
 
-
             </div>
 
-        </div>
-
-        <div class="modal-footer">
-
-
-            
         </div>
 
     </div>

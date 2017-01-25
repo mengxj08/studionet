@@ -98,7 +98,7 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 app.config(function($provide) {
     $provide.decorator('taOptions', ['$delegate', function(taOptions) {
     	taOptions.toolbar = [
-      	['h1', 'h2', 'h3', 'p', 'ul', 'ol',
+      	['clear', 'h1', 'h2', 'h3', 'p', 'ul', 'ol',
       	'justifyLeft', 'justifyCenter', 'justifyRight', 'indent', 'outdent', 'html','insertLink', 'insertVideo']];
   		return taOptions;
     }]);

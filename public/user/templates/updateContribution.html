@@ -1,0 +1,72 @@
+<!-- Update Modal -->
+<div id='update-modal' class="modal-dialog modal-content" ng-if='updateMode'>
+  
+  <div class="modal-content">
+
+    <div class="modal-header"><h4 class="modal-title">Update Contribution</h4></div>
+
+    <div class="modal-body">
+        <div class='row editor update'>
+            
+            <!-- Title -->
+            <div class='form-section'>
+              <!-- <label> Title </label> -->
+              <input class='wide' value='Title' ng-model="contributionData.title">
+            </div>
+
+            <!-- Content -->
+            <div class='form-section'>
+              <!-- <label> Content </label> -->
+              <div text-angular ng-model="contributionData.body" class="textAngular"></div>
+            </div>
+
+            <!-- attachments -->
+            <div class='form-section'>
+              <!-- should be different from create / reply editor -->
+              <!-- <label> Attachments <small>({{ contributionData.attachments.length }} file(s) uploaded)</small> </label>
+              <div class="button btn-sm" ngf-select ng-model="contributionData.attachments" ngf-multiple="true">
+                    <h6>Choose Additional Files</h6>
+              </div> -->
+              <!-- new attachments -->
+              <!-- <div class="attachments" ng-repeat="attachment in contributionData.attachments" ng-if='contributionData.attachments.length>0'>
+                <h5 style="color: blue; width: 70%; display: inline-block;"><u>{{ attachment.name }} ({{ attachment.size/1000 }} KB)</u></h5>
+                <button style='float: right; display: inline-block;' class="btn btn-xs" ng-click="removeFiles(attachment, contributionData)">X</button>
+              </div>
+              <hr> -->
+              <!-- existing attachments -->
+              <h6  ng-if='contributionData._attachments[0].id != null'>Existing Attachments</h6>
+              <div class="attachments" ng-repeat="attachment in contributionData._attachments" ng-if='contributionData._attachments[0].id != null'>
+                <h5 style="color: blue; width: 70%; display: inline-block;"><u>{{ attachment.attachment.name }} ({{ attachment.attachment.size/1000 }} KB)</u></h5>
+                <!-- <button style='float: right; display: inline-block;' class="btn btn-xs" ng-click="removeFiles(attachment)">X</button> -->
+              </div>
+            </div>
+            
+            <!-- tags -->
+            <div class='form-section'>
+              <label> Tags <small>( {{ contributionData._tags.length || 0 }} tag(s) added) </small></label>
+              <tags-input class='tags-input' class="bootstrap"
+                type='text'
+                ng-model="contributionData._tags"
+                display-property='name'
+                placeholder="Add a tag"
+                replace-spaces-with-dashes="false"
+                template='tag-item-template'>
+              <auto-complete source="loadTags($query)"
+                            min-length="0"
+                            debounce-delay="0"
+                            max-results-to-show="10000"
+                            load-on-down-arrow="true"
+                            load-on-focus="true"
+                            template="tags-template"></auto-complete>
+              </tags-input>
+            </div>
+        </div>
+    </div>
+
+    <div class='modal-footer'>
+        <button type="button" ng-click="updateContribution(contributionData);" class="btn btn-default modal-button">Update</button>
+        <button type="button" class="btn btn-default modal-button" ng-click='cancel()'>Cancel</button>
+    </div>
+  
+  </div>
+</div>

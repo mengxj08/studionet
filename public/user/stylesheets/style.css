@@ -39,7 +39,10 @@ body {
 h1, h2, h3, h4, h5 ,h6{
 	font-family: 'Roboto', sans-serif;
 	font-weight: 400;
-	margin-bottom: 0px;
+
+	padding: 0px !important;
+	margin: 0px;
+	margin-bottom: 4px;
 }
 
 hr{
@@ -347,10 +350,6 @@ li.notification{
 	border-radius: 0px;
 }
 
-.panel-heading{
-	padding: 0px 15px !important;
-}
-
 .panel-body{
 	background-color: #F0F0F0 !important;
 	padding: 0px !important;
@@ -371,6 +370,7 @@ li.notification{
 	background-color: white !important;
 	border-top-left-radius: 0px !important;
 	border-top-right-radius: 0px !important;
+	padding: 5px;
 }
 
 .panel .panel-body {
@@ -383,6 +383,120 @@ li.notification{
 	border-bottom-right-radius: 4px !important;
 }
 
+.panel-group{
+	
+	margin-bottom: 0px;
+}
 
 
 
+html {
+    overflow: scroll;
+    overflow-x: hidden;
+}
+::-webkit-scrollbar {
+    width: 0px;  /* remove scrollbar space */
+    background: transparent;  /* optional: just make scrollbar invisible */
+}
+/* optional: show position indicator in red */
+::-webkit-scrollbar-thumb {
+    background: #FF0000;
+}
+
+
+/*
+ * Modal Styles
+ */
+
+
+.modal-header .close { 
+  float: right;
+  margin-right: 5px;
+}
+
+.modal{
+  height: 100%; 
+  width: 100%;
+  overflow-y: scroll;
+}
+
+.modal-dialog{
+  padding: 0px !important;
+  //height: 100%;
+  /*height: 500px;*/
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.modal-content{
+  position: relative;
+  overflow-y: hidden !important;
+  box-shadow: none !important;
+  border: 1px solid #B6B6B6 !important;
+  border-radius: 0px !important;
+}
+
+
+/*
+ * Modal Header
+ */
+.modal-header{
+    height: 45px;
+    padding: 10px 0px 10px 0px !important;
+    border-bottom: 1px solid #B6B6B6 !important;
+    overflow: hidden !important; /*important*/
+    display: none;
+}
+
+.close{ 
+    line-height: 25px !important;
+}
+
+h4.modal-title{
+    line-height: 25px;
+    text-align: center !important;
+    font-size: 16px !important; 
+}
+
+
+/*
+ * Modal footer
+ */
+
+.modal-footer{
+  bottom: 0px;
+  width: 100%; 
+  height: 60px;
+  padding: 7.5px 30px !important;
+
+  //border-top: 1px solid #B6B6B6 !important;
+  background-color: #F0F0F0 !important;
+
+  display: none;
+}
+
+
+/*
+ * Modal Body
+ */
+.modal-body{
+    height: 100%;
+    max-height: calc(100% - 105px);
+    padding: 0px !important;
+    background-color: #F0F0F0;
+    overflow-y: auto !important;
+}
+
+.modal-button{
+  margin: 15px 10px 0px 10px !important;
+  min-width: 80px;
+  height: 100% !important;
+  font-size: 15px;
+  font-family: 'Roboto Condensed', sans-serif;
+  padding: 0px; 
+  line-height: 40px; 
+}
+
+.modal-section{
+  margin-top: 15px;
+}
