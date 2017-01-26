@@ -1,4 +1,4 @@
-<div id="profileModal" class="modal fade" role="dialog" ng-controller='ProfileCtrl' ng-init='computeStats()'>
+<div id="profileModal" class="modal fade" role="dialog" ng-controller='ProfileCtrl as profilectrl' ng-init='computeStats()'>
   
   <div class="modal-dialog">
 
@@ -78,8 +78,8 @@
                 </div>
 
                 <div class='row text-right modal-section'>
-                  <button type="button" class="btn btn-default modal-button" ng-click='profileEdit=true'>Edit Groups</button>
-                  <button type="button" class="btn btn-default modal-button" ng-click='profileEdit=true'>Edit Profile</button>
+                  <button type="button" class="btn btn-default modal-button" ng-disabled="true">Edit Groups</button>
+                  <button type="button" class="btn btn-default modal-button" ng-click='profilectrl.profileEdit=true' ng-hide="profilectrl.profileEdit">Edit Profile</button>
                   <button type="button" class="btn btn-default modal-button" data-dismiss='modal' ng-click='close()'>Close</button>
                 </div>
 
@@ -89,46 +89,7 @@
 
     </div>
 
-
-    <!-- Edit Profile-->
-    <div class="modal-content modal-dialog" ng-show='profileEdit'>
-
-        <div class="modal-body">
-
-          <div class='editor'>
-              <div class="form-group">
-                <div class="col-sm-12">
-                  <h5 class="control-label">Name</h5>
-                </div>
-                <div class="col-sm-12">
-                  <input type="text" class="form-control" placeholder="" ng-model='user.name' maxlength="20">
-                </div>
-              </div>
-
-              <div class="form-group">
-                <div class="col-sm-12">
-                  <h5 class="control-label">Your Photo</h5>
-                </div>
-                <div class="col-sm-12">
-                  
-                  <div class='col-xs-3 profile-img-container' style='background: url({{user.avatar}})'>
-                  </div>
-                  <button type="button" class="btn btn-default modal-button" ngf-select="uplodateFiles($file)" ngf-multiple="false">Change</button>
-                  <!--<input type="file" ngf-select="showUplodatedFiles" ng-model="contributionData.attachments" name="file" ngf-multiple="true">-->
-                </div>
-              </div>
-          
-              <div class='row text-right'>
-                <button type="button" class="btn btn-default modal-button" ng-click='profileEdit=false;'>Submit</button>
-                <button type="button" class="btn btn-default modal-button" ng-click='profileEdit=false;'>Cancel</button>
-              </div>
-
-
-          </div>
-
-        </div>
-    
-    </div>
+    <ng-include src="'./templates/editProfile.html'"></ng-include>
 
   </div>
 

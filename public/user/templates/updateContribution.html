@@ -9,19 +9,19 @@
         <div class='row editor update'>
             
             <!-- Title -->
-            <div class='form-section'>
+            <div class='modal-section'>
               <!-- <label> Title </label> -->
               <input class='wide' value='Title' ng-model="contributionData.title">
             </div>
 
             <!-- Content -->
-            <div class='form-section'>
+            <div class='modal-section'>
               <!-- <label> Content </label> -->
               <div text-angular ng-model="contributionData.body" class="textAngular"></div>
             </div>
 
             <!-- attachments -->
-            <div class='form-section'>
+            <div class='modal-section'>
               <!-- should be different from create / reply editor -->
               <!-- <label> Attachments <small>({{ contributionData.attachments.length }} file(s) uploaded)</small> </label>
               <div class="button btn-sm" ngf-select ng-model="contributionData.attachments" ngf-multiple="true">
@@ -42,7 +42,7 @@
             </div>
             
             <!-- tags -->
-            <div class='form-section'>
+            <div class='modal-section'>
               <label> Tags <small>( {{ contributionData._tags.length || 0 }} tag(s) added) </small></label>
               <tags-input class='tags-input' class="bootstrap"
                 type='text'
@@ -60,13 +60,18 @@
                             template="tags-template"></auto-complete>
               </tags-input>
             </div>
+
+            <br>
+
+            <div class='row text-right modal-section'>
+                <button type="button" ng-click="updateContribution(contributionData);" class="btn btn-default modal-button">Update</button>
+                <button type="button" class="btn btn-default modal-button" ng-click='cancel()'>Cancel</button>
+            </div>
+
         </div>
     </div>
 
-    <div class='modal-footer'>
-        <button type="button" ng-click="updateContribution(contributionData);" class="btn btn-default modal-button">Update</button>
-        <button type="button" class="btn btn-default modal-button" ng-click='cancel()'>Cancel</button>
-    </div>
+
   
   </div>
 </div>

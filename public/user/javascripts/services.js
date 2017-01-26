@@ -25,10 +25,25 @@ angular.module('studionet')
 
 	};
 
+	var observerCallbacks = [];
+
+	// register an observer
+	o.registerObserverCallback = function(callback){
+	   observerCallbacks.push(callback);
+	};
+
+	// call this when you know 'foo' has been changed
+	var notifyObservers = function(){
+		angular.forEach(observerCallbacks, function(callback){
+	    	 callback();
+	    });
+	};
+
 	o.getUser = function(){
 		return $http.get('/api/profile/').success(function(data){
 			angular.copy(data, o.user);
 			console.log("Profile Refreshed");
+			notifyObservers();
 		});
 	};
 
@@ -51,7 +66,7 @@ angular.module('studionet')
 
 	o.changeName = function(user){
 
-	  	$http({
+	  	return $http({
 			  method  : 'PUT',
 			  url     : '/api/profile/',
 			  data    : user,  // pass in data as strings

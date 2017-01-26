@@ -46,8 +46,9 @@ h1, h2, h3, h4, h5 ,h6{
 }
 
 hr{
-	padding: 5px;
-	margin: 0px;
+	padding: 0px;
+	margin: 2px 0px;
+	border-bottom: 1px solid #B6B6b6;
 }
 
 a {
@@ -499,4 +500,8 @@ h4.modal-title{
 
 .modal-section{
   margin-top: 15px;
+}
+
+.modal-editor{
+	padding: 15px;
 }

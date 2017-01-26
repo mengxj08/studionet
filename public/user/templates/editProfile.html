@@ -1,0 +1,31 @@
+<!-- Edit Profile-->
+<div class="modal-content modal-dialog" ng-show='profilectrl.profileEdit == true' ng-controller="EditProfileCtrl">
+
+    <div class="modal-body">
+
+      <div class='modal-editor'>
+
+          <div class='row'>
+              <div class="col-sm-6 profile-img-container" style='background: url({{userData.avatar}})'>
+                  <a type="button" ngf-select="uplodateFiles($files)" ngf-multiple="false">
+                  <i class='fa fa-pencil' style='float: right;'></i>
+                  </a>
+              </div>
+                
+              <div class="col-sm-6">
+                  <h5 style="display: inline-block;">Logged in with NusOpenID: {{ userData.nusOpenId }}</h5>
+                  <hr>
+                  <h5 style="display: inline-block;">Name:</h5><input style='display: inline-block;' type="text" placeholder="" ng-model='userData.name' maxlength="60">
+              </div>
+          </div>
+
+          <div class='row text-right modal-section'>
+            <button type="button" class="btn btn-default modal-button" ng-click='updateProfile(); profilectrl.profileEdit = false'>Submit</button>
+            <button type="button" class="btn btn-default modal-button" ng-click='profilectrl.profileEdit = false'>Cancel</button>
+          </div>
+
+      </div>
+    
+    </div>
+
+</div>

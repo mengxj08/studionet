@@ -14,6 +14,13 @@ angular.module('studionet')
 	$scope.contributions = $scope.user.contributions;
 	$scope.groups = groups.groups;
 
+	// Observe the Graph Service for Changes and register observer
+	var updateProfile = function(){
+	  $scope.user = profile.user;
+	};
+	profile.registerObserverCallback(updateProfile);
+
+
 	$scope.computeStats = function(){
 
 		$scope.views = 0; 
@@ -56,13 +63,50 @@ angular.module('studionet')
 	    $('.modal-backdrop').remove();
   	};
   
+
+}])
+
+.controller('EditProfileCtrl', ['$scope', 'profile', 'Upload', '$http',  function($scope, profile, Upload, $http){
+
+	$scope.userData = { 'id': profile.user.id, 'name': profile.user.name, 'nusOpenId': profile.user.nusOpenId, 'avatar': profile.user.avatar };
+
+	$scope.uplodateFiles = function (profile_picture){
+
+	  //$scope.userData.profilePic = profile_picture;
+
+	  //console.log(profile_picture);
+	  $scope.profilePic = profile_picture;
+  	
+  	}
+
 	$scope.uploadPic = function(avatar) {
-	    avatar.upload = Upload.upload({
-	      url: '/uploads/avatar',
-	      data: {username: $scope.username, avatar: avatar},
+
+		var formData = new FormData();
+		formData.append('avatar', avatar, avatar.name);
+
+		console.log(formData);
+
+	    $http({
+				method  : 'POST',
+				url     : '/uploads/avatar',
+				headers : { 'Content-Type': undefined, 'enctype':'multipart/form-data; charset=utf-8' },
+				processData: false,
+				data: formData
+	    })
+	    .success(function(res) {
+	    	
+	    	console.log(res);
+
 	    });
 
-	    avatar.upload.then(function (response) {
+	    /*avatar.upload = Upload.upload({
+	      url: '/uploads/avatar',
+	      data: {avatar: avatar},
+	    });*/
+
+
+	    /*avatar.upload.then(function (response) {
+
 	      $timeout(function () {
 	        avatar.result = response.data;
 
@@ -72,52 +116,48 @@ angular.module('studionet')
 			      $scope.user.avatar = $scope.user.avatar + "?cb=" + random;
 			    });
 	      });
+
 	    }, function (response) {
+	      
 	      if (response.status > 0)
 	        $scope.errorMsg = response.status + ': ' + response.data;
+	    
 	    }, function (evt) {
-	      // Math.min is to fix IE which reports 200% sometimes
-	      avatar.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-	    });
+	    
+	      	// Math.min is to fix IE which reports 200% sometimes
+	      	avatar.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+	    
+	    });*/
+
    	}
 
-   	$scope.updateUser = function(){
-   		alert("User Update")
-   	}
+   	$scope.updateProfile = function(){
 
-  	$scope.changeName = function($event){
-  		if($event.keyCode==13){
-  			profile.changeName($scope.user);
-  		}
-  	}
+   		// check if profile changed
+   		if($scope.profilePic !== undefined){
+   			// call function to update picture
+	   		$scope.uploadPic($scope.profilePic[0]);
+   		}
+   		else{
+   			console.log("Avatar unchanged");
+   		}		
+
+
+   		// check if name changed
+   		if($scope.userData.name == profile.user.name){
+   			console.log("Same name - no need to update");
+   		}
+ 		else{
+
+ 			console.log("Name changed - updating...")
+ 			profile.changeName($scope.userData).success(function(data){
+ 				profile.getUser().then(function(){
+ 					$scope.userData = { 'id': profile.user.id, 'name': profile.user.name, 'nusOpenId': profile.user.nusOpenId, 'avatar': profile.user.avatar };
+ 				});
+ 			});
+
+ 		}
  
-	$scope.createGroup = function(){
+   	}
 
-		ModalService.showModal({
-		        templateUrl: "/user/templates/createGroupModal.html",
-		        controller: "CreateGroupCtrl",
-		        scope: $scope
-	      }).then(function(modal) {
-		        modal.element.modal({
-		          backdrop: 'static'
-		        });
-		        modal.scope.reset();
-	      });
-	}
-
-	$scope.editProfile = function(){
-
-		ModalService.showModal({
-		        templateUrl: "/user/templates/editProfile.html",
-		        controller: "ProfileCtrl",
-		        scope: $scope
-	      }).then(function(modal) {
-		        modal.element.modal({
-		          backdrop: 'static'
-		        });
-	      });
-	
-	}	
-
-
-}])
+}]);

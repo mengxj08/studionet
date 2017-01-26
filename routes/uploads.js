@@ -14,8 +14,8 @@ var auth = require('./auth');
 router.post('/avatar', auth.ensureAuthenticated, multer({
 	storage: storage.avatarStorage
 }).single('avatar'), function(req, res, next){
-	// update avatar for user
 
+	// update avatar for user
 	var query = [
 		'MATCH (u:user) WHERE ID(u)=' + req.user.id,
 		'WITH u',
