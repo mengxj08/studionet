@@ -68,14 +68,27 @@ angular.module('studionet')
 
 .controller('EditProfileCtrl', ['$scope', 'profile', 'Upload', '$http',  function($scope, profile, Upload, $http){
 
-	$scope.userData = { 'id': profile.user.id, 'name': profile.user.name, 'nusOpenId': profile.user.nusOpenId, 'avatar': profile.user.avatar };
+	$scope.init = function(){
+		$scope.userData = { 'id': profile.user.id, 'name': profile.user.name, 'nusOpenId': profile.user.nusOpenId, 'avatar': profile.user.avatar };
+	}
 
 	$scope.uplodateFiles = function (profile_picture){
 
 	  //$scope.userData.profilePic = profile_picture;
 
 	  //console.log(profile_picture);
+	  profile_picture = profile_picture[0];
 	  $scope.profilePic = profile_picture;
+
+	  
+	  var reader  = new FileReader();
+	  reader.addEventListener("load", function () {
+	    $scope.userData.avatar = reader.result;
+	  }, false);
+
+	  if(profile_picture){
+	  	reader.readAsDataURL(profile_picture);
+	  }
   	
   	}
 
@@ -83,8 +96,6 @@ angular.module('studionet')
 
 		var formData = new FormData();
 		formData.append('avatar', avatar, avatar.name);
-
-		console.log(formData);
 
 	    $http({
 				method  : 'POST',
@@ -95,39 +106,12 @@ angular.module('studionet')
 	    })
 	    .success(function(res) {
 	    	
-	    	console.log(res);
+			profile.getUser().then(function(){
+			  $scope.user.avatar = $scope.user.avatar + "?cb=" + Math.random(0,1)*123124;
+			  $scope.init();
+			});
 
 	    });
-
-	    /*avatar.upload = Upload.upload({
-	      url: '/uploads/avatar',
-	      data: {avatar: avatar},
-	    });*/
-
-
-	    /*avatar.upload.then(function (response) {
-
-	      $timeout(function () {
-	        avatar.result = response.data;
-
-	         // force a reload for avatar
-		      var random = (new Date()).toString();
-		      profile.getUser().then(function(){
-			      $scope.user.avatar = $scope.user.avatar + "?cb=" + random;
-			    });
-	      });
-
-	    }, function (response) {
-	      
-	      if (response.status > 0)
-	        $scope.errorMsg = response.status + ': ' + response.data;
-	    
-	    }, function (evt) {
-	    
-	      	// Math.min is to fix IE which reports 200% sometimes
-	      	avatar.progress = Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-	    
-	    });*/
 
    	}
 
@@ -136,7 +120,7 @@ angular.module('studionet')
    		// check if profile changed
    		if($scope.profilePic !== undefined){
    			// call function to update picture
-	   		$scope.uploadPic($scope.profilePic[0]);
+	   		$scope.uploadPic($scope.profilePic);
    		}
    		else{
    			console.log("Avatar unchanged");
@@ -150,9 +134,10 @@ angular.module('studionet')
  		else{
 
  			console.log("Name changed - updating...")
- 			profile.changeName($scope.userData).success(function(data){
+ 			profile.changeName( {'id' : $scope.userData.id, 'name': $scope.userData.name } ).success(function(data){
  				profile.getUser().then(function(){
- 					$scope.userData = { 'id': profile.user.id, 'name': profile.user.name, 'nusOpenId': profile.user.nusOpenId, 'avatar': profile.user.avatar };
+ 					//$scope.userData = { 'id': profile.user.id, 'name': profile.user.name, 'nusOpenId': profile.user.nusOpenId, 'avatar': profile.user.avatar };
+ 					$scope.init();
  				});
  			});
 

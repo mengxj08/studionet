@@ -8,6 +8,8 @@ var db = require('seraph')({
 	pass: process.env.DB_PASS
 });
 var auth = require('./auth');
+var glob = require('glob');
+var path = require('path');
 
 // POST: /uploads/avatar
 // Upload a new profile picture
@@ -38,7 +40,7 @@ router.post('/avatar', auth.ensureAuthenticated, multer({
 
 // GET: /uploads/:nusOpenId/avatar
 // GET user's avatar by nusOpenId param
-router.get('/:nusOpenId/avatar', auth.ensureAuthenticated, function(req, res){
+router.get('/users/:nusOpenId/avatar', auth.ensureAuthenticated, function(req, res){
 	var avatar = glob.sync('./uploads/users/' + req.params.nusOpenId + '/avatar/'  + 'avatar.*');
 	if (avatar.length === 0) {
 		return res.send('no custom avatar for this user');
