@@ -151,27 +151,26 @@ var COSE_GRAPH_LAYOUT = {
 var computeSizeFn = function(node){
 
   var incomers = node.predecessors().length;
-  var basic = 20;
-  var final = basic; 
-
-  return basic;
+  var basic = 10;
+  var final = basic;
 
   if(node.data('marked') == true)
     return basic + 30;
 
+  return basic;
 
   switch(true){
 
       case (incomers < 10):
           break;
       case (incomers < 30):
-          final = basic + 50; 
+          final = basic + 10; 
           break;
       case (incomers < 50):
-          final = basic + 100; 
+          final = basic + 15; 
           break;
       case (incomers > 50):
-          final = basic + 150; 
+          final = basic + 20; 
           break;
 
   }
@@ -234,10 +233,10 @@ var computeFontFn = function(node){
             final = basic + 0.2; 
             break;
         case (incomers < 50):
-            final = basic + 1.2; 
+            final = basic + 0.7; 
             break;
         case (incomers > 50):
-            final = basic + 4; 
+            final = basic + 1; 
             break;
 
     }
@@ -265,7 +264,7 @@ var graph_style = {
 
       hideLabelsOnViewport: false,
 
-      layout: COSE_GRAPH_LAYOUT, //{name: "null"},
+      layout: {name: "null"},
       
       style: 
         cytoscape.stylesheet()
@@ -449,7 +448,7 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
     graph_style.motionBlur = true;
 
     graph = cytoscape( graph_style );
-    //reposition();
+    draw_graph();
 
     graph.fit();
 
@@ -462,16 +461,179 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
  * Helper Functions
  * Stackoverflow source
  */
-var threshold = 25;
+
+// number of incomers above which the node is placed on the spiral
+// always double of number of incoming nodes required
+var threshold = 4; 
+var draw_graph = function(){
+
+  // Sort the nodes first
+  var sortedNodes = graph.nodes().sort(function (ele1, ele2) {
+      return ( ele1.predecessors().length > ele2.predecessors().length ? -1 : 1);
+  });
+
+  // set the onSpiral value to -1 for all nodes
+  graph.nodes().map(function(n){
+      n.data('onSpiral', -1);
+  }) ;
+
+  // Extract nodes which will be on the spiral
+  var spiralNodes = sortedNodes.filter(function(i, node){
+
+      // this node will go on the spiral
+      // hence all its parents should be marked
+      if(node.predecessors().length >= threshold && node.id() != 5){
+        
+            // mark the node to be on the spiral
+            node.data('onSpiral', node.id() );
+
+            var inc = 0;
+            // mark all the parents to be on the spiral with this node
+            node.predecessors().nodes().map(function(child){
+
+              if( child.data('onSpiral') == -1 ){
+                child.data('onSpiral', node.id() );
+                inc++;
+              }
+
+            });
+
+            console.log(inc + " marked");
+
+            return true;
+      
+      }
+      else{
+
+            // node is not on the spiral due to less number of predecessors
+            // check if it is part of another node already on the spiral
+            // 
+            if( node.data('onSpiral') !== -1 ){
+              console.log("Node already part of the spiral");
+            }
+            
+
+
+
+        return false;
+      }
+      
+  });
+
+  console.log(spiralNodes.length);
+
+  graph.nodes("[onSpiral=-1]").map(function(node){
+
+    if(node.data('onSpiral') == 1){
+
+        // add node to spiral
+        spiralNodes.add(node);
+      
+        // mark nodes predessors
+        var inc = 0;
+        node.predecessors().nodes().map(function(child){
+
+              if( child.data('onSpiral') == -1 ){
+                child.data('onSpiral', node.id() );
+                inc++;
+              }
+        });
+        console.log(inc, "marked");
+    
+        
+    }
+
+  })
+
+
+  //spiralNodes = spiralNodes.add( graph.nodes("[onSpiral=-1]") );
+  console.log(spiralNodes.length);
+
+  var spiralNodes = spiralNodes.sort(function (ele1, ele2) {
+      return ( ele1.predecessors().length > ele2.predecessors().length ? -1 : 1);
+  });
+
+
+
+  var angle = 2 * Math.PI / spiralNodes.length;
+  var radius = 0.5*window.innerWidth;
+
+  var initX = 0//$(window).height()/2;
+  var initY = 0//$(window).width()/2;
+
+  // make the inital spiral
+  makeSpiral( spiralNodes,  initX, initY, 200 ); // this will get over in 500*spiralNodes.length time
+
+  setTimeout(function(){
+      
+      // for each node on the spiral, make a spiral of all its predecessors around it
+      for(var i=0; i < spiralNodes.length; i++){
+
+
+          var node = spiralNodes[i];
+          var condition = "[onSpiral=\'" + node.id() + "\']";
+
+
+          var nodes = node.predecessors().nodes(condition);
+          //console.log(condition, nodes.length);
+
+
+          var position = node.position(); 
+
+          makeSpiral(nodes, position.x, position.y, 10);
+      }
+
+  }, 1000);
+
+
+
+
+}
+
+
+// logarithmic spiral
+var makeSpiral = function(nodes, initX, initY, rad){
+
+  var radius = 50; 
+  if(rad !== undefined)
+    radius = rad;
+
+  var radius = rad || 100;
+  var angle = 0;
+
+  var angleInc = (2 * Math.PI * (1 + nodes.length/10) )/nodes.length;
+  var radInc = radius/4;
+
+  for(var i=0; i<nodes.length; i++){
+
+      var node = nodes[i];
+
+      var x = ( radius + ( i * radInc ) ) * Math.cos( angle + ((i-1) * ( angleInc) ) ) + initX;
+      var y = ( radius + ( i * radInc ) ) * Math.sin( angle + ((i-1) * ( angleInc) ) ) + initY;
+
+      node.animate(
+          { position : {x: x, y: y } , 
+            style: { backgroundColor: '#AFAFAF' }  
+          }, 
+          { 
+            duration: 500 
+          } 
+      );
+      
+  }
+    
+}
+
+
+
 var reposition = function(){
 
-      var topNodesLength = graph.nodes().length;
 
       // sort the nodes by the number of incomers 
       // incoming means the node pointing to is the qestion  (incase of answer) / main article (incase of comment) / resource_for (problem_statement) /  ....
       // incomers add value 
       // outgoers denote heirarchy
-      var topNodes = graph.nodes().sort(function (ele1, ele2) {
+      var sortedNodes = graph.nodes().sort(function (ele1, ele2) {
           return ( ele1.predecessors().length > ele2.predecessors().length ? -1 : 1);
       });
 
@@ -510,11 +672,8 @@ var reposition = function(){
               }
               return flag;
             }
-
-
       });
 
-      console.log(topNodes.length);
 
 /*            arrangeIsolatedNodes(   graph.nodes().filter(function(i, node){
             return ( node.incomers().length <= 1 && node.outgoers().length <= 1);
