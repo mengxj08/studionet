@@ -6,7 +6,11 @@ module.exports.relationships = [
 		"target_type" : "contribution",
 		"name" : "QUESTION_FOR"
 	},
-
+	{
+		"src_type" : "contribution",
+		"target_type" : "contribution",
+		"name" : "SUBMISSION_FOR"
+	},
 	{
 		"src_type" : "contribution",
 		"target_type" : "contribution",

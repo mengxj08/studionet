@@ -42,8 +42,8 @@ STUDIONET.GRAPH.qtipFormat = function(evt){
      },
      position: {
         //container: $('div.graph-container'),
-        my: 'top left',
-        at: 'bottom right'
+        my: 'bottom center',
+        at: 'top center'
      },
      events: {
                     //this hide event will remove the qtip element from body and all assiciated events, leaving no dirt behind.
@@ -221,6 +221,8 @@ var computeFontFn = function(node){
     var basic = 0.3;
     var final = basic; 
 
+    return 0.5 + 'em';
+
     if(node.data('marked') == true)
       return basic + 1;
 
@@ -273,25 +275,28 @@ var graph_style = {
             .css({
               'width': computeSizeFn,
               'height': computeSizeFn,
-              'background-color': computeBgColorFn,
-              'label' : computeLabel,
-              'text-valign': 'top',
+              'border-color': computeBgColorFn,
+              'background-color': '#000623',
+              //'label' : computeLabel,
+              'text-valign': 'bottom',
               //'text-margin-y': '0.1em',
               'font-size': computeFontFn,
-              'color': '#474547',
-              'line-height': '1em',
+              'color': '#C0DD00',
+              //'line-height': '0.5em',
               'font-weight': '400',  
+              'font-size': '3px',
               'text-wrap': 'wrap',
-              'text-max-width': '100px',
+              'text-max-width': '10px',
               'font-family': 'Roboto, sans serif',
               'min-zoomed-font-size': '1em',
-              'margin': '300px'
+              'margin': '300px',
+              'source-arrow-shape': 'triangle'
             })
 
           .selector('edge')
             .css({
               'curve-style': 'haystack',
-              'line-color': edgeColorFn,
+              'line-color': '#923F31',//edgeColorFn,
               'width': 0.7,
               'font-size': '0.3em',
               'color': '#474547',
@@ -299,25 +304,28 @@ var graph_style = {
 
           .selector('.selected')
             .css({
-              'background-color' : '#F0F311',
+              //'background-color' : '#F0F311',
               'border-width': '1',
-              'border-color': '#4273EF',
+              //'border-color': '#4273EF',
               'opacity': 1,
               'text-opacity': 1,
-              'content' : 'data(name)',
+              //'content' : 'data(name)',
               //'font-size': '1em',
               'text-valign': 'top',
+              'background-color' : '#000623',
+              'border-width': '2',
+              'border-color': '#AFAFAF',
+              //'label' : computeLabel,
             })
 
           .selector('.highlighted')
             .css({
-              'content' : 'data(name)',
+              //'content' : 'data(name)',
               //'font-size': '0.4em',
               //'font-weight': '600',
               'text-wrap': 'wrap',
               'text-max-width': '300px',
               'min-zoomed-font-size': '1em',
-              'z-index': 5,
               'opacity': 1,
               'text-opacity': 1
             })
@@ -326,14 +334,14 @@ var graph_style = {
             .css({
               'opacity': 0.1,
               'text-opacity': 0.2,
-              'label': computeLabel
+              //'label': computeLabel
             })
           .selector('.marked')
             .css({
-              'background-color' : '#0F8612',
+              'background-color' : '#000623',
               'border-width': '2',
-              'border-color': 'white',
-              'label' : computeLabel,
+              'border-color': '#AFAFAF',
+              //'label' : computeLabel,
             })
           .selector('.marked-parent')
             .css({
@@ -351,18 +359,19 @@ var graph_style = {
           .selector('edge.highlighted')
             .css({
               'curve-style': 'bezier',
-              'target-arrow-shape': 'triangle',
+              'target-arrow-shape': 'none',
+              'target-arrow-fill': 'hollow',
               'line-color': '#999999',
               'target-arrow-color':'#CFCACA',
-              'content' : 'data(name)',
+              'arrow-scale': 0.4,
+              //'content' : 'data(name)',
               //'source-label' : 'data(name)',
               //'source-text-offset' : '1',
               //'target-label' : 'data(name)',
               'text-rotation' : 'autorotate',
-              'width': 0.5,
+              'width': 0.4,
               //'font-size': '0.7em',
-              'font-weight': '400',
-              'z-index': 5
+              'font-weight': '200'
             })
        
           .selector('.faded')
@@ -424,7 +433,7 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
         else 
           return true;
     }); */
-    var manuallyCreatedEdges = [];
+    /*var manuallyCreatedEdges = [];
     console.log(edges.length, "before sorting");
     edges = edges.filter(function(edge){
         if(edge.data.properties.createdBy == undefined)
@@ -432,7 +441,7 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
         else 
           return false;
     });
-    console.log(edges.length, "after sorting");
+    console.log(edges.length, "after sorting");*/
 
 
     graph_style.elements = {
@@ -443,7 +452,7 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
     // disable zooming
     //graph_style.zoomingEnabled = false;
     graph_style.minZoom = 0.05;
-    graph_style.maxZoom = 5;
+    graph_style.maxZoom = 7;
     graph_style.wheelSensitivity = 0.1;
 
     // performance options
@@ -498,7 +507,7 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
 
             var inc = 0;
             // mark all the parents to be on the spiral with this node
-            node.predecessors().nodes().map(function(child){
+            node.incomers().nodes().map(function(child){
 
               if( child.data('onSpiral') == -1 ){
                 child.data('onSpiral', node.id() );
@@ -526,6 +535,7 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
 
   console.log("Original Spiral Nodes", spiralNodes.length);
 
+  // add additional ones which are isolated
   for(var i=0; i < graph.nodes().length; i++){
 
       var node = graph.nodes()[i];
@@ -540,7 +550,7 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
         
           // mark nodes predessors
           var inc = 0;
-          node.predecessors().nodes().map(function(child){
+          node.incomers().nodes().map(function(child){
 
                 if( child.data('onSpiral') == -1 ){
                   child.data('onSpiral', node.id() );
@@ -561,11 +571,7 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
   //spiralNodes = spiralNodes.add( graph.nodes("[onSpiral=-1]") );
   console.log("Spiral nodes after addition", spiralNodes.length);
 
-  var spiralNodes = spiralNodes.sort(function (ele1, ele2) {
-      return ( ele1.predecessors().length > ele2.predecessors().length ? -1 : 1);
-  });
-
-
+  var spiralNodes = spiralNodes.sort( sortFn );
 
   var angle = 2 * Math.PI / spiralNodes.length;
   var radius = 0.5*window.innerWidth;
@@ -573,85 +579,109 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
   var initX = 0//$(window).height()/2;
   var initY = 0//$(window).width()/2;
 
-  // make the inital spiral
-  // makeSpiral( spiralNodes,  initX, initY, 200 ); // this will get over in 500*spiralNodes.length time
-  makeLine(spiralNodes);
-
-  setTimeout(function(){
       
-      // for each node on the spiral, make a spiral of all its predecessors around it
-      for(var i=0; i < spiralNodes.length; i++){
-
-
-          var node = spiralNodes[i];
-          var condition = "[onSpiral=\'" + node.id() + "\']";
-
-
-          var nodes = node.predecessors().nodes(condition);
-          //console.log(condition, nodes.length);
-
-
-          var position = node.position(); 
-
-          makeSpiral(nodes, position.x, position.y, 10);
-      }
-
-  }, 1000);
-
-
-}
-
-var makeLine = function(nodes){
-
-  for(var i=0; i<nodes.length; i++){
-
-      var x = i*200;
-      var y = 0; 
-
-      var node = nodes[i];
-
-      node.animate(
-          { position : {x: x, y: y } , 
-            style: { backgroundColor: '#AFAFAF' }  
-          }, 
-          { 
-            duration: 500 
-          } 
-      );
-  }
-
-}
-
-
-// radius of one small circle is 10
-// d = 20
-// if i want all spirals to be 4PI, available length is 4 * Math.PI * R = number_of_nodes * d (roughly)
-// if i find the 'R', I get the approx size of the container
-// R = number_of_nodes * d / 4 * Math.PI
-
-// logarithmic spiral
-var makeSpiral = function(nodes, initX, initY, rad){
-
-  var radius = 50; 
-  if(rad !== undefined)
-    radius = rad;
-
-  var radius = rad || 100;
+  var prevRadius = 1;
+  var x = initX;
+  var y = 0;
+  var radius = 150;
   var angle = 0;
+  
+  // for each node on the spiral, make a spiral of all its predecessors around it
+  var nextNode = function(i){
 
-  var angleInc = /*6*Math.PI / nodes.length; */(2 * Math.PI * (1 + nodes.length/10) )/nodes.length;
-  var radInc = /*3*radius/(nodes.length)*/ radius > 25 ? radius/10  : radius / 4;
+      //console.log("Node No:", i);
 
-  for(var i=0; i<nodes.length; i++){
+      // node on spiral
+      var node = spiralNodes[i];
+
+      x = radius*Math.cos( angle ) + initX;
+      y = radius*Math.sin( angle ) + initY;
+
+      // place the spiral nodes
+      node.animate(
+          { 
+            position : { x: x, y: y } , 
+            style: { backgroundColor: '#AFAFAF' }  
+          }, 
+          { 
+            duration: 10, 
+            complete: function(){
+
+                // find the children
+                var condition = "[onSpiral=\'" + node.id() + "\']";
+                var nodes = node.incomers().nodes(condition);
+
+                var position = node.position(); 
+
+                // make a smaller spiral of all the incomers
+                // get the radius of the smaller spiral
+                prevRadius = makeSubSpiral(nodes, position.x, position.y, 30) ;
+                //console.log("Size of node No:", i, prevRadius);
+
+
+                // use the radius of the above spiral to place next node
+                //x += initX + prevRadius;
+                minNodes = Math.floor( 2 * Math.PI * radius / prevRadius );
+
+                // for minNodes
+                angleInc = 2*Math.PI / minNodes; 
+                radiusInc = (prevRadius + 30) / minNodes; 
+
+                angle += 2*angleInc;
+                radius += 4*radiusInc;
+
+                x = radius*Math.cos( angle ) + initX;
+                y = radius*Math.sin( angle ) + initY;
+                
+                if( i+1 < spiralNodes.length ){
+                  nextNode(i+1);
+                }
+                else{
+                  graph.fit();
+                }
+
+            }
+          }
+      );
+
+  }
+
+  nextNode(0);
+
+
+
+}
+
+
+/*
+ * In this case, the centre position being passed is already occupied
+ * Return resulting radius of the subspiral
+ * Perfect spiral - donot edit further!
+ */
+var makeSubSpiral = function(nodes, centerX, centerY, minimumRadius){
+
+    var radius_SubNode = 10;
+    var safety_gap = 10;
+
+    var angle = Math.PI + Math.atan(centerY / centerX), 
+        radius = minimumRadius, minNodes, angleInc, radiusInc;
+
+    for(var i=0; i < nodes.length; i++){
 
       var node = nodes[i];
 
-      /*if(radius > 25){
-        angleInc = (10 + node.predecessors().length) * (Math.PI / 180)
-      }*/
+      minNodes = Math.floor( 2 * Math.PI * radius / radius_SubNode );
 
-      var x = ( radius + ( i * radInc ) ) * Math.cos( angle + ((i-1) * ( angleInc) ) ) + initX;
-      var y = ( radius + ( i * radInc )  ) * Math.sin( angle + ((i-1) * ( angleInc) ) ) + initY;
+      // for minNodes
+      angleInc = 2*Math.PI / minNodes; 
+      radiusInc = (radius_SubNode + safety_gap) / minNodes; 
+
+
+      var x = radius*Math.cos( angle ) + centerX;
+      var y = radius*Math.sin( angle ) + centerY;
+
+      angle += angleInc + Math.PI/30;
+      radius += radiusInc;
 
       node.animate(
           { position : {x: x, y: y } , 
@@ -661,8 +691,11 @@ var makeSpiral = function(nodes, initX, initY, rad){
             duration: 500 
           } 
       );
-      
-  }
-    
+    }
+
+    if(nodes.length == 0)
+      return radius_SubNode;
+
+    return radius;
 }
 

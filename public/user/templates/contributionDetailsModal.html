@@ -31,14 +31,16 @@
                     <div class="col-sm-8">
                         <div class = "authorInfo">
                           <h3 class='title'>{{contribution.db_data.title}}</h3>
-                          <p><img class='profile-picture' style='width: 25px; height: 25px; display: inline-block; border-radius: 50%;' src={{users[contribution.db_data.createdBy].avatar}}/> {{ users[contribution.db_data.createdBy].name }}</p>
+                          <p>
+                          <img class='profile-picture' style='width: 25px; height: 25px; display: inline-block; border-radius: 50%;' src={{users[contribution.db_data.createdBy].avatar}} alt='profile'/> {{ users[contribution.db_data.createdBy].name }}</p>
                         </div>
                     </div>
 
                     <div class="col-sm-4 text-right">
-                      <p id='rating' uib-rating ng-model="$parent.rate" max="$parent.max" read-only="false" on-hover="$parent.hoveringOver(value)" on-leave="overStar = null" ng-click='rateContribution($parent.rate, contribution.db_data.id)'></p>
+                      <p id='rating' uib-rating ng-model="$parent.rate" max="$parent.max" read-only="false" on-hover="$parent.hoveringOver(value)" on-leave="overStar = null" ng-click='rateContribution($parent.rate, contribution.db_data.id)' ng-if='contribution.db_data.createdBy != user.id'></p>
                       <span id='avg_rating' class="pop" uib-popover-template="'/user/templates/statistics.html'" popover-trigger="'outsideClick'" popover-placement="left">
-                      {{ contribution.db_data.rating / (contribution.db_data.rateCount || 0) }}  <i class='glyphicon glyphicon-star'></i></span>
+                      {{ contribution.db_data.rateCount == 0 ? "No ratings" : contribution.db_data.rating / contribution.db_data.rateCount }}  
+                      <i class='glyphicon glyphicon-star'></i></span>
                     </div>
 
                 </div>

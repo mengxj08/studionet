@@ -14,7 +14,7 @@
 
 .contribution-content{
   padding-top: 20px; 
-  border-top: 2px solid #b6b6b6;
+  border-top: 2px solid #B9B9B9;
 }
 
 
@@ -89,7 +89,7 @@ input{
 }
 
 .tag{
-  background-color: #B4B1B1;
+  background-color: #B9B9B9;
   padding: 4px;
   margin-right: 5px;
   margin-bottom: 5px;
@@ -137,6 +137,7 @@ tags-input .tags{
  */
 .ta-editor.ta-html, .ta-scroll-window.form-control{
   max-height: 500px;
+  background: white;
 }
 
 .textAngular .btn-default{

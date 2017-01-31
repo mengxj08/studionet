@@ -174,7 +174,9 @@ angular.module('studionet')
       // remove supernode
       $scope.graph.getElementById(supernode.contribution).remove();
 
-      STUDIONET.GRAPH.draw_graph($scope.graph, 1);
+      // redraw graph
+      var threshold = 20; 
+      STUDIONET.GRAPH.draw_graph($scope.graph, threshold);
     
       // Display the entire node name
       $scope.graph.on('mouseover','node', function(evt){

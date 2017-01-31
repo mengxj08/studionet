@@ -55,9 +55,7 @@ angular.module('studionet')
 		});
 	};
 
-	// redundant
 	o.getContributions = function(){
-		console.warn("Warning: Usage of Profile Contributions in Services");		
 		return $http.get('/api/profile/contributions').success(function(data){
 			angular.copy(data, o.contributions);
 		});
@@ -213,7 +211,7 @@ angular.module('studionet')
 	}
 
 
-	o.updateContribtuion = function(update_contribution){
+	o.updateContribution = function(update_contribution){
 
 		var formData = new FormData();
 		formData.append('title', update_contribution.title);
@@ -233,7 +231,10 @@ angular.module('studionet')
       	      processData: false,
               data: formData
 			 })
-			.success(function(res) {
+			.then(function(res) {
+
+
+				console.log(res);
 		    	
 				// refresh graph
 				graph.getGraph().then(function(){	graph.selectNode(update_contribution.id);	});
@@ -249,10 +250,7 @@ angular.module('studionet')
 
 				// send success
 				return res;  
-			})
-		    .error(function(error){
-				throw error;
-	   	 	})	
+			})	
 	}
 
 
@@ -294,9 +292,12 @@ angular.module('studionet')
 	};
 
 	o.rateContribution = function(id, rating){
+		
 		return $http.post('/api/contributions/' + id + '/rate', {'rating': rating} ).success(function(data){
-			console.log(data);
+			console.log("Successfully rated contribution");
+			profile.getContributions();
 		});
+	
 	};
 
 

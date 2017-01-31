@@ -11,11 +11,12 @@ angular.module('studionet')
 
   //todo: check why promise doesn't always get resolved
   $scope.relationships = [{"src_type":"contribution","target_type":"contribution","name":"QUESTION_FOR"},
+                          {"src_type":"contribution","target_type":"contribution","name":"SUBMISSION_FOR"},
                           {"src_type":"contribution","target_type":"contribution","name":"ANSWER_FOR"},
                           {"src_type":"contribution","target_type":"contribution","name":"COMMENT_FOR"},
-                          {"src_type":"contribution","target_type":"contribution","name":"RESOURCE_FOR","createdBy":"__"},
-                          {"src_type":"contribution","target_type":"contribution","name":"INSPIRED_FROM","createdBy":"__"},
-                          {"src_type":"contribution","target_type":"contribution","name":"RELATED_TO","createdBy":"__","note":"__"},
+                          {"src_type":"contribution","target_type":"contribution","name":"RESOURCE_FOR"},
+                          {"src_type":"contribution","target_type":"contribution","name":"INSPIRED_FROM"},
+                          {"src_type":"contribution","target_type":"contribution","name":"RELATED_TO"},
                           {"src_type":"user","target_type":"contribution","name":"LIKED","properties":[{"name":"count","type":0}]},
                           {"src_type":"user","target_type":"contribution","name":"VIEWED","properties":[{"name":"count","type":0},
                           {"name":"last_viewed","type":"2017-01-23T07:31:43.857Z"}]}];
@@ -43,10 +44,9 @@ angular.module('studionet')
   }
 
   $scope.showUpdateModal = function(id){
+    
     $scope.updateMode = true;
     $scope.contributionData = jQuery.extend({}, $scope.contribution.db_data);
-
-    console.log("updating", $scope.contributionData);
 
     if($scope.contributionData.attachments[0].id == null){
       $scope.contributionData.attachments = [];
@@ -75,6 +75,25 @@ angular.module('studionet')
   /*  $scope.clickedContribution = null;
     $scope.contributionTree = [];  */
 
+  getRating = function(contribution_id){
+
+    var rating = 0;
+    
+    for(var i=0; i < profile.contributions[0].length; i++){
+
+      var user_contribution = profile.contributions[0][i];
+      if( user_contribution.type == "RATED" && user_contribution.end == contribution_id ){
+        rating = user_contribution.properties.rating;
+        break;
+      }
+
+    }
+
+    return rating;
+
+
+  }
+
   // setting data from scope calling ModalService
   $scope.setData = function(data, activeContribution){
       
@@ -83,6 +102,9 @@ angular.module('studionet')
       //$scope.activeContribution = activeContribution; // contribution currently in view (when scroll is implemented)
 
       $scope.contribution = data[0];
+
+      // get rating
+      $scope.rate = getRating( $scope.contribution.id );
 
       $scope.parents = ["parent1", "parent2", "parent3"];
 
@@ -123,14 +145,27 @@ angular.module('studionet')
   $scope.max = 5;
   $scope.overStar = null; 
   $scope.percent = 0;
+  
+
   $scope.hoveringOver = function(value) {
     $scope.overStar = value;
     $scope.percent = 100 * (value / $scope.max);
   };
+  
   $scope.rateContribution = function(rating, id){
+    
      contribution.rateContribution(id, rating).then(function(){
+
+        console.log($scope.contributionData);
+        
+        //$scope.contributionData.rateCount++; 
+        //$scope.contributionData.rating += rating; 
         console.log("Contribution Rated Successfully");
-    })
+
+        //$scope.$apply();
+    
+     })
+  
   }
 
   // Attachments
@@ -203,6 +238,7 @@ angular.module('studionet')
 
         if(contributionData.title == undefined || contributionData.title.length == 0 || contributionData.body == undefined || contributionData.body.length == 0){
           alert("Contribution must have a title and body!");
+          return;
         }
 
         contributionData.ref = parentId;
@@ -255,9 +291,10 @@ angular.module('studionet')
     }
 
     updateContribution.tags = [];
-    updateContribution._tags.map(function(t){
-      updateContribution.tags.push(t.name);
-    });
+    if(updateContribution._tags.length > 0)
+      updateContribution._tags.map(function(t){
+        updateContribution.tags.push(t.name);
+      });
     delete updateContribution._tags;
 
     //Remove the attachments that have already existed in the database
@@ -268,15 +305,17 @@ angular.module('studionet')
       }
     }
 
-    contribution.updateContribtuion(updateContribution).then(function(res){
-          console.log("success");
-          //$scope.alert.success = true; 
-          //$scope.alert.successMsg = "Contribution Id : " + updateContribution.id + " has been updated.";
+    contribution.updateContribution(updateContribution).then(function(res){
+        alert("Contribution Updated")
+        sendMessage( {status: 200, message: "Updated contribution successfully" } );
+        $scope.close();
 
     }, function(error){
           console.log("failure");
-          $scope.alert.error = true; 
-          $scope.alert.errorMsg = error.data;
+          sendMessage( {status: 500, message: "Error updating contribution" } );
+          $scope.close();
+          //$scope.alert.error = true; 
+          //$scope.alert.errorMsg = error.data;
     });
   }
 
@@ -292,12 +331,12 @@ angular.module('studionet')
           
 
           sendMessage({status: 200, message: "Contribution Id : " + $scope.contribution.id + " was successfully deleted." });
-          close();
+          $scope.close();
 
       }, function(error){
           
           sendMessage({status: 500, message: "Error deleting Contribution Id : " + $scope.contribution.id });
-          close();
+          $scope.close();
       
       });
     } else {

@@ -414,6 +414,7 @@ router.route('/:contributionId')
           };
 
           db.query(query, params, function(error, result){
+            
             if (error){
               console.log(error);
               res.status(500);
@@ -423,14 +424,17 @@ router.route('/:contributionId')
               console.log('[SUCCESS] Success in editing the contribution with id: ' + req.params.contributionId);
               req.contributionId = result[0].id;
               res.status(200);
-              res.send( result[0] );
-              next();
+              res.send( "Contribution updated" );
+
+              //next();
             }
+
             
           });
 
         });
-  }, contributionUtil.updateDatabaseWithAttachmentsAndGenerateThumbnails)
+  })
+  //}, contributionUtil.updateDatabaseWithAttachmentsAndGenerateThumbnails)
 
   .delete(auth.ensureAuthenticated, function(req, res){
 
