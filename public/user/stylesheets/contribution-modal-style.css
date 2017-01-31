@@ -59,8 +59,6 @@ input{
   background-color: white;
 }
 
-
-
 /*
  * Attachments
  */
@@ -85,6 +83,20 @@ input{
 /*
  * ng-tags CSS
  */
+
+.tags{
+  margin-top: 10px !important;
+}
+
+.tag{
+  background-color: #B4B1B1;
+  padding: 4px;
+  margin-right: 5px;
+  margin-bottom: 5px;
+  display: inline-block;
+}
+
+
 tags-input .tags .tag-item{
   background: #f0f0f0 !important;
   border-radius: 0px;

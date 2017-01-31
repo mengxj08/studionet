@@ -294,7 +294,8 @@ angular.module('studionet')
               console.log("Filter Request", data);
 
               //$(target).empty();
-              var target = GRAPH_CONTAINER;
+              
+              var target = document.getElementById('cy');
               spinner.spin(target);
 
               $http({

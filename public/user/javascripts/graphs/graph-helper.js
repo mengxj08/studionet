@@ -9,8 +9,8 @@ STUDIONET.GRAPH.spinner = {
   , radius: 42 // The radius of the inner circle
   , scale: 1 // Scales overall size of the spinner
   , corners: 1 // Corner roundness (0..1)
-  , color: '#ddd' // #rgb or #rrggbb or array of colors
-  , opacity: 0.25 // Opacity of the lines
+  , color: '#fff' // #rgb or #rrggbb or array of colors
+  , opacity: 0.1 // Opacity of the lines
   , rotate: 0 // The rotation offset
   , direction: 1 // 1: clockwise, -1: counterclockwise
   , speed: 1 // Rounds per second
@@ -246,7 +246,7 @@ var computeFontFn = function(node){
 }
 
 var computeLabel = function(ele){
-   return ele.data().name + " (" +  ele.predecessors().length/2 + ")";//ele.data().name.substr(0,5)+"...";
+   return ele.data().name.substr(0,10) + "..." /*+ " (" +  ele.predecessors().length/2 + ")";*///ele.data().name.substr(0,5)+"...";
 }
 
 
@@ -275,14 +275,14 @@ var graph_style = {
               'height': computeSizeFn,
               'background-color': computeBgColorFn,
               'label' : computeLabel,
-              'text-valign': 'center',
+              'text-valign': 'top',
               //'text-margin-y': '0.1em',
               'font-size': computeFontFn,
               'color': '#474547',
               'line-height': '1em',
               'font-weight': '400',  
               'text-wrap': 'wrap',
-              'text-max-width': '300px',
+              'text-max-width': '100px',
               'font-family': 'Roboto, sans serif',
               'min-zoomed-font-size': '1em',
               'margin': '300px'
@@ -293,26 +293,27 @@ var graph_style = {
               'curve-style': 'haystack',
               'line-color': edgeColorFn,
               'width': 0.7,
-              'font-size': '1.5em',
+              'font-size': '0.3em',
+              'color': '#474547',
             })     
 
           .selector('.selected')
             .css({
               'background-color' : '#F0F311',
-              'border-width': '5',
-              'border-color': '#A4A4A4',
+              'border-width': '1',
+              'border-color': '#4273EF',
               'opacity': 1,
               'text-opacity': 1,
               'content' : 'data(name)',
-              'font-size': '3.5em',
+              //'font-size': '1em',
               'text-valign': 'top',
             })
 
           .selector('.highlighted')
             .css({
               'content' : 'data(name)',
-              'font-size': '0.4em',
-              'font-weight': '600',
+              //'font-size': '0.4em',
+              //'font-weight': '600',
               'text-wrap': 'wrap',
               'text-max-width': '300px',
               'min-zoomed-font-size': '1em',
@@ -358,7 +359,7 @@ var graph_style = {
               //'source-text-offset' : '1',
               //'target-label' : 'data(name)',
               'text-rotation' : 'autorotate',
-              'width': 1.2,
+              'width': 0.5,
               //'font-size': '0.7em',
               'font-weight': '400',
               'z-index': 5
@@ -398,6 +399,7 @@ var createGraphEdge = function(edge){  return { data: edge };   }
  *      edgeFn - Conversion of edges in data to cytoscape edges
  *      graphStyle - Graph Style 
  */
+var spinner = new Spinner(STUDIONET.GRAPH.spinner);
 STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn, edgeFn){
 
     // if cytoscape canvas is defined, assign that
@@ -441,6 +443,7 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
     // disable zooming
     //graph_style.zoomingEnabled = false;
     graph_style.minZoom = 0.05;
+    graph_style.maxZoom = 5;
     graph_style.wheelSensitivity = 0.1;
 
     // performance options
@@ -467,9 +470,12 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
 // always double of number of incoming nodes required
 STUDIONET.GRAPH.draw_graph = function(graph, threshold){
 
-  var sortFn = function (ele1, ele2) {
+  spinner.spin(document.getElementById('cy'));
+  console.log("Start spinner", document.getElementById('cy'));
+  console.log(spinner);
 
-      return ( ele1.predecessors().length > ele2.predecessors().length ? -1 : 1);
+  var sortFn = function (ele1, ele2) {
+      return ( ele1.incomers().length > ele2.incomers().length ? -1 : 1);
   }
 
   // Sort the nodes first
@@ -485,7 +491,7 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
 
       // this node will go on the spiral
       // hence all its parents should be marked
-      if(node.predecessors().length >= threshold && node.id() != 5){
+      if(node.incomers().length >= threshold && node.id() != 5){
         
             // mark the node to be on the spiral
             node.data('onSpiral', node.id() );
@@ -544,6 +550,12 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
           //console.log(inc, " additional marked and removed for id: ", node.id() );
       }
 
+
+      if( i== graph.nodes().length - 1){
+        spinner.stop();
+        console.log("Last node stop spinner");
+      }
+
   }
 
   //spiralNodes = spiralNodes.add( graph.nodes("[onSpiral=-1]") );
@@ -562,8 +574,8 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
   var initY = 0//$(window).width()/2;
 
   // make the inital spiral
-  makeSpiral( spiralNodes,  initX, initY, 200 ); // this will get over in 500*spiralNodes.length time
-  //makeLine(spiralNodes);
+  // makeSpiral( spiralNodes,  initX, initY, 200 ); // this will get over in 500*spiralNodes.length time
+  makeLine(spiralNodes);
 
   setTimeout(function(){
       

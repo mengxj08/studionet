@@ -15,28 +15,36 @@
 
   <div class='info-pane'>
 
-    <i class="graph-nav-control icon fa fa-database" ng-click='resetGraph()' uib-tooltip='Fit Graph'  tooltip-placement='left'></i><br>
+    <!-- reset graph -->
+    <div><i class="graph-nav-control icon fa fa-arrows-alt" ng-click='resetGraph()' uib-tooltip='Fit Graph' tooltip-placement='left'></i></div>
 
+
+    
+    <div><i class="graph-nav-control icon fa fa-database" uib-tooltip='Leaderboards - Coming Soon!' tooltip-placement='left' ng-disabled="true"></i></div>
 
     <!-- Zoom Level -->
     <!-- <span><b>Z:</b> {{zoomLevel}} %</span>&nbsp;&nbsp;&nbsp; -->
 
-    <!-- reset graph -->
-    <i class="graph-nav-control icon fa fa-arrows-alt" ng-click='resetGraph()' uib-tooltip='Fit Graph'  tooltip-placement='left'></i>
 
+  </div>
+
+  <div class='info-pane bottom-center'>
+    <div id="message">{{message}}</div><br>
+    <div id='zoom'><b>Z:</b> {{zoomLevel}} %</div>
   </div>
   
   <div class='graph-controls'>
 
 		<!-- create a contribution -->
 		<!-- <i class="graph-nav-control icon fa fa-plus" ng-click='openNewContributionModal()' uib-tooltip='New Contribution'  tooltip-placement='left'></i> -->
-    <i class="graph-nav-control icon fa fa-plus" data-toggle="modal" data-target="#createContribution" uib-tooltip='New Contribution'  tooltip-placement='left'></i> 
+    <i class="graph-nav-control icon fa fa-plus" data-toggle="modal" data-target="#createContribution" data-backdrop="static" data-keyboard="false" uib-tooltip='New Contribution' tooltip-placement='left'></i> 
 
     <!-- Using native bootstrap modal functionality - faster -->
     <!-- <i class="graph-nav-control icon fa fa-search" data-toggle="modal" data-target="#filterModal" uib-tooltip='Filter'  tooltip-placement='left'></i> -->
-    <i class="graph-nav-control icon fa fa-link" data-toggle="modal" data-target="" uib-tooltip='Link Contributions'  tooltip-placement='left' ng-disabled="true"></i>
+    <i class="graph-nav-control icon fa fa-link" data-toggle="modal" data-target="" uib-tooltip='Link Contributions - Coming Soon!'  tooltip-placement='left' ng-disabled="true"></i>
   
   </div>
+
 
 
    
@@ -48,7 +56,7 @@
   <!-- <i class="graph-nav-control icon fa fa-filter" data-toggle="modal" data-target="#filterModal" uib-tooltip='Filter'  tooltip-placement='left'></i> -->
   <!-- <button type="button" data-toggle="modal" data-target="#filterModal" class="btn btn-default modal-button">Filter</button> -->
 
-  <h5 class='filter-heading-button' type="button" data-toggle="modal" data-target="#filterModal">Filters</h5> 
+  <h5 class='filter-heading-button' type="button" data-toggle="modal" data-target="#filterModal" data-backdrop="static" data-keyboard="false">Filters</h5> 
 
   <h6 id='filter-nodes-count' ng-show='filters.length==0' ng-cloak>{{graph.nodes().length}} matching nodes found.</h6> 
   

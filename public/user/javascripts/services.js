@@ -279,7 +279,6 @@ angular.module('studionet')
 			// refresh contributions
 			contributions.getAll();
 
-			alert(res);
 	    })
 	    .error(function(error){
 			throw error;
@@ -585,6 +584,8 @@ angular.module('studionet')
 
 		// takes either data from filters or contribution.graph data
 		o.graph = STUDIONET.GRAPH.makeGraph( o.graph_data, container ); // defaults to cy
+		
+
 		var cy = o.graph;
 
 		// notify any controller watching of the updated graph

@@ -5,6 +5,8 @@ var BROADCAST_CLEAR_FILTER = "filter-cleared";
 var BROADCAST_CLEAR_ALL_FILTERS = "filter-clear-all";
 var BROADCAST_CONTRIBUTION_CLICKED = "contribution-clicked";
 
+var BROADCAST_MESSAGE = "message-sent";
+
 
 angular.module('studionet')
 
@@ -17,6 +19,27 @@ angular.module('studionet')
   // ---------------- Filters
   $scope.filters = [];
   $scope.matchingNodes = [];
+
+  // when message received
+  $scope.$on( BROADCAST_MESSAGE, function(event, args) {
+      
+      console.log("Message received", args.message);
+      $scope.message = args.message;
+
+      for(i=0;i<5;i++) {
+        $('#message').fadeTo('slow', 0.5).fadeTo('slow', 1.0);
+      }
+
+      setTimeout(function(){
+        $('#message').hide();
+      }, 7000)
+
+
+      // hack
+      // todo : change later
+      $('.modal-backdrop').remove();
+
+  });
 
   // when filter is active
   $scope.$on( BROADCAST_FILTER_ACTIVE, function(event, args) {
@@ -151,7 +174,7 @@ angular.module('studionet')
       // remove supernode
       $scope.graph.getElementById(supernode.contribution).remove();
 
-      STUDIONET.GRAPH.draw_graph($scope.graph, 20);
+      STUDIONET.GRAPH.draw_graph($scope.graph, 1);
     
       // Display the entire node name
       $scope.graph.on('mouseover','node', function(evt){

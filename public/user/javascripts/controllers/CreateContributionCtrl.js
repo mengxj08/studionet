@@ -51,13 +51,17 @@ angular.module('contributionEditorDirective', [])
           delete $scope.contributionData._tags;
 
           contribution.createContribution( $scope.contributionData ).then(function(res){
-                $scope.alert.success = true; 
-                $scope.alert.successMsg = "Your contribution was created." // res.data.id; 
-                $scope.alert.successId = res.data.id;
+                //$scope.alert.success = true; 
+                //$scope.alert.successMsg = "Your contribution was created." // res.data.id; 
+                //$scope.alert.successId = res.data.id;
+                
+                $scope.$emit( BROADCAST_MESSAGE, { status: 200, message: "Contribution was created successfully." } );
+
 
           }, function(error){
-                $scope.alert.error = true; 
-                $scope.alert.errorMsg = error;
+                //$scope.alert.error = true; 
+                //$scope.alert.errorMsg = error;
+                $scope.$emit( BROADCAST_MESSAGE, { status: 500, message: "Error creating contribution." } );
           }); 
 
       };

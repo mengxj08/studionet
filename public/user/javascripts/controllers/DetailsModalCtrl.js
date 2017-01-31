@@ -8,6 +8,11 @@ angular.module('studionet')
   $scope.contributions = contributions.contributions;
   $scope.users = users.users.hash();
 
+
+
+
+  
+
   //todo: check why promise doesn't always get resolved
   $scope.relationships = [{"src_type":"contribution","target_type":"contribution","name":"QUESTION_FOR"},
                           {"src_type":"contribution","target_type":"contribution","name":"ANSWER_FOR"},
@@ -32,6 +37,10 @@ angular.module('studionet')
     all_tags[$scope.tags[i].name] = $scope.tags[i];
   }
 
+  // sends message to graph
+  var sendMessage = function(message){
+    $scope.$emit(BROADCAST_MESSAGE, message );
+  }
 
   $scope.showReplyModal = function(id){
     $scope.replyMode = true;
@@ -196,6 +205,10 @@ angular.module('studionet')
 
         if(!contributionData) return;
 
+        if(contributionData.title == undefined || contributionData.title.length == 0 || contributionData.body == undefined || contributionData.body.length == 0){
+          alert("Contribution must have a title and body!");
+        }
+
         contributionData.ref = parentId;
 
         contributionData.contentType = 'text'; /// default
@@ -213,16 +226,26 @@ angular.module('studionet')
             });
 
         contribution.createContribution( contributionData ).then(function(res){
-              $scope.alert.success = true; 
-              $scope.alert.successMsg = "Contribution Id : " + res.data.id + " has been created.";
+              
+              //$scope.alert.success = true; 
+              //$scope.alert.successMsg = "Contribution Id : " + res.data.id + " has been created.";
+              
+              sendMessage( {status: 200, message: "Replied to contribution successfully" } );
 
-              $scope.replyMode = false; 
-              $scope.updateMode = false;
+              // change contribution
+              //$scope.contribution = contributionData;
+              //
+              $scope.close();
+
+
+              //$scope.replyMode = false; 
+              //$scope.updateMode = false;
 
 
         }, function(error){
-              $scope.alert.error = true; 
-              $scope.alert.errorMsg = error;
+
+              //alert("Error replying to message. Please")
+              sendMessage( {status: 200, message: "Error replying to message. Please try again." } );
         }); 
    };
 
@@ -251,8 +274,8 @@ angular.module('studionet')
 
     contribution.updateContribtuion(updateContribution).then(function(res){
           console.log("success");
-          $scope.alert.success = true; 
-          $scope.alert.successMsg = "Contribution Id : " + updateContribution.id + " has been updated.";
+          //$scope.alert.success = true; 
+          //$scope.alert.successMsg = "Contribution Id : " + updateContribution.id + " has been updated.";
 
     }, function(error){
           console.log("failure");
@@ -267,10 +290,19 @@ angular.module('studionet')
     var r = confirm("Are you sure you want to delete your contribution? This action cannot be undone");
     if (r == true) {
       contribution.deleteContribution(contributionId).then(function(){
-          $scope.alert.success = true; 
-          $scope.alert.successMsg = "Contribution Id : " + $scope.contribution.id + " was successfully deleted.";
+          
+          //$scope.alert.success = true; 
+          //$scope.alert.successMsg = "Contribution Id : " + $scope.contribution.id + " was successfully deleted.";
+          
+
+          sendMessage({status: 200, message: "Contribution Id : " + $scope.contribution.id + " was successfully deleted." });
+          close();
+
       }, function(error){
-            alert("Error occured while deleting contribution")
+          
+          sendMessage({status: 500, message: "Error deleting Contribution Id : " + $scope.contribution.id });
+          close();
+      
       });
     } else {
         x = "You pressed Cancel!";
