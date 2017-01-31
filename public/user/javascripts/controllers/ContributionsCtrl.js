@@ -150,6 +150,8 @@ angular.module('studionet')
 
       // remove supernode
       $scope.graph.getElementById(supernode.contribution).remove();
+
+      STUDIONET.GRAPH.draw_graph($scope.graph, 20);
     
       // Display the entire node name
       $scope.graph.on('mouseover','node', function(evt){

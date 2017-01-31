@@ -264,7 +264,7 @@ var graph_style = {
 
       hideLabelsOnViewport: false,
 
-      layout: {name: "null"},
+      layout: {name: "preset"},
       
       style: 
         cytoscape.stylesheet()
@@ -283,7 +283,7 @@ var graph_style = {
               'font-weight': '400',  
               'text-wrap': 'wrap',
               'text-max-width': '300px',
-              'font-family': 'Roboto Condensed, sans serif',
+              'font-family': 'Roboto, sans serif',
               'min-zoomed-font-size': '1em',
               'margin': '300px'
             })
@@ -416,20 +416,21 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
     var nodes = data.nodes.map( function(node){ return createGraphNode(node) } );
     var edges = data.links.map( function(edge){ return createGraphEdge(edge) } );
     
-    nodes = nodes.filter(function(data){
+    /*nodes = nodes.filter(function(data){
         if(data.id == 5)
           return false; 
         else 
           return true;
-    });
-    edges = edges.filter(function(data){
-        if(data.source == 5 || data.target == 5)
-          return false; 
+    }); */
+    var manuallyCreatedEdges = [];
+    console.log(edges.length, "before sorting");
+    edges = edges.filter(function(edge){
+        if(edge.data.properties.createdBy == undefined)
+          return true; 
         else 
-          return true;
+          return false;
     });
-        //nodes: data.nodes.map( function(node){ return createGraphNode(node) } ), 
-        //edges: data.links.map( function(edge){ return createGraphEdge(edge) } )
+    console.log(edges.length, "after sorting");
 
 
     graph_style.elements = {
@@ -448,7 +449,7 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
     graph_style.motionBlur = true;
 
     graph = cytoscape( graph_style );
-    draw_graph();
+
 
     graph.fit();
 
@@ -464,20 +465,22 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
 
 // number of incomers above which the node is placed on the spiral
 // always double of number of incoming nodes required
-var threshold = 4; 
-var draw_graph = function(){
+STUDIONET.GRAPH.draw_graph = function(graph, threshold){
+
+  var sortFn = function (ele1, ele2) {
+
+      return ( ele1.predecessors().length > ele2.predecessors().length ? -1 : 1);
+  }
 
   // Sort the nodes first
-  var sortedNodes = graph.nodes().sort(function (ele1, ele2) {
-      return ( ele1.predecessors().length > ele2.predecessors().length ? -1 : 1);
-  });
+  var sortedNodes = graph.nodes().sort( sortFn );
 
   // set the onSpiral value to -1 for all nodes
   graph.nodes().map(function(n){
       n.data('onSpiral', -1);
   }) ;
 
-  // Extract nodes which will be on the spiral
+  // Extract nodes which will be on the spiral, including all children
   var spiralNodes = sortedNodes.filter(function(i, node){
 
       // this node will go on the spiral
@@ -498,8 +501,6 @@ var draw_graph = function(){
 
             });
 
-            console.log(inc + " marked");
-
             return true;
       
       }
@@ -512,42 +513,41 @@ var draw_graph = function(){
               console.log("Node already part of the spiral");
             }
             
-
-
-
         return false;
       }
       
   });
 
-  console.log(spiralNodes.length);
+  console.log("Original Spiral Nodes", spiralNodes.length);
 
-  graph.nodes("[onSpiral=-1]").map(function(node){
+  for(var i=0; i < graph.nodes().length; i++){
 
-    if(node.data('onSpiral') == 1){
+      var node = graph.nodes()[i];
 
-        // add node to spiral
-        spiralNodes.add(node);
-      
-        // mark nodes predessors
-        var inc = 0;
-        node.predecessors().nodes().map(function(child){
 
-              if( child.data('onSpiral') == -1 ){
-                child.data('onSpiral', node.id() );
-                inc++;
-              }
-        });
-        console.log(inc, "marked");
-    
+      if(node.data('onSpiral') == -1){
+
+          //console.log("Doing node:", node.id());
+          
+          // add node to spiral
+          spiralNodes = spiralNodes.add(node);
         
-    }
+          // mark nodes predessors
+          var inc = 0;
+          node.predecessors().nodes().map(function(child){
 
-  })
+                if( child.data('onSpiral') == -1 ){
+                  child.data('onSpiral', node.id() );
+                  inc++;
+                }
+          });
+          //console.log(inc, " additional marked and removed for id: ", node.id() );
+      }
 
+  }
 
   //spiralNodes = spiralNodes.add( graph.nodes("[onSpiral=-1]") );
-  console.log(spiralNodes.length);
+  console.log("Spiral nodes after addition", spiralNodes.length);
 
   var spiralNodes = spiralNodes.sort(function (ele1, ele2) {
       return ( ele1.predecessors().length > ele2.predecessors().length ? -1 : 1);
@@ -563,6 +563,7 @@ var draw_graph = function(){
 
   // make the inital spiral
   makeSpiral( spiralNodes,  initX, initY, 200 ); // this will get over in 500*spiralNodes.length time
+  //makeLine(spiralNodes);
 
   setTimeout(function(){
       
@@ -586,10 +587,35 @@ var draw_graph = function(){
   }, 1000);
 
 
+}
 
+var makeLine = function(nodes){
+
+  for(var i=0; i<nodes.length; i++){
+
+      var x = i*200;
+      var y = 0; 
+
+      var node = nodes[i];
+
+      node.animate(
+          { position : {x: x, y: y } , 
+            style: { backgroundColor: '#AFAFAF' }  
+          }, 
+          { 
+            duration: 500 
+          } 
+      );
+  }
 
 }
 
+
+// radius of one small circle is 10
+// d = 20
+// if i want all spirals to be 4PI, available length is 4 * Math.PI * R = number_of_nodes * d (roughly)
+// if i find the 'R', I get the approx size of the container
+// R = number_of_nodes * d / 4 * Math.PI
 
 // logarithmic spiral
 var makeSpiral = function(nodes, initX, initY, rad){
@@ -601,15 +627,19 @@ var makeSpiral = function(nodes, initX, initY, rad){
   var radius = rad || 100;
   var angle = 0;
 
-  var angleInc = (2 * Math.PI * (1 + nodes.length/10) )/nodes.length;
-  var radInc = radius/4;
+  var angleInc = /*6*Math.PI / nodes.length; */(2 * Math.PI * (1 + nodes.length/10) )/nodes.length;
+  var radInc = /*3*radius/(nodes.length)*/ radius > 25 ? radius/10  : radius / 4;
 
   for(var i=0; i<nodes.length; i++){
 
       var node = nodes[i];
 
+      /*if(radius > 25){
+        angleInc = (10 + node.predecessors().length) * (Math.PI / 180)
+      }*/
+
       var x = ( radius + ( i * radInc ) ) * Math.cos( angle + ((i-1) * ( angleInc) ) ) + initX;
-      var y = ( radius + ( i * radInc ) ) * Math.sin( angle + ((i-1) * ( angleInc) ) ) + initY;
+      var y = ( radius + ( i * radInc )  ) * Math.sin( angle + ((i-1) * ( angleInc) ) ) + initY;
 
       node.animate(
           { position : {x: x, y: y } , 
@@ -624,243 +654,3 @@ var makeSpiral = function(nodes, initX, initY, rad){
     
 }
 
-
-
-var reposition = function(){
-
-
-      // sort the nodes by the number of incomers 
-      // incoming means the node pointing to is the qestion  (incase of answer) / main article (incase of comment) / resource_for (problem_statement) /  ....
-      // incomers add value 
-      // outgoers denote heirarchy
-      var sortedNodes = graph.nodes().sort(function (ele1, ele2) {
-          return ( ele1.predecessors().length > ele2.predecessors().length ? -1 : 1);
-      });
-
-      /*   Criteria : Nodes with parents more than threshold on the spiral
-       *            : Nodes with parents less than threshold but no children with parents more than threshold on the spiral
-       */
-      topNodes = topNodes.filter(function(i, node){
-
-            /*if(node.successors().length <= 1 && node.predecessors().length <= 1){
-              console.log("zero on spiral");
-              return true;
-            }*/
-            if(node.incomers().length <= 1 && node.outgoers().length <= 1)
-              return true;
-
-
-            if(node.predecessors().length >= threshold){
-              node.predecessors().map(function(pre){
-                pre.data('onSpiral', true);
-              })
-              return true; 
-            }
-            else if(node.predecessors().length < threshold){
-              var children = node.successors();
-              var flag = true; 
-              for(var i=0; i < children.length; i++){
-
-                  var child = children[i];
-
-                  // means parent on the spiral 
-                  if(child.predecessors().length >= threshold){
-                      flag = false;
-                      break;
-                  }
-
-              }
-              return flag;
-            }
-      });
-
-
-/*            arrangeIsolatedNodes(   graph.nodes().filter(function(i, node){
-            return ( node.incomers().length <= 1 && node.outgoers().length <= 1);
-      }) ); */
-
-      var angle = 2 * Math.PI / topNodes.length;
-      var radius = 0.5*window.innerWidth;
-
-      var initX = $(window).height()/2;
-      var initY = $(window).width()/2;
-
-      makeGalaxy( topNodes,  radius, initX, initY, undefined, 0, 6);
-
-
-    
-}
-
-
-var arrangeIsolatedNodes = function( nodes ){
-    nodes.map(function(node, index){
-        node.animate({    position : {x: 0, y: 0 } , style: { backgroundColor: '#AFAFAF' }  }, { duration: 500 }, function(){ console.log("Isolated nodes arranged"); } );
-    })
-}
-
-var makeGalaxy = function( nodes, radius, initX, initY, color, count, max_count, init_angle ){
-
-      //var trend = "circular"; 
-
-      // if first iteration
-      //if(count == 0)
-        trend = "spiralIn"
-
-      var angle = (trend =='spiralIn') ? 2*Math.PI / 9: (2 * Math.PI / (nodes.length) );
-      //var radius =  ( radius - 2*(max_count - count) > 0 )? (radius - 2*(max_count - count) ) : 50; 
-
-      var colors = randomColors(nodes.length);
-      var cluster_color;
-      
-      for(var i=0; i< nodes.length; i++){
-
-          var node = nodes[i];
-
-          if(trend === "spiralIn"){
-            radius = radius + radius/40 // increase radius with every node placed
-            //angle = angle + (node.predecessors().length/10)
-            angle = 0.99*angle;
-          }
-
-          var x = radius * Math.cos( (init_angle || 0 ) + angle*i ) + initX + node.predecessors().length;
-          var y = radius * Math.sin( (init_angle || 0 ) +  angle*i ) + initY + node.predecessors().length;
-
-          if(color == undefined)
-            cluster_color = colors[i];
-          else
-            cluster_color = color; 
-
-          node.animate({    position : {x: x, y: y} , style: { backgroundColor: cluster_color }  }, { duration: 300 });
-          node.data('color', cluster_color);
-
-          if(count < max_count){
-
-            var incomers = node.predecessors().filter(function(i, n){
-
-               // if incomers of incoming nodes is greater than node's incomers, it'll be before this node in the spiral
-              if(n.isNode() && n.predecessors().length < node.predecessors().length)
-                return true;
-              else
-                return false;
-
-               //return n.predecessors().length < node.predecessors().length && n.predecessors().length < threshold; 
-            });
-
-            /*
-            var outgoers = node.outgoers().filter(function(i, n){
-                return n.predecessors().length < threshold; 
-            });
-            
-            incomers = incomers.add(outgoers); */
-            
-            //console.log("Making Galaxy for node", i, "in Galaxy iteration: ", count);
-            //makeGalaxy( incomers, /*100 +*/ incomers.length /*(12.5*incomers.length)/Math.PI*/ , x, y, cluster_color, count+1, max_count, (init_angle || 0 ) + angle*i );
-          }
-
-      }
-
-}
-
-
-function randomColors(total){
-    var i = 360 / (total - 1); // distribute the colors evenly on the hue range
-    var r = []; // hold the generated colors
-    for (var x=0; x<total; x++)
-    {
-        r.push(hsvToRgb(i * x, 100, 100)); // you can also alternate the saturation and value for even more contrast between the colors
-    }
-    return r;
-}
-
-function hsvToRgb(h, s, v) {
-  var r, g, b;
-  var i;
-  var f, p, q, t;
- 
-  // Make sure our arguments stay in-range
-  h = Math.max(0, Math.min(360, h));
-  s = Math.max(0, Math.min(100, s));
-  v = Math.max(0, Math.min(100, v));
- 
-  // We accept saturation and value arguments from 0 to 100 because that's
-  // how Photoshop represents those values. Internally, however, the
-  // saturation and value are calculated from a range of 0 to 1. We make
-  // That conversion here.
-  s /= 100;
-  v /= 100;
- 
-  if(s == 0) {
-    // Achromatic (grey)
-    r = g = b = v;
-    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
-  }
- 
-  h /= 60; // sector 0 to 5
-  i = Math.floor(h);
-  f = h - i; // factorial part of h
-  p = v * (1 - s);
-  q = v * (1 - s * f);
-  t = v * (1 - s * (1 - f));
- 
-  switch(i) {
-    case 0:
-      r = v;
-      g = t;
-      b = p;
-      break;
- 
-    case 1:
-      r = q;
-      g = v;
-      b = p;
-      break;
- 
-    case 2:
-      r = p;
-      g = v;
-      b = t;
-      break;
- 
-    case 3:
-      r = p;
-      g = q;
-      b = v;
-      break;
- 
-    case 4:
-      r = t;
-      g = p;
-      b = v;
-      break;
- 
-    default: // case 5:
-      r = v;
-      g = p;
-      b = q;
-  }
- 
-  return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
-}
-
-
-STUDIONET.GRAPH.getVisibleNodes = function(cy){
-
-    var vw = cy.extent();
-    var visible = [];
-
-    cy.nodes().map(function(node){
-      if( viewportContainsNode(vw, node) ){
-        node.data('visible', true);
-        visible.push(node);
-      }
-      else
-        node.data('visible', false);
-    })
-
-    return visible;
-
-}
-
-function viewportContainsNode(vw, n){
-    return ( ( n.position().x > vw.x1 && n.position().x < vw.x2 ) && ( n.position().y > vw.y1 && n.position().y < vw.y2  ) )
-}
