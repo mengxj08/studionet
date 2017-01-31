@@ -235,9 +235,15 @@ angular.module('studionet')
 
 
 				console.log(res);
+
+				graph.selectNode(update_contribution.id);
+				graph.graph.getElementById(update_contribution.id).data('db_data', update_contribution);
+				graph.graph.getElementById(update_contribution.id).data('name', update_contribution.title);
+				
+
 		    	
 				// refresh graph
-				graph.getGraph().then(function(){	graph.selectNode(update_contribution.id);	});
+				// graph.getGraph().then(function(){	graph.selectNode(update_contribution.id);	});
 
 				// refresh tags
 				tags.getAll();

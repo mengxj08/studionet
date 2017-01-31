@@ -88,7 +88,7 @@ angular.module('studionet')
   }
 
   // Interaction on Single Click
-  var onNodeSingleClick = function(evt){
+  var onNodeSingleClick = function(evt, dbl){
 
         var node = evt.cyTarget;
         
@@ -104,6 +104,9 @@ angular.module('studionet')
 
           contribution.getContribution(data.id).then(function(res){
               node.data('db_data', res.data);
+
+              if(dbl)
+                onNodeDoubleClick(evt);
           });
 
         }
@@ -131,7 +134,7 @@ angular.module('studionet')
         }
         else{
           console.warn("Data not defined for selected node;");
-          onNodeSingleClick(evt);
+          onNodeSingleClick(evt, true);
         }
   }
 

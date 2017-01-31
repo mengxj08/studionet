@@ -315,7 +315,6 @@ router.route('/:contributionId')
   })
 
   .put(auth.ensureAuthenticated, contributionUtil.initTempFileDest, multer({storage: storage.attachmentStorage}).array('attachments'), function(req, res, next){
-        
 
         //because form data has text string for tags   
         req.body.tags = req.body.tags.split(",");
@@ -400,7 +399,8 @@ router.route('/:contributionId')
               'UNWIND {tagsToAddParam} as tagToAdd',
               'MERGE (t2:tag {name: tagToAdd})',
               'ON CREATE SET t2.createdBy = {createdByParam}',
-              'CREATE UNIQUE (c3)-[:TAGGED]->(t2)'
+              'CREATE UNIQUE (c3)-[:TAGGED]->(t2)',
+              'RETURN c3'
             ];
           }
 
@@ -430,7 +430,7 @@ router.route('/:contributionId')
             }
             else{
               console.log('[SUCCESS] Success in editing the contribution with id: ' + req.params.contributionId);
-              req.contributionId = result[0].id;
+              //req.contributionId = result[0].id;
               res.status(200);
               res.send( "Contribution updated" );
 

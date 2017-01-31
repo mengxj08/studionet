@@ -28,6 +28,8 @@ angular.module('studionet')
   $scope.replyMode = false;
   $scope.updateMode = false;
 
+  var spinner = new Spinner(STUDIONET.GRAPH.spinner);
+  var target = document.getElementById('cy');
 
   var all_tags = [];
   for(var i=0; i<$scope.tags.length; i++){
@@ -108,6 +110,9 @@ angular.module('studionet')
 
       // if tags are a single word, convert to array
       console.log("tags",  $scope.contribution.db_data.tags);
+
+      if($scope.contribution.db_data.tags.length == 1 && $scope.contribution.db_data.tags[0] == "")
+        $scope.contribution.db_data.tags = [];
 
       contribution.updateViewCount($scope.contribution.db_data.id);
 
@@ -257,11 +262,14 @@ angular.module('studionet')
                 contributionData.tags.push(t.name.toLowerCase().trim());
             });
 
+        spinner.spin(target);
+
+
         contribution.createContribution( contributionData ).then(function(res){
               
               //$scope.alert.success = true; 
               //$scope.alert.successMsg = "Contribution Id : " + res.data.id + " has been created.";
-              
+              spinner.stop();
               sendMessage( {status: 200, message: "Replied to contribution successfully" } );
 
               // change contribution
@@ -277,6 +285,7 @@ angular.module('studionet')
         }, function(error){
 
               //alert("Error replying to message. Please")
+              spinner.stop();
               sendMessage( {status: 200, message: "Error replying to message. Please try again." } );
         }); 
    };
@@ -290,14 +299,12 @@ angular.module('studionet')
       return;
     }
 
-    console.log("Updating...");
-
     updateContribution.tags = [];
     if(updateContribution._tags.length > 0)
       updateContribution._tags.map(function(t){
-        updateContribution.tags.push(t.name);
+        updateContribution.tags.push(t.name.toLowerCase().trim());
       });
-    delete updateContribution._tags;
+    //delete updateContribution._tags;
 
     //Remove the attachments that have already existed in the database
     //Newly chosen attachment should not have the 'attachment' property
@@ -307,13 +314,18 @@ angular.module('studionet')
       }
     }
 
+    spinner.spin(target);
     contribution.updateContribution(updateContribution).then(function(res){
-        alert("Contribution Updated")
+       
+
+        spinner.stop();
         sendMessage( {status: 200, message: "Updated contribution successfully" } );
         $scope.close();
 
     }, function(error){
-          console.log("failure");
+
+          spinner.stop();
+          
           sendMessage( {status: 500, message: "Error updating contribution" } );
           $scope.close();
           //$scope.alert.error = true; 
@@ -326,16 +338,19 @@ angular.module('studionet')
 
     var r = confirm("Are you sure you want to delete your contribution? This action cannot be undone");
     if (r == true) {
+
+      spinner.spin(target);
       contribution.deleteContribution(contributionId).then(function(){
           
           //$scope.alert.success = true; 
           //$scope.alert.successMsg = "Contribution Id : " + $scope.contribution.id + " was successfully deleted.";
-          
-
+          spinner.stop();
           sendMessage({status: 200, message: "Contribution Id : " + $scope.contribution.id + " was successfully deleted." });
           $scope.close();
 
       }, function(error){
+
+          spinner.stop();
           
           sendMessage({status: 500, message: "Error deleting Contribution Id : " + $scope.contribution.id });
           $scope.close();
