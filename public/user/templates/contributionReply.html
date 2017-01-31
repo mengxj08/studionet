@@ -55,7 +55,7 @@
             <!--<input type="file" ngf-select="showUplodatedFiles" ng-model="contributionData.attachments" name="file" ngf-multiple="true">-->
             <div class="attachments" ng-repeat="attachment in contributionData.attachments">
               <h5 style="color: blue; width: 70%; display: inline-block;"><u>{{ attachment.name }} ({{ attachment.size/1000 }} KB)</u></h5>
-              <button style='float: right; display: inline-block;' class="btn btn-xs" ng-click="removeFiles(attachment)">X</button>
+              <button style='float: right; display: inline-block;' class="btn btn-xs" ng-click="removeFiles(attachment, contributionData)">X</button>
             </div>
           </div>
 

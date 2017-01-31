@@ -7,10 +7,6 @@ angular.module('studionet')
   $scope.relationships = relationships.relationships;
   $scope.contributions = contributions.contributions;
   $scope.users = users.users.hash();
-
-
-
-
   
 
   //todo: check why promise doesn't always get resolved
