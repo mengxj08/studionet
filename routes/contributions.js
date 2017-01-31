@@ -63,7 +63,7 @@ router.route('/')
 		var currentDate = Date.now();
 		var params = {
 			createdByParam: parseInt(req.user.id),
-			tagsParam: req.body.tags.split(","), //because form data has text string for tags   
+			//tagsParam: ( req.body.tags !== "" ?  : [] ), //because form data has text string for tags   
 			contributionTitleParam: req.body.title,
 			contributionBodyParam: req.body.body,
 			contributionRefParam: parseInt(req.body.ref), 
@@ -77,6 +77,12 @@ router.route('/')
 			rateCountParam: 0,
 			viewsParam: 0
 		};
+
+    if(req.body.tags == "")
+      params.tagsParam = ""
+    else
+      params.tagsParam = req.body.tags.split(",");
+
 
 		db.query(query, params, function(error, result){
 			if (error){
@@ -309,7 +315,10 @@ router.route('/:contributionId')
   })
 
   .put(auth.ensureAuthenticated, contributionUtil.initTempFileDest, multer({storage: storage.attachmentStorage}).array('attachments'), function(req, res, next){
-        req.body.tags = req.body.tags.split(","); //because form data has text string for tags   
+        
+
+        //because form data has text string for tags   
+        req.body.tags = req.body.tags.split(",");
 
         var query = [
           'MATCH (c:contribution) WHERE ID(c)=' + req.params.contributionId,
@@ -337,8 +346,7 @@ router.route('/:contributionId')
           var newRef = req.body.ref;
 
           var oldTags = result.tags;
-          var newTags = req.body.tags || [];
-
+          var newTags = req.body.tags;
           var createdBy = result.createdBy;
           var changeRelationQuery = [];
           var changeTagsQuery = [];

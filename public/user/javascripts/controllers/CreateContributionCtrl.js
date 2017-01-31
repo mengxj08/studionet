@@ -45,17 +45,17 @@ angular.module('contributionEditorDirective', [])
 
 
       $scope.createContribution = function(){
-          $scope.contributionData._tags.map(function(t){
-              $scope.contributionData.tags.push(t.name.trim());
-          });
+          
+          if($scope.contributionData._tags.length > 0)
+            $scope.contributionData._tags.map(function(t){
+                $scope.contributionData.tags.push(t.name.toLowerCase().trim());
+            });
           delete $scope.contributionData._tags;
 
           contribution.createContribution( $scope.contributionData ).then(function(res){
-                //$scope.alert.success = true; 
-                //$scope.alert.successMsg = "Your contribution was created." // res.data.id; 
-                //$scope.alert.successId = res.data.id;
                 
                 $scope.$emit( BROADCAST_MESSAGE, { status: 200, message: "Contribution was created successfully." } );
+                $scope.contributionData = { _tags: [], attachments: [], tags: [], refType: "RELATED_TO", contentType: "text", ref: supernode.contribution};
 
 
           }, function(error){

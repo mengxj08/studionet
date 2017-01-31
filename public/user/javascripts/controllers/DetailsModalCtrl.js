@@ -106,7 +106,10 @@ angular.module('studionet')
       // get rating
       $scope.rate = getRating( $scope.contribution.id );
 
-      $scope.parents = ["parent1", "parent2", "parent3"];
+      // if tags are a single word, convert to array
+      console.log("tags",  $scope.contribution.db_data.tags);
+
+      contribution.updateViewCount($scope.contribution.db_data.id);
 
   }
 
@@ -119,9 +122,6 @@ angular.module('studionet')
   //  This close function doesn't need to use jQuery or bootstrap, because
   //  the button has the 'data-dismiss' attribute.
   $scope.close = function() {
-
-      // increase viewcount for contribution
-      contribution.updateViewCount($scope.contribution);
 
       $('body').removeClass('modal-open');
       $('.modal-backdrop').remove();
@@ -254,7 +254,7 @@ angular.module('studionet')
         // if _tags is defined
         if(contributionData._tags)
             contributionData._tags.map(function(t){
-                contributionData.tags.push(t.name.trim());
+                contributionData.tags.push(t.name.toLowerCase().trim());
             });
 
         contribution.createContribution( contributionData ).then(function(res){
@@ -289,6 +289,8 @@ angular.module('studionet')
       alert("Please input the title or content of the contribution!");
       return;
     }
+
+    console.log("Updating...");
 
     updateContribution.tags = [];
     if(updateContribution._tags.length > 0)

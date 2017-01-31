@@ -91,38 +91,24 @@ angular.module('studionet')
   var onNodeSingleClick = function(evt){
 
         var node = evt.cyTarget;
-        // select the node
+        
+        // select the node and highlight connections
         graph.selectNode(node);
         
         // preview
-        if(node.data('qtip') == undefined){
+        if(node.data('db_data') == undefined){
           
           //console.log("Constructing new qtip");
 
-          var qtipFormat = STUDIONET.GRAPH.qtipFormat(evt);
           var data = node.data();
 
           contribution.getContribution(data.id).then(function(res){
-
-                var extra_data = res.data;
-
-                qtipFormat.id = "qTip-" +  data.id;
-                //qtipFormat.content.title =  extra_data.title;
-                qtipFormat.content.text = "<h4 class='qtip-title'>" + extra_data.title + "</h4>" +  generateQtipContent(extra_data);
-
-                qtipFormat.content.button = 'Close';
-
-                node.data('qtip', qtipFormat);
-                node.data('db_data', extra_data);
-
-                node.qtip(qtipFormat, evt);  
-
+              node.data('db_data', res.data);
           });
 
         }
         else{
-          //console.log("qtip already defined");
-          node.qtip(node.data('qtip'), evt);
+          console.log("data already present");
         }        
   }
 
@@ -149,21 +135,19 @@ angular.module('studionet')
         }
   }
 
-  // Function to generate the QTip content
-  var generateQtipContent = function(extra_data){
+  var showQTip = function(evt){
 
-      function htmlToPlaintext(text) {
-        return text ? String(text).replace(/<[^>]+>/gm, '') : '';
-      }
+      var node = evt.cyTarget;
 
+      var data = node.data();
 
-      var profile = "<em>By " +  users.getUser( extra_data.createdBy ).name  + "</em><br>";
-      var date = "<br><em>" + (new Date(extra_data.dateCreated)).toString().substr(0, 10) + "</em>" ;
-      var attachments = "<br><br><b><em>" + extra_data.attachments.length + " attachments</em></b>";
-      var tags = "<br>" + JSON.stringify(extra_data.tags) + "<br>";
-      var textSnippet = "<br>" + htmlToPlaintext(extra_data.body).substr(0,150) + " ...";
+      var qtipFormat = STUDIONET.GRAPH.qtipFormat(evt);
+      
+      qtipFormat.id = "qTip-" +  node.id();
+      qtipFormat.content.text =  node.data('name');
 
-      return profile + /*date + tags +*/( (extra_data.attachments[0].id == null) ? " " : attachments )  + textSnippet;                      
+      node.qtip(qtipFormat, evt);  
+  
   }
 
   // Add graph interactions
@@ -179,16 +163,9 @@ angular.module('studionet')
       STUDIONET.GRAPH.draw_graph($scope.graph, threshold);
     
       // Display the entire node name
-      $scope.graph.on('mouseover','node', function(evt){
-        $scope.graph.elements().removeClass('fullname');
-        evt.cyTarget.addClass('fullname');
+      $scope.graph.on('mouseover', 'node', function(evt){
+          showQTip(evt);
       });
-
-      // Shorten the node name
-      $scope.graph.on('mouseout','node', function(evt){
-        $scope.graph.elements().removeClass('fullname');
-      });
-
 
       $scope.graph.on('tap', function(evt){
         if( evt.cyTarget.isEdge && evt.cyTarget.isEdge() )

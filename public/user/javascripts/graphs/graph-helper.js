@@ -276,7 +276,7 @@ var graph_style = {
               'width': computeSizeFn,
               'height': computeSizeFn,
               'border-color': computeBgColorFn,
-              'background-color': '#000623',
+              'background-color': '#AEADAD',
               //'label' : computeLabel,
               'text-valign': 'bottom',
               //'text-margin-y': '0.1em',
@@ -318,7 +318,7 @@ var graph_style = {
               //'label' : computeLabel,
             })
 
-          .selector('.highlighted')
+          .selector('edge.highlighted')
             .css({
               //'content' : 'data(name)',
               //'font-size': '0.4em',
@@ -327,12 +327,13 @@ var graph_style = {
               'text-max-width': '300px',
               'min-zoomed-font-size': '1em',
               'opacity': 1,
-              'text-opacity': 1
+              'text-opacity': 1,
+              'line-color': '#2A00FE'
             })
 
           .selector('.unmarked')
             .css({
-              'opacity': 0.1,
+              'opacity': 0.05,
               'text-opacity': 0.2,
               //'label': computeLabel
             })
@@ -341,19 +342,18 @@ var graph_style = {
               'background-color' : '#000623',
               'border-width': '2',
               'border-color': '#AFAFAF',
+              'opacity': 0.7
               //'label' : computeLabel,
             })
-          .selector('.marked-parent')
+          .selector('edge.marked-parent')
             .css({
-              'background-color' : '#5E865F',
-              'border-width': '1',
-              'border-color': 'white'
+              'line-color' : '#4DBE50',
+              'width': '1'
             })
-          .selector('.marked-children')
+          .selector('edge.marked-children')
             .css({
-              'background-color' : '#868686',
-              'border-width': '1',
-              'border-color': 'white'
+              'line-color' : '#2561DA',
+              'width': '1'
             })
 
           .selector('edge.highlighted')
@@ -600,8 +600,7 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
       // place the spiral nodes
       node.animate(
           { 
-            position : { x: x, y: y } , 
-            style: { backgroundColor: '#AFAFAF' }  
+            position : { x: x, y: y } 
           }, 
           { 
             duration: 10, 
@@ -684,8 +683,7 @@ var makeSubSpiral = function(nodes, centerX, centerY, minimumRadius){
       radius += radiusInc;
 
       node.animate(
-          { position : {x: x, y: y } , 
-            style: { backgroundColor: '#AFAFAF' }  
+          { position : {x: x, y: y }  
           }, 
           { 
             duration: 500 

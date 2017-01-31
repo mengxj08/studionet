@@ -646,10 +646,10 @@ angular.module('studionet')
 		  node.removeClass('faded')
 		      .addClass('selected');
 		  
-		  node.predecessors().removeClass('faded')
+		  node.incomers().removeClass('faded')
 		                     .addClass('highlighted');
 		  
-		  node.successors().removeClass('faded')  
+		  node.outgoers().removeClass('faded')  
 		                   .addClass('highlighted');
 		});
 
