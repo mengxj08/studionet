@@ -353,14 +353,14 @@ var graph_style = {
             .css({
               //'background-color' : 'white',// '#000623',
               //'border-width': 2,
-              'border-color': '#FFF'//'#AFAFAF',
+              'border-color': '#4A95EF'//'#AFAFAF',
               //'opacity': 0.7
             })
 
           .selector('.unmarked')
             .css({
               //'border-width': 2,
-              'border-color': '#1A3EEA',//'#1F4A23'//'#B9B9B9',
+              'border-color': '#FFF',//'#1F4A23'//'#B9B9B9',
               //'background-color' : '#AFAFAF',
               //'opacity': 0.2,
               //'text-opacity': 0.2,
