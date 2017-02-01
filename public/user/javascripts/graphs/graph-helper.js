@@ -295,7 +295,7 @@ var graph_style = {
             .css({
               'curve-style': 'haystack',
               'line-color': '#923F31',
-              'width': 1
+              'width': 0.2
             })     
 
           // selected
@@ -335,8 +335,8 @@ var graph_style = {
           // unselected
           .selector('node.faded')
             .css({
-              'width' : 3, 
-              'height': 3
+              'width' : 1, 
+              'height': 1
             })
           /*.selector('node.marked.faded')
             .css({
@@ -374,7 +374,8 @@ var graph_style = {
               'target-arrow-fill': 'hollow',
               'target-arrow-color': '#923F31',
               'haystack-radius': 0,
-              'arrow-scale': 0.5
+              'arrow-scale': 0.5,
+              'width': 1
             })
 
 
