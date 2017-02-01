@@ -267,7 +267,7 @@ var graph_style = {
       hideLabelsOnViewport: false,
 
       layout: {name: "preset"},
-      
+
       style: 
         cytoscape.stylesheet()
           
@@ -453,10 +453,11 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
     }
 
     // disable zooming
-    //graph_style.zoomingEnabled = false;
+    //graph_style.zoomingEnabled = true;
     graph_style.minZoom = 0.05;
     graph_style.maxZoom = 7;
     graph_style.wheelSensitivity = 0.1;
+    graph_style.zoom = 0.10;
 
     // performance options
     graph_style.hideEdgesOnViewport = true;
@@ -465,8 +466,7 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
 
     graph = cytoscape( graph_style );
 
-
-    graph.fit();
+    //graph.fit();
 
 
     return graph;
