@@ -37,11 +37,11 @@
 
 		<!-- create a contribution -->
 		<!-- <i class="graph-nav-control icon fa fa-plus" ng-click='openNewContributionModal()' uib-tooltip='New Contribution'  tooltip-placement='left'></i> -->
-    <i class="graph-nav-control icon fa fa-plus" data-toggle="modal" data-target="#createContribution" data-backdrop="static" data-keyboard="false" uib-tooltip='New Contribution' tooltip-placement='left'></i> 
+    <i class="graph-nav-control icon fa fa-plus" data-toggle="modal" data-target="#createContribution" data-backdrop="static" data-keyboard="false" uib-tooltip='New Node' tooltip-placement='left'></i> 
 
     <!-- Using native bootstrap modal functionality - faster -->
     <!-- <i class="graph-nav-control icon fa fa-search" data-toggle="modal" data-target="#filterModal" uib-tooltip='Filter'  tooltip-placement='left'></i> -->
-    <i class="graph-nav-control icon fa fa-link" data-toggle="modal" data-target="" uib-tooltip='Link Contributions - Coming Soon!'  tooltip-placement='left' ng-disabled="true"></i>
+    <i class="graph-nav-control icon fa fa-link" data-toggle="modal" data-target="" uib-tooltip='Link Nodes - Coming Soon!'  tooltip-placement='left' ng-disabled="true"></i>
   
   </div>
 
@@ -110,7 +110,7 @@
   <div style="border-bottom: 1px solid #C2BDBD; margin-bottom: 3px;">
         <i class="data.restricted ? icon fa fa-lock : icon fa fa-unlock" ng-if='data.group'></i> 
         <i class="icon fa fa-tag" ng-if='!data.group'></i> 
-        <span ng-if='!data.group'>#</span>{{data.name.toLowerCase()}}( <small><i>{{data.contributionCount}} contributions</i></small> )
+        <span ng-if='!data.group'>#</span>{{data.name.toLowerCase()}}( <small><i>{{data.contributionCount}} nodes</i></small> )
   </div>
 </script>
 

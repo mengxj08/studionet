@@ -65,6 +65,7 @@ angular.module('studionet')
   // First Initialization of the graph on page-refresh
   $scope.graphInit = function(){  graph.getGraph(angular.element('#cy')[0]);  }
 
+
   // Highlight any state params
   var highlightStateParams = function(){
 
@@ -80,6 +81,22 @@ angular.module('studionet')
       }
   }
 
+  var showQTip = function(evt){
+
+      var node = evt.cyTarget;
+
+      var data = node.data();
+
+      var qtipFormat = STUDIONET.GRAPH.qtipFormat(evt);
+      
+      qtipFormat.id = "qTip-" +  node.id();
+      qtipFormat.content.text =  node.data('name');
+
+      node.qtip(qtipFormat, evt);  
+  
+  }
+
+
   var onEdgeSingleClick = function(evt){
     
     console.log("Edge clicked", evt.cyTarget.data());
@@ -89,6 +106,8 @@ angular.module('studionet')
 
   // Interaction on Single Click
   var onNodeSingleClick = function(evt, dbl){
+
+        showQTip(evt);
 
         var node = evt.cyTarget;
         
@@ -138,20 +157,7 @@ angular.module('studionet')
         }
   }
 
-  var showQTip = function(evt){
 
-      var node = evt.cyTarget;
-
-      var data = node.data();
-
-      var qtipFormat = STUDIONET.GRAPH.qtipFormat(evt);
-      
-      qtipFormat.id = "qTip-" +  node.id();
-      qtipFormat.content.text =  node.data('name');
-
-      node.qtip(qtipFormat, evt);  
-  
-  }
 
   // Add graph interactions
   var addGraphInteractions = function(){

@@ -69,7 +69,7 @@
 
                 <div class='row text-right'>
                   <span ng-hide='replyMode || updateMode || alert.success'>
-                      <button type="button" ng-click="showReplyModal(contribution.id)" class="btn btn-default modal-button">Reply</button>
+                      <button type="button" ng-click="showReplyModal(contribution.id)" class="btn btn-default modal-button">Add</button>
                       
                       <!-- if author -->
                       <button type="button" ng-click="showUpdateModal(contribution.id)" class="btn btn-default modal-button" ng-if="(user.id == contribution.db_data.createdBy)">Update</button>

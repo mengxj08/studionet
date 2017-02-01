@@ -275,7 +275,7 @@ li.notification{
  */
 
 .qtip-titlebar{
-	max-width: 100px;
+	max-width: 150px;
 	background-color: #000623 !important; 
 	padding: 0px 10px !important;
 	color: white;
@@ -289,9 +289,9 @@ li.notification{
 
 .qtip, .qtip-default{
 	background-color: #000623; 
-	color: #C0DD00;
-	border: 1px solid #C0DD00;
-	max-width: 100px;
+	color: #4A95EF;
+	border: 1px solid #4A95EF;
+	max-width: 150px;
 }
 
 .qtip-content{

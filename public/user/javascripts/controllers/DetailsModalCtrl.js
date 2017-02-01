@@ -251,7 +251,9 @@ angular.module('studionet')
         contributionData.contentType = 'text'; /// default
         contributionData.tags = [];
 
-        console.log(contributionData);
+        // default relationship type for everything
+        contributionData.refType = 'RELATED_TO';
+
 
         if(contributionData.attachments == undefined)
           contributionData.attachments = [];

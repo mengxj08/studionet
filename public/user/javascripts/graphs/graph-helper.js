@@ -295,9 +295,7 @@ var graph_style = {
             .css({
               'curve-style': 'haystack',
               'line-color': '#923F31',
-              'width': 0.7,
-              'font-size': '0.3em',
-              'color': '#474547',
+              'width': 1
             })     
 
           .selector('.faded')
@@ -307,7 +305,8 @@ var graph_style = {
 
           .selector('.selected')
             .css({
-              'background-color' : '#AFAFAF',
+              'background-color' : '#A3BC05',//'#AFAFAF',
+              'border-color': '#A3BC05',
               'opacity': 1
             })
 
@@ -330,13 +329,15 @@ var graph_style = {
 
           .selector('.marked.selected')
             .css({
-              'background-color' : '#AFAFAF',
+              'background-color' : '#A3BC05',//'#AFAFAF',
+              'border-color': '#A3BC05',
               'opacity': 1
             })
 
           .selector('.unmarked.selected')
             .css({
-              'background-color' : '#AFAFAF',
+              'background-color' : '#A3BC05',//'#AFAFAF',
+              'border-color': '#A3BC05',
               'opacity': 1
             })
 
@@ -352,7 +353,13 @@ var graph_style = {
 
           .selector('.highlighted')
             .css({
-              'opacity': 0.6
+              'opacity': 0.6,
+              'curve-style': 'bezier',
+              'target-arrow-shape': 'triangle',
+              'target-arrow-fill': 'hollow',
+              'target-arrow-color': '#923F31',
+              'haystack-radius': 0,
+              'arrow-scale': 0.5
             })
 
           .selector('.unmarked.highlighted')
