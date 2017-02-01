@@ -178,7 +178,7 @@ angular.module('studionet')
       if(attachment.thumb)
         return "/api/contributions/" + contributionId + /attachments/+ attachment.id + "/thumbnail";
       else
-        return "http://placehold.it/150x150"; // replace with image for particular extension
+        return "./img/file_default.png"; // replace with image for particular extension
   }
 
   //Uploaded files
