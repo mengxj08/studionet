@@ -24,7 +24,7 @@
                         <br>
 
                         <h6 class='stat-name no-margin-padding'>Total Views:  <b>{{views}}</b> </h6>
-                        <h6 class='stat-name no-margin-padding'>Average Rating:  <b>{{rating}}</b> </h6>
+                        <h6 class='stat-name no-margin-padding'>Average Rating:  <b>{{ isNaN (rating) ? "No Rating" : rating }}</b> </h6>
                         <h6 class='stat-name no-margin-padding'>Level:  <b>{{level}}</b> </h6>
                   </div>
 

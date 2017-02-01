@@ -653,10 +653,10 @@ angular.module('studionet')
 		      .addClass('selected');
 		  
 		  node.incomers().removeClass('faded')
-		                     .addClass('highlighted');
+		                  .addClass('highlighted');
 		  
 		  node.outgoers().removeClass('faded')  
-		                   .addClass('highlighted');
+		                  .addClass('highlighted');
 		});
 
 	}
@@ -668,7 +668,6 @@ angular.module('studionet')
 			.removeClass('highlighted')
 			.removeClass('highlighted')
 			.removeClass('marked')
-			.addClass('faded');
 
 		if(node instanceof Array && node.length == 0){
 			o.graph.elements().addClass('unmarked');
@@ -692,16 +691,6 @@ angular.module('studionet')
 				.removeClass('unmarked')
 				.addClass('marked');
 
-/*			o.graph.$(selectorQuery).predecessors()
-								.removeClass('unmarked')
-								.removeClass('faded')
-								.addClass('marked-parent');
-
-			o.graph.$(selectorQuery).successors()
-							.removeClass('faded')  
-							.removeClass('unmarked')
-							.addClass('marked-children');*/
-
 		}
 
 		// node is either a cytoscape node or an id 
@@ -715,12 +704,6 @@ angular.module('studionet')
 
 			node.removeClass('faded')
 				.addClass('marked');
-/*
-			node.predecessors().removeClass('faded')
-								.addClass('marked-parent');
-
-			node.successors().removeClass('faded')  
-							.addClass('marked-children');*/
 
 		});
 

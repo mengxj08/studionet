@@ -275,14 +275,9 @@ var graph_style = {
             .css({
               'width': computeSizeFn,
               'height': computeSizeFn,
-              'border-color': computeBgColorFn,
-              'background-color': '#AEADAD',
-              //'label' : computeLabel,
               'text-valign': 'bottom',
-              //'text-margin-y': '0.1em',
               'font-size': computeFontFn,
               'color': '#C0DD00',
-              //'line-height': '0.5em',
               'font-weight': '400',  
               'font-size': '3px',
               'text-wrap': 'wrap',
@@ -290,101 +285,81 @@ var graph_style = {
               'font-family': 'Roboto, sans serif',
               'min-zoomed-font-size': '1em',
               'margin': '300px',
-              'source-arrow-shape': 'triangle'
+              'source-arrow-shape': 'triangle',
+              'border-width': 1,
+              'background-color' : '#000623',
+              'border-color': '#AFAFAF'
             })
 
           .selector('edge')
             .css({
               'curve-style': 'haystack',
-              'line-color': '#923F31',//edgeColorFn,
+              'line-color': '#923F31',
               'width': 0.7,
               'font-size': '0.3em',
               'color': '#474547',
             })     
 
+          .selector('.faded')
+            .css({
+              'opacity': 0.1,
+            })
+
           .selector('.selected')
             .css({
-              //'background-color' : '#F0F311',
-              'border-width': '1',
-              //'border-color': '#4273EF',
-              'opacity': 1,
-              'text-opacity': 1,
-              //'content' : 'data(name)',
-              //'font-size': '1em',
-              'text-valign': 'top',
-              'background-color' : '#000623',
-              'border-width': '2',
-              'border-color': '#AFAFAF',
-              //'label' : computeLabel,
+              'background-color' : '#AFAFAF',
+              'opacity': 1
             })
 
-          .selector('edge.highlighted')
-            .css({
-              //'content' : 'data(name)',
-              //'font-size': '0.4em',
-              //'font-weight': '600',
-              'text-wrap': 'wrap',
-              'text-max-width': '300px',
-              'min-zoomed-font-size': '1em',
-              'opacity': 1,
-              'text-opacity': 1,
-              'line-color': '#2A00FE'
-            })
-
-          .selector('.unmarked')
-            .css({
-              'opacity': 0.05,
-              'text-opacity': 0.2,
-              //'label': computeLabel
-            })
           .selector('.marked')
             .css({
+              'border-width': 1,
               'background-color' : '#000623',
               'border-width': '2',
               'border-color': '#AFAFAF',
               'opacity': 0.7
-              //'label' : computeLabel,
-            })
-          .selector('edge.marked-parent')
-            .css({
-              'line-color' : '#4DBE50',
-              'width': '1'
-            })
-          .selector('edge.marked-children')
-            .css({
-              'line-color' : '#2561DA',
-              'width': '1'
             })
 
-          .selector('edge.highlighted')
+          .selector('.unmarked')
             .css({
-              'curve-style': 'bezier',
-              'target-arrow-shape': 'none',
-              'target-arrow-fill': 'hollow',
-              'line-color': '#999999',
-              'target-arrow-color':'#CFCACA',
-              'arrow-scale': 0.4,
-              //'content' : 'data(name)',
-              //'source-label' : 'data(name)',
-              //'source-text-offset' : '1',
-              //'target-label' : 'data(name)',
-              'text-rotation' : 'autorotate',
-              'width': 0.4,
-              //'font-size': '0.7em',
-              'font-weight': '200'
-            })
-       
-          .selector('.faded')
-            .css({
-              'opacity': 0.2,
-              'text-opacity': 0.2
+              'border-width': 0.5,
+              'background-color' : '#AFAFAF',
+              'opacity': 0.05,
+              'text-opacity': 0.2,
             })
 
-          .selector('node.fullname')
+          .selector('.marked.selected')
             .css({
-              'content' : 'data(name)'
+              'background-color' : '#AFAFAF',
+              'opacity': 1
             })
 
+          .selector('.unmarked.selected')
+            .css({
+              'background-color' : '#AFAFAF',
+              'opacity': 1
+            })
+
+          .selector('.marked.faded')
+            .css({
+              'opacity': 0.05
+            })
+
+          .selector('.unmarked.faded')
+            .css({
+              'opacity': 0.05
+            })
+
+          .selector('.highlighted')
+            .css({
+              'opacity': 0.6
+            })
+
+          .selector('.unmarked.highlighted')
+            .css({
+              'background-color' : '#000623',
+              'opacity': 0.6
+            })
 }
 
 /*
