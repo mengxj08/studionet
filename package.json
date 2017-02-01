@@ -20,7 +20,6 @@
     "glob": "^7.0.5",
     "gm": "^1.23.0",
     "mkdirp": "^0.5.1",
-    "mmmagic": "^0.4.5",
     "morgan": "~1.7.0",
     "multer": "^1.1.0",
     "nodemon": "^1.11.0",
@@ -31,6 +30,7 @@
     "request": "^2.74.0",
     "seraph": "^0.14.4",
     "serve-favicon": "~2.3.0",
+    "socket.io": "^1.7.2",
     "underscore": "^1.8.3",
     "winston": "^2.3.0",
     "winston-daily-rotate-file": "^1.4.0"

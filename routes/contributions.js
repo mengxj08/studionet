@@ -594,6 +594,9 @@ router.route('/:contributionId/view')
         console.log(error);
       }
       else{
+        
+        req.app.get('socket').emit('contribution_viewed',   { id: req.params.contributionId, user: req.user.id } );
+        
         res.send('Successfully viewed contribution id: ' + req.params.contributionId);
       }
     });

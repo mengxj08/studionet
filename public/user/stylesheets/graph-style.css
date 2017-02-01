@@ -54,23 +54,21 @@
 .info-pane.bottom-center{
   position: fixed;
   top: auto; 
-  width: 300px;
   bottom: 0px;
-  left: 50%; 
-  margin-left: -150px;
+  right: 0px; 
+  //margin-left: -150px;
   text-align: center;
 }
 
 #zoom{
   border: 1px solid #274F7F;
   padding: 0px 10px;
-  width: 300px;
+  max-width: 300px;
 }
 
 #message{
   display: none;
-  margin-bottom: 50px;
-  border: 1px solid #274F7F;
+  //border: 1px solid #274F7F;
   border-radius: 5px;
   height: 25px !important;
   line-height: 25px;

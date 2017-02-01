@@ -16,15 +16,31 @@ angular.module('studionet')
  */
 .controller('ContributionsCtrl', ['$scope', '$stateParams', '$rootScope', 'graph', 'users', 'supernode', 'ModalService', 'contribution', function($scope, $stateParams, $rootScope, graph, users, supernode, ModalService, contribution){
 
-  // ---------------- Filters
-  $scope.filters = [];
-  $scope.matchingNodes = [];
+  $scope.loggedInUsers = 1;
 
-  // when message received
-  $scope.$on( BROADCAST_MESSAGE, function(event, args) {
-      
-      console.log("Message received", args.message);
-      $scope.message = args.message;
+  // --------------- sockets
+  socket.on('user_logged_in', function (data) {
+    
+    console.log("loggedinusers", data);
+    $scope.loggedInUsers  = data; 
+    $scope.$apply();
+
+  });
+
+  socket.on('contribution_viewed', function (data) {
+    
+    console.log("viewed", data);
+
+    showMessage("Someone is viewing " + $scope.graph.getElementById(data.id).data().name )
+    
+
+  });
+
+  var showMessage = function(msg){
+
+      $scope.message = msg;
+
+      $scope.$apply();
 
       for(i=0;i<5;i++) {
         $('#message').fadeTo('slow', 0.5).fadeTo('slow', 1.0);
@@ -37,7 +53,22 @@ angular.module('studionet')
 
       // hack
       // todo : change later
-      $('.modal-backdrop').remove();
+      //$('.modal-backdrop').remove();
+  
+  }
+
+
+  // ---------------- Filters
+  $scope.filters = [];
+  $scope.matchingNodes = [];
+
+  // when message received
+  $scope.$on( BROADCAST_MESSAGE, function(event, args) {
+      
+      console.log("Message received", args.message);
+      $scope.message = args.message;
+
+      showMessage(args.message);
 
   });
 

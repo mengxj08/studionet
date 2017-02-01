@@ -111,7 +111,7 @@ angular.module('studionet')
       // if tags are a single word, convert to array
       console.log("tags",  $scope.contribution.db_data.tags);
 
-      if($scope.contribution.db_data.tags.length == 1 && $scope.contribution.db_data.tags[0] == "")
+      if($scope.contribution.db_data.tags != null && $scope.contribution.db_data.tags.length == 1 && $scope.contribution.db_data.tags[0] == "")
         $scope.contribution.db_data.tags = [];
 
       contribution.updateViewCount($scope.contribution.db_data.id);

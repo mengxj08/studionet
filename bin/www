@@ -88,3 +88,11 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+
+
+/* 
+ *    Socket related code
+ */
+var io = require('socket.io')(server);
+app.set('socket', io);

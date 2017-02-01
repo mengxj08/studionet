@@ -303,33 +303,17 @@ var graph_style = {
             .css({
               'background-color' : '#A3BC05',//'#AFAFAF',
               'border-color': '#A3BC05',
-             //'opacity': 1
             })
-          /*.selector('.marked.selected')
-            .css({
-              'background-color' : '#A3BC05',//'#AFAFAF',
-              'border-color': '#A3BC05',
-              //'opacity': 1
-            })
-          .selector('.unmarked.selected')
-            .css({
-              'background-color' : '#A3BC05',//'#AFAFAF',
-              'border-color': '#A3BC05',
-              //'opacity': 1
-            })*/
+
 
           // selected
           .selector('.marked.highlighted')
             .css({
-              //'border-color': '#000623',
-              //'background-color' : '#AFAFAF',
-              //'opacity': 0.6
+
             })
           .selector('.unmarked.highlighted')
             .css({
-              //'border-color': '#000623',
-              //'background-color' : '#AFAFAF',
-              //'opacity': 0.6
+
             })
 
           // unselected
@@ -338,33 +322,24 @@ var graph_style = {
               'width' : 1, 
               'height': 1
             })
-          /*.selector('node.marked.faded')
-            .css({
-              'width' : 3, 
-              'height': 3
-            })
-          .selector('node.unmarked.faded')
-            .css({
-              'width' : 3, 
-              'height': 3
-            })*/
 
           .selector('.marked')
             .css({
-              //'background-color' : 'white',// '#000623',
-              //'border-width': 2,
               'border-color': '#4A95EF'//'#AFAFAF',
-              //'opacity': 0.7
             })
 
           .selector('.unmarked')
             .css({
-              //'border-width': 2,
               'border-color': '#FFF',//'#1F4A23'//'#B9B9B9',
-              //'background-color' : '#AFAFAF',
-              //'opacity': 0.2,
-              //'text-opacity': 0.2,
             })
+
+          .selector('node.glow')
+            .css({
+              'background-color' : '#E7E528',
+              'width': 20,
+              'height': 20
+            })
+
 
           .selector('edge.highlighted')
             .css({
@@ -377,14 +352,6 @@ var graph_style = {
               'arrow-scale': 0.5,
               'width': 1
             })
-
-
-/*          .selector('.marked.highlighted')
-            .css({
-              'border-color': '#000623',
-              'background-color' : '#AFAFAF',
-              'opacity': 0.6
-            })*/
 
 
 

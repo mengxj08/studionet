@@ -10,11 +10,17 @@ var db = require('seraph')({
 //   the request is authenticated (typically via a persistent login session),
 //   the request will proceed.  Otherwise, the user will be redirected to the
 //   login page.
+var logged_in_users = 0;
 module.exports.ensureAuthenticated = function(req, res, next) {
   
   if (req.isAuthenticated()) { 
+
+    req.app.get('socket').emit('user_logged_in', ++logged_in_users);
+  
     return next(); 
+  
   }
+
   res.redirect('/denied');
   
 }
