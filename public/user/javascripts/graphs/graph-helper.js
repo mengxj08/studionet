@@ -636,6 +636,8 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
                 y = radius*Math.sin( angle ) + initY;
                 
                 if( i+1 < spiralNodes.length ){
+
+                  graph.fit();
                   nextNode(i+1);
                 }
                 else{
