@@ -288,7 +288,7 @@ var graph_style = {
               'source-arrow-shape': 'triangle',
               'border-width': 1,
               'background-color' : '#000623',
-              'border-color': '#AFAFAF'
+              'border-color': '#FFF'//'#AFAFAF'
             })
 
           .selector('edge')
@@ -298,62 +298,77 @@ var graph_style = {
               'width': 1
             })     
 
-          .selector('.faded')
-            .css({
-              'opacity': 0.1,
-            })
-
+          // selected
           .selector('.selected')
             .css({
               'background-color' : '#A3BC05',//'#AFAFAF',
               'border-color': '#A3BC05',
-              'opacity': 1
+             //'opacity': 1
             })
-
-          .selector('.marked')
-            .css({
-              'border-width': 1,
-              'background-color' : '#000623',
-              'border-width': '2',
-              'border-color': '#AFAFAF',
-              'opacity': 0.7
-            })
-
-          .selector('.unmarked')
-            .css({
-              'border-width': 0.5,
-              'background-color' : '#AFAFAF',
-              'opacity': 0.05,
-              'text-opacity': 0.2,
-            })
-
-          .selector('.marked.selected')
+          /*.selector('.marked.selected')
             .css({
               'background-color' : '#A3BC05',//'#AFAFAF',
               'border-color': '#A3BC05',
-              'opacity': 1
+              //'opacity': 1
             })
-
           .selector('.unmarked.selected')
             .css({
               'background-color' : '#A3BC05',//'#AFAFAF',
               'border-color': '#A3BC05',
-              'opacity': 1
+              //'opacity': 1
+            })*/
+
+          // selected
+          .selector('.marked.highlighted')
+            .css({
+              //'border-color': '#000623',
+              //'background-color' : '#AFAFAF',
+              //'opacity': 0.6
+            })
+          .selector('.unmarked.highlighted')
+            .css({
+              //'border-color': '#000623',
+              //'background-color' : '#AFAFAF',
+              //'opacity': 0.6
             })
 
-          .selector('.marked.faded')
+          // unselected
+          .selector('node.faded')
             .css({
-              'opacity': 0.05
+              'width' : 3, 
+              'height': 3
+            })
+          /*.selector('node.marked.faded')
+            .css({
+              'width' : 3, 
+              'height': 3
+            })
+          .selector('node.unmarked.faded')
+            .css({
+              'width' : 3, 
+              'height': 3
+            })*/
+
+          .selector('.marked')
+            .css({
+              //'background-color' : 'white',// '#000623',
+              //'border-width': 2,
+              'border-color': '#FFF'//'#AFAFAF',
+              //'opacity': 0.7
             })
 
-          .selector('.unmarked.faded')
+          .selector('.unmarked')
             .css({
-              'opacity': 0.05
+              //'border-width': 2,
+              'border-color': '#1A3EEA',//'#1F4A23'//'#B9B9B9',
+              //'background-color' : '#AFAFAF',
+              //'opacity': 0.2,
+              //'text-opacity': 0.2,
             })
 
-          .selector('.highlighted')
+          .selector('edge.highlighted')
             .css({
-              'opacity': 0.6,
+              //'opacity': 0.6,
               'curve-style': 'bezier',
               'target-arrow-shape': 'triangle',
               'target-arrow-fill': 'hollow',
@@ -362,11 +377,16 @@ var graph_style = {
               'arrow-scale': 0.5
             })
 
-          .selector('.unmarked.highlighted')
+
+/*          .selector('.marked.highlighted')
             .css({
-              'background-color' : '#000623',
+              'border-color': '#000623',
+              'background-color' : '#AFAFAF',
               'opacity': 0.6
-            })
+            })*/
+
+
+
 }
 
 /*

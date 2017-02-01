@@ -65,12 +65,16 @@ input{
 
 .attachment-thumb{
   background-size: cover; 
-  min-height: 100px;
+  height: 150px;
+  margin-bottom: 10px;
+  border: 1px solid #B9B9B9;
+  max-height: 100px;
   background-position: center;
   background-repeat: no-repeat;
-  margin-top: 15px;
-  padding: 5px;
-  margin-right: 15px;
+}
+
+.attachment-details{
+  margin-left: 20px;
 }
 
 .attachments {

@@ -57,10 +57,17 @@
                 <!-- Attachments - if present -->
                 <div class='row' ng-if='contribution.db_data.attachments[0].id!=null'>
                     <div ng-repeat="attachment in contribution.db_data.attachments">
-                        <div class='col-sm-3 attachment-thumb' style='background-image: url({{getThumb(contribution.db_data.id, attachment.attachment)}});'>
-                          <h5 class='contributionName'>{{attachment.attachment.name}}</h5>
-                          <h6> Size: {{ attachment.attachment.size/1000 }} MB </h6>
-                          <h6><a href="/api/contributions/{{contribution.db_data.id}}/attachments/{{attachment.id}}" target=_blank>Download</a></h6>
+                        <div class='col-sm-12' >
+                          <div class='row'>
+                            <div class='col-sm-4 attachment-thumb' style='background-image: url({{getThumb(contribution.db_data.id, attachment.attachment)}});'></div>
+                            <div class='col-sm-8'>
+                                <div class='attachment-details'>
+                                  <p class='contributionName'>{{attachment.attachment.name}}</p>
+                                  <p> Size: {{ attachment.attachment.size/1000 }} MB </p>
+                                  <p><a href="/api/contributions/{{contribution.db_data.id}}/attachments/{{attachment.id}}" target=_blank>Download</a></p>
+                                </div>
+                            </div>
+                          </div>
                         </div>
                     </div>
                 </div>

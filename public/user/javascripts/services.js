@@ -666,7 +666,7 @@ angular.module('studionet')
 		o.graph.batch(function(){
 		o.graph.elements()
 			.removeClass('highlighted')
-			.removeClass('highlighted')
+			.removeClass('faded')
 			.removeClass('marked')
 
 		if(node instanceof Array && node.length == 0){
