@@ -55,8 +55,8 @@
   position: fixed;
   top: auto; 
   bottom: 0px;
-  right: 0px; 
-  //margin-left: -150px;
+  left: 50%; 
+  margin-left: -150px;
   text-align: center;
 }
 

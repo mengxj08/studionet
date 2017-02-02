@@ -19,14 +19,6 @@ angular.module('studionet')
   $scope.loggedInUsers = 1;
 
   // --------------- sockets
-  socket.on('user_logged_in', function (data) {
-    
-    console.log("loggedinusers", data);
-    $scope.loggedInUsers  = data; 
-    $scope.$apply();
-
-  });
-
   socket.on('contribution_viewed', function (data) {
     
     console.log("viewed", data);
