@@ -317,7 +317,8 @@ var graph_style = {
 
           .selector('.marked')
             .css({
-              'border-color': '#4A95EF'//'#AFAFAF',
+              'border-color': '#00FF00',//'#AFAFAF',
+              'border-width': 2
             })
 
           .selector('.unmarked')

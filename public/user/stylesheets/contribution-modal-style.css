@@ -98,7 +98,8 @@ input{
 }
 
 .tag{
-  background-color: #B9B9B9;
+  //background-color: #B9B9B9;
+  border: 1px solid #B9B9B9;
   padding: 4px;
   margin-right: 5px;
   margin-bottom: 5px;

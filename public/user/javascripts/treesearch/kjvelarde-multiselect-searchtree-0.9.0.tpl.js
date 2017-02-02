@@ -42,7 +42,7 @@ angular.module('multiselect-searchtree').run(['$templateCache', function ($templ
       "              ng-click=\"onExpandClicked(item, $event)\"></span>\n" +
       "\n" +
       "        <div class=\"item-details\"><input class=\"tree-checkbox\" type=\"checkbox\" ng-if=\"showCheckbox()\"\n" +
-      "                                         ng-checked=\"item.selected\"/>{{item.name}}\n" +
+      "                                         ng-checked=\"item.selected\"/>{{item.name}}&nbsp;&nbsp;{{item.note}}\n" +
       "        </div>\n" +
       "    </div>\n" +
       "    <ul ng-repeat=\"child in item.children\" ng-if=\"item.isExpanded\">\n" +

@@ -27,6 +27,7 @@ angular.module('studionet')
   $scope.contributionData = { attachments: [], tags: []}; //store the data of replying information
   $scope.replyMode = false;
   $scope.updateMode = false;
+  $scope.authorMode = false;
 
   var spinner = new Spinner(STUDIONET.GRAPH.spinner);
   var target = document.getElementById('cy');
@@ -47,29 +48,27 @@ angular.module('studionet')
 
   $scope.showUpdateModal = function(id){
     
-    $scope.updateMode = true;
-    $scope.contributionData = jQuery.extend({}, $scope.contribution.db_data);
+        $scope.updateMode = true;
+        $scope.contributionData = jQuery.extend({}, $scope.contribution.db_data);
 
-    if($scope.contributionData.attachments[0].id == null){
-      $scope.contributionData.attachments = [];
-    }
+        if($scope.contributionData.attachments[0].id == null){
+          $scope.contributionData.attachments = [];
+        }
 
-    if($scope.contributionData.tags instanceof Array){
-        $scope.contributionData._tags = $scope.contributionData.tags.map(function(t){
-            return all_tags[t];
-        })
-    }  
-    else if($scope.contributionData.tags == null){
-      $scope.contributionData._tags = [];
-    }
-    else{
-      $scope.contributionData._tags = [ all_tags[$scope.contributionData.tags] ]
-    }
+        if($scope.contributionData.tags instanceof Array){
+            $scope.contributionData._tags = $scope.contributionData.tags.map(function(t){
+                return all_tags[t];
+            })
+        }  
+        else if($scope.contributionData.tags == null){
+          $scope.contributionData._tags = [];
+        }
+        else{
+          $scope.contributionData._tags = [ all_tags[$scope.contributionData.tags] ]
+        }
 
-    $scope.contributionData._attachments = $scope.contributionData.attachments;
-    $scope.contributionData.attachments = [];
-
-
+        $scope.contributionData._attachments = $scope.contributionData.attachments;
+        $scope.contributionData.attachments = [];
   }
 
 
@@ -211,7 +210,7 @@ angular.module('studionet')
           if(all_tags[t] !== undefined)
             return all_tags[t];
           else
-            console.warn("Contribution tag not available in database. Something is wrong.")
+            console.warn("Node tag not available in database. Something is wrong.")
       })
     }
     else{
@@ -229,7 +228,7 @@ angular.module('studionet')
         if(!contributionData) return;
 
         if(contributionData.title == undefined || contributionData.title.length == 0 || contributionData.body == undefined || contributionData.body.length == 0){
-          alert("Contribution must have a title and body!");
+          alert("Node must have a title and body!");
           return;
         }
 
@@ -252,12 +251,10 @@ angular.module('studionet')
             });
 
         spinner.spin(target);
-
-
         contribution.createContribution( contributionData ).then(function(res){
               
               spinner.stop();
-              sendMessage( {status: 200, message: "Replied to contribution successfully" } );
+              sendMessage( {status: 200, message: "Successfully replied to node" } );
 
               // change contribution
               $scope.close();
@@ -266,7 +263,7 @@ angular.module('studionet')
 
               //alert("Error replying to message. Please")
               spinner.stop();
-              sendMessage( {status: 200, message: "Error replying to message. Please try again." } );
+              sendMessage( {status: 200, message: "Error replying to node. Please try again." } );
         }); 
    };
 
@@ -275,7 +272,7 @@ angular.module('studionet')
     updateContribution.contentType = 'text'; /// default
 
     if(!updateContribution.title || !updateContribution.body){
-      alert("Please input the title or content of the contribution!");
+      alert("Please input the title or content of the node!");
       return;
     }
 
@@ -299,14 +296,14 @@ angular.module('studionet')
        
 
         spinner.stop();
-        sendMessage( {status: 200, message: "Updated contribution successfully" } );
+        sendMessage( {status: 200, message: "Successfully updated node." } );
         $scope.close();
 
     }, function(error){
 
           spinner.stop();
           
-          sendMessage( {status: 500, message: "Error updating contribution" } );
+          sendMessage( {status: 500, message: "Error updating node" } );
           $scope.close();
     });
   }
@@ -314,21 +311,21 @@ angular.module('studionet')
   // Delete the contribution
   $scope.deleteContribution = function(contributionId){
 
-    var r = confirm("Are you sure you want to delete your contribution? This action cannot be undone");
+    var r = confirm("Are you sure you want to delete your node? This action cannot be undone.");
     if (r == true) {
 
       spinner.spin(target);
       contribution.deleteContribution(contributionId).then(function(){
           
           spinner.stop();
-          sendMessage({status: 200, message: "Contribution Id : " + $scope.contribution.id + " was successfully deleted." });
+          sendMessage({status: 200, message: "Successfully deleted node." });
           $scope.close();
 
       }, function(error){
 
           spinner.stop();
           
-          sendMessage({status: 500, message: "Error deleting Contribution Id : " + $scope.contribution.id });
+          sendMessage({status: 500, message: "Error deleting node" });
           $scope.close();
       
       });

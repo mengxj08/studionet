@@ -70,7 +70,6 @@
   display: none;
   border: 1px solid #274F7F;
   border-radius: 5px;
-  height: 25px !important;
   line-height: 25px;
   background-color:  transparent;
   margin-bottom: 400px;
@@ -128,24 +127,25 @@
 
 h6.clear-filter-shortcut{
   background-color: transparent;
-  color: #274F7F;
-  display: inline-block;
-  margin-right: 10px;
-  padding: 8px !important;
-  border: 1px solid #4A95EF;
-  font-weight: 600;
+  color: lime; //#274F7F;
+  //display: inline-block;
+  //margin-right: 10px;
+  //padding: 8px !important;
+  //border: 1px solid #4A95EF;
+  font-weight: 300;
 }
 
 h6.clear-filter-shortcut:hover{
-  background-color: #4A95EF;
+  //background-color: #4A95EF;
   cursor: pointer;
+  font-weight: 600;
+  //border-width: 2px;
 }
 
 h6.clear-filter-shortcut:after{
   margin-left: 10px;
   content: "x";
   font-weight: lighter;
-  color: #6D60EF;
 }
 
 

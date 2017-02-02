@@ -15,7 +15,8 @@ router.route('/')
   .get(auth.ensureAuthenticated, function(req, res){
     var query = [
       'MATCH (u:user)',
-      'RETURN {id: id(u), nickname: u.nickname, name: u.name, avatar: u.avatar}'
+      'OPTIONAL MATCH (c:contribution)<-[r:CREATED]-(u)',
+      'RETURN {id: id(u), nickname: u.nickname, name: u.name, avatar: u.avatar, contributionCount: COUNT(r)}'
     ].join('\n');
 
     db.query(query, function(error, result){

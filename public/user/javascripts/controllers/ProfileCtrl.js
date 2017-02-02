@@ -12,7 +12,7 @@ angular.module('studionet')
 	$scope.lastLoggedIn = new Date($scope.user.lastLoggedIn);
 	$scope.groups = groups.groups;
 
-	$scope.tagline = "Apprentice";
+	$scope.tagline = "Beginner";
 
 	// Observe the Graph Service for Changes and register observer
 	var updateProfile = function(){
@@ -57,6 +57,7 @@ angular.module('studionet')
 			})
 
 			$scope.level = $scope.level.toFixed(0);
+
 
 
 		})
@@ -153,3 +154,4 @@ angular.module('studionet')
    	}
 
 }]);
+

@@ -16,7 +16,7 @@ angular.module('studionet')
 	return o;
 }])
 
-.factory('profile', ['$http', function($http){
+.factory('profile', ['$http', 'users', function($http, users){
 	var o ={
 		user: {},
 		groups: [],
@@ -71,7 +71,10 @@ angular.module('studionet')
 			  headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
 			 })
 			.success(function(data) {
-				o.user = user;
+				
+				o.user = data;
+				users.setUser(o.user);
+
 			})
 	}
 
@@ -91,8 +94,17 @@ angular.module('studionet')
 
 	o.getAll = function(){
 		return $http.get('/api/users').success(function(data){
+
 			angular.copy(data, o.users);
 			o.usersHash = o.users.hash();
+
+			// convert all names to title case
+			for(var i=0; i < o.users.length; i++){
+				var u = o.users[i];
+				u.name = u.name.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+			}
+
+
 		});
 	};
 
@@ -102,6 +114,11 @@ angular.module('studionet')
 		if(user.nickname == null || user.nickname == undefined)
 			user.nickname = "";
 		return user;
+	}
+
+	o.setUser = function(user_data){
+		o.usersHash[user_data.id] = user_data;
+		return true;		
 	}
 
 	o.createNewUser = function(user){
@@ -274,8 +291,8 @@ angular.module('studionet')
 				})
 	    .success(function(res) {
 
-			// refresh graph
-			graph.getGraph();
+			// remove node from graph
+			graph.removeNode(contribution_id)
 
 			// refresh tags
 			tags.getAll();
@@ -304,7 +321,7 @@ angular.module('studionet')
 		
 		return $http.post('/api/contributions/' + id + '/rate', {'rating': rating} ).success(function(data){
 			//console.log("Successfully rated contribution");
-			profile.getContributions();
+			profile.getActivity();
 		});
 	
 	};
@@ -618,6 +635,11 @@ angular.module('studionet')
 
 		});
 	}
+
+	o.removeNode = function(id){
+		o.graph.getElementById(id).remove();
+	}
+
 
 	// Styling Options
 	o.removeAdditionalStyles = function(){

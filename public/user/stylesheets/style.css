@@ -109,6 +109,10 @@ label{
 	opacity: 0.1 !important;
 }
 
+.pointer{
+	cursor: pointer;
+}
+
 /*
  *  Top Nav CSS
  */

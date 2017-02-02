@@ -22,7 +22,7 @@
                     <div class="col-sm-8">
                         <div class = "authorInfo">
                           <h3 class='title'>{{contribution.db_data.title}}</h3>
-                          <p>
+                          <p class='pointer'>
                             <img class='profile-picture' 
                                 style='width: 25px; height: 25px; display: inline-block; border-radius: 50%; margin-right: 10px;' 
                                 src='{{author.avatar}}?q={{random}}'
@@ -35,7 +35,7 @@
                     <div class="col-sm-4 text-right">
                       <p id='rating' uib-rating ng-model="$parent.rate" max="$parent.max" read-only="false" on-hover="$parent.hoveringOver(value)" on-leave="overStar = null" ng-click='rateContribution($parent.rate, contribution.db_data.id)' ng-if='contribution.db_data.createdBy != user.id'></p>
                       <span id='avg_rating' class="pop" uib-popover-template="'/user/templates/statistics.html'" popover-trigger="'outsideClick'" popover-placement="left">
-                      {{ contribution.db_data.ratings == 0.0 ? "No ratings" : (contribution.db_data.rating).toFixed(1) }}  
+                      {{ contribution.db_data.rating > 0 ? (contribution.db_data.rating).toFixed(1) : "No Ratings Yet" }}  
                       <i class='glyphicon glyphicon-star'></i></span>
                     </div>
 
@@ -47,14 +47,13 @@
                 </p>
                 
                 <!-- content -->
-                <p class='contribution-content text-justify' ng-bind-html="contribution.db_data.body"></p>
+                <p class='row contribution-content text-justify' ng-bind-html="contribution.db_data.body"></p>
 
 
 
                 <!-- Attachments - if present -->
                 <div class='row' ng-if='contribution.db_data.attachments[0].id!=null'>
                     <br/>
-                    <hr/>
                     <br>
                     <b>Attachments</b>
                     <br/>
@@ -76,7 +75,7 @@
                 <br>
 
                 <div class='row text-right'>
-                  <span ng-hide='replyMode || updateMode'>
+                  <span ng-hide='replyMode || updateMode || profileMode'>
                       <button type="button" ng-click="showReplyModal(contribution.id)" class="btn btn-default modal-button">Add</button>
                       
                       <!-- if author -->

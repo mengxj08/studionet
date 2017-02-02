@@ -70,7 +70,7 @@
         <!-- if filter is an array of values -->
         <div ng-if='filter.type == "Array"'>
             <!-- <h6 id='filter-nodes-count'>{{ filter.value.length }} {{filter.name}}(s) selected</h6> -->
-            <h6 class='clear-filter-shortcut' ng-repeat="fval in filter.value track by fval.id" ng-click="clearFilter(filter.code, fval.id)">{{fval.name}}</h6>
+            <h6 class='clear-filter-shortcut' ng-repeat="fval in filter.value track by fval.id" ng-click="clearFilter(filter.code, fval.id)">{{ fval.name }}</h6>
         </div>
         
         <!-- if filter is a range -->

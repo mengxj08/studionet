@@ -140,18 +140,25 @@ angular.module('studionet')
 
       var populateUsers = function(){
 
-          return users.users.map(function(user){
+          return users.users.filter(function(user){
 
-              if (user.type != undefined)
-                  return user;
+              if(user.contributionCount){
+                user.note = "( Nodes: " + user.contributionCount + " )";
 
-              user.type = "user";
-              user.parentId = null; 
-              user.isExpanded = false; 
-              user.children = [];
-              user.selected = false;
+                if (user.type != undefined)
+                    return user;
 
-              return user;
+                user.type = "user";
+                user.parentId = null; 
+                user.isExpanded = false; 
+                user.children = [];
+                user.selected = false;
+
+                return true;
+                
+              }
+              else
+                return false;
           });
       }
 

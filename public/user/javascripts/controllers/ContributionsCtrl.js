@@ -133,9 +133,11 @@ angular.module('studionet')
       var data = node.data();
 
       var qtipFormat = STUDIONET.GRAPH.qtipFormat(evt);
+
+      var auth = users.getUser(node.data('createdBy'));
       
       qtipFormat.id = "qTip-" +  node.id();
-      qtipFormat.content.text =  node.data('name');
+      qtipFormat.content.text =  node.data('name') + "<br>- " + (auth.nickname.length ? auth.nickname : auth.name)
 
       node.qtip(qtipFormat, evt);  
   
