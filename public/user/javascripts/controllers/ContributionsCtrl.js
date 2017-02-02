@@ -225,6 +225,7 @@ angular.module('studionet')
 
   // Observe the Graph Service for Changes and register observer
   var updateGraph = function(){
+      
       $scope.graph = graph.graph;
       highlightStateParams();
       addGraphInteractions();

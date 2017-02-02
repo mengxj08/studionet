@@ -181,34 +181,26 @@ var computeSizeFn = function(node){
 
 var computeBgColorFn = function(node){
 
-    // if filtered contribution
-    if(node.data('match'))
-      return "#0AEF40";
+    var rating = Math.ceil(node.data().rating);
+    var final = "#000623"; 
 
-    if(node.data('owner') == true)
-      return "#068E26";
+    switch(rating){
 
-    if(node.data('marked') == true)
-      return "#F3CB17";
-
-
-    var incomers = node.predecessors().length;
-    var final = "#989BB4"; 
-
-    switch(true){
-
-        case (incomers < 10):
+        case (1):
+            final = "#762A84"; 
             break;
-        case (incomers < 30):
-            final = "#6B73B4"; 
+        case (2):
+            final = "#C0A6CC"; 
             break;
-        case (incomers < 50):
-            final = "#4551B4"; 
+        case (3):
+            final = "#F7F7F2"; 
             break;
-        case (incomers > 50):
-            final = "#2030B4"; 
+        case (4):
+            final = "#A4DC9D"; 
             break;
-
+        case (5):
+            final = "#1B7131"; 
+            break;
     }
 
     return final; 
@@ -287,7 +279,7 @@ var graph_style = {
               'margin': '300px',
               'source-arrow-shape': 'triangle',
               'border-width': 1,
-              'background-color' : '#000623',
+              'background-color' : computeBgColorFn,//'#000623',
               'border-color': '#FFF'//'#AFAFAF'
             })
 
@@ -301,7 +293,7 @@ var graph_style = {
           // selected
           .selector('.selected')
             .css({
-              'background-color' : '#A3BC05',//'#AFAFAF',
+              'background-color' : 'yellow',// '#A3BC05',//'#AFAFAF',
               'border-color': '#A3BC05',
             })
 
@@ -404,14 +396,14 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
           return true;
     }); */
     /*var manuallyCreatedEdges = [];
-    console.log(edges.length, "before sorting");
+    //console.log(edges.length, "before sorting");
     edges = edges.filter(function(edge){
         if(edge.data.properties.createdBy == undefined)
           return true; 
         else 
           return false;
     });
-    console.log(edges.length, "after sorting");*/
+    //console.log(edges.length, "after sorting");*/
 
 
     graph_style.elements = {
@@ -450,11 +442,16 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
 STUDIONET.GRAPH.draw_graph = function(graph, threshold){
 
   spinner.spin(document.getElementById('cy'));
-  console.log("Start spinner", document.getElementById('cy'));
-  console.log(spinner);
+  //console.log("Start spinner", document.getElementById('cy'));
+  //console.log(spinner);
+  graph.reset();
 
   var sortFn = function (ele1, ele2) {
-      return ( ele1.incomers().length > ele2.incomers().length ? -1 : 1);
+
+      if( ele1.incomers().length == ele2.incomers().length )
+        return ( ele1.predecessors().length > ele2.predecessors().length )
+      else
+        return ( ele1.incomers().length > ele2.incomers().length ? -1 : 1);
   }
 
   // Sort the nodes first
@@ -495,7 +492,7 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
             // check if it is part of another node already on the spiral
             // 
             if( node.data('onSpiral') !== -1 ){
-              console.log("Node already part of the spiral");
+              //console.log("Node already part of the spiral");
             }
             
         return false;
@@ -503,7 +500,7 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
       
   });
 
-  console.log("Original Spiral Nodes", spiralNodes.length);
+  //console.log("Original Spiral Nodes", spiralNodes.length);
 
   // add additional ones which are isolated
   for(var i=0; i < graph.nodes().length; i++){
@@ -513,7 +510,7 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
 
       if(node.data('onSpiral') == -1){
 
-          //console.log("Doing node:", node.id());
+          ////console.log("Doing node:", node.id());
           
           // add node to spiral
           spiralNodes = spiralNodes.add(node);
@@ -527,27 +524,27 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
                   inc++;
                 }
           });
-          //console.log(inc, " additional marked and removed for id: ", node.id() );
+          ////console.log(inc, " additional marked and removed for id: ", node.id() );
       }
 
 
       if( i== graph.nodes().length - 1){
         spinner.stop();
-        console.log("Last node stop spinner");
+        //console.log("Last node stop spinner");
       }
 
   }
 
   //spiralNodes = spiralNodes.add( graph.nodes("[onSpiral=-1]") );
-  console.log("Spiral nodes after addition", spiralNodes.length);
+  //console.log("Spiral nodes after addition", spiralNodes.length);
 
   var spiralNodes = spiralNodes.sort( sortFn );
 
   var angle = 2 * Math.PI / spiralNodes.length;
   var radius = 0.5*window.innerWidth;
 
-  var initX = 0//$(window).height()/2;
-  var initY = 0//$(window).width()/2;
+  var initX = $(window).width()/2;
+  var initY = $(window).height()/2;
 
       
   var prevRadius = 1;
@@ -559,7 +556,7 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
   // for each node on the spiral, make a spiral of all its predecessors around it
   var nextNode = function(i){
 
-      //console.log("Node No:", i);
+      ////console.log("Node No:", i);
 
       // node on spiral
       var node = spiralNodes[i];
@@ -585,7 +582,7 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
                 // make a smaller spiral of all the incomers
                 // get the radius of the smaller spiral
                 prevRadius = makeSubSpiral(nodes, position.x, position.y, 30) ;
-                //console.log("Size of node No:", i, prevRadius);
+                ////console.log("Size of node No:", i, prevRadius);
 
 
                 // use the radius of the above spiral to place next node
@@ -604,11 +601,12 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
                 
                 if( i+1 < spiralNodes.length ){
 
-                  graph.fit();
+                  //graph.fit();
                   nextNode(i+1);
                 }
                 else{
-                  graph.fit();
+                  
+                  //graph.fit();
                 }
 
             }

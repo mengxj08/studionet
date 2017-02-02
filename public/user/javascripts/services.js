@@ -42,7 +42,7 @@ angular.module('studionet')
 	o.getUser = function(){
 		return $http.get('/api/profile/').success(function(data){
 			angular.copy(data, o.user);
-			console.log("Profile Refreshed");
+			//console.log("Profile Refreshed");
 			notifyObservers();
 		});
 	};
@@ -93,7 +93,7 @@ angular.module('studionet')
 		return $http.get('/api/users').success(function(data){
 			angular.copy(data, o.users);
 			o.usersHash = o.users.hash();
-			console.log("Users Refreshed");
+			//console.log("Users Refreshed");
 		});
 	};
 
@@ -121,7 +121,7 @@ angular.module('studionet')
 		return $http.get('/api/tags').success(function(data){
 			// order according to contribution count
 			angular.copy($filter('orderBy')(data, 'contributionCount', true) , o.tags);
-			console.log("Tags Refreshed");
+			//console.log("Tags Refreshed");
 		});
 	};
 
@@ -146,7 +146,7 @@ angular.module('studionet')
 	o.getAll = function(){
 		return $http.get('/api/contributions').success(function(data){
 			angular.copy(data, o.contributions);
-			console.log("Contributions Refreshed");
+			//console.log("Contributions Refreshed");
 		});
 	};
 
@@ -188,7 +188,7 @@ angular.module('studionet')
 	    .success(function(res) {
 
 	    	// mark in graph
-	    	console.log("Selecting in graph", res.id, res.id);
+	    	//console.log("Selecting in graph", res.id, res.id);
 
 			// refresh graph
 			graph.getGraph().then(function(){	graph.selectNode(res.id);	});
@@ -234,7 +234,7 @@ angular.module('studionet')
 			.then(function(res) {
 
 
-				console.log(res);
+				//console.log(res);
 
 				graph.selectNode(update_contribution.id);
 				graph.graph.getElementById(update_contribution.id).data('db_data', update_contribution);
@@ -262,7 +262,7 @@ angular.module('studionet')
 
 	o.deleteContribution = function(contribution_id){
 
-		console.log("deleting", contribution_id);
+		//console.log("deleting", contribution_id);
 	    return $http({
 				method  : 'delete',
 				url     : '/api/contributions/' + contribution_id,
@@ -300,7 +300,7 @@ angular.module('studionet')
 	o.rateContribution = function(id, rating){
 		
 		return $http.post('/api/contributions/' + id + '/rate', {'rating': rating} ).success(function(data){
-			console.log("Successfully rated contribution");
+			//console.log("Successfully rated contribution");
 			profile.getContributions();
 		});
 	
@@ -321,7 +321,7 @@ angular.module('studionet')
 	o.getAll = function(){
 		return $http.get('/api/groups').success(function(data){
 			angular.copy(data, o.groups);
-			console.log("Groups Refreshed");
+			//console.log("Groups Refreshed");
 		});
 	};
 
@@ -339,7 +339,7 @@ angular.module('studionet')
 			
 			var data = response.data;
 
-			console.log("new group created", data);
+			//console.log("new group created", data);
 			
 			// refresh groups, the user
 			o.getAll();
@@ -365,7 +365,7 @@ angular.module('studionet')
 	o.updateDelete = function( data ){
 		// update groups
 		groups.groups = groups.groups.filter( function(grp){
-			console.log(data, "deleted");
+			//console.log(data, "deleted");
 			return grp.id != data.id;
 		})
 	}
@@ -408,7 +408,7 @@ angular.module('studionet')
 	};
 
 	o.getGroupUsers = function(id){
-		console.log("getting users");
+		//console.log("getting users");
 		return $http.get('/api/groups/' + id + '/users').success(function(data){
 			angular.copy(data, o.users);
 
@@ -440,7 +440,7 @@ angular.module('studionet')
 			groups.graph.nodes = group.groups;
 			
 			//
-			console.log("joined group", o.group)
+			//console.log("joined group", o.group)
 		});
 	}
 
@@ -461,7 +461,7 @@ angular.module('studionet')
 			//groups.graph.nodes = groups.groups;
 
 			// 
-			console.log("Removed from group", data)
+			//console.log("Removed from group", data)
 
 		});
 	}
@@ -506,7 +506,7 @@ angular.module('studionet')
 			.success(function(data) {
 
 				//o.getGroupInfo().then( function(){ o.getGroupUsers() });
-				console.log("Group edited", data);
+				//console.log("Group edited", data);
 
 				return (data);
 			})
@@ -533,7 +533,7 @@ angular.module('studionet')
 	o.getAll = function(){
 		$http.get('/api/relationships/').success(function(data){
 			angular.copy(data, o.relationships);
-			console.log("Relationships Refreshed", data);
+			//console.log("Relationships Refreshed", data);
 		});
 	}
 
@@ -549,7 +549,7 @@ angular.module('studionet')
 		return $http.delete('/api/contributions/'+contributionId+'/attachments/'+attachmentId)
 		.success(function(res) {
 			//log success
-			console.log("attachment id:" + attachmentId + " has been deleted");
+			//console.log("attachment id:" + attachmentId + " has been deleted");
 
 			// send success
 			return;  
@@ -591,9 +591,6 @@ angular.module('studionet')
 
 		// takes either data from filters or contribution.graph data
 		o.graph = STUDIONET.GRAPH.makeGraph( o.graph_data, container ); // defaults to cy
-		
-
-		var cy = o.graph;
 
 		// notify any controller watching of the updated graph
 		notifyObservers();
@@ -606,12 +603,12 @@ angular.module('studionet')
 		o.container = container;
 
 		return $http.get(o.url).success(function(data){
-			
+
 			filterUrl = "";
 
 			// copy data
 			angular.copy(data, o.graph_data);
-			console.log("Graph Refreshed");
+			//console.log("Graph Refreshed");
 
 			// make graph with the data - could provide a container id
 			makeGraph( container );

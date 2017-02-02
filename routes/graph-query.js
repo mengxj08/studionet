@@ -67,7 +67,10 @@ var graphQuery = function (query, callback){
             nodes.push({
                 id: n.id,
                 type: n.labels[0],
-                name: setName(n)
+                name: setName(n),
+                onSpiral: -1,
+                rating: n.properties.rating, 
+                createdBy: n.properties.createdBy
             });
       });
 
