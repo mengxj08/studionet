@@ -31,7 +31,15 @@ angular.module('studionet')
     
     console.log("viewed", data);
 
-    showMessage("Someone is viewing " + $scope.graph.getElementById(data.id).data().name )
+    $scope.graph.getElementById(data.id).flashClass('glow', 500)
+    for(i = 0; i < 30; i++){
+      setTimeout(function(){
+        $scope.graph.getElementById(data.id).flashClass('glow', 500)
+      }, 1000*i)
+    
+    }
+
+    //showMessage("Someone is viewing " + $scope.graph.getElementById(data.id).data().name )
     
 
   });

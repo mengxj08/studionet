@@ -335,9 +335,9 @@ var graph_style = {
 
           .selector('node.glow')
             .css({
-              'background-color' : '#E7E528',
-              'width': 20,
-              'height': 20
+              'background-color' : '#DCE317',
+              'width' : 15, 
+              'height' : 15
             })
 
 
