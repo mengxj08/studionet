@@ -2,6 +2,21 @@
 .contributionView{
   padding: 30px !important;
 }
+
+/*to adjust pop-over position
+ *so that at the start it wont shift around
+*/
+#contributionViewModal .popover {
+/*    top: -11px !important;
+    left: -134px !important;*/
+  top: 63px !important;
+  left: 23px !important;
+}
+
+/*to make rating bar same height as title*/
+.col-sm-4.text-right.hasStars {
+  top: -20px !important;
+}
 </style>
 
 <div id='contributionViewModal' class="modal fade" role="dialog">
@@ -32,9 +47,9 @@
                         </div>
                     </div>
 
-                    <div class="col-sm-4 text-right">
+                    <div class="col-sm-4 text-right" ng-class="{'hasStars':user.id != contribution.db_data.createdBy}">
                       <p id='rating' uib-rating ng-model="$parent.rate" max="$parent.max" read-only="false" on-hover="$parent.hoveringOver(value)" on-leave="overStar = null" ng-click='rateContribution($parent.rate, contribution.db_data.id)' ng-if='contribution.db_data.createdBy != user.id'></p>
-                      <span id='avg_rating' class="pop" uib-popover-template="'/user/templates/statistics.html'" popover-trigger="'outsideClick'" popover-placement="left">
+                      <span id='avg_rating' class="pop" uib-popover-template="'/user/templates/statistics.html'" popover-trigger="'outsideClick'" popover-placement="bottom">
                       {{ contribution.db_data.rating > 0 ? (contribution.db_data.rating).toFixed(1) : "No Ratings Yet" }}  
                       <i class='glyphicon glyphicon-star'></i></span>
                     </div>
