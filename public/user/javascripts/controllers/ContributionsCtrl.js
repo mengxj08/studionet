@@ -8,6 +8,8 @@ var BROADCAST_CONTRIBUTION_CLICKED = "contribution-clicked";
 var BROADCAST_MESSAGE = "message-sent";
 
 
+
+
 angular.module('studionet')
 
 /*
@@ -16,13 +18,32 @@ angular.module('studionet')
  */
 .controller('ContributionsCtrl', ['$scope', '$stateParams', '$rootScope', 'graph', 'users', 'supernode', 'ModalService', 'contribution', function($scope, $stateParams, $rootScope, graph, users, supernode, ModalService, contribution){
 
-  $scope.loggedInUsers = 1;
+  /*
+   * Helper Fn
+   */
+  var tagCorrectionFn = function(data){
+      if( data.tags == null )
+        data.tags = [];
+      
+      if(data.tags != null && data.tags.length == 1 && data.tags[0] == "")
+        data.tags = [];
+
+      return data;
+  }
 
   // --------------- sockets
+  socket.on('contribution_rated', function (data) {
+    
+    // update the graph colors
+    $scope.graph.getElementById(data.id).data('rating', data.rating);
+
+    // update the db_data of the node that is displayed in the modal
+    $scope.graph.getElementById(data.id).data('db_data', tagCorrectionFn(data) );
+
+  });
+
   socket.on('contribution_viewed', function (data) {
     
-    console.log("viewed", data);
-
     $scope.graph.getElementById(data.id).flashClass('glow', 500)
     for(i = 0; i < 30; i++){
       setTimeout(function(){
@@ -31,16 +52,12 @@ angular.module('studionet')
     
     }
 
-    //showMessage("Someone is viewing " + $scope.graph.getElementById(data.id).data().name )
-    
-
   });
+
 
   var showMessage = function(msg){
 
       $scope.message = msg;
-
-      $scope.$apply();
 
       for(i=0;i<5;i++) {
         $('#message').fadeTo('slow', 0.5).fadeTo('slow', 1.0);
@@ -64,10 +81,7 @@ angular.module('studionet')
 
   // when message received
   $scope.$on( BROADCAST_MESSAGE, function(event, args) {
-      
       console.log("Message received", args.message);
-      $scope.message = args.message;
-
       showMessage(args.message);
 
   });
@@ -153,7 +167,9 @@ angular.module('studionet')
           var data = node.data();
 
           contribution.getContribution(data.id).then(function(res){
-              node.data('db_data', res.data);
+              
+
+              node.data( 'db_data', tagCorrectionFn(res.data) );
 
               if(dbl)
                 onNodeDoubleClick(evt);

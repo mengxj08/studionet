@@ -618,7 +618,7 @@ router.route('/:contributionId/rate')
       'ON CREATE SET c.rating = (c.totalRating + {ratingParam})/toFloat(c.rateCount+1), c.rateCount = c.rateCount+1, c.totalRating = c.totalRating + {ratingParam}',
       'ON MATCH SET c.rating = (c.totalRating - r.rating + {ratingParam})/toFloat(c.rateCount), c.totalRating = c.totalRating - r.rating + {ratingParam}',
       'SET r.rating={ratingParam}, r.lastRated={lastRatedParam}',
-      'RETURN p'
+      'RETURN c'
     ].join('\n');
 
     var params = {
@@ -634,7 +634,14 @@ router.route('/:contributionId/rate')
       }
       else {
         console.log('[SUCCESS] Successfully rated contribution id ' + req.params.contributionId + ' with the rating ' + req.body.rating);
-        res.send('Successfully rated contribution id ' + req.params.contributionId + ' with the rating ' + req.body.rating);
+        
+        //res.send('Successfully rated contribution id ' + req.params.contributionId + ' with the rating ' + req.body.rating);
+        // broadcasting message
+        req.app.get('socket').emit('contribution_rated', result[0]);       
+        
+        // sending the contribution data
+        res.send(result[0]);
+      
       }
     })
   });

@@ -270,6 +270,10 @@ li.notification{
 	background-color: #000623;
 }
 
+.navbar .navbar-collapse .navbar-nav.navbar-mobile .navbar-brand .highlight{
+	background-color: #264E7D;
+}
+
 /*
  * qTip CSS
  */
@@ -400,7 +404,7 @@ html {
 }
 /* optional: show position indicator in red */
 ::-webkit-scrollbar-thumb {
-    background: #FF0000;
+    //background: #FF0000;
 }
 
 

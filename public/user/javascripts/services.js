@@ -55,8 +55,8 @@ angular.module('studionet')
 		});
 	};
 
-	o.getContributions = function(){
-		return $http.get('/api/profile/contributions').success(function(data){
+	o.getActivity = function(){
+		return $http.get('/api/profile/activity').success(function(data){
 			angular.copy(data, o.contributions);
 		});
 	};
@@ -93,12 +93,15 @@ angular.module('studionet')
 		return $http.get('/api/users').success(function(data){
 			angular.copy(data, o.users);
 			o.usersHash = o.users.hash();
-			//console.log("Users Refreshed");
 		});
 	};
 
 	o.getUser = function(user_id){
-		return o.usersHash[user_id];
+
+		var user = o.usersHash[user_id];
+		if(user.nickname == null || user.nickname == undefined)
+			user.nickname = "";
+		return user;
 	}
 
 	o.createNewUser = function(user){
@@ -146,7 +149,7 @@ angular.module('studionet')
 	o.getAll = function(){
 		return $http.get('/api/contributions').success(function(data){
 			angular.copy(data, o.contributions);
-			//console.log("Contributions Refreshed");
+			console.error("If you aren't admin, why are you using this api? :/ ");
 		});
 	};
 

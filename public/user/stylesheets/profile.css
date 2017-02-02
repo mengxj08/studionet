@@ -43,3 +43,9 @@
 .profile-item:hover{
   background-color: white;
 }
+
+.tagline{
+  border: 1px solid #B6B6B6;
+  border-radius: 5px;
+  text-align: center;
+}

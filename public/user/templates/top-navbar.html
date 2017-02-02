@@ -9,7 +9,7 @@
           </button>
         </li>
         <li class="logo">
-          <a class="navbar-brand" href="#"><span class="highlight">Studionet</span> User</a>
+          <a class="navbar-brand" href="#"><span class="highlight">Studionet</span></a>
         </li>
         <li>
           <div class='icon'>
@@ -22,95 +22,15 @@
 
       <ul class="nav navbar-nav navbar-left">
         <li class="navbar-title"><a href='#'>Studionet</a></li>
-
-      <!-- Search Bar  
-        <li class="navbar-search hidden-sm" ng-if=!simple>
-          <input ng-model='textFilter.text' id="search" type="text" placeholder="Search..">
-          <button class="btn-search" ng-click='textSearchFilter(textFilter.text)' ng-if='!textFilter.active'><i class="fa fa-search"></i></button>
-          <button class="btn-search" ng-click='clearSearch()' ng-if='textFilter.active'><i class="fa fa-close"></i></button>
-          </input>
-        </li> -->
-
       </ul>
 
       <ul class="nav navbar-nav navbar-right" id="noDropdown" >
-
-<!--         <li class="dropdown notification warning"  ng-if='simple' ng-click='toggleFilter()'>
-          <a class="dropdown-toggle" data-toggle="dropdown">
-            <div class="icon" uib-tooltip="Filters" tooltip-trigger="'mouseenter' " tooltip-placement="bottom"><i class="fa fa-filter" aria-hidden="true"></i></div>
-            <div class="title">Filters</div>
-          </a>
-        </li> -->
-
-        <!-- Groups / Filters / Contributions Toggle -->
-<!--         <li class="dropdown notification warning" ng-if='!simple'>
-          <a ui-sref="contributions" class="dropdown-toggle" data-toggle="dropdown">
-            <div class="icon" uib-tooltip="Contributions" tooltip-trigger="'mouseenter'" tooltip-placement="bottom"><i class="fa fa-pencil" aria-hidden="true"></i></div>
-            <div class="title">Contributions</div>
-          </a>
-        </li>
-
-        <li class="dropdown notification warning"  ng-if='!simple'>
-          <a ui-sref="groups" class="dropdown-toggle" data-toggle="dropdown">
-            <div class="icon"><i class="fa fa-users" aria-hidden="true"></i></div>
-            <div class="title">Groups</div>
-          </a>
-        </li>
-        <li class="dropdown notification warning"  ng-if='!simple'>
-          <a ui-sref="groups" class="dropdown-toggle" data-toggle="dropdown">
-            <div class="icon"><i class="fa fa-filter" aria-hidden="true"></i></div>
-            <div class="title">Filters</div>
-          </a>
-          <div class="dropdown-menu">
-            <div class="profile-info">
-              <h4 class="username">Saved Filters</h4>
-            </div>
-            <ul class="action" ng-show="{{ filterNames.length == 0 || filterNames == undefined }}">
-              <li>
-                <a href="#">
-                  No filters found
-                </a>
-              </li>
-            </ul>
-            <ul class="action" ng-repeat='filter in filterNames' ng-hide="{{ filterNames.length == 0 || filterNames == undefined }}">
-              <li>
-                <a href="{{ filters_ref[$index] }}">
-                  {{ filter }} <small class='pull-right'>{{ filters[$index] }}</small>
-                </a>
-              </li>
-            </ul>
-          </div>
-        </li> -->
-
         <li class="dropdown notification warning">
-          <a class="dropdown-toggle" data-toggle="modal" data-target="#profileModal" uib-tooltip='My Profile' tooltip-placement='left'>
+          <a class="dropdown-toggle" data-toggle="modal" data-target="#profileModal" data-backdrop="static" data-keyboard="false" uib-tooltip='My Profile' tooltip-placement='left'>
             <div class="icon"><i class="fa fa-user" aria-hidden="true"></i></div>
             <div class="title">Profile</div>
           </a>
-<!--           <div class="dropdown-menu">
-            <div class="profile-info">
-              <h4 class="username">{{user.name}}</h4>
-            </div>
-            <ul class="action">
-              <li>
-                <a ui-sref="profile">
-                  Profile
-                </a>
-              </li>
-              <li>
-                <a href="/admin" ng-if="user.superAdmin">
-                  <div class="title">Admin Dashboard</div>
-                </a>
-              </li>
-              <li>
-                <a href="/logout">
-                  Logout
-                </a>
-              </li>
-            </ul>
-          </div> -->
         </li>
-
       </ul>
     </div>
   </div>

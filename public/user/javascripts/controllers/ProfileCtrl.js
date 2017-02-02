@@ -1,18 +1,18 @@
 angular.module('studionet')
 
-.controller('ProfileCtrl', ['$scope', 'ModalService', 'profile', 'contributions', 'tags', 'groups', function($scope, ModalService, profile, contributions, tags, groups){
+.controller('ProfileCtrl', ['$scope', 'ModalService', 'profile', 'tags', 'groups', function($scope, ModalService, profile, tags, groups){
 
 	/*
 	 *	Functionality for User Profile Page
 	 */
-	$scope.contributionsRef = contributions.contributions.hash();
 	$scope.tags = tags.tags;
 
 	// warning: be wary of scope overlaps; wasn't working with $scope.groups
 	$scope.user = profile.user;
 	$scope.lastLoggedIn = new Date($scope.user.lastLoggedIn);
-	$scope.contributions = $scope.user.contributions;
 	$scope.groups = groups.groups;
+
+	$scope.tagline = "Apprentice";
 
 	// Observe the Graph Service for Changes and register observer
 	var updateProfile = function(){
@@ -27,18 +27,22 @@ angular.module('studionet')
 		$scope.rating = 0;
 		$scope.level = 0;
 
-		var rateCount = 0;
-		for(var i=0; i < $scope.contributions.length; i++){
-			$scope.views += $scope.contributions[i].views; 
-			$scope.rating += $scope.contributions[i].rating;
-			rateCount += $scope.contributions[i].rateCount;  
-		}
+		var viewed = 0; 
+		var rated = 0;
+		var created = 0;
 
+		// compute the rating
+		var rateCount = 0;
+		for(var i=0; i < $scope.user.contributions.length; i++){
+			var contribution = $scope.user.contributions[i];
+			$scope.views += contribution.views; 
+			$scope.rating += contribution.rating;
+			rateCount += contribution.rateCount;  
+		}
 		$scope.rating = ($scope.rating / rateCount).toFixed(1);
 
-		$scope.level = 0;
-
-		profile.getContributions().then(function(res){
+		// compute the level
+		profile.getActivity().then(function(res){
 
 			var data = res.data[0];
 			data.map(function(activity){
@@ -53,6 +57,7 @@ angular.module('studionet')
 			})
 
 			$scope.level = $scope.level.toFixed(0);
+
 
 		})
 
@@ -69,7 +74,7 @@ angular.module('studionet')
 .controller('EditProfileCtrl', ['$scope', 'profile', 'Upload', '$http',  function($scope, profile, Upload, $http){
 
 	$scope.init = function(){
-		$scope.userData = { 'id': profile.user.id, 'name': profile.user.name, 'nusOpenId': profile.user.nusOpenId, 'avatar': profile.user.avatar };
+		$scope.userData = { 'id': profile.user.id, 'name': profile.user.name, 'nusOpenId': profile.user.nusOpenId, 'avatar': profile.user.avatar, 'nickname' : profile.user.nickname };
 	}
 
 	$scope.uplodateFiles = function (profile_picture){
@@ -126,20 +131,22 @@ angular.module('studionet')
    			console.log("Avatar unchanged");
    		}		
 
-
    		// check if name changed
-   		if($scope.userData.name == profile.user.name){
-   			console.log("Same name - no need to update");
+   		if($scope.userData.nickname == profile.user.nickname){
+   			console.log("Same nickname - no need to update");
    		}
  		else{
 
- 			console.log("Name changed - updating...")
- 			profile.changeName( {'id' : $scope.userData.id, 'name': $scope.userData.name } ).success(function(data){
- 				profile.getUser().then(function(){
- 					//$scope.userData = { 'id': profile.user.id, 'name': profile.user.name, 'nusOpenId': profile.user.nusOpenId, 'avatar': profile.user.avatar };
- 					$scope.init();
- 				});
- 			});
+ 			if($scope.userData.nickname.replace(/\s/g, '').length || $scope.userData.nickname == ""){
+	 			profile.changeName( {'id' : $scope.userData.id, 'nickname': $scope.userData.nickname } ).success(function(data){
+	 				profile.getUser().then(function(){
+	 					$scope.init();
+	 				});
+	 			});
+ 			}
+ 			else{
+ 				alert("Nickname can't contain only spaces.")
+ 			}
 
  		}
  

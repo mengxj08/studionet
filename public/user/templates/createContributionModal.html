@@ -6,25 +6,11 @@
 
        <div class="modal-body">
 
-        <!-- alert -->
-        <div class="alert alert-danger" role="alert" id='errorMsg' ng-show='alert.error'>
-                <strong>Oh snap! </strong>{{ alert.errorMsg }}
-        </div>
-
-        <div class="alert alert-success" role="alert" id='successMsg' ng-show='alert.success'>
-                <strong>Awesome! </strong>{{ alert.successMsg }}
-        </div>   
-
-        <div class='editor' ng-hide='alert.success'>
+        <div class='editor'>
 
             <div class='modal-info'>
               <h5>New Contribution</h5>
             </div>
-
-            <!-- Reference -->
-            <!-- <div class='modal-section'>
-              <input class='wide' placeholder="Connected To: None" ng-disabled="true">
-            </div> -->
 
             <!-- Title -->
             <div class='modal-section'>
@@ -76,18 +62,13 @@
 
 
             <div class='modal-section text-right'>
-                <button type="button" class="btn btn-default modal-button" ng-if='!alert.success' ng-click='createContribution()' ng-disabled="!(contributionData.body && contributionData.title)" data-dismiss='modal'>Submit</button>
-                <button type="button" class="btn btn-default modal-button" data-dismiss='modal' ng-click='close()'>{{ alert.success ? "Close" : "Cancel" }}</button>
+                <button type="button" class="btn btn-default modal-button" ng-click='createContribution()' ng-disabled="!(contributionData.body && contributionData.title)" data-dismiss='modal'>Submit</button>
+                <button type="button" class="btn btn-default modal-button" data-dismiss='modal' ng-click='close()'>Cancel</button>
             </div>
 
         </div>
 
       </div>
-
-<!--       <div class="modal-footer">
-        <button type="button" class="btn btn-default modal-button" ng-if='!alert.success' ng-click='createContribution()' ng-disabled="!(contributionData.body && contributionData.title)">Submit</button>
-        <button type="button" class="btn btn-default modal-button" data-dismiss='modal' ng-click='close()'>{{ alert.success ? "Close" : "Cancel" }}</button>
-      </div> -->
   
   </div>
 

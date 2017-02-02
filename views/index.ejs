@@ -40,7 +40,7 @@
       </div>
           <div id="sidebar">
       <div id="my_menu" class="sdmenu">
-        <span class="title-fix"><a href='#' onclick='enterUser()'>LOGIN</a></span>
+        <span class="title-fix"><a href='#' onclick='enterUser()' id='login'>LOGIN</a></span>
         <span class="title-fix"><a href='/'>ABOUT</a></span>
       </div>
     </div>
@@ -125,7 +125,39 @@
 <div id="window-resizer-tooltip" style="display: none;"><a href="https://openid.nus.edu.sg/about/#" title="Edit settings"></a><span class="tooltipTitle">Window size: </span><span class="tooltipWidth" id="winWidth">1343</span> x <span class="tooltipHeight" id="winHeight">1010</span><br><span class="tooltipTitle">Viewport size: </span><span class="tooltipWidth" id="vpWidth">810</span> x <span class="tooltipHeight" id="vpHeight">917</span></div></body><div></div></html>
 
 <script>
-function enterUser(){
-  document.getElementById("form_user").submit();
+
+var enterUser;
+
+/*
+ * Compatibility Testing
+ */
+
+// wrapper function to remove element from IE
+function removeElement(element) {
+    element && element.parentNode && element.parentNode.removeChild(element);
 }
+
+// Check for IE
+(function(){
+    var N= navigator.appName, ua= navigator.userAgent, tem;
+    var M= ua.match(/(opera|chrome|safari|firefox|msie)\/?\s*(\.?\d+(\.\d+)*)/i);
+    if(M && (tem= ua.match(/version\/([\.\d]+)/i))!= null) M[2]= tem[1];
+    //M= M? [M[1], M[2]]: [N, navigator.appVersion,'-?'];
+
+    if(M[1] == "MSIE"){
+      alert("Sorry! Internet Explorer is currently unsupported by Studionet. Please switch to a different browser.");
+      removeElement( document.getElementById('form_user') );
+      removeElement( document.getElementById('login') );
+    }
+    else{
+      enterUser = function(){
+          document.getElementById("form_user").submit();
+      }
+    }
+
+})();
+
+
+
+
 </script>

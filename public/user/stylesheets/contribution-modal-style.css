@@ -26,13 +26,14 @@
   font-size: 20px;
   line-height: 20px;
   margin-top: 20px;
+  color: goldenrod;
 } 
 
 
 #avg_rating{
   background-color: #343333;
   padding: 2px 5px;
-  color: #BAB2B2;
+  color: goldenrod; //#BAB2B2;
   border-radius: 2px;
 }
 
@@ -64,13 +65,16 @@ input{
  */
 
 .attachment-thumb{
-  background-size: cover; 
-  height: 150px;
+  background-size: contain; 
+  height: 50px;
   margin-bottom: 10px;
   border: 1px solid #B9B9B9;
-  max-height: 100px;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+.attachment-thumb.small{
+  height: 40px;
 }
 
 .attachment-details{
@@ -170,3 +174,22 @@ tags-input .tags{
 .textAngular .btn-default{
   border-color: #a9a9a9 !important;
 }
+
+
+/*
+ * Contribution Content
+ */
+
+.contribution-content > p > img{
+  max-width: 100%;
+  margin: 10px 0px 10px 0px;
+  //width: 30px !important; 
+  //height: 30px !important;
+}
+
+/*.contribution-content > p > img:hover{
+  max-width: 100%;
+  margin: 10px 0px 10px 0px;
+  height: 100px;
+  width: 100px;
+}*/

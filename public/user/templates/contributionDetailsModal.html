@@ -13,18 +13,9 @@
               <button type="button" class="close" data-dismiss="modal" ng-click='close()' aria-hidden="true">&times;</button>
           </div>
 
-          <!-- alert -->
-          <div class="alert alert-danger" role="alert" id='errorMsg' ng-show='alert.error'>
-                  <strong>Oh snap! </strong>{{ alert.errorMsg }}
-          </div>
-
-          <div class="alert alert-success" role="alert" id='successMsg' ng-show='alert.success'>
-                  <strong>Awesome! </strong>{{ alert.successMsg }}
-          </div>   
-
           <!--- ng-if preferable to ng-show -->
           <!--- ng-if removes DOM element -->
-          <div class="modal-body contributionView" ng-if='alert.success == undefined'>
+          <div class="modal-body contributionView">
 
                 <div class="authorBar row">
                     
@@ -32,14 +23,19 @@
                         <div class = "authorInfo">
                           <h3 class='title'>{{contribution.db_data.title}}</h3>
                           <p>
-                          <img class='profile-picture' style='width: 25px; height: 25px; display: inline-block; border-radius: 50%; margin-right: 10px;' src='{{users[contribution.db_data.createdBy].avatar}}' alt='profile'/>{{users[contribution.db_data.createdBy].name}}</p>
+                            <img class='profile-picture' 
+                                style='width: 25px; height: 25px; display: inline-block; border-radius: 50%; margin-right: 10px;' 
+                                src='{{author.avatar}}?q={{random}}'
+                                alt='{{author.name[0]}}'/>
+                                {{ author.nickname.length ? author.nickname : author.name }}
+                          </p>
                         </div>
                     </div>
 
                     <div class="col-sm-4 text-right">
                       <p id='rating' uib-rating ng-model="$parent.rate" max="$parent.max" read-only="false" on-hover="$parent.hoveringOver(value)" on-leave="overStar = null" ng-click='rateContribution($parent.rate, contribution.db_data.id)' ng-if='contribution.db_data.createdBy != user.id'></p>
                       <span id='avg_rating' class="pop" uib-popover-template="'/user/templates/statistics.html'" popover-trigger="'outsideClick'" popover-placement="left">
-                      {{ contribution.db_data.rateCount == 0 ? "No ratings" : (contribution.db_data.totalRating / contribution.db_data.rateCount).toFixed(1) }}  
+                      {{ contribution.db_data.ratings == 0.0 ? "No ratings" : (contribution.db_data.rating).toFixed(1) }}  
                       <i class='glyphicon glyphicon-star'></i></span>
                     </div>
 
@@ -54,32 +50,37 @@
                 <p class='contribution-content text-justify' ng-bind-html="contribution.db_data.body"></p>
 
 
+
                 <!-- Attachments - if present -->
                 <div class='row' ng-if='contribution.db_data.attachments[0].id!=null'>
+                    <br/>
+                    <hr/>
+                    <br>
+                    <b>Attachments</b>
+                    <br/>
                     <div ng-repeat="attachment in contribution.db_data.attachments">
-                        <div class='col-sm-12' >
-                          <div class='row'>
-                            <div class='col-sm-4 attachment-thumb' style='background-image: url({{getThumb(contribution.db_data.id, attachment.attachment)}});'></div>
-                            <div class='col-sm-8'>
-                                <div class='attachment-details'>
-                                  <p class='contributionName'>{{attachment.attachment.name}}</p>
-                                  <p> Size: {{ attachment.attachment.size/1000 }} MB </p>
-                                  <p><a href="/api/contributions/{{contribution.db_data.id}}/attachments/{{attachment.id}}" target=_blank>Download</a></p>
-                                </div>
-                            </div>
+                      <a href="/api/contributions/{{contribution.db_data.id}}/attachments/{{attachment.id}}" target=_blank>
+                        <div class='row'>
+                          <div class='col-xs-2 attachment-thumb' style='background-image: url({{getThumb(contribution.db_data.id, attachment.attachment)}});'></div>
+                          <div class='col-xs-10'>
+                              <div class='attachment-details'>
+                                <p>{{attachment.attachment.name}}</p>
+                                <p> Size: {{ attachment.attachment.size/1000 }} MB </p>
+                              </div>
                           </div>
                         </div>
+                      </a>
                     </div>
                 </div>
 
                 <br>
 
                 <div class='row text-right'>
-                  <span ng-hide='replyMode || updateMode || alert.success'>
+                  <span ng-hide='replyMode || updateMode'>
                       <button type="button" ng-click="showReplyModal(contribution.id)" class="btn btn-default modal-button">Add</button>
                       
                       <!-- if author -->
-                      <button type="button" ng-click="showUpdateModal(contribution.id)" class="btn btn-default modal-button" ng-if="(user.id == contribution.db_data.createdBy)">Update</button>
+                      <button type="button" ng-click="showUpdateModal(contribution.id)" class="btn btn-default modal-button" ng-if="(user.id == contribution.db_data.createdBy)">Edit</button>
 
                       <button type="button" ng-click="deleteContribution(contribution.db_data.id)" class="btn btn-default modal-button"
                       ng-if="(user.id == contribution.db_data.createdBy)" data-dismiss='modal'>Delete</button>

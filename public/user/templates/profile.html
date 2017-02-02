@@ -14,15 +14,19 @@
 
             <div class='profile-container'>
 
+                <div class='tagline'><small class='username no-margin-padding'>{{ tagline }}</small></div>
+
+                <br>
+
                 <!-- Profile Details -->
                 <div class='row profile-header'>
                   
-                  <div class='col-xs-7 profile-details-container no-margin-padding'>
+                  <div class='col-xs-4 profile-details-container no-margin-padding'>
                         <h5 class='username no-margin-padding'>{{ user.name }}</h4>
-                        <h6 class='tagline'>Last Logged In: {{user.lastLoggedIn | date: 'medium'}}</h6>
+                        <h5 class='username no-margin-padding'>Known as: <br>{{ user.nickname }}</h4>
+                  </div>
 
-                        <br>
-
+                  <div class='col-xs-3'>
                         <h6 class='stat-name no-margin-padding'>Total Views:  <b>{{views}}</b> </h6>
                         <h6 class='stat-name no-margin-padding'>Average Rating:  <b>{{ rating == "NaN" ? "No Rating" : rating }}</b> </h6>
                         <h6 class='stat-name no-margin-padding'>Level:  <b>{{level}}</b> </h6>
@@ -44,7 +48,7 @@
                           <div class='profile-item'>
                             <div class='row'>
                               <div class='col-sm-6'>
-                                <h6><a href='/user/#/contributions/{{contribution.id}}' target=_blank> {{ contributionsRef[ contribution.id ].title }} </a></h6>
+                                <h6><a href='/user/#/contributions/{{contribution.id}}' target='_blank'> {{ contribution.title }} </a></h6>
                               </div>
                               <div class='col-sm-3'>
                                 <h6>{{ contribution.views }} views</h6>

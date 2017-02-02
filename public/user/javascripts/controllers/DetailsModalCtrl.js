@@ -1,13 +1,13 @@
 angular.module('studionet')
-.controller('DetailsModalCtrl', ['$scope', '$http', 'profile', 'users', '$location', 'attachments', 'contribution', 'contributions', 'relationships', 'tags', function($scope, $http, profile, users, $location, attachments, contribution, contributions, relationships, tags){
+.controller('DetailsModalCtrl', ['$scope', '$http', 'profile', 'users', '$location', 'attachments', 'contribution', 'relationships', 'tags', function($scope, $http, profile, users, $location, attachments, contribution, relationships, tags){
+
+  // to prevent image caching of profile images
+  $scope.random = Math.random();
 
   // general 
   $scope.user = profile.user;
   $scope.tags = tags.tags;
   $scope.relationships = relationships.relationships;
-  $scope.contributions = contributions.contributions;
-  $scope.users = users.users.hash();
-  
 
   //todo: check why promise doesn't always get resolved
   $scope.relationships = [{"src_type":"contribution","target_type":"contribution","name":"QUESTION_FOR"},
@@ -42,7 +42,7 @@ angular.module('studionet')
   }
 
   $scope.showReplyModal = function(id){
-    $scope.replyMode = true;
+      $scope.replyMode = true;
   }
 
   $scope.showUpdateModal = function(id){
@@ -73,11 +73,7 @@ angular.module('studionet')
   }
 
 
-  // --- Modal Opening and Closing
-  /*  $scope.clickedContribution = null;
-    $scope.contributionTree = [];  */
-
-  getRating = function(contribution_id){
+  var getRating = function(contribution_id){
 
     var rating = 0;
     
@@ -99,20 +95,12 @@ angular.module('studionet')
   // setting data from scope calling ModalService
   $scope.setData = function(data, activeContribution){
       
-      //$scope.contributionTree = data; // contribution tree
-      //$scope.clickedContribution = activeContribution;  // contribution clicked initially
-      //$scope.activeContribution = activeContribution; // contribution currently in view (when scroll is implemented)
-
       $scope.contribution = data[0];
+
+      $scope.author = users.getUser( $scope.contribution.db_data.createdBy );
 
       // get rating
       $scope.rate = getRating( $scope.contribution.id );
-
-      // if tags are a single word, convert to array
-      console.log("tags",  $scope.contribution.db_data.tags);
-
-      if($scope.contribution.db_data.tags != null && $scope.contribution.db_data.tags.length == 1 && $scope.contribution.db_data.tags[0] == "")
-        $scope.contribution.db_data.tags = [];
 
       contribution.updateViewCount($scope.contribution.db_data.id);
 
@@ -159,16 +147,8 @@ angular.module('studionet')
   
   $scope.rateContribution = function(rating, id){
     
-     contribution.rateContribution(id, rating).then(function(){
+     contribution.rateContribution(id, rating).then(function(data){
 
-        console.log($scope.contributionData);
-        
-        //$scope.contributionData.rateCount++; 
-        //$scope.contributionData.rating += rating; 
-        console.log("Contribution Rated Successfully");
-
-        //$scope.$apply();
-    
      })
   
   }
@@ -177,8 +157,15 @@ angular.module('studionet')
   $scope.getThumb = function(contributionId, attachment){
       if(attachment.thumb)
         return "/api/contributions/" + contributionId + /attachments/+ attachment.id + "/thumbnail";
-      else
-        return "./img/file_default.png"; // replace with image for particular extension
+      else{
+
+        if(attachment.name.indexOf(".pdf") > -1)
+          return "./img/file_pdf.jpeg"
+        else if(attachment.name.indexOf(".doc") > -1)
+          return "./img/file_doc.png"
+        else
+          return "./img/file_default.png"; // replace with image for particular extension
+      }
   }
 
   //Uploaded files
@@ -269,20 +256,11 @@ angular.module('studionet')
 
         contribution.createContribution( contributionData ).then(function(res){
               
-              //$scope.alert.success = true; 
-              //$scope.alert.successMsg = "Contribution Id : " + res.data.id + " has been created.";
               spinner.stop();
               sendMessage( {status: 200, message: "Replied to contribution successfully" } );
 
               // change contribution
-              //$scope.contribution = contributionData;
-              //
               $scope.close();
-
-
-              //$scope.replyMode = false; 
-              //$scope.updateMode = false;
-
 
         }, function(error){
 
@@ -330,8 +308,6 @@ angular.module('studionet')
           
           sendMessage( {status: 500, message: "Error updating contribution" } );
           $scope.close();
-          //$scope.alert.error = true; 
-          //$scope.alert.errorMsg = error.data;
     });
   }
 
@@ -344,8 +320,6 @@ angular.module('studionet')
       spinner.spin(target);
       contribution.deleteContribution(contributionId).then(function(){
           
-          //$scope.alert.success = true; 
-          //$scope.alert.successMsg = "Contribution Id : " + $scope.contribution.id + " was successfully deleted.";
           spinner.stop();
           sendMessage({status: 200, message: "Contribution Id : " + $scope.contribution.id + " was successfully deleted." });
           $scope.close();
