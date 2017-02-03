@@ -675,7 +675,7 @@ angular.module('studionet')
 
 			console.log("got graph data", new Date());
 			
-		    var nodes = [];
+		    /*var nodes = [];
 		    var links = [];
 
 			data.forEach(function(row){
@@ -709,10 +709,10 @@ angular.module('studionet')
 			var graph_data = {
 		      nodes: nodes, 
 		      links: links
-		    }
+		    }*/
 
 			// copy data
-			angular.copy(graph_data, o.graph_data);
+			angular.copy(data, o.graph_data);
 
 			// make graph with the data - could provide a container id
 			makeGraph( container );

@@ -37,7 +37,7 @@
                    
                     <div uib-accordion-group class='profile-item-container'>
                       <uib-accordion-heading> 
-                          <h5>Nodes</h5>
+                          <h5>Nodes ({{user.contributions.length}})</h5>
                       </uib-accordion-heading>
                       
                       <div class='col-sm-12'  ng-repeat="contribution in user.contributions | orderBy : '-views' ">

@@ -54,7 +54,7 @@ var graphQuery = function (query, callback){
 
     var data = body.results[0].data;
       
-    /*data.forEach(function(row){
+    data.forEach(function(row){
       // for each graph
 
       row.graph.nodes.forEach(function(n) {
@@ -80,15 +80,14 @@ var graphQuery = function (query, callback){
           };
       }));
 
-    });*/
+    });
 
-    callback(data);
 
-    /*
+    
     callback({
       nodes: nodes, 
       links: links
-    }); */
+    }); 
 
   });
 
