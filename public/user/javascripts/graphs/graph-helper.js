@@ -329,8 +329,15 @@ var graph_style = {
           .selector('node.glow')
             .css({
               //'background-color' : '#5E5E5E',
-              'width' : 15, 
-              'height' : 15
+              'width' : '12', 
+              'height' : '12'
+            })
+
+          .selector('node.glow.faded')
+            .css({
+              //'background-color' : '#5E5E5E',
+              'width' : '2', 
+              'height' : '2'
             })
 
 
