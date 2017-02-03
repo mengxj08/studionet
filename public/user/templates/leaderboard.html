@@ -1,0 +1,86 @@
+<!-- Profile Modal -->
+<div id='leaderboard' class="modal fade" role="dialog">
+  
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+
+        <div class="modal-body">
+
+        	<h3>Leaderboard</h3>
+        	<h6>The shining stars</h6>
+
+        	<br><hr><br>
+
+        	<div class='row text-center'>
+
+        			<div class='col-sm-4' style='padding: 10px 0px;'>
+        				<div class='row' style='padding: 15px 0px !important'>
+        					<div class='row'><img src={{topCreator.avatar}} style='width: 50px;'></div>
+        					<div class='row'>
+								<div style='color:#7C7777; font-size: 12px; font-weight: 400'>CHIEF STAR MAKER</div>
+								<div>{{topCreator.name}}</div>
+								<h6>with {{topCreator.activityArr[2]}} contributions</h6>
+        					</div>
+        				</div>
+        			</div>
+
+        			<div class='col-sm-4' style='padding: 10px 0px;'>
+        				<div class='row' style='padding: 15px 0px !important'>
+        					<div class='row'><img src={{topRater.avatar}} style='width: 50px;'></div>
+        					<div class='row'>
+								<div style='color:#7C7777; font-size: 12px; font-weight: 400'>ASTRONOMER</div>
+								<div>{{topRater.name}}</div>
+								<h6>with {{topRater.activityArr[1]}} contributions rated.</h6>
+        					</div>
+        				</div>
+        			</div>
+
+					<div class='col-sm-4' style='padding: 10px 0px;'>
+        				<div class='row' style='padding: 15px 0px !important'>
+        					<div class='row'><img src={{topViewer.avatar}} style='width: 50px;'></div>
+        					<div class='row'>
+								<div style='color:#7C7777; font-size: 12px; font-weight: 400'>STAR GAZER</div>
+								<div>{{topViewer.name}}</div>
+								<h6>with {{topViewer.activityArr[0]}} contributions read.</h6>
+        					</div>
+        				</div>
+        			</div>
+
+        	</div>
+
+        	<br>
+
+        	<div class='row text-center'>
+        		<div class='col-sm-1'><h6>Rank</h6></div>
+        		<div class='col-sm-2'><h6>Avatar</h6></div>
+        		<div class='col-sm-4'><h6>Name</h6></div>
+        		<div class='col-sm-2'><h6>Level</h6></div>
+        		<div class='col-sm-1'><h6>Viewed</h6></div>
+        		<div class='col-sm-1'><h6>Rated</h6></div>
+        		<div class='col-sm-1'><h6>Created</h6></div>
+        	</div>
+
+        	<hr>
+
+        	<div class='row text-center' ng-repeat="user in users | orderBy: '-level' " style='padding: 10px 0px; border-bottom: 1px solid #B9B9B9'>
+        	    <div class='col-sm-1'><h5 style='line-height: 30px;'>{{$index + 1}}</h5></div>
+        		<div class='col-sm-2' style='background-image: url({{user.avatar}}); height: 30px; background-size: contain; background-repeat: no-repeat;'><h5 style='line-height: 30px;'></h5></div>
+        		<div class='col-sm-4'><h5 style='line-height: 30px;'>{{user.name}}</h5></div>
+        		<div class='col-sm-2'><h5 style='line-height: 30px;'>{{user.level.toFixed(0)}}</h5></div>
+        		<div class='col-sm-1'><h5 style='line-height: 30px;'>{{user.activityArr[0]}}</h5></div>
+        		<div class='col-sm-1'><h5 style='line-height: 30px;'>{{user.activityArr[1]}}</h5></div>
+        		<div class='col-sm-1'><h5 style='line-height: 30px;'>{{user.activityArr[2]}}</h5></div>
+        	</div>
+
+        </div>
+
+    </div>
+
+
+  </div>
+
+</div>
+
+

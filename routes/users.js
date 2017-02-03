@@ -8,15 +8,24 @@ var db = require('seraph')({
 });
 
 
+var constants = require('../datastructure/constants.js');
+var weights = constants.activityWeights;
+var taglineFn = constants.taglineFn
+
 // route: /api/users
 router.route('/')
 
   // return all users
   .get(auth.ensureAuthenticated, function(req, res){
+
     var query = [
       'MATCH (u:user)',
-      'OPTIONAL MATCH (c:contribution)<-[r:CREATED]-(u)',
-      'RETURN {id: id(u), nickname: u.nickname, name: u.name, avatar: u.avatar, contributionCount: COUNT(r)}'
+      'OPTIONAL MATCH (c:contribution)<-[r1:VIEWED]-(u)',
+      'OPTIONAL MATCH (c:contribution)<-[r2:RATED]-(u)',
+      'OPTIONAL MATCH (c:contribution)<-[r3:CREATED]-(u)',
+      'RETURN { id: id(u), nickname: u.nickname, name: u.name, avatar: u.avatar,\
+                activityArr: [COUNT(r1),  COUNT(r2), COUNT(r3)],  \
+                level: COUNT(r1)*' + weights[0] + ' + COUNT(r2)*' + weights[1] + ' + COUNT(r3)* ' + weights[2] + '}'
     ].join('\n');
 
     db.query(query, function(error, result){
@@ -98,12 +107,10 @@ router.route('/:userId')
           'OPTIONAL MATCH p1=(g:group)-[r:MEMBER]->(u)',
           'WITH collect({id: id(g), name: g.name, role: r.role}) as groups, u',
           'OPTIONAL MATCH p2=(c:contribution)<-[r1:CREATED]-(u)',
-          'WITH groups, collect({id: id(c), title: c.title}) as contributions, u',
+          'WITH groups, collect({id: id(c), title: c.title, rating: c.rating, views: c.views, rateCount: c.rateCount }) as contributions, u',
           'OPTIONAL MATCH p3=(t:tag)<-[r1:CREATED]-(u)',
           'WITH groups, collect({id: id(t), name: t.name}) as tags, contributions, u',
           'RETURN {\
-                    name: u.name,\
-                    avatar: u.avatar,\
                     joinedOn: u.joinedOn,\
                     lastLoggedIn: u.lastLoggedIn,\
                     id: id(u),\
@@ -178,5 +185,6 @@ router.route('/:userId')
       }
     })
   });
+
 
 module.exports = router;

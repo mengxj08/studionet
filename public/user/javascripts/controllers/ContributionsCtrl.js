@@ -108,7 +108,13 @@ angular.module('studionet')
 
   // ----------------- Graphs
   // First Initialization of the graph on page-refresh
-  $scope.graphInit = function(){  graph.getGraph(angular.element('#cy')[0]);  }
+  $scope.graphInit = function(){  
+  
+
+    graph.getGraph(angular.element('#cy')[0]);  
+
+
+  }
 
 
   // Highlight any state params
@@ -134,10 +140,10 @@ angular.module('studionet')
 
       var qtipFormat = STUDIONET.GRAPH.qtipFormat(evt);
 
-      var auth = users.getUser(node.data('createdBy'));
+      var auth = users.getUser( node.data('createdBy'), false );
       
       qtipFormat.id = "qTip-" +  node.id();
-      qtipFormat.content.text =  node.data('name') + "<br>- " + (auth.nickname.length ? auth.nickname : auth.name)
+      qtipFormat.content.text =  node.data('name') + "<br>- " + ( (auth.nickname !=null && auth.nickname.length) ? auth.nickname : auth.name)
 
       node.qtip(qtipFormat, evt);  
   
@@ -218,6 +224,7 @@ angular.module('studionet')
 
       // redraw graph
       var threshold = 20; 
+      console.log("draw graph");
       STUDIONET.GRAPH.draw_graph($scope.graph, threshold);
     
       // Display the entire node name
@@ -248,7 +255,6 @@ angular.module('studionet')
       highlightStateParams();
       addGraphInteractions();
 
-      console.log("Graph Updated");
   };
   graph.registerObserverCallback(updateGraph);
 

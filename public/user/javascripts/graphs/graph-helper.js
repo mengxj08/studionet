@@ -77,76 +77,6 @@ var CONCENTRIC_GRAPH_LAYOUT = {  name: 'concentric',
                                   }};
 
 
-var COSE_GRAPH_LAYOUT = {
-  name: 'cose',
-
-  // Called on `layoutready`
-  ready: function(){ },
-
-  // Called on `layoutstop`
-  stop: function(){   /*reposition() */ },
-
-  // Whether to animate while running the layout
-  animate: true,
-
-  // The layout animates only after this many milliseconds
-  // (prevents flashing on fast runs)
-  animationThreshold: 250,
-
-  // Number of iterations between consecutive screen positions update
-  // (0 -> only updated on the end)
-  refresh: 20,
-
-  // Whether to fit the network view after when done
-  fit: true,
-
-  // Padding on fit
-  padding: 10,
-
-  // Constrain layout bounds; { x1, y1, x2, y2 } or { x1, y1, w, h }
-  boundingBox:  undefined,
-
-  // Randomize the initial positions of the nodes (true) or use existing positions (false)
-  randomize: true,
-
-  // Extra spacing between components in non-compound graphs
-  componentSpacing: function( node ){ return 300 + node.predecessors().length*100; },
-
-  // Node repulsion (non overlapping) multiplier
-  nodeRepulsion: function( node ){ return node.predecessors().length*1000000; },
-
-  // Node repulsion (overlapping) multiplier
-  nodeOverlap: 50000,
-
-  // Ideal edge (non nested) length
-  idealEdgeLength: function( edge ){ return 10; },
-
-  // Divisor to compute edge forces
-  edgeElasticity: function( edge ){ return 1; },
-
-  // Nesting factor (multiplier) to compute ideal edge length for nested edges
-  // nestingFactor: 5,
-
-  // Gravity force (constant)
-  gravity: 100,
-
-  // Maximum number of iterations to perform
-  numIter: 3000,
-
-  // Initial temperature (maximum node displacement)
-  initialTemp: 400,
-
-  // Cooling factor (how the temperature is reduced between consecutive iterations
-  coolingFactor: 0.95,
-
-  // Lower temperature threshold (below this point the layout will end)
-  minTemp: 1.0,
-
-  // Whether to use threading to speed up the layout
-  useMultitasking: true
-};
-
-
 
 var computeSizeFn = function(node){
 
@@ -353,14 +283,12 @@ var graph_style = {
               'width': 1
             })
 
-
-
 }
 
 /*
  * Converts normal node from backend into cytoscape-specific format
  */
-var createGraphNode = function(node){    return  { data: node };   }
+var createGraphNode = function(node){    return  { data: node, position: {x:  $(window).width()/2, y:  $(window).height()/2 } };   }
 
 /*
  * Converts normal edge from backend into cytoscape-specific format
@@ -378,8 +306,10 @@ var createGraphEdge = function(edge){  return { data: edge };   }
  *      edgeFn - Conversion of edges in data to cytoscape edges
  *      graphStyle - Graph Style 
  */
-var spinner = new Spinner(STUDIONET.GRAPH.spinner);
+spinner = new Spinner(STUDIONET.GRAPH.spinner);
+
 STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn, edgeFn){
+    
 
     // if cytoscape canvas is defined, assign that
     if(arguments[1] != undefined)
@@ -397,26 +327,18 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
     var nodes = data.nodes.map( function(node){ return createGraphNode(node) } );
     var edges = data.links.map( function(edge){ return createGraphEdge(edge) } );
     
-    /*nodes = nodes.filter(function(data){
-        if(data.id == 5)
-          return false; 
-        else 
-          return true;
-    }); */
-    /*var manuallyCreatedEdges = [];
     //console.log(edges.length, "before sorting");
-    edges = edges.filter(function(edge){
+   /* edges = edges.filter(function(edge){
         if(edge.data.properties.createdBy == undefined)
           return true; 
         else 
           return false;
-    });
-    //console.log(edges.length, "after sorting");*/
+    });*/
 
 
     graph_style.elements = {
-        nodes: nodes,//data.nodes.filter( function(node){ if(node.id != 5) return createGraphNode(node) } ), 
-        edges: edges//data.links.filter( function(edge){ if(edge.source !== 5 && edge.target != 5) return createGraphEdge(edge) else return false } )
+        nodes: nodes,
+        edges: edges
     }
 
     // disable zooming
@@ -433,8 +355,6 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
 
     graph = cytoscape( graph_style );
 
-    //graph.fit();
-
 
     return graph;
     
@@ -449,26 +369,22 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
 // always double of number of incoming nodes required
 STUDIONET.GRAPH.draw_graph = function(graph, threshold){
 
-  spinner.spin(document.getElementById('cy'));
-  //console.log("Start spinner", document.getElementById('cy'));
-  //console.log(spinner);
   graph.reset();
 
   var sortFn = function (ele1, ele2) {
 
       if( ele1.incomers().length == ele2.incomers().length )
-        return ( ele1.predecessors().length > ele2.predecessors().length )
+        return ( ele1.predecessors().length > ele2.predecessors().length ? -1 : 1)
       else
         return ( ele1.incomers().length > ele2.incomers().length ? -1 : 1);
   }
 
+  console.log("in draw_graph", new Date());
+
   // Sort the nodes first
   var sortedNodes = graph.nodes().sort( sortFn );
 
-  // set the onSpiral value to -1 for all nodes
-  graph.nodes().map(function(n){
-      n.data('onSpiral', -1);
-  }) ;
+  console.log("Nodes sorted", new Date());
 
   // Extract nodes which will be on the spiral, including all children
   var spiralNodes = sortedNodes.filter(function(i, node){
@@ -508,40 +424,35 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
       
   });
 
-  //console.log("Original Spiral Nodes", spiralNodes.length);
+  console.log("Original Spiral Nodes added", new Date());
 
   // add additional ones which are isolated
-  for(var i=0; i < graph.nodes().length; i++){
+  function isIsolated(nodeIndex){
 
-      var node = graph.nodes()[i];
-
+      var node = graph.nodes()[nodeIndex];
 
       if(node.data('onSpiral') == -1){
 
-          ////console.log("Doing node:", node.id());
-          
           // add node to spiral
           spiralNodes = spiralNodes.add(node);
         
           // mark nodes predessors
-          var inc = 0;
           node.incomers().nodes().map(function(child){
-
                 if( child.data('onSpiral') == -1 ){
                   child.data('onSpiral', node.id() );
-                  inc++;
                 }
           });
-          ////console.log(inc, " additional marked and removed for id: ", node.id() );
       }
 
-
-      if( i== graph.nodes().length - 1){
-        spinner.stop();
-        //console.log("Last node stop spinner");
-      }
+      if(nodeIndex+1 < graph.nodes().length)
+        isIsolated(nodeIndex+1);
 
   }
+  isIsolated(0);
+
+  console.log("Isolated Node added", new Date());
+
+
 
   //spiralNodes = spiralNodes.add( graph.nodes("[onSpiral=-1]") );
   //console.log("Spiral nodes after addition", spiralNodes.length);
@@ -556,7 +467,7 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
 
       
   var prevRadius = 1;
-  var x = initX;
+  var x = 0;
   var y = 0;
   var radius = 150;
   var angle = 0;
@@ -613,7 +524,8 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
                   nextNode(i+1);
                 }
                 else{
-                  
+                  spinner.stop();
+                  console.log("graph finished", new Date())
                   //graph.fit();
                 }
 
@@ -623,6 +535,7 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
 
   }
 
+  console.log("Animation started", new Date());
   nextNode(0);
 
 
@@ -640,8 +553,10 @@ var makeSubSpiral = function(nodes, centerX, centerY, minimumRadius){
     var radius_SubNode = 10;
     var safety_gap = 10;
 
-    var angle = Math.PI + Math.atan(centerY / centerX), 
+    var angle = Math.atan( Math.abs(centerY / centerX) ), 
         radius = minimumRadius, minNodes, angleInc, radiusInc;
+
+    //console.log((angle*57.2).toFixed(2) + " deg");
 
     for(var i=0; i < nodes.length; i++){
 

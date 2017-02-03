@@ -270,9 +270,6 @@ li.notification{
 	border-radius: 0px !important;
 }
 
-#cy{
-	background-color: #000623;
-}
 
 .navbar .navbar-collapse .navbar-nav.navbar-mobile .navbar-brand .highlight{
 	background-color: #264E7D;
@@ -490,7 +487,7 @@ h4.modal-title{
 .modal-body{
     height: 100%;
     max-height: calc(100% - 105px);
-    padding: 0px !important;
+    padding: 15px !important;
     background-color: #F0F0F0;
     overflow-y: auto !important;
 }

@@ -1,37 +1,24 @@
 angular.module('studionet')
 
-.controller('ProfileCtrl', ['$scope', 'ModalService', 'profile', 'tags', 'groups', function($scope, ModalService, profile, tags, groups){
+.controller('ProfileCtrl', ['$scope', 'profile', 'tags', 'groups', 'users', function($scope, profile, tags, groups, users){
+
 
 	/*
 	 *	Functionality for User Profile Page
 	 */
 	$scope.tags = tags.tags;
-
-	// warning: be wary of scope overlaps; wasn't working with $scope.groups
-	$scope.user = profile.user;
-	$scope.lastLoggedIn = new Date($scope.user.lastLoggedIn);
 	$scope.groups = groups.groups;
 
 	$scope.tagline = "Beginner";
 
 	// Observe the Graph Service for Changes and register observer
-	var updateProfile = function(){
-	  $scope.user = profile.user;
-	};
-	profile.registerObserverCallback(updateProfile);
+	var updateProfile;
 
-
-	$scope.computeStats = function(){
+	var computeStats = function(){
 
 		$scope.views = 0; 
 		$scope.rating = 0;
-		$scope.level = 0;
-
-		var viewed = 0; 
-		var rated = 0;
-		var created = 0;
-
-		// compute the rating
+		// compute the rating based on rating of the contributions the user has made
 		var rateCount = 0;
 		for(var i=0; i < $scope.user.contributions.length; i++){
 			var contribution = $scope.user.contributions[i];
@@ -40,28 +27,41 @@ angular.module('studionet')
 			rateCount += contribution.rateCount;  
 		}
 		$scope.rating = ($scope.rating / rateCount).toFixed(1);
+	}
 
-		// compute the level
-		profile.getActivity().then(function(res){
+	$scope.setUser = function(user_id, own){
 
-			var data = res.data[0];
-			data.map(function(activity){
+		$scope.own = own;
 
-				if(activity.type == "CREATED")
-					$scope.level += 0.2;
-				else if(activity.type == "RATED")
-					$scope.level += 0.1;
-				else if(activity.type == "VIEWED")
-					$scope.level += 0.01;
+		if($scope.own){
+			
+			$scope.user = profile.user;
 
-			})
+			updateProfile = function(){
+			  $scope.user = profile.user;
+			};
+			profile.registerObserverCallback(updateProfile);
+			
+			computeStats();
+		}
+		else{
 
-			$scope.level = $scope.level.toFixed(0);
+			var promise = {};
+			$scope.user = users.getUser(user_id, false);
+			users.getUser(user_id, true).then(function(res){
+
+				if(res.status == 200){
+					computeStats();
+				}
+				else{
+					console.err("Error fetching user data");
+				}
 
 
-
-		})
-
+			});
+		
+		}
+	
 	}
 
 	$scope.close = function() {
@@ -72,6 +72,10 @@ angular.module('studionet')
 
 }])
 
+
+/*
+ * To edit the profile
+ */
 .controller('EditProfileCtrl', ['$scope', 'profile', 'Upload', '$http',  function($scope, profile, Upload, $http){
 
 	$scope.init = function(){

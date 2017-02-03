@@ -35,7 +35,7 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 					return relationships.getAll();
 				}],
 				userProfile: ['profile', function(profile){
-					return profile.getUser();
+					return profile.getUser() && profile.getActivity();
 				}]
 			}
 		})

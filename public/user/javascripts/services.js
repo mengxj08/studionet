@@ -20,7 +20,7 @@ angular.module('studionet')
 	var o ={
 		user: {},
 		groups: [],
-		contributions: [],
+		activity: [],
 		groupsById: {},
 
 	};
@@ -57,7 +57,7 @@ angular.module('studionet')
 
 	o.getActivity = function(){
 		return $http.get('/api/profile/activity').success(function(data){
-			angular.copy(data, o.contributions);
+			angular.copy(data[0], o.activity);
 		});
 	};
 
@@ -108,12 +108,39 @@ angular.module('studionet')
 		});
 	};
 
-	o.getUser = function(user_id){
-
+	// get user from the hash and trigger data request for additional info about the user from the server
+	o.getUser = function(user_id, fromDB){
+		
 		var user = o.usersHash[user_id];
-		if(user.nickname == null || user.nickname == undefined)
-			user.nickname = "";
-		return user;
+
+		// trigger for user data
+		if(fromDB){
+
+			var url = '/api/users/' + user_id;
+			
+			return $http.get(url).then(function(res){
+				
+				if(res.status == 200){
+					var data = res.data;
+					var user = o.usersHash[data.id];
+
+					for(prop in data){
+						if(data.hasOwnProperty(prop)){
+							user[prop] = data[prop];
+						}
+					}		
+
+					return res;
+
+				}
+				else{
+					console.log("Error fetching user data");
+				}
+			});
+		
+		}
+		else
+			return user;
 	}
 
 	o.setUser = function(user_data){
@@ -346,12 +373,14 @@ angular.module('studionet')
 	};
 
 	o.getGraph = function(user_context){
-		return $http.get('/graph/all/groups').success(function(data){
+    	
+		/*return $http.get('/graph/all/groups').success(function(data){
 			// replace the nodes with the groups that already hold data about the user status in each group
+			
 			data.nodes = o.groups;
 			// copy data
 			angular.copy(data, o.graph);
-		});
+		});*/
 	};
 
 	o.createNewGroup = function(group){
@@ -609,6 +638,9 @@ angular.module('studionet')
 	// make the graph
 	var makeGraph = function( container ){
 
+		console.log("Making graph", new Date());
+
+
 		// takes either data from filters or contribution.graph data
 		o.graph = STUDIONET.GRAPH.makeGraph( o.graph_data, container ); // defaults to cy
 
@@ -620,15 +652,67 @@ angular.module('studionet')
 	// get the graph from the URL
 	o.getGraph = function( container ){
 
-		o.container = container;
+		var idIndex = function (a, id){
+		  for (var i = 0; i < a.length ; i++) {
+		    if (a[i].id === id) {
+		      return a[i];
+		    }
+		  }
+		  return null;
+		}
 
+		var setName = function (n) {
+		    if (n.labels[0] === "contribution") {
+		        return n.properties.title;
+		    } else {
+		        return n.properties.name;
+		    }
+		}
+
+		o.container = container;
+		spinner.spin(container);
 		return $http.get(o.url).success(function(data){
 
-			filterUrl = "";
+			console.log("got graph data", new Date());
+			
+		    var nodes = [];
+		    var links = [];
+
+			data.forEach(function(row){
+			      // for each graph
+
+			      row.graph.nodes.forEach(function(n) {
+			      	n.type = n.labels[0];
+			      	n.name = setName(n);
+			        if (idIndex(nodes, n.id) == null)
+			            nodes.push({
+			                id: n.id,
+			                type: n.labels[0],
+			                name: setName(n),
+			                onSpiral: -1,
+			                rating: n.properties.rating, 
+			                createdBy: n.properties.createdBy
+			            });
+			      });
+
+			      links = links.concat(row.graph.relationships.map(function(r) {
+			          return {
+			              source: idIndex(nodes, r.startNode).id,   // should not be a case where start or end is null.
+			              target: idIndex(nodes, r.endNode).id,
+			              name: r.type,
+			              properties: r.properties
+			          };
+			      }));
+
+			});
+
+			var graph_data = {
+		      nodes: nodes, 
+		      links: links
+		    }
 
 			// copy data
-			angular.copy(data, o.graph_data);
-			//console.log("Graph Refreshed");
+			angular.copy(graph_data, o.graph_data);
 
 			// make graph with the data - could provide a container id
 			makeGraph( container );

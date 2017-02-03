@@ -3,7 +3,7 @@
 
 <!-- Stylesheet for Modals & textAngular -->
 <link rel='stylesheet' href='/user/stylesheets/textAngular/textAngular.css' />
-<link rel='stylesheet' href='/user/stylesheets/contribution-modal-style.css' />
+<link rel='stylesheet' href='/user/stylesheets/modal-styles.css' />
 
 <!-- actual graph container -->
 <div class='graph-container' ng-init='graphInit()'> 
@@ -20,7 +20,7 @@
 
 
     
-    <div><i class="graph-nav-control icon fa fa-database" uib-tooltip='Leaderboards - Coming Soon!' tooltip-placement='left' ng-disabled="true"></i></div>
+    <div><i class="graph-nav-control icon fa fa-database" data-toggle="modal" data-target="#leaderboard" uib-tooltip='Leaderboards' tooltip-placement='left' ng-disabled="true"></i></div>
 
   </div>
 
@@ -94,12 +94,13 @@
 
 <!--- Profile Modal  -->
 <!-- Should be placed here because this page gets loaded after resolving all promises for required data -->
-<ng-include src="'templates/profile.html'" ></ng-include>
+<ng-include src="'templates/profile.html'" ng-controller='ProfileCtrl as profilectrl' ng-init='setUser(undefined, true)'></ng-include>
 
 <!-- Create Contribution Modal -->
 <ng-include src="'templates/createContributionModal.html'"></ng-include>
 
-
+<!-- Leaderboard Modal -->
+<ng-include src="'templates/leaderboard.html'" ng-controller='LeaderboardCtrl' ></ng-include>
 
 
 

@@ -142,8 +142,8 @@ angular.module('studionet')
 
           return users.users.filter(function(user){
 
-              if(user.contributionCount){
-                user.note = "( Nodes: " + user.contributionCount + " )";
+              if(user.activityArr[2]){
+                user.note = "( Nodes: " + user.activityArr[2] + " )";
 
                 if (user.type != undefined)
                     return user;
