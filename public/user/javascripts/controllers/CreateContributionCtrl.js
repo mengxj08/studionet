@@ -44,8 +44,8 @@ angular.module('contributionEditorDirective', [])
       }
 
 
-            var spinner = new Spinner(STUDIONET.GRAPH.spinner);
-            var target = document.getElementById('cy');
+      //var spinner = new Spinner(STUDIONET.GRAPH.spinner);
+      //var target = document.getElementById('cy');
       $scope.createContribution = function(){
 
           
@@ -55,10 +55,10 @@ angular.module('contributionEditorDirective', [])
             });
           delete $scope.contributionData._tags;
 
-          spinner.spin(target);
+          //spinner.spin();
           contribution.createContribution( $scope.contributionData ).then(function(res){
 
-                spinner.stop();
+                //spinner.stop();
                 
                 $scope.$emit( BROADCAST_MESSAGE, { status: 200, message: "Contribution was created successfully." } );
                 $scope.contributionData = { _tags: [], attachments: [], tags: [], refType: "RELATED_TO", contentType: "text", ref: supernode.contribution};
