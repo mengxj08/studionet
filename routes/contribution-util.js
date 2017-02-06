@@ -23,7 +23,7 @@ module.exports.handleGetContributionsWithoutParams = function(req, res, next) {
 	var query = [
 		'MATCH (c:contribution)',
 		'WITH c',
-		'RETURN ({title: c.title, createdBy: c.createdBy, dateCreated: c.dateCreated, id: id(c)})'		
+		'RETURN ({title: c.title, createdBy: c.createdBy, dateCreated: c.dateCreated, id: id(c), totalRatings: c.totalRating, rateCount: c.rateCount, rating: c.rating, views: c.views })'		
 	].join('\n');
 
 	db.query(query, function(error, result) {

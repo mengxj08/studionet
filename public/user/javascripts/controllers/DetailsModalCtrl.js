@@ -51,6 +51,8 @@ angular.module('studionet')
             console.log("View Contribution Modal Closed");
             $('#contributionViewModal').modal('hide');
 
+            $scope.$emit(BROADCAST_VIEWMODE_OFF, {} );
+
         };
 
 
@@ -327,6 +329,8 @@ angular.module('studionet')
           } else {
               x = "You pressed Cancel!";
           }
+
+          $scope.close();
         };
 
 

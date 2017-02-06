@@ -271,11 +271,9 @@ router.route('/:contributionId')
       'OPTIONAL MATCH (c)<-[rating3:RATED {rating: 3}]-(:user) ',
       'OPTIONAL MATCH (c)<-[rating2:RATED {rating: 2}]-(:user) ',
       'OPTIONAL MATCH (c)<-[rating1:RATED {rating: 1}]-(:user) ',
-      'OPTIONAL MATCH (c)<-[rating0:RATED {rating: 0}]-(:user)',
       'OPTIONAL MATCH (a:attachment)<-[:ATTACHMENT]-(c)',
       'RETURN { \
-                ratingArray: [count(rating0), \
-                  count(rating1), count(rating2), \
+                ratingArray: [ count(rating1), count(rating2), \
                   count(rating3), count(rating4), \
                   count(rating5)], \
                 id: ID(c),\

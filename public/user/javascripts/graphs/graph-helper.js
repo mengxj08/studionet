@@ -227,6 +227,11 @@ var graph_style = {
               'border-color': '#A3BC05',
             })
 
+          .selector('.permanent-selected')
+            .css({
+              'background-color' : 'yellow',// '#A3BC05',//'#AFAFAF',
+              'border-color': '#A3BC05',
+            })
 
           // selected
           .selector('.marked.highlighted')

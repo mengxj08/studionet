@@ -23,8 +23,8 @@ router.route('/')
       'OPTIONAL MATCH (c:contribution)<-[r1:VIEWED]-(u)',
       'OPTIONAL MATCH (c:contribution)<-[r2:RATED]-(u)',
       'OPTIONAL MATCH (c:contribution)<-[r3:CREATED]-(u)',
-      'RETURN { id: id(u), nickname: u.nickname, name: u.name, avatar: u.avatar,\
-                activityArr: [COUNT(r1),  COUNT(r2), COUNT(r3)],  \
+      'RETURN { id: id(u), nickname: u.nickname, name: u.name, avatar: u.avatar, isAdmin: u.isAdmin,\
+                lastLoggedIn: u.lastLoggedIn, activityArr: [COUNT(r1),  COUNT(r2), COUNT(r3)],  \
                 level: COUNT(r1)*' + weights[0] + ' + COUNT(r2)*' + weights[1] + ' + COUNT(r3)* ' + weights[2] + '}'
     ].join('\n');
 

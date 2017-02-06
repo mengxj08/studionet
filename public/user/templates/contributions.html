@@ -18,11 +18,12 @@
     <!-- reset graph -->
     <div><i class="graph-nav-control icon fa fa-arrows-alt" ng-click='resetGraph()' uib-tooltip='Fit Graph' tooltip-placement='left'></i></div>
 
-
-    
     <div>
-      <!-- <i class="graph-nav-control icon fa fa-database" data-toggle="modal" data-target="#leaderboard" uib-tooltip='Leaderboards' tooltip-placement='left' ng-disabled="true"></i> -->
-      <i class="graph-nav-control icon fa fa-database" uib-tooltip='Leaderboards - Coming Soon' tooltip-placement='left' ng-disabled="true"></i>
+      <i class="graph-nav-control icon fa fa-group" data-toggle="modal" data-target="#userActivityBoard" data-backdrop="static" data-keyboard="false"  uib-tooltip='User Activity' tooltip-placement='left' ng-disabled="true"></i>
+    </div>
+
+    <div>
+      <i class="graph-nav-control icon fa fa-pencil" data-toggle="modal" data-target="#contributionsActivityBoard" data-backdrop="static" data-keyboard="false"  uib-tooltip='Contribution Activity' tooltip-placement='left' ng-disabled="true"></i>
     </div>
 
   </div>
@@ -102,9 +103,9 @@
 <!-- Create Contribution Modal -->
 <ng-include src="'templates/createContributionModal.html'"></ng-include>
 
-<!-- Leaderboard Modal -->
-<ng-include src="'templates/leaderboard.html'" ng-controller='LeaderboardCtrl' ></ng-include>
-
+<!-- Leaderboard Modals -->
+<ng-include src="'templates/userActivityBoard.html'" ng-controller='UserActivityBoardCtrl' ></ng-include>
+<ng-include src="'templates/contributionActivityBoard.html'" ng-controller='ContributionActivityBoardCtrl' ></ng-include>
 
 
 

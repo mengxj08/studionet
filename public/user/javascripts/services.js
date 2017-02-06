@@ -183,17 +183,33 @@ angular.module('studionet')
 	return o;
 }])
 
-.factory('contributions', ['$http', 'profile', function($http, profile){
+.factory('contributions', ['$http', 'supernode', function($http, supernode){
 
 	var o = {
 		contributions: [],
-		graph: {}
 	};
 
 	o.getAll = function(){
 		return $http.get('/api/contributions').success(function(data){
+
+			data = data.filter(function(c){
+				if(c.id == supernode.contribution){
+					console.log("foudn supernode", supernode.contribution);
+					return false;
+				}
+				else
+					return true;
+			})
+
 			angular.copy(data, o.contributions);
-			console.error("If you aren't admin, why are you using this api? :/ ");
+
+			return data;
+		});
+	};
+
+	o.getContribution = function(id){
+		return $http.get('/api/contributions/' + id).success(function(data){
+				angular.copy(data, o.contribution);
 		});
 	};
 
@@ -205,12 +221,6 @@ angular.module('studionet')
 
 	var o = {
 		contribution: {}
-	};
-
-	o.getContribution = function(id){
-		return $http.get('/api/contributions/' + id).success(function(data){
-				angular.copy(data, o.contribution);
-		});
 	};
 
 	o.createContribution = function(new_contribution){
@@ -611,7 +621,7 @@ angular.module('studionet')
 	return o;
 }])
 
-.factory('graph', ['$http', function($http){
+.factory('graph', ['$http', 'contributions', function($http, contributions){
 	
 	var o = {
 		container : {},
@@ -702,6 +712,8 @@ angular.module('studionet')
 
 	o.selectNode = function( node ){
 
+		$('.modal-backdrop').remove();
+
 		// node is either a cytoscape node or an id 
 		if(node.id)
 			o.activeNode = node.id();
@@ -710,6 +722,21 @@ angular.module('studionet')
 
 		if( node.isNode == undefined )
 			node = o.graph.getElementById(node);
+
+		// get extra data for the node if not presetn
+        if(node.data('db_data') == undefined){
+          
+          var data = node.data();
+
+          contributions.getContribution(data.id).then(function(res){
+              node.data( 'db_data', tagCorrectionFn(res.data) );
+              console.log('fetched data');
+          });
+
+        }
+        else{
+          console.log("data already present");
+        }
 
 		o.graph.batch(function(){
 		o.graph.elements()
@@ -727,6 +754,51 @@ angular.module('studionet')
 		                  .addClass('highlighted');
 		});
 
+	}
+
+	o.selectNodePermanent = function(node){
+
+		$('.modal-backdrop').remove();
+
+		// node is either a cytoscape node or an id 
+		if(node.id)
+			o.activeNode = node.id();
+		else
+			o.activeNode = node;
+
+		if( node.isNode == undefined )
+			node = o.graph.getElementById(node);
+
+		// get extra data for the node if not presetn
+        if(node.data('db_data') == undefined){
+          
+          var data = node.data();
+
+          contributions.getContribution(data.id).then(function(res){
+              node.data( 'db_data', tagCorrectionFn(res.data) );
+              console.log('fetched data');
+          });
+
+        }
+        else{
+          console.log("data already present");
+        }
+
+		o.graph.batch(function(){
+		o.graph.elements()
+		  .removeClass('highlighted')
+		  .removeClass('permanent-selected')
+		  .addClass('faded');
+
+		  node.removeClass('faded')
+		      .addClass('permanent-selected');
+		  
+		  node.predecessors().removeClass('faded')
+		                  .addClass('highlighted');
+		  
+		  node.successors().removeClass('faded')  
+		                  .addClass('highlighted');
+		});		
 	}
 
 	o.markNode = function( node ){
@@ -815,4 +887,15 @@ Array.prototype.hash = function(){
 	
 	return hash;
 
+}
+
+// remove from ContributionCtrl
+var tagCorrectionFn = function(data){
+  if( data.tags == null )
+    data.tags = [];
+  
+  if(data.tags != null && data.tags.length == 1 && data.tags[0] == "")
+    data.tags = [];
+
+  return data;
 }

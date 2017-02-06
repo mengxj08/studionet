@@ -1,0 +1,170 @@
+<!-- Profile Modal -->
+<div id='userActivityBoard' class="modal fade" role="dialog">
+  
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+
+        <div class="modal-body">
+
+            <h3>User Activity Board</h3>
+            <h6>The star makers</h6>
+
+            <hr>
+
+            <!-- Highlights -->
+            <div class='modal-section'>
+
+                <div class='row text-center'>
+                    
+                    <!-- maximum creations -->
+                    <div class='col-sm-4'>
+                        <div class='award-name'>Star Maker</div>
+                        <div class='awardee-name'>{{ topCreator.name ? topCreator.nickname : topCreator.name }}</div>
+                        <div class='awardee-details'><img src='{{topCreator.avatar}}' style='width: 30px; height: 30px; border-radius: 50%;'></div>
+                    </div>
+
+                    <!-- maximum ratings -->
+                    <div class='col-sm-4'>
+                        <div class='award-name'>Star Rater</div>
+                        <div class='awardee-name'>{{ topRater.nickname ? topRater.nickname : topRater.name }}</div>
+                        <div class='awardee-details'><img src='{{topRater.avatar}}' style='width: 30px; height: 30px; border-radius: 50%;'></div>
+                    </div>
+
+                    <!-- maximum views -->
+                    <div class='col-sm-4'>
+                        <div class='award-name'>Star Gazer</div>
+                        <div class='awardee-name'>{{ topViewer.nickname ? topViewer.nickname : topViewer.name  }}</div>
+                        <div class='awardee-details'><img src='{{topViewer.avatar}}' style='width: 30px; height: 30px; border-radius: 50%;'></div>
+                    </div>
+
+
+                </div>
+
+
+                <!-- <div class='row text-center'>
+                    
+                    <div class='col-sm-4 pointer'>
+                        <div class='award-name'>Star Maker</div>
+                        <div class='awardee-name'>{{ latest.title }}</div>
+                        <div class='awardee-details'>by {{ users[latest.createdBy].name }}</div>
+                    </div>
+
+                    <div class='col-sm-4 pointer'>
+                        <div class='award-name'>Star Rater</div>
+                        <div class='awardee-name'>{{ highestRating.title }}</div>
+                        <div class='awardee-details'>by {{ users[highestRating.createdBy].name }}</div>
+                    </div>
+
+                    <div class='col-sm-4 pointer'>
+                        <div class='award-name'>Star Gazer</div>
+                        <div class='awardee-name'>{{ mostViewed.title }}</div>
+                        <div class='awardee-details'>by {{ users[highestRating.createdBy].name }}</div>
+                    </div>
+
+                </div> -->
+
+
+            </div>
+
+            <br>
+
+
+            <!--  lists -->
+            <div class='modal-section'>
+
+                    <!-- pagination -->
+                    <ul uib-pagination total-items="users.length" ng-model="currentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" force-ellipses="true" items-per-page='itemsPerPage'></ul>
+
+                    <form>
+                    <div class="form-group">
+                    <div class="input-group">
+                    <div class="input-group-addon"><i class="fa fa-search"></i></div>
+                    <input type="text" class="form-control" placeholder="Search for a user" ng-model="searchUser">
+                    </div>      
+                    </div>
+                    </form>
+
+
+                    <table class="table table-bordered table-striped">
+
+                    <thead>
+                        <tr>
+                        <td class='col-sm-1'>
+                          <a href="#">
+                            #
+                          </a>
+                        </td>
+                        <td class='col-sm-2'>
+                          <a href="#" ng-click="sortType = 'lastLoggedIn'; sortReverse = !sortReverse">
+                            Last Logged in
+                            <span ng-show="sortType == 'dateCreated' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'dateCreated' && sortReverse" class="fa fa-caret-up"></span>
+                          </a>
+                        </td>
+                        <td class='col-sm-1'>
+                          <a href="#" ng-click="sortType = 'name'; sortReverse = !sortReverse">
+                            Name
+                            <span ng-show="sortType == 'name' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'name' && sortReverse" class="fa fa-caret-up"></span>
+                          </a>
+                        </td>
+                        <td class='col-sm-2'>
+                          <a href="#" ng-click="sortType = 'activityArr[2]'; sortReverse = !sortReverse">
+                            Created
+                            <span ng-show="sortType == 'activityArr[2]' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'activityArr[2]' && sortReverse" class="fa fa-caret-up"></span>
+                          </a>
+                        </td>
+                        <td class='col-sm-2'>
+                          <a href="#" ng-click="sortType = 'activityArr[1]'; sortReverse = !sortReverse">
+                            Rated
+                            <span ng-show="sortType == 'activityArr[1]' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'activityArr[1]' && sortReverse" class="fa fa-caret-up"></span>
+                          </a>
+                        </td>
+                        <td class='col-sm-2'>
+                          <a href="#" ng-click="sortType = 'activityArr[0]'; sortReverse = !sortReverse">
+                            Viewed
+                            <span ng-show="sortType == 'activityArr[0]' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'activityArr[0]' && sortReverse" class="fa fa-caret-up"></span>
+                          </a>
+                        </td>
+
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    <tbody>
+                        <tr ng-repeat="user in users | orderBy: [ sortType ]:sortReverse | filter:searchUser" 
+                                ng-show='$index < (currentPage)*itemsPerPage && $index >= (currentPage-1)*itemsPerPage'>
+                            <td class='col-sm-1'>{{ $index + 1 }}</td>
+                            <td class='col-sm-2' ng-if='user.lastLoggedIn > -1'>{{ user.lastLoggedIn | date : 'short'  }}</td>
+                            <td class='col-sm-2' ng-if='!(user.lastLoggedIn > -1)'>--</td>
+                            <td class='col-sm-3'>{{ user.nickname ? user.nickname : user.name }}</td>
+                            <td class='col-sm-2'>{{ user.activityArr[2] }}</td>
+                            <td class='col-sm-2'>{{ user.activityArr[1] }}</td>
+                            <td class='col-sm-2'>{{ user.activityArr[0] }}</td>
+                        </tr>
+                    
+                    </tbody>
+
+                    </table>
+            </div>
+
+            <!-- buttons -->
+            <div class='row text-right modal-section'>
+                <button type="button" ng-click='close();' class="btn btn-default modal-button" data-dismiss='modal'>Close</button>
+            </div>
+
+        </div>
+
+    </div>
+
+
+  </div>
+
+</div>
+
+
