@@ -673,44 +673,6 @@ angular.module('studionet')
 		spinner.spin(container);
 		return $http.get(o.url).success(function(data){
 
-			console.log("got graph data", new Date());
-			
-		    /*var nodes = [];
-		    var links = [];
-
-			data.forEach(function(row){
-			      // for each graph
-
-			      row.graph.nodes.forEach(function(n) {
-			      	n.type = n.labels[0];
-			      	n.name = setName(n);
-			        if (idIndex(nodes, n.id) == null)
-			            nodes.push({
-			                id: n.id,
-			                type: n.labels[0],
-			                name: setName(n),
-			                onSpiral: -1,
-			                rating: n.properties.rating, 
-			                createdBy: n.properties.createdBy
-			            });
-			      });
-
-			      links = links.concat(row.graph.relationships.map(function(r) {
-			          return {
-			              source: idIndex(nodes, r.startNode).id,   // should not be a case where start or end is null.
-			              target: idIndex(nodes, r.endNode).id,
-			              name: r.type,
-			              properties: r.properties
-			          };
-			      }));
-
-			});
-
-			var graph_data = {
-		      nodes: nodes, 
-		      links: links
-		    }*/
-
 			// copy data
 			angular.copy(data, o.graph_data);
 

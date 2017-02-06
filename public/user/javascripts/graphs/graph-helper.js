@@ -371,6 +371,8 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
 
   graph.reset();
 
+  spinner.stop();
+
   var sortFn = function (ele1, ele2) {
 
       if( ele1.incomers().length == ele2.incomers().length )

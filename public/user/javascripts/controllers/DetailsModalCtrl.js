@@ -332,8 +332,13 @@ angular.module('studionet')
 
         // -----------------Function - Author Profile
         $scope.authorMode = false; 
+        
         $scope.showAuthorModal = function(){
           $scope.authorMode = true;
+        }
+
+        $scope.hideAuthorModal = function(){
+          $scope.authorMode = false;
         }
 
 

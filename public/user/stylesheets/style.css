@@ -427,8 +427,6 @@ html {
 
 .modal-dialog{
   padding: 0px !important;
-  //height: 100%;
-  /*height: 500px;*/
   margin-top: 15px;
   margin-bottom: 15px;
 }
@@ -487,7 +485,7 @@ h4.modal-title{
 .modal-body{
     height: 100%;
     max-height: calc(100% - 105px);
-    padding: 15px !important;
+    padding: 30px !important;
     background-color: #F0F0F0;
     overflow-y: auto !important;
 }
@@ -504,8 +502,4 @@ h4.modal-title{
 
 .modal-section{
   margin-top: 15px;
-}
-
-.modal-editor{
-	padding: 15px;
 }
