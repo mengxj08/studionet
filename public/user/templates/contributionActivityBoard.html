@@ -22,21 +22,21 @@
                     <div class='col-sm-4 pointer' ng-click='goToNode(latest.id)' data-dismiss='modal'>
                         <div class='award-name'>Latest</div>
                         <div class='awardee-name'>{{ latest.title }}</div>
-                        <div class='awardee-details'>by {{ users[latest.createdBy].name }}</div>
+                        <div class='awardee-details'>by {{ users[latest.createdBy].nickname ? users[latest.createdBy].nickname : users[latest.createdBy].name }}</div>
                     </div>
 
                     <!-- highest rating -->
                     <div class='col-sm-4 pointer' ng-click='goToNode(highestRating.id)' data-dismiss='modal'>
                         <div class='award-name'>Highest Rating</div>
                         <div class='awardee-name'>{{ highestRating.title }}</div>
-                        <div class='awardee-details'>by {{ users[highestRating.createdBy].name }}</div>
+                        <div class='awardee-details'>by {{ users[highestRating.createdBy].nickname ? users[highestRating.createdBy].nickname : users[highestRating.createdBy].name }}</div>
                     </div>
 
                     <!-- most viewed -->
                     <div class='col-sm-4 pointer' ng-click='goToNode(mostViewed.id)' data-dismiss='modal'>
                         <div class='award-name'>Most Viewed</div>
                         <div class='awardee-name'>{{ mostViewed.title }}</div>
-                        <div class='awardee-details'>by {{ users[mostViewed.createdBy].name }}</div>
+                        <div class='awardee-details'>by {{ users[mostViewed.createdBy].nickname ? users[mostViewed.createdBy].nickname : users[mostViewed.createdBy].name }}</div>
                     </div>
 
                 </div>

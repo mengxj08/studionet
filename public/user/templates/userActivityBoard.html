@@ -99,8 +99,8 @@
                         <td class='col-sm-2'>
                           <a href="#" ng-click="sortType = 'lastLoggedIn'; sortReverse = !sortReverse">
                             Last Logged in
-                            <span ng-show="sortType == 'dateCreated' && !sortReverse" class="fa fa-caret-down"></span>
-                            <span ng-show="sortType == 'dateCreated' && sortReverse" class="fa fa-caret-up"></span>
+                            <span ng-show="sortType == 'lastLoggedIn' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'lastLoggedIn' && sortReverse" class="fa fa-caret-up"></span>
                           </a>
                         </td>
                         <td class='col-sm-1'>
@@ -137,7 +137,7 @@
 
                     <tbody>
                     <tbody>
-                        <tr ng-repeat="user in users | orderBy: [ sortType ]:sortReverse | filter:searchUser" 
+                        <tr ng-repeat="user in users | orderBy: [ sortType, 'lastLoggedIn' ]:sortReverse | filter:searchUser" 
                                 ng-show='$index < (currentPage)*itemsPerPage && $index >= (currentPage-1)*itemsPerPage'>
                             <td class='col-sm-1'>{{ $index + 1 }}</td>
                             <td class='col-sm-2' ng-if='user.lastLoggedIn > -1'>{{ user.lastLoggedIn | date : 'short'  }}</td>
