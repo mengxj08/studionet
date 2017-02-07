@@ -19,7 +19,7 @@ angular.module('studionet')
 	})
 
 	//----- Pagination
-	$scope.itemsPerPage = 5;
+	$scope.itemsPerPage = 15;
 	$scope.maxSize = 5; 
 	$scope.currentPage = 1; 
 

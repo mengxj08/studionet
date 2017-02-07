@@ -8,8 +8,8 @@
 
         <div class="modal-body">
 
-        	<h3>Contributions Activity Board</h3>
-        	<h6>The shining stars</h6>
+        	<h3>Node Activity Board</h3>
+        	<h6>The shining nodes</h6>
 
             <hr>
 
@@ -19,21 +19,21 @@
                 <div class='row text-center'>
                     
                     <!-- latest -->
-                    <div class='col-sm-4 pointer' ng-click='goToNode(latest.id)' data-dismiss='modal'>
+                    <div class='col-sm-4 pointer award-box' ng-click='goToNode(latest.id)' data-dismiss='modal'>
                         <div class='award-name'>Latest</div>
                         <div class='awardee-name'>{{ latest.title }}</div>
                         <div class='awardee-details'>by {{ users[latest.createdBy].nickname ? users[latest.createdBy].nickname : users[latest.createdBy].name }}</div>
                     </div>
 
                     <!-- highest rating -->
-                    <div class='col-sm-4 pointer' ng-click='goToNode(highestRating.id)' data-dismiss='modal'>
+                    <div class='col-sm-4 pointer award-box' ng-click='goToNode(highestRating.id)' data-dismiss='modal'>
                         <div class='award-name'>Highest Rating</div>
                         <div class='awardee-name'>{{ highestRating.title }}</div>
                         <div class='awardee-details'>by {{ users[highestRating.createdBy].nickname ? users[highestRating.createdBy].nickname : users[highestRating.createdBy].name }}</div>
                     </div>
 
                     <!-- most viewed -->
-                    <div class='col-sm-4 pointer' ng-click='goToNode(mostViewed.id)' data-dismiss='modal'>
+                    <div class='col-sm-4 pointer award-box' ng-click='goToNode(mostViewed.id)' data-dismiss='modal'>
                         <div class='award-name'>Most Viewed</div>
                         <div class='awardee-name'>{{ mostViewed.title }}</div>
                         <div class='awardee-details'>by {{ users[mostViewed.createdBy].nickname ? users[mostViewed.createdBy].nickname : users[mostViewed.createdBy].name }}</div>
@@ -49,8 +49,7 @@
             <!--  lists -->
             <div class='modal-section'>
 
-                    <!-- pagination -->
-                    <ul uib-pagination total-items="contributions.length" ng-model="currentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" force-ellipses="true" items-per-page='itemsPerPage'></ul>
+
 
                     <form>
                     <div class="form-group">
@@ -92,14 +91,14 @@
                         </td>
                         <td class='col-sm-1'>
                           <a href="#" ng-click="sortType = 'rateCount'; sortReverse = !sortReverse">
-                            Number of Ratings
+                            # of Ratings
                             <span ng-show="sortType == 'rateCount' && !sortReverse" class="fa fa-caret-down"></span>
                             <span ng-show="sortType == 'rateCount' && sortReverse" class="fa fa-caret-up"></span>
                           </a>
                         </td>
                         <td class='col-sm-1'>
                           <a href="#" ng-click="sortType = 'rating'; sortReverse = !sortReverse">
-                            Average Rating
+                            Avg. Rating
                             <span ng-show="sortType == 'rating' && !sortReverse" class="fa fa-caret-down"></span>
                             <span ng-show="sortType == 'rating' && sortReverse" class="fa fa-caret-up"></span>
                           </a>
@@ -108,20 +107,23 @@
                         </tr>
                     </thead>
 
-                    <tbody>
-                        <tr ng-repeat="contribution in contributions | orderBy:sortType:sortReverse | filter:searchContribution" 
+                    <tbody> 
+                        <tr ng-repeat="contribution in contributions | orderBy:sortType:sortReverse | filter:searchContribution as filtered" 
                                 ng-show='$index < (currentPage)*itemsPerPage && $index >= (currentPage-1)*itemsPerPage'>
                             <td class='col-sm-1'>{{ $index + 1 }}</td>
-                            <td class='col-sm-2'>{{ contribution.dateCreated | date : 'medium' }}</td>
-                            <td class='col-sm-4 pointer' ng-click='goToNode(contribution.id)' data-dismiss='modal'>{{ contribution.title }}</td>
+                            <td class='col-sm-3'>{{ contribution.dateCreated | date : 'short' }}</td>
+                            <td class='col-sm-5 pointer' ng-click='goToNode(contribution.id)' data-dismiss='modal'>{{ contribution.title }}</td>
                             <td class='col-sm-1'>{{ contribution.views }}</td>
-                            <td class='col-sm-2'>{{ contribution.rateCount }}</td>
-                            <td class='col-sm-2'>{{ contribution.rating.toFixed(2) }}</td>
+                            <td class='col-sm-1'>{{ contribution.rateCount }}</td>
+                            <td class='col-sm-1'>{{ contribution.rating.toFixed(2) }}</td>
                         </tr>
                     
                     </tbody>
 
                     </table>
+
+                    <!-- pagination -->
+                    <ul uib-pagination total-items="filtered.length" ng-model="currentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" force-ellipses="true" items-per-page='itemsPerPage'></ul>
             </div>
 
             <!-- buttons -->

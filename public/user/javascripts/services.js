@@ -194,7 +194,6 @@ angular.module('studionet')
 
 			data = data.filter(function(c){
 				if(c.id == supernode.contribution){
-					console.log("foudn supernode", supernode.contribution);
 					return false;
 				}
 				else

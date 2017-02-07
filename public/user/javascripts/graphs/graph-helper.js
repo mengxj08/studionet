@@ -333,13 +333,13 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
     var edges = data.links.map( function(edge){ return createGraphEdge(edge) } );
     
     //console.log(edges.length, "before sorting");
-   /* edges = edges.filter(function(edge){
+    /*edges = edges.filter(function(edge){
         if(edge.data.properties.createdBy == undefined)
           return true; 
         else 
           return false;
-    });*/
-
+    });
+*/
 
     graph_style.elements = {
         nodes: nodes,
@@ -372,7 +372,7 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
 
 // number of incomers above which the node is placed on the spiral
 // always double of number of incoming nodes required
-STUDIONET.GRAPH.draw_graph = function(graph, threshold){
+STUDIONET.GRAPH.draw_graph = function(graph, threshold, supernodeId){
 
   graph.reset();
 
@@ -386,19 +386,17 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
         return ( ele1.incomers().length > ele2.incomers().length ? -1 : 1);
   }
 
-  console.log("in draw_graph", new Date());
 
   // Sort the nodes first
   var sortedNodes = graph.nodes().sort( sortFn );
 
-  console.log("Nodes sorted", new Date());
 
   // Extract nodes which will be on the spiral, including all children
   var spiralNodes = sortedNodes.filter(function(i, node){
 
       // this node will go on the spiral
       // hence all its parents should be marked
-      if(node.incomers().length >= threshold && node.id() != 5){
+      if(node.incomers().length >= threshold && node.id() != supernodeId){
         
             // mark the node to be on the spiral
             node.data('onSpiral', node.id() );
@@ -409,7 +407,6 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
 
               if( child.data('onSpiral') == -1 ){
                 child.data('onSpiral', node.id() );
-                inc++;
               }
 
             });
@@ -428,27 +425,32 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
             
         return false;
       }
-      
+
+
   });
 
-  console.log("Original Spiral Nodes added", new Date());
 
   // add additional ones which are isolated
   function isIsolated(nodeIndex){
 
-      var node = graph.nodes()[nodeIndex];
+      var node = sortedNodes[nodeIndex];
 
       if(node.data('onSpiral') == -1){
 
           // add node to spiral
           spiralNodes = spiralNodes.add(node);
-        
+          node.data('onSpiral', node.id());
+   
           // mark nodes predessors
-          node.incomers().nodes().map(function(child){
-                if( child.data('onSpiral') == -1 ){
-                  child.data('onSpiral', node.id() );
-                }
-          });
+          for(var i=0; i < node.incomers().length; i++){
+
+              var child = node.incomers()[i];
+              if( child.data('onSpiral') == -1 ){
+                child.data('onSpiral', node.id() );
+              }
+
+          } 
+          
       }
 
       if(nodeIndex+1 < graph.nodes().length)
@@ -457,14 +459,7 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
   }
   isIsolated(0);
 
-  console.log("Isolated Node added", new Date());
-
-
-
-  //spiralNodes = spiralNodes.add( graph.nodes("[onSpiral=-1]") );
-  //console.log("Spiral nodes after addition", spiralNodes.length);
-
-  var spiralNodes = spiralNodes.sort( sortFn );
+  spiralNodes = spiralNodes.sort( sortFn );
 
   var angle = 2 * Math.PI / spiralNodes.length;
   var radius = 0.5*window.innerWidth;
@@ -501,7 +496,7 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold){
 
                 // find the children
                 var condition = "[onSpiral=\'" + node.id() + "\']";
-                var nodes = node.incomers().nodes(condition);
+                var nodes = node.incomers().nodes(condition); 
 
                 var position = node.position(); 
 
@@ -586,7 +581,7 @@ var makeSubSpiral = function(nodes, centerX, centerY, minimumRadius){
           { position : {x: x, y: y }  
           }, 
           { 
-            duration: 500 
+            duration: 400 
           } 
       );
     }

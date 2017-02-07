@@ -219,7 +219,7 @@ angular.module('studionet')
 
       // redraw graph
       var threshold = 20; 
-      STUDIONET.GRAPH.draw_graph($scope.graph, threshold);
+      STUDIONET.GRAPH.draw_graph($scope.graph, threshold, supernode.contribution);
     
       // Display the entire node name
       $scope.graph.on('mouseover', 'node', function(evt){
