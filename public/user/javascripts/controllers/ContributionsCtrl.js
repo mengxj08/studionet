@@ -4,6 +4,7 @@ var BROADCAST_FILTER_ACTIVE = "filter-started";
 var BROADCAST_CLEAR_FILTER = "filter-cleared";
 var BROADCAST_CLEAR_ALL_FILTERS = "filter-clear-all";
 var BROADCAST_CONTRIBUTION_CLICKED = "contribution-clicked";
+var BROADCAST_VIEWMODE_OFF = "contribution-viewer-closed";
 
 var BROADCAST_MESSAGE = "message-sent";
 
@@ -108,7 +109,9 @@ angular.module('studionet')
 
   // ----------------- Graphs
   // First Initialization of the graph on page-refresh
-  $scope.graphInit = function(){  graph.getGraph(angular.element('#cy')[0]);  }
+  $scope.graphInit = function(){  
+    graph.getGraph(angular.element('#cy')[0]);  
+  }
 
 
   // Highlight any state params
@@ -118,7 +121,7 @@ angular.module('studionet')
       if($stateParams.contributionId && $scope.graph.getElementById( $stateParams.contributionId ) ){
 
         var node = $scope.graph.getElementById( $stateParams.contributionId)
-        graph.selectNode( node );
+        graph.selectNodePermanent( node );
 
         // fit the graph
         $scope.graph.fit( '#' + node.id() )
@@ -134,10 +137,10 @@ angular.module('studionet')
 
       var qtipFormat = STUDIONET.GRAPH.qtipFormat(evt);
 
-      var auth = users.getUser(node.data('createdBy'));
+      var auth = users.getUser( node.data('createdBy'), false );
       
       qtipFormat.id = "qTip-" +  node.id();
-      qtipFormat.content.text =  node.data('name') + "<br>- " + (auth.nickname.length ? auth.nickname : auth.name)
+      qtipFormat.content.text =  node.data('name') + "<br>- " + ( (auth.nickname !=null && auth.nickname.length) ? auth.nickname : auth.name)
 
       node.qtip(qtipFormat, evt);  
   
@@ -154,37 +157,20 @@ angular.module('studionet')
   // Interaction on Single Click
   var onNodeSingleClick = function(evt, dbl){
 
-        showQTip(evt);
-
         var node = evt.cyTarget;
+
+        showQTip(evt);
         
         // select the node and highlight connections
         graph.selectNode(node);
-        
-        // preview
-        if(node.data('db_data') == undefined){
-          
-          //console.log("Constructing new qtip");
 
-          var data = node.data();
-
-          contribution.getContribution(data.id).then(function(res){
-              
-
-              node.data( 'db_data', tagCorrectionFn(res.data) );
-
-              if(dbl)
-                onNodeDoubleClick(evt);
-          });
-
-        }
-        else{
-          console.log("data already present");
-        }        
+               
   }
 
   // Graph Interaction for Double Click
   var onNodeDoubleClick = function(evt){
+
+        console.log("Double click");
 
         var node = evt.cyTarget;
 
@@ -198,11 +184,22 @@ angular.module('studionet')
         // if data is already defined, donot load again - directly show modal
         // db_data stores additional-data from the server
         if(node.data('db_data')){
-          showDetailsModal( nodeTree, node.id() );
+
+          if($scope.viewMode == false)
+            showDetailsModal( nodeTree, node.id() );
+          else
+            console.warn("Modal already showing");
+
         }
         else{
           console.warn("Data not defined for selected node;");
-          onNodeSingleClick(evt, true);
+
+          // check again after 400ms
+          setTimeout(function(){
+            if(node.data('db_data') !== undefined)
+              showDetailsModal( nodeTree, node.id() );
+          }, 400);
+          
         }
   }
 
@@ -211,6 +208,10 @@ angular.module('studionet')
   // Add graph interactions
   var addGraphInteractions = function(){
 
+      // remove all listeners first 
+      $scope.graph.off("tap");
+      $scope.graph.off("mouseover");
+
       // ---- Reattach interactions to the graph
 
       // remove supernode
@@ -218,7 +219,7 @@ angular.module('studionet')
 
       // redraw graph
       var threshold = 20; 
-      STUDIONET.GRAPH.draw_graph($scope.graph, threshold);
+      STUDIONET.GRAPH.draw_graph($scope.graph, threshold, supernode.contribution);
     
       // Display the entire node name
       $scope.graph.on('mouseover', 'node', function(evt){
@@ -231,10 +232,14 @@ angular.module('studionet')
         else if( !( (evt.cyTarget.isNode && evt.cyTarget.isNode()) ) ){
             graph.removeAdditionalStyles();
         }
-        else if( evt.cyTarget.isNode && evt.cyTarget.id() == graph.activeNode )
+        else if( evt.cyTarget.isNode && evt.cyTarget.id() == graph.activeNode ){
+            console.log(graph.activeNode);
             onNodeDoubleClick(evt);
-        else if( evt.cyTarget.isNode() )
+        }
+        else if( evt.cyTarget.isNode() ){
+            console.log("single click");
             onNodeSingleClick(evt);
+        }
         else
           console.warn("Undefined Interaction");
       });
@@ -248,7 +253,6 @@ angular.module('studionet')
       highlightStateParams();
       addGraphInteractions();
 
-      console.log("Graph Updated");
   };
   graph.registerObserverCallback(updateGraph);
 
@@ -300,7 +304,13 @@ angular.module('studionet')
 
   }
 
+  $scope.viewMode = false;
+  $scope.$on( BROADCAST_VIEWMODE_OFF, function(event, args) {
+    $scope.viewMode = false;
+  });
   var showDetailsModal = function(data, clickedContributionId) {
+
+      $scope.viewMode = true;
 
       // show the details modal
       ModalService.showModal({

@@ -75,3 +75,7 @@ module.exports.relationships = [
 
 
 ]
+
+
+// viewing, rating, creating
+module.exports.activityWeights = [ 0.05, 0.1, 0.5 ]

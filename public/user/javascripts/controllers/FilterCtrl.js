@@ -140,13 +140,18 @@ angular.module('studionet')
 
       var populateUsers = function(){
 
-          return users.users.filter(function(user){
+          // potential errors?
+          var user_list = JSON.parse(JSON.stringify(users.users));
 
-              if(user.contributionCount){
-                user.note = "( Nodes: " + user.contributionCount + " )";
+          return user_list.filter(function(user){
+
+              if(user.activityArr[2]){
+                user.note = "( Nodes: " + user.activityArr[2] + " )";
 
                 if (user.type != undefined)
                     return user;
+
+                user.name = (user.nickname ? user.nickname : user.name);
 
                 user.type = "user";
                 user.parentId = null; 

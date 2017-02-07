@@ -25,9 +25,6 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 				groupsPromise: ['groups', function(groups){
 					return groups.getAll() && groups.getGraph();
 				}],
-				/*contributionsPromise: ['contributions', function(contributions){
-					return contributions.getAll();
-				}],*/
 				usersPromise: ['users', function(users){ 
 					return users.getAll();
 				}],
@@ -35,7 +32,7 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 					return relationships.getAll();
 				}],
 				userProfile: ['profile', function(profile){
-					return profile.getUser();
+					return profile.getUser() && profile.getActivity();
 				}]
 			}
 		})
@@ -59,8 +56,11 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 				usersPromise: ['users', function(users){ 
 					return users.getAll();
 				}],
+				relationshipsPromise: ['relationships', function(relationships){ 
+					return relationships.getAll();
+				}],
 				userProfile: ['profile', function(profile){
-					return profile.getUser();
+					return profile.getUser() && profile.getActivity();
 				}]
 			}
 		})

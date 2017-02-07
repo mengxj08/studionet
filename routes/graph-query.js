@@ -50,9 +50,6 @@ var graphQuery = function (query, callback){
     
     var headers = result.headers;
     var statusCode = result.statusCode;
-    //inspect(headers, 'headers')
-    //inspect(statusCode, 'statusCode')
-    //inspect(body, 'body')
     var nodes = [], links = [];
 
     var data = body.results[0].data;
@@ -85,10 +82,12 @@ var graphQuery = function (query, callback){
 
     });
 
+
+    
     callback({
       nodes: nodes, 
       links: links
-    });
+    }); 
 
   });
 

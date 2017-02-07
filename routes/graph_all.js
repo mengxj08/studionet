@@ -19,6 +19,7 @@ router.route('/')
 			'RETURN p'
 		].join('\n');
 
+
 		graphQuery(query, function(data){
 			res.send(data);
 		});

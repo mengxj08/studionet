@@ -1,0 +1,143 @@
+<!-- Profile Modal -->
+<div id='contributionsActivityBoard' class="modal fade" role="dialog">
+  
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+
+        <div class="modal-body">
+
+        	<h3>Node Activity Board</h3>
+        	<h6>The shining nodes</h6>
+
+            <hr>
+
+            <!-- Highlights -->
+            <div class='modal-section'>
+
+                <div class='row text-center'>
+                    
+                    <!-- latest -->
+                    <div class='col-sm-4 pointer award-box' ng-click='goToNode(latest.id)' data-dismiss='modal'>
+                        <div class='award-name'>Latest</div>
+                        <div class='awardee-name'>{{ latest.title }}</div>
+                        <div class='awardee-details'>by {{ users[latest.createdBy].nickname ? users[latest.createdBy].nickname : users[latest.createdBy].name }}</div>
+                    </div>
+
+                    <!-- highest rating -->
+                    <div class='col-sm-4 pointer award-box' ng-click='goToNode(highestRating.id)' data-dismiss='modal'>
+                        <div class='award-name'>Highest Rating</div>
+                        <div class='awardee-name'>{{ highestRating.title }}</div>
+                        <div class='awardee-details'>by {{ users[highestRating.createdBy].nickname ? users[highestRating.createdBy].nickname : users[highestRating.createdBy].name }}</div>
+                    </div>
+
+                    <!-- most viewed -->
+                    <div class='col-sm-4 pointer award-box' ng-click='goToNode(mostViewed.id)' data-dismiss='modal'>
+                        <div class='award-name'>Most Viewed</div>
+                        <div class='awardee-name'>{{ mostViewed.title }}</div>
+                        <div class='awardee-details'>by {{ users[mostViewed.createdBy].nickname ? users[mostViewed.createdBy].nickname : users[mostViewed.createdBy].name }}</div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <br>
+
+
+            <!--  lists -->
+            <div class='modal-section'>
+
+
+
+                    <form>
+                    <div class="form-group">
+                    <div class="input-group">
+                    <div class="input-group-addon"><i class="fa fa-search"></i></div>
+                    <input type="text" class="form-control" placeholder="Search for a node" ng-model="searchContribution">
+                    </div>      
+                    </div>
+                    </form>
+
+
+                    <table class="table table-bordered table-striped">
+
+                    <thead>
+                        <tr>
+                        <td class='col-sm-1'>
+                            #
+                        </td>
+                        <td class='col-sm-3'>
+                          <a href="#" ng-click="sortType = 'dateCreated'; sortReverse = !sortReverse">
+                            Date Created 
+                            <span ng-show="sortType == 'dateCreated' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'dateCreated' && sortReverse" class="fa fa-caret-up"></span>
+                          </a>
+                        </td>
+                        <td class='col-sm-5'>
+                          <a href="#" ng-click="sortType = 'title'; sortReverse = !sortReverse">
+                            Title
+                            <span ng-show="sortType == 'title' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'title' && sortReverse" class="fa fa-caret-up"></span>
+                          </a>
+                        </td>
+                        <td class='col-sm-1'>
+                          <a href="#" ng-click="sortType = 'views'; sortReverse = !sortReverse">
+                            Views
+                            <span ng-show="sortType == 'views' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'views' && sortReverse" class="fa fa-caret-up"></span>
+                          </a>
+                        </td>
+                        <td class='col-sm-1'>
+                          <a href="#" ng-click="sortType = 'rateCount'; sortReverse = !sortReverse">
+                            # of Ratings
+                            <span ng-show="sortType == 'rateCount' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'rateCount' && sortReverse" class="fa fa-caret-up"></span>
+                          </a>
+                        </td>
+                        <td class='col-sm-1'>
+                          <a href="#" ng-click="sortType = 'rating'; sortReverse = !sortReverse">
+                            Avg. Rating
+                            <span ng-show="sortType == 'rating' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'rating' && sortReverse" class="fa fa-caret-up"></span>
+                          </a>
+                        </td>
+
+                        </tr>
+                    </thead>
+
+                    <tbody> 
+                        <tr ng-repeat="contribution in contributions | orderBy:sortType:sortReverse | filter:searchContribution as filtered" 
+                                ng-show='$index < (currentPage)*itemsPerPage && $index >= (currentPage-1)*itemsPerPage'>
+                            <td class='col-sm-1'>{{ $index + 1 }}</td>
+                            <td class='col-sm-3'>{{ contribution.dateCreated | date : 'short' }}</td>
+                            <td class='col-sm-5 pointer' ng-click='goToNode(contribution.id)' data-dismiss='modal'>{{ contribution.title }}</td>
+                            <td class='col-sm-1'>{{ contribution.views }}</td>
+                            <td class='col-sm-1'>{{ contribution.rateCount }}</td>
+                            <td class='col-sm-1'>{{ contribution.rating.toFixed(2) }}</td>
+                        </tr>
+                    
+                    </tbody>
+
+                    </table>
+
+                    <!-- pagination -->
+                    <ul uib-pagination total-items="filtered.length" ng-model="currentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" force-ellipses="true" items-per-page='itemsPerPage'></ul>
+            </div>
+
+            <!-- buttons -->
+            <div class='row text-right modal-section'>
+                <button type="button" ng-click='close();' class="btn btn-default modal-button" data-dismiss='modal'>Close</button>
+            </div>
+              
+
+        </div>
+
+    </div>
+
+
+  </div>
+
+</div>
+

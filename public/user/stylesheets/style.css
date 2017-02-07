@@ -64,9 +64,9 @@ p{
 	margin:0px !important;
 }
 
-img{
+/*img{
 	width: 300px;
-}
+}*/
 
 .container-fluid{
 	//border: 1px solid black;
@@ -270,9 +270,6 @@ li.notification{
 	border-radius: 0px !important;
 }
 
-#cy{
-	background-color: #000623;
-}
 
 .navbar .navbar-collapse .navbar-nav.navbar-mobile .navbar-brand .highlight{
 	background-color: #264E7D;
@@ -430,8 +427,6 @@ html {
 
 .modal-dialog{
   padding: 0px !important;
-  //height: 100%;
-  /*height: 500px;*/
   margin-top: 15px;
   margin-bottom: 15px;
 }
@@ -490,25 +485,91 @@ h4.modal-title{
 .modal-body{
     height: 100%;
     max-height: calc(100% - 105px);
-    padding: 0px !important;
+    padding: 30px !important;
     background-color: #F0F0F0;
     overflow-y: auto !important;
 }
 
 .modal-button{
-  margin: 15px 10px 0px 10px !important;
-  min-width: 80px;
-  height: 100% !important;
-  font-size: 15px;
-  font-family: 'Roboto Condensed', sans-serif;
-  padding: 0px; 
-  line-height: 40px; 
+	margin: 15px 10px 0px 10px !important;
+	min-width: 80px;
+	height: 100% !important;
+	font-size: 15px;
+	font-family: 'Roboto Condensed', sans-serif;
+	padding: 0px; 
+	line-height: 40px; 
 }
 
 .modal-section{
-  margin-top: 15px;
+	margin-top: 15px;
 }
 
-.modal-editor{
-	padding: 15px;
+.award-box{
+	border: 1px solid rgba(0, 0, 0, 0.26);
+}
+
+.award-name{
+	text-transform: uppercase;
+	font-weight: 400;
+	color: #777;
+	font-size: 12px;
+	margin: 10px 0px;
+}
+
+.awardee-name{
+	color: #777; 
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.awardee-details{
+	font-size: 11px;
+	font-weight: 300;
+	margin: 10px 0px;
+}
+
+.awardee-picture{
+	height: 100% !important;
+}
+
+.awardee-profile-picture{
+	position: relative;
+	border-radius: 50%;
+	max-height: 50px;
+	max-width: 100%;
+}
+
+
+/*
+ * Tables CSS
+ */
+table.table > tbody > tr td, table.table > tbody > tr th, table.table > thead > tr td, table.table > thead > tr th{
+    padding: 2px 5px !important;
+}
+.table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td{
+    vertical-align: middle;
+}
+table.table > tbody > tr td, table.table > tbody > tr th, table.table > thead > tr td, table.table > thead > tr th{
+    font-size: 12px;
+}
+.table > caption + thead > tr:first-child > th, .table > colgroup + thead > tr:first-child > th, .table > thead:first-child > tr:first-child > th, .table > caption + thead > tr:first-child > td, .table > colgroup + thead > tr:first-child > td, .table > thead:first-child > tr:first-child > td{
+    max-width: 100px;
+}
+
+tbody{
+	max-height: 500px;
+	overflow-y: auto;
+}
+
+/*
+ * Pagination
+ */
+.pagination > li.active > a, .pagination > li.active > span{
+	border-bottom: 2px solid #b9b9b9;
+	background-color: #b6b6b6;
+}
+
+.pagination > li.active > a:hover, .pagination > li.active > a:focus, .pagination > li.active > span:hover, .pagination > li.active > span:focus{
+	border-bottom: 2px solid #b9b9b9;
+	background-color: #3B3B36;
 }

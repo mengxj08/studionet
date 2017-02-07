@@ -20,7 +20,7 @@ angular.module('studionet')
 	var o ={
 		user: {},
 		groups: [],
-		contributions: [],
+		activity: [],
 		groupsById: {},
 
 	};
@@ -57,7 +57,7 @@ angular.module('studionet')
 
 	o.getActivity = function(){
 		return $http.get('/api/profile/activity').success(function(data){
-			angular.copy(data, o.contributions);
+			angular.copy(data[0], o.activity);
 		});
 	};
 
@@ -108,12 +108,39 @@ angular.module('studionet')
 		});
 	};
 
-	o.getUser = function(user_id){
-
+	// get user from the hash and trigger data request for additional info about the user from the server
+	o.getUser = function(user_id, fromDB){
+		
 		var user = o.usersHash[user_id];
-		if(user.nickname == null || user.nickname == undefined)
-			user.nickname = "";
-		return user;
+
+		// trigger for user data
+		if(fromDB){
+
+			var url = '/api/users/' + user_id;
+			
+			return $http.get(url).then(function(res){
+				
+				if(res.status == 200){
+					var data = res.data;
+					var user = o.usersHash[data.id];
+
+					for(prop in data){
+						if(data.hasOwnProperty(prop)){
+							user[prop] = data[prop];
+						}
+					}		
+
+					return res;
+
+				}
+				else{
+					console.log("Error fetching user data");
+				}
+			});
+		
+		}
+		else
+			return user;
 	}
 
 	o.setUser = function(user_data){
@@ -156,17 +183,32 @@ angular.module('studionet')
 	return o;
 }])
 
-.factory('contributions', ['$http', 'profile', function($http, profile){
+.factory('contributions', ['$http', 'supernode', function($http, supernode){
 
 	var o = {
 		contributions: [],
-		graph: {}
 	};
 
 	o.getAll = function(){
 		return $http.get('/api/contributions').success(function(data){
+
+			data = data.filter(function(c){
+				if(c.id == supernode.contribution){
+					return false;
+				}
+				else
+					return true;
+			})
+
 			angular.copy(data, o.contributions);
-			console.error("If you aren't admin, why are you using this api? :/ ");
+
+			return data;
+		});
+	};
+
+	o.getContribution = function(id){
+		return $http.get('/api/contributions/' + id).success(function(data){
+				angular.copy(data, o.contribution);
 		});
 	};
 
@@ -178,12 +220,6 @@ angular.module('studionet')
 
 	var o = {
 		contribution: {}
-	};
-
-	o.getContribution = function(id){
-		return $http.get('/api/contributions/' + id).success(function(data){
-				angular.copy(data, o.contribution);
-		});
 	};
 
 	o.createContribution = function(new_contribution){
@@ -346,12 +382,14 @@ angular.module('studionet')
 	};
 
 	o.getGraph = function(user_context){
-		return $http.get('/graph/all/groups').success(function(data){
+    	
+		/*return $http.get('/graph/all/groups').success(function(data){
 			// replace the nodes with the groups that already hold data about the user status in each group
+			
 			data.nodes = o.groups;
 			// copy data
 			angular.copy(data, o.graph);
-		});
+		});*/
 	};
 
 	o.createNewGroup = function(group){
@@ -582,7 +620,7 @@ angular.module('studionet')
 	return o;
 }])
 
-.factory('graph', ['$http', function($http){
+.factory('graph', ['$http', 'contributions', function($http, contributions){
 	
 	var o = {
 		container : {},
@@ -609,6 +647,9 @@ angular.module('studionet')
 	// make the graph
 	var makeGraph = function( container ){
 
+		console.log("Making graph", new Date());
+
+
 		// takes either data from filters or contribution.graph data
 		o.graph = STUDIONET.GRAPH.makeGraph( o.graph_data, container ); // defaults to cy
 
@@ -620,15 +661,29 @@ angular.module('studionet')
 	// get the graph from the URL
 	o.getGraph = function( container ){
 
+		var idIndex = function (a, id){
+		  for (var i = 0; i < a.length ; i++) {
+		    if (a[i].id === id) {
+		      return a[i];
+		    }
+		  }
+		  return null;
+		}
+
+		var setName = function (n) {
+		    if (n.labels[0] === "contribution") {
+		        return n.properties.title;
+		    } else {
+		        return n.properties.name;
+		    }
+		}
+
 		o.container = container;
-
+		spinner.spin(container);
 		return $http.get(o.url).success(function(data){
-
-			filterUrl = "";
 
 			// copy data
 			angular.copy(data, o.graph_data);
-			//console.log("Graph Refreshed");
 
 			// make graph with the data - could provide a container id
 			makeGraph( container );
@@ -656,6 +711,8 @@ angular.module('studionet')
 
 	o.selectNode = function( node ){
 
+		$('.modal-backdrop').remove();
+
 		// node is either a cytoscape node or an id 
 		if(node.id)
 			o.activeNode = node.id();
@@ -664,6 +721,21 @@ angular.module('studionet')
 
 		if( node.isNode == undefined )
 			node = o.graph.getElementById(node);
+
+		// get extra data for the node if not presetn
+        if(node.data('db_data') == undefined){
+          
+          var data = node.data();
+
+          contributions.getContribution(data.id).then(function(res){
+              node.data( 'db_data', tagCorrectionFn(res.data) );
+              console.log('fetched data');
+          });
+
+        }
+        else{
+          console.log("data already present");
+        }
 
 		o.graph.batch(function(){
 		o.graph.elements()
@@ -681,6 +753,51 @@ angular.module('studionet')
 		                  .addClass('highlighted');
 		});
 
+	}
+
+	o.selectNodePermanent = function(node){
+
+		$('.modal-backdrop').remove();
+
+		// node is either a cytoscape node or an id 
+		if(node.id)
+			o.activeNode = node.id();
+		else
+			o.activeNode = node;
+
+		if( node.isNode == undefined )
+			node = o.graph.getElementById(node);
+
+		// get extra data for the node if not presetn
+        if(node.data('db_data') == undefined){
+          
+          var data = node.data();
+
+          contributions.getContribution(data.id).then(function(res){
+              node.data( 'db_data', tagCorrectionFn(res.data) );
+              console.log('fetched data');
+          });
+
+        }
+        else{
+          console.log("data already present");
+        }
+
+		o.graph.batch(function(){
+		o.graph.elements()
+		  .removeClass('highlighted')
+		  .removeClass('permanent-selected')
+		  .addClass('faded');
+
+		  node.removeClass('faded')
+		      .addClass('permanent-selected');
+		  
+		  node.predecessors().removeClass('faded')
+		                  .addClass('highlighted');
+		  
+		  node.successors().removeClass('faded')  
+		                  .addClass('highlighted');
+		});		
 	}
 
 	o.markNode = function( node ){
@@ -769,4 +886,15 @@ Array.prototype.hash = function(){
 	
 	return hash;
 
+}
+
+// remove from ContributionCtrl
+var tagCorrectionFn = function(data){
+  if( data.tags == null )
+    data.tags = [];
+  
+  if(data.tags != null && data.tags.length == 1 && data.tags[0] == "")
+    data.tags = [];
+
+  return data;
 }
