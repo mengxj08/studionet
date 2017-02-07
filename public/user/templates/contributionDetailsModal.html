@@ -26,7 +26,7 @@
                       <p id='rating' uib-rating ng-model="$parent.rate" max="$parent.max" read-only="false" on-hover="$parent.hoveringOver(value)" on-leave="overStar = null" ng-click='rateContribution($parent.rate, contribution.db_data.id)' ng-if='contribution.db_data.createdBy != user.id'></p>
                       <span id='avg_rating' class="pop" 
                           uib-popover-template="'/user/templates/statistics.html'" popover-trigger="'mouseenter'" 
-                          popover-placement="bottom-right" popover-class='statsPopover'>
+                          popover-placement="bottom-right" popover-class='statsPopover' popover-append-to-body='true'>
                       {{ contribution.db_data.rating > 0 ? (contribution.db_data.rating).toFixed(1) : "No Ratings Yet" }}  
                       <i class='glyphicon glyphicon-star'></i></span>
                     </div>

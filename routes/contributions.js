@@ -266,16 +266,11 @@ router.route('/:contributionId')
 
     var query = [
       'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
-      'OPTIONAL MATCH (c)<-[rating5:RATED {rating: 5}]-(:user) ',
-      'OPTIONAL MATCH (c)<-[rating4:RATED {rating: 4}]-(:user) ',
-      'OPTIONAL MATCH (c)<-[rating3:RATED {rating: 3}]-(:user) ',
-      'OPTIONAL MATCH (c)<-[rating2:RATED {rating: 2}]-(:user) ',
-      'OPTIONAL MATCH (c)<-[rating1:RATED {rating: 1}]-(:user) ',
       'OPTIONAL MATCH (a:attachment)<-[:ATTACHMENT]-(c)',
       'RETURN { \
-                ratingArray: [ count(rating1), count(rating2), \
-                  count(rating3), count(rating4), \
-                  count(rating5)], \
+                ratingArray: [ SIZE((:user)-[:RATED{rating: 1}]->(c)), SIZE((:user)-[:RATED{rating: 2}]->(c)), \
+                  SIZE((:user)-[:RATED{rating: 3}]->(c)), SIZE((:user)-[:RATED{rating: 4}]->(c)), \
+                  SIZE((:user)-[:RATED{rating: 5}]->(c))], \
                 id: ID(c),\
                 edited: c.edited, \
                 rating: c.rating, \

@@ -280,4 +280,5 @@ tags-input .tags{
 
 .statsPopover{
     width: 300px;
+    z-index: 1000000;
 }
