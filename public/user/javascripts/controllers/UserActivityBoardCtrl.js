@@ -42,8 +42,8 @@ angular.module('studionet')
 
 		$scope.topViewer = topViewer;
 		$scope.topRater = topRater;
-		$scope.topCreator = topCreator; console.log($scope.topCreator);
-
+		$scope.topCreator = topCreator;
+		
 		//----- Pagination
 		$scope.itemsPerPage = 15;
 		$scope.maxSize = 5; 

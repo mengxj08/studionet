@@ -1,5 +1,5 @@
 angular.module('studionet')
-.controller('DetailsModalCtrl', ['$scope', '$http', 'profile', 'users', 'attachments', 'contribution', 'tags', function($scope, $http, profile, users, attachments, contribution, tags){
+.controller('DetailsModalCtrl', ['$scope', '$http', '$anchorScroll', '$location', 'profile', 'users', 'attachments', 'contribution', 'tags', function($scope, $http, $anchorScroll, $location, profile, users, attachments, contribution, tags){
 
         //////// --------------  general declarations
         $scope.user = profile.user;
@@ -93,10 +93,6 @@ angular.module('studionet')
            })
         
         }
-
-
-
-
 
         ////////-------------- Dealing with attachments
         $scope.getThumb = function(contributionId, attachment){
@@ -194,6 +190,11 @@ angular.module('studionet')
         $scope.replyMode = false;
         $scope.showReplyModal = function(id){
             $scope.replyMode = true;
+            
+
+            // call $anchorScroll()
+            /*$location.hash('reply-modal');
+            $anchorScroll();*/
         }
 
         $scope.replyToContribution = function(contributionData, parentId){

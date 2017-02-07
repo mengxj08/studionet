@@ -29,6 +29,14 @@ angular.module('studionet')
 		$scope.close();
 	}
 
+	$scope.processName = function(name){
+
+		if(name && name.length > 23)
+			return name.substr(0, 23) + "..."
+		else 
+			return name;
+	}
+
 
 	//  This close function doesn't need to use jQuery or bootstrap, because
 	//  the button has the 'data-dismiss' attribute.

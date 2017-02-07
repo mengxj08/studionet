@@ -21,21 +21,21 @@
                     <!-- latest -->
                     <div class='col-sm-4 pointer award-box' ng-click='goToNode(latest.id)' data-dismiss='modal'>
                         <div class='award-name'>Latest</div>
-                        <div class='awardee-name'>{{ latest.title }}</div>
+                        <div class='awardee-name'>{{ processName(latest.title) }}</div>
                         <div class='awardee-details'>by {{ users[latest.createdBy].nickname ? users[latest.createdBy].nickname : users[latest.createdBy].name }}</div>
                     </div>
 
                     <!-- highest rating -->
                     <div class='col-sm-4 pointer award-box' ng-click='goToNode(highestRating.id)' data-dismiss='modal'>
                         <div class='award-name'>Highest Rating</div>
-                        <div class='awardee-name'>{{ highestRating.title }}</div>
+                        <div class='awardee-name'>{{ processName(highestRating.title) }}</div>
                         <div class='awardee-details'>by {{ users[highestRating.createdBy].nickname ? users[highestRating.createdBy].nickname : users[highestRating.createdBy].name }}</div>
                     </div>
 
                     <!-- most viewed -->
                     <div class='col-sm-4 pointer award-box' ng-click='goToNode(mostViewed.id)' data-dismiss='modal'>
                         <div class='award-name'>Most Viewed</div>
-                        <div class='awardee-name'>{{ mostViewed.title }}</div>
+                        <div class='awardee-name'>{{ processName(mostViewed.title) }}</div>
                         <div class='awardee-details'>by {{ users[mostViewed.createdBy].nickname ? users[mostViewed.createdBy].nickname : users[mostViewed.createdBy].name }}</div>
                     </div>
 
@@ -43,12 +43,9 @@
 
             </div>
 
-            <br>
-
 
             <!--  lists -->
             <div class='modal-section'>
-
 
 
                     <form>

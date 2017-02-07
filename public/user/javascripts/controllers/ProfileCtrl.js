@@ -28,6 +28,7 @@ angular.module('studionet')
 			rateCount += contribution.rateCount;  
 		}
 		$scope.rating = (totalRating / rateCount).toFixed(1);
+		$scope.level = Math.floor($scope.user.level + 1)
 	}
 
 	$scope.setUser = function(user_id, own){

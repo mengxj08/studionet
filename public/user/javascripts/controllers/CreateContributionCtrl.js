@@ -60,7 +60,7 @@ angular.module('contributionEditorDirective', [])
 
                 //spinner.stop();
                 
-                $scope.$emit( BROADCAST_MESSAGE, { status: 200, message: "Contribution was created successfully." } );
+                $scope.$emit( BROADCAST_MESSAGE, { status: 200, message: "Node was created successfully." } );
                 $scope.contributionData = { _tags: [], attachments: [], tags: [], refType: "RELATED_TO", contentType: "text", ref: supernode.contribution};
 
 
@@ -68,7 +68,7 @@ angular.module('contributionEditorDirective', [])
                 //$scope.alert.error = true; 
                 //$scope.alert.errorMsg = error;
                 spinner.stop();
-                $scope.$emit( BROADCAST_MESSAGE, { status: 500, message: "Error creating contribution." } );
+                $scope.$emit( BROADCAST_MESSAGE, { status: 500, message: "Error creating node." } );
           }); 
 
       };

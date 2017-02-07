@@ -1,9 +1,45 @@
 <div>
 
-      <h5 style='border-bottom: 1px solid #b6b6b6;'>Contribution ID: {{contribution.db_data.id}}</h5>
-      <p>Number of Views: {{contribution.db_data.views}}</p>
-      <p>Rating Array: {{contribution.db_data.ratingArray}}</p>
-      <p>Number of Ratings: {{contribution.db_data.rateCount}}</p>
-      <p>Last Updated: {{contribution.db_data.lastupdated}}</p>
-      <p>Date Created: {{contribution.db_data.dateCreated | date: 'longDate'}}</p>
+	<div class='row'>
+		<h5>ID: {{contribution.db_data.id}}</h5>
+		<hr/>
+		<h6>Created on {{contribution.db_data.dateCreated | date: 'longDate'}}</h6>
+		<h6>Viewed by {{contribution.db_data.views}} users</h6>
+		<h6 ng-if='contribution.db_data.rateCount==0'>This contribution has no ratings yet.</h6>
+	</div>
+
+	<br>
+
+	<div class="ratingArray row" ng-if='contribution.db_data.rateCount>0'>
+		<h6 class='text-center'>{{contribution.db_data.rating.toFixed(0)}} out of 5 stars </h6> 
+	
+		<div class='row' ng-repeat="r in [4, 3, 2, 1, 0]" style='line-height: 20px; font-size: 10px;'>
+			<div class='col-sm-3'>{{r+1}} stars</div>
+			<div class='col-sm-7' ng-init="rv=0;">
+				<uib-progressbar max="100" value="100*contribution.db_data.ratingArray[r]/contribution.db_data.rateCount" animate="true">
+					<span style="color:white; white-space:nowrap;">{{contribution.db_data.ratingArray[r]}} / {{contribution.db_data.rateCount}}</span>
+				</uib-progressbar>
+			</div>
+			<div class='col-sm-2 text-right'>{{contribution.db_data.ratingArray[r]}}</div>
+		</div>
+	</div>
+
+	<br>
+
 </div>
+
+<style>
+.progress{
+	border-radius: 0px;
+	margin-bottom: 5px;
+	border: 1px solid goldenrod;
+}
+
+.progress-bar{
+	box-shadow: none;
+	-webkit-box-shadow: none;
+	background-color: goldenrod;
+	font-size: 10px;
+	transition: width .5s ease;
+}
+</style>

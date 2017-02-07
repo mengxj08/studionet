@@ -20,12 +20,10 @@ router.route('/')
 
     var query = [
       'MATCH (u:user)',
-      'OPTIONAL MATCH (c:contribution)<-[r1:VIEWED]-(u)',
-      'OPTIONAL MATCH (c:contribution)<-[r2:RATED]-(u)',
-      'OPTIONAL MATCH (c:contribution)<-[r3:CREATED]-(u)',
       'RETURN { id: id(u), nickname: u.nickname, name: u.name, avatar: u.avatar, isAdmin: u.isAdmin,\
-                lastLoggedIn: u.lastLoggedIn, activityArr: [COUNT(r1),  COUNT(r2), COUNT(r3)],  \
-                level: COUNT(r1)*' + weights[0] + ' + COUNT(r2)*' + weights[1] + ' + COUNT(r3)* ' + weights[2] + '}'
+                lastLoggedIn: u.lastLoggedIn, \
+                activityArr: [ SIZE((u)-[:VIEWED]->(:contribution)), SIZE((u)-[:RATED]->(:contribution)), SIZE((u)-[:CREATED]->(:contribution)) ],  \
+                level: SIZE((u)-[:VIEWED]->(:contribution))*' + weights[0] + ' +  SIZE((u)-[:RATED]->(:contribution))*' + weights[1] + ' + SIZE((u)-[:CREATED]->(:contribution))* ' + weights[2] + '}'
     ].join('\n');
 
     db.query(query, function(error, result){

@@ -14,3 +14,4 @@ studionet.sublime-project
 .sass-cache
 syntheticdb.mdown
 logs/
+views/.gitignore

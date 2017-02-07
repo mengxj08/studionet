@@ -25,7 +25,6 @@
 #rating .glyphicon{
   font-size: 20px;
   line-height: 20px;
-  margin-top: 20px;
   color: goldenrod;
 } 
 
@@ -236,4 +235,49 @@ tags-input .tags{
   border: 1px solid #B6B6B6;
   border-radius: 5px;
   text-align: center;
+}
+
+
+.award-box{
+  border: 1px solid rgba(0, 0, 0, 0.26);
+}
+
+.award-name{
+  text-transform: uppercase;
+  font-weight: 400;
+  color: #777;
+  font-size: 12px;
+  margin: 10px 0px;
+}
+
+.awardee-name{
+  color: #777; 
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.awardee-details{
+  font-size: 11px;
+  font-weight: 300;
+  margin: 10px 0px;
+}
+
+.awardee-picture{
+  height: 100% !important;
+}
+
+.awardee-profile-picture{
+  position: relative;
+  border-radius: 50%;
+  max-height: 50px;
+  max-width: 100%;
+}
+
+
+.statisticsContainer{
+  line-height: 26px;
+}
+
+.statsPopover{
+    width: 300px;
 }

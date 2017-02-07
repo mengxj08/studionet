@@ -541,54 +541,82 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold, supernodeId){
   nextNode(0);
 
 
+  /*
+   * In this case, the centre position being passed is already occupied
+   * Return resulting radius of the subspiral
+   * Perfect spiral - donot edit further!
+   */
+  var makeSubSpiral = function(nodes, centerX, centerY, minimumRadius){
+
+      var radius_SubNode = 10;
+      var safety_gap = 10;
+
+      var deltaX = (centerX - initX);
+      var deltaY = (centerY - initY);
+
+      var angle = Math.atan( deltaY / deltaX ), 
+          radius = minimumRadius, minNodes, angleInc, radiusInc;
+
+      // Angle Correction
+      //                |
+      //       x-ve     |     x +ve
+      //       y-ve     |     y -ve
+      //                |
+      //  --------------------------------
+      //                |     
+      //       x -ve    |     x +ve
+      //       y +ve    |     y +ve
+      //                |
+      // https://www.mathworks.com/matlabcentral/answers/9330-changing-the-atan-function-so-that-it-ranges-from-0-to-2-pi?requestedDomain=www.mathworks.com
+      if(deltaY > 0 && deltaX < 0)
+        angle = Math.PI  + angle;
+      else if(deltaY < 0 && deltaX < 0)
+        angle = -Math.PI + angle;
+      else if(deltaY > 0 && deltaX ==0 )
+        angle = -Math.PI/2
+      else if(deltaY < 0 && deltaX == 0)
+        angle = -Math.PI/2
+
+      if(angle < 0)
+        angle = angle + 2*Math.PI
+
+
+
+      for(var i=0; i < nodes.length; i++){
+
+        var node = nodes[i];
+
+        minNodes = Math.floor( 2 * Math.PI * radius / radius_SubNode );
+
+        // for minNodes
+        angleInc = 2*Math.PI / minNodes; 
+        radiusInc = (radius_SubNode + safety_gap) / minNodes; 
+
+
+        var x = radius*Math.cos( angle ) + centerX;
+        var y = radius*Math.sin( angle ) + centerY;
+
+        angle += angleInc + Math.PI/30;
+        radius += radiusInc;
+
+        node.animate(
+            { position : {x: x, y: y }  
+            }, 
+            { 
+              duration: 400 
+            } 
+        );
+      }
+
+      if(nodes.length == 0)
+        return radius_SubNode;
+
+      return radius;
+  }
+
+
 
 }
 
 
-/*
- * In this case, the centre position being passed is already occupied
- * Return resulting radius of the subspiral
- * Perfect spiral - donot edit further!
- */
-var makeSubSpiral = function(nodes, centerX, centerY, minimumRadius){
-
-    var radius_SubNode = 10;
-    var safety_gap = 10;
-
-    var angle = Math.atan( Math.abs(centerY / centerX) ), 
-        radius = minimumRadius, minNodes, angleInc, radiusInc;
-
-    //console.log((angle*57.2).toFixed(2) + " deg");
-
-    for(var i=0; i < nodes.length; i++){
-
-      var node = nodes[i];
-
-      minNodes = Math.floor( 2 * Math.PI * radius / radius_SubNode );
-
-      // for minNodes
-      angleInc = 2*Math.PI / minNodes; 
-      radiusInc = (radius_SubNode + safety_gap) / minNodes; 
-
-
-      var x = radius*Math.cos( angle ) + centerX;
-      var y = radius*Math.sin( angle ) + centerY;
-
-      angle += angleInc + Math.PI/30;
-      radius += radiusInc;
-
-      node.animate(
-          { position : {x: x, y: y }  
-          }, 
-          { 
-            duration: 400 
-          } 
-      );
-    }
-
-    if(nodes.length == 0)
-      return radius_SubNode;
-
-    return radius;
-}
 
