@@ -1,8 +1,4 @@
 /*Filter Modal Overrride */
-.modal-body.filter-container{
-	padding: 15px !important;
-}
-
 #filterModal .modal-footer{
 	height: 40px !important;
 	padding: 0px !important;

@@ -64,9 +64,9 @@ p{
 	margin:0px !important;
 }
 
-/*img{
-	width: 300px;
-}*/
+img{
+	max-width: 100%;
+}
 
 .container-fluid{
 	//border: 1px solid black;

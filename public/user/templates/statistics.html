@@ -13,14 +13,14 @@
 	<div class="ratingArray row" ng-if='contribution.db_data.rateCount>0'>
 		<h6 class='text-center'>{{contribution.db_data.rating.toFixed(1)}} out of 5 stars </h6> 
 	
-		<div class='row' ng-repeat="r in [4, 3, 2, 1, 0]" style='line-height: 20px; font-size: 10px;'>
-			<div class='col-sm-3'>{{r+1}} stars</div>
+		<div class='row' ng-repeat="r in contribution.db_data.ratingArray track by $index" style='line-height: 20px; font-size: 10px;'>
+			<div class='col-sm-3'>{{$index+1}} stars</div>
 			<div class='col-sm-7'>
-				<uib-progressbar max="100" value="100*contribution.db_data.ratingArray[r]/contribution.db_data.rateCount" animate="true">
-					<span style="color:white; white-space:nowrap;">{{contribution.db_data.ratingArray[r]}} / {{contribution.db_data.rateCount}}</span>
+				<uib-progressbar max="100" value="100*r/contribution.db_data.rateCount" animate="true">
+					<span style="color:white; white-space:nowrap;">{{r}} / {{contribution.db_data.rateCount}}</span>
 				</uib-progressbar>
 			</div>
-			<div class='col-sm-2 text-right'>{{contribution.db_data.ratingArray[r]}}</div>
+			<div class='col-sm-2 text-right'>{{r}}</div>
 		</div>
 	</div>
 

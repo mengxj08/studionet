@@ -56,9 +56,9 @@
   top: auto; 
   bottom: 0px;
   left: 50%; 
-  margin-left: -150px;
+  margin-left: -100px;
   text-align: center;
-  max-width: 200px;
+  width: 200px;
 }
 
 #zoom{
@@ -110,6 +110,25 @@
 
   color: #969696;
 }
+
+@media screen and (max-width:600px) {
+    .filter-controls{
+      margin-left: 10px !important;
+    }
+
+    .graph-controls{
+      right: 10px;
+    }
+
+    .info-pane{
+      right: 10px;
+    }
+
+    .modal-body{
+      padding: 7.5px !important;
+    }
+}
+
 
 .filter-heading-button{
   background-color: transparent;
@@ -177,4 +196,6 @@ h6.clear-filter-shortcut:after{
 .graph-nav-control:hover{
   font-size: 1.1em;
 }
+
+
 

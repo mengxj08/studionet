@@ -268,9 +268,9 @@ router.route('/:contributionId')
       'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
       'OPTIONAL MATCH (a:attachment)<-[:ATTACHMENT]-(c)',
       'RETURN { \
-                ratingArray: [ SIZE((:user)-[:RATED{rating: 1}]->(c)), SIZE((:user)-[:RATED{rating: 2}]->(c)), \
-                  SIZE((:user)-[:RATED{rating: 3}]->(c)), SIZE((:user)-[:RATED{rating: 4}]->(c)), \
-                  SIZE((:user)-[:RATED{rating: 5}]->(c))], \
+                ratingArray: [ SIZE((:user)-[:RATED{rating: 5}]->(c)), SIZE((:user)-[:RATED{rating: 4}]->(c)), \
+                  SIZE((:user)-[:RATED{rating: 3}]->(c)), SIZE((:user)-[:RATED{rating: 2}]->(c)), \
+                  SIZE((:user)-[:RATED{rating: 1}]->(c))], \
                 id: ID(c),\
                 edited: c.edited, \
                 rating: c.rating, \
