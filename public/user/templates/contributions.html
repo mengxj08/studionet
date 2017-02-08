@@ -5,90 +5,64 @@
 <link rel='stylesheet' href='/user/stylesheets/textAngular/textAngular.css' />
 <link rel='stylesheet' href='/user/stylesheets/modal-styles.css' />
 
+
 <!-- actual graph container -->
 <div class='graph-container' ng-init='graphInit()'> 
 
-  <!--Nav Bar with Filters-->
-  <!-- <ng-include src="'templates/filters.html'"></ng-include> -->
-
   <div id='cy'></div>
 
-  <div class='info-pane'>
+  <!-- reset graph -->
+  <div class='graph-controls'>
 
-    <!-- reset graph -->
-    <div><i class="graph-nav-control icon fa fa-arrows-alt" ng-click='resetGraph()' uib-tooltip='Fit Graph' tooltip-placement='left'></i></div>
-
-    <div>
-      <i class="graph-nav-control icon fa fa-group" ng-click='alert("hello")' data-toggle="modal" data-target="#userActivityBoard" data-backdrop="static" data-keyboard="false"  uib-tooltip='User Activity' tooltip-placement='left'></i>
-    </div>
-
-    <div>
-      <i class="graph-nav-control icon fa fa-star" data-toggle="modal" data-target="#contributionsActivityBoard" data-backdrop="static" data-keyboard="false"  uib-tooltip='Node Activity' tooltip-placement='left'></i>
-    </div>
-
-  </div>
-
-  <div class='info-pane bottom-center'>
-    
-    <div id="message">{{message}}</div>
+    <!-- Profile -->
+    <img class="graph-nav-control icon" src={{me.avatar}} data-toggle="modal" data-target="#profileModal" data-backdrop="static" data-keyboard="false" uib-tooltip='{{me.nickname ? me.nickname : me.name}}' tooltip-placement='left'></i>
 
     <br>
 
-    <div id='zoom'><b>Z:</b> {{zoomLevel}} %</div>
-  
-  </div>
-  
-  <div class='graph-controls'>
-
-		<!-- create a contribution -->
-		<!-- <i class="graph-nav-control icon fa fa-plus" ng-click='openNewContributionModal()' uib-tooltip='New Contribution'  tooltip-placement='left'></i> -->
+    <i class="graph-nav-control icon fa fa-group" data-toggle="modal" data-target="#userActivityBoard" data-backdrop="static" data-keyboard="false"  uib-tooltip='User Activity' tooltip-placement='left'></i>
+    <i class="graph-nav-control icon fa fa-star" data-toggle="modal" data-target="#contributionsActivityBoard" data-backdrop="static" data-keyboard="false"  uib-tooltip='Node Activity' tooltip-placement='left'></i>
+    <i class="graph-nav-control icon fa fa-arrows-alt" ng-click='resetGraph(); zoomLevel=100.00' uib-tooltip='Fit Graph' tooltip-placement='left'></i>
+    <i class="graph-nav-control icon fa fa-filter" data-toggle="modal" data-target="#filterModal" data-backdrop="static" data-keyboard="false" uib-tooltip='Filter Nodes' tooltip-placement='left'></i>
     <i class="graph-nav-control icon fa fa-plus" data-toggle="modal" data-target="#createContribution" data-backdrop="static" data-keyboard="false" uib-tooltip='New Node' tooltip-placement='left'></i> 
 
-    <!-- Using native bootstrap modal functionality - faster -->
-    <!-- <i class="graph-nav-control icon fa fa-search" data-toggle="modal" data-target="#filterModal" uib-tooltip='Filter'  tooltip-placement='left'></i> -->
-    <i class="graph-nav-control icon fa fa-link" data-toggle="modal" data-target="" uib-tooltip='Link Nodes - Coming Soon!'  tooltip-placement='left' ng-disabled="true"></i>
-  
   </div>
 
+  <div class='info-pane'>
+
+      <div id='brand'>Studionet</div>
+
+      <br>
+      <div id="message">{{message}}&nbsp;&nbsp;&nbsp;&nbsp;</div>
+      
+      <div id='zoom'><b>Z:</b> {{zoomLevel}} %</div>
 
 
-   
-</div>
+      <h6 id='filter-nodes-count' ng-show='filters.length==0' ng-cloak>{{graph.nodes().length || 0}} matching nodes found.</h6> 
 
-<div class='filter-controls'>
-
-  <!-- Using native bootstrap modal functionality - faster -->
-  <!-- <i class="graph-nav-control icon fa fa-filter" data-toggle="modal" data-target="#filterModal" uib-tooltip='Filter'  tooltip-placement='left'></i> -->
-  <!-- <button type="button" data-toggle="modal" data-target="#filterModal" class="btn btn-default modal-button">Filter</button> -->
-
-  <h5 class='filter-heading-button' type="button" data-toggle="modal" data-target="#filterModal" data-backdrop="static" data-keyboard="false">Filters</h5> 
-
-  <h6 id='filter-nodes-count' ng-show='filters.length==0' ng-cloak>{{graph.nodes().length}} matching nodes found.</h6> 
-  
-  <div id='filter-shortcuts' ng-show='filters.length>0'>
-    
-    <h6 id='filter-nodes-count'>{{matchingNodes.length}} matching node(s) found.</h6>
-    
-    <div class='filter-shortcut-container' ng-repeat="filter in filters">
+      <div id='filter-shortcuts' ng-show='filters.length>0'>
         
-        <!-- if filter is an array of values -->
-        <div ng-if='filter.type == "Array"'>
-            <!-- <h6 id='filter-nodes-count'>{{ filter.value.length }} {{filter.name}}(s) selected</h6> -->
-            <h6 class='clear-filter-shortcut' ng-repeat="fval in filter.value track by fval.id" ng-click="clearFilter(filter.code, fval.id)">{{ fval.name }}</h6>
+        <h6 id='filter-nodes-count'>{{matchingNodes.length}} matching node(s) found.</h6>
+        
+        <div class='filter-shortcut-container' ng-repeat="filter in filters">
+            
+            <!-- if filter is an array of values -->
+            <div ng-if='filter.type == "Array"'>
+                <!-- <h6 id='filter-nodes-count'>{{ filter.value.length }} {{filter.name}}(s) selected</h6> -->
+                <h6 class='clear-filter-shortcut' ng-repeat="fval in filter.value track by fval.id" ng-click="clearFilter(filter.code, fval.id)">{{ fval.name }}</h6>
+            </div>
+            
+            <!-- if filter is a range -->
+            <div ng-if='filter.type == "Range"'>
+                <!-- <h6 id='filter-nodes-count' >{{filter.name}} selected</h6> -->
+                <h6 class='clear-filter-shortcut' ng-click="clearFilter(filter.code)">{{filter.value}}</h6>
+            </div>
+            
         </div>
-        
-        <!-- if filter is a range -->
-        <div ng-if='filter.type == "Range"'>
-            <!-- <h6 id='filter-nodes-count' >{{filter.name}} selected</h6> -->
-            <h6 class='clear-filter-shortcut' ng-click="clearFilter(filter.code)">{{filter.value}}</h6>
-        </div>
-        
-    </div>
+      </div>
   </div>
-
+  
+  
 </div>
-
-
 
 <!--- Normal Bootstrap Modals : These modals are faster to load since the same template is being reused again and again -->
 

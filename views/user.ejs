@@ -15,14 +15,16 @@
     <link rel="stylesheet" href="/user/stylesheets/treesearch/kjvelarde-multiselect-searchtree-0.9.0.min.css">
     <link rel="stylesheet" href="/user/stylesheets/slider/angular-ranger.css">
 
-    <!-- Angular Material -->
-<!--     <link rel="stylesheet" href="https://gitcdn.link/repo/angular/bower-material/master/angular-material.css"> -->
-
     <!-- QTip -->
     <link rel="stylesheet" href="/user/stylesheets/jquery.qtip.min.css">
 
     <!-- Overrides -->
     <link rel='stylesheet' href='/user/stylesheets/style.css' />
+
+    <!-- Template JS --> 
+    <!-- should be placed here otherwise all the components stick to the side --> 
+    <script type="text/javascript" src="../assets/js/vendor.js"></script>
+    <script type="text/javascript" src="../assets/js/app.js"></script>
 
   </head>
 
@@ -35,19 +37,7 @@
   <body ng-app="studionet">
 
     <div class="app app-default">
-        
-        <script type="text/ng-template" id="sidebar-dropdown.tpl.html">
-          <div class="dropdown-background">
-            <div class="bg"></div>
-          </div>
-          <div class="dropdown-container">
-            {{list}}
-          </div>
-        </script>
-
-        <!--Top Nav Bar -->
-        <ng-include src="'templates/top-navbar.html'" ng-controller='NavCtrl'></ng-include>
-        
+       
         <div class="app-container">
             <!-- Main Graph View OR User View -->
             <ui-view></ui-view>
@@ -55,9 +45,7 @@
 
     </div>
   </body>
-  <!-- Template JS -->  
-  <script type="text/javascript" src="../assets/js/vendor.js"></script>
-  <script type="text/javascript" src="../assets/js/app.js"></script>
+
 
   <!--- JQuery -->
   <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
@@ -120,7 +108,6 @@
   <script src="/user/javascripts/graphs/graph-helper.js"></script>
 
   <script type="text/javascript" src="/user/javascripts/controllers/ProfileCtrl.js"></script> 
-  <script type="text/javascript" src="/user/javascripts/controllers/NavCtrl.js"></script>
   <script type="text/javascript" src="/user/javascripts/controllers/ContributionsCtrl.js"></script>
   <script type="text/javascript" src="/user/javascripts/controllers/DetailsModalCtrl.js"></script>
   <script type="text/javascript" src="/user/javascripts/controllers/CreateContributionCtrl.js"></script>

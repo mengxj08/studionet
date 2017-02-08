@@ -9,7 +9,6 @@
  *		General CSS
  */
 *{
-	/*padding: 0px;*/
 	margin: 0px; 
 }
 
@@ -113,99 +112,14 @@ label{
 	cursor: pointer;
 }
 
-/*
- *  Top Nav CSS
- */
-nav{
-	position: fixed !important; 
-	top: 0px;
-	
-	width: 100%;
-	
-	padding: 0px !important;
+#brand{
+	font-family: 'Open Sans', sans-serif;
+	font-size: 17px;
+	line-height: 20px;
+	font-weight: 900;
+	color: #4A95EF;
 }
 
-nav .navbar-nav{
-	padding: 0px 0px !important;
-	z-index: 2;
-
-}
-
-.navbar{
-	margin: 0px !important;
-	padding: 0px !important;
-	height: auto;
-
-}
-
-.navbar-default{
-	border: 0px;
-	border-color: none;
-}
-
-.navbar .navbar-collapse{
-	border: 0px !important;
-	box-shadow: none;
-	background-color: transparent;
-}
-
-.nav.navbar-nav{
-	height: 50px !important;   // top-bar height
-	margin: 0px 50px !important;
-
-	padding: 0px !important;
-}
-
-.navbar-left{
-	margin: 0px 30px !important;
-}
-
-.navbar-right{
-	margin: 0px 30px;
-	margin-left: 0px !important;
-    border-bottom-width: 0px !important;
-}
-
-.navbar-collapse{
-	padding: 0px;
-}
-
-.navbar-title{
-	padding: 0px !important;
-	font-weight: 900 !important;
-}
-
-.nav > li > a{
-	padding: 15px 0px;
-}
-
-.navbar-default .navbar-nav > li > a{
-	color: #4a95ef;
-}
-
-.navbar .navbar-collapse .navbar-nav > li.dropdown:hover .dropdown-menu {
-  transform: translate(0, -3px); }
-
-.navbar .navbar-collapse .navbar-nav > li.dropdown:hover:after {
-  transform: translate(-50%, -3px); 
-}
-
-#noDropdown > li.dropdown:hover:after {
-  display: none;
-  visibility: none;
-  opacity: none;
-  transform: none; 
-}
-
-.navbar .navbar-collapse .navbar-nav > li.dropdown.notification.warning a.dropdown-toggle .icon {
-    background-color: rgb(74, 149, 239);
-    color: #e7edee;
-}
-
-.dropdown-menu{
-	width: 150px !important;
-	min-width: 100px !important;
-}
 
 /*
  * App Body & Theme CSS
@@ -227,14 +141,14 @@ nav .navbar-nav{
 	height: 30px !important; 
 	width: 30px !important; 
 
-	border-radius: 50%;
+	border-radius: 0px;//50%;
 	font-size: 16px !important;
 
 	cursor: pointer;
 }
 
 .icon:hover{
-    transform: scale(1.1) rotate(7deg);
+    transform: none;//scale(1.1) rotate(7deg);
 }
 
 li.notification{
@@ -338,14 +252,6 @@ li.notification{
 }
 
 
-.btn.btn-default{
-	border-color: #b6b6b6;
-	height: 30px !important;
-	line-height: 30px;
-	margin: 0px !important;
-	border-radius: 0px !important;
-
-}
 
 
 /*
@@ -493,11 +399,14 @@ h4.modal-title{
 .modal-button{
 	margin: 15px 10px 0px 10px !important;
 	min-width: 80px;
-	height: 100% !important;
 	font-size: 15px;
 	font-family: 'Roboto Condensed', sans-serif;
 	padding: 0px; 
-	line-height: 40px; 
+	border-color: #B9B9B9;
+	height: 30px !important;
+	line-height: 30px;
+	margin: 0px !important;
+	border-radius: 0px !important;
 }
 
 .modal-section{

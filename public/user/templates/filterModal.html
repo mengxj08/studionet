@@ -65,15 +65,17 @@
 
                         <div id='dateFilter'>
                           <br>
-                          <h6>Date Range <!-- <span class='filter-element-count'></span> --></h6>  
-                          <h6>Starting from: </h6><input type="date" name="firstDate" ng-model='$parent.$parent.$parent.startDate'>
-                          <br>
-                          <h6>Ending on </h6> <input type="date" name="lastDate" ng-model='$parent.$parent.$parent.endDate'>
+                          <h6>Date Range</h6>  
+                          <div class='row'>
+                              <div class='col-sm-5'><input type="date" name="firstDate" ng-model='$parent.$parent.$parent.startDate'></div>
+                              <div class='col-sm-2'><h6 class='text-center'>-</h6></div>
+                              <div class='col-sm-5'><input type="date" name="lastDate" ng-model='$parent.$parent.$parent.endDate'></div>
+                          </div>
                         </div>
 
                         <div id='rating'>
                           <br>
-                          <h6>Ratings <!-- <span class='filter-element-count'></span> --></h6>  
+                          <h6>Ratings</h6>  
                           <angular-ranger id='ratingFilter' min="0" max="5" step="1" min-value=$parent.$parent.$parent.ratingMin max-value=$parent.$parent.$parent.ratingMax></angular-ranger>
                         </div>
 

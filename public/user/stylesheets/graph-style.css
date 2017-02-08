@@ -23,81 +23,41 @@
 
 }
 
-
-#user-graph {
-
-  position: absolute;
-
-  height: calc( 100vh - 50px); // remove for topbar & filters
-  //height: auto;
-  z-index: 2;
-
-}
-
-.info-pane{
+.graph-controls{
   position: fixed;
-  right: 30px;
-  top: 70px;
+  top: 15px; 
+  right: 30px; // standard
 
-  //width: 100px; 
   height: auto;
-
-  // padding: 0px 10px;
-
-  text-align: right;
 
   z-index: 3;
 
   color: #7A7B80;
 }
 
-.info-pane.bottom-center{
-  position: fixed;
-  top: auto; 
-  bottom: 0px;
-  left: 50%; 
-  margin-left: -100px;
+
+.graph-nav-control{
+
+  position: relative !important;
+
+  width: 30px;
+  height: 30px;
+
+  line-height: 30px;
   text-align: center;
-  width: 200px;
+  
+  color: #B9B9B9;
+  background: #000623;
+  border: 1px solid;
+
+  margin: -1px 0px;
+  display: block;
+
 }
 
-#zoom{
-  border: 1px solid #274F7F;
-  padding: 0px 10px;
-}
-
-#message{
-  display: none;
-  border: 1px solid #274F7F;
-  border-radius: 5px;
-  line-height: 25px;
-  background-color:  transparent;
-  margin-bottom: 400px;
-}
-
-
-.graph-controls{
-
+.info-pane{
   position: fixed;
-  bottom: 30px;
-  right: 30px;
-
-  width: 30px; 
-  height: auto;
-
-  //margin-top: calc(100vh - 55px);
-  margin-left: calc(100vw - 55px);
-
-  z-index: 3;
-
-  background: transparent;
-
-}
-
-.filter-controls{
-
-  position: fixed;
-  top: 70px !important; 
+  top: 15px; !important  // standard
 
   width: 200px;
   max-width: 200px;
@@ -107,50 +67,19 @@
   margin-right: 30px !important;
 
   z-index: 3;
-
   color: #969696;
+  line-height: 25px;
 }
 
-@media screen and (max-width:600px) {
-    .filter-controls{
-      margin-left: 10px !important;
-    }
-
-    .graph-controls{
-      right: 10px;
-    }
-
-    .info-pane{
-      right: 10px;
-    }
-
-    .modal-body{
-      padding: 7.5px !important;
-    }
+#filter-shortcuts{
+  max-height: 70vh; 
+  overflow-y: auto;
 }
 
-
-.filter-heading-button{
-  background-color: transparent;
-  color: #274F7F;
-  border-bottom: 1px solid;
-  padding: 8px 0px;
-  cursor: pointer;
-}
-
-.filter-heading-button:after{
-  margin-left: 10px;
-  content: "\f14c";
-  font-family: FontAwesome;
-}
 
 h6.clear-filter-shortcut{
   background-color: transparent;
   color: lime; //#274F7F;
-  //display: inline-block;
-  //margin-right: 10px;
-  //padding: 8px !important;
-  //border: 1px solid #4A95EF;
   font-weight: 300;
 }
 
@@ -168,34 +97,35 @@ h6.clear-filter-shortcut:after{
 }
 
 
-.graph-nav-control{
 
-  position: relative !important;
 
-  width: 30px;
-  height: 30px;
 
-  line-height: 30px;
-  text-align: center;
-  
-  color: white;
-  background: #4A95EF;
+@media screen and (max-width:600px) {
+    .info-pane{
+      margin-left: 10px !important;
+    }
 
-  //box-shadow: 2px 2px 2px grey;
-  margin: 10px 0px;
+    .graph-controls{
+      right: 10px;
+    }
 
-  //border: 1px solid black;
+    .modal-body{
+      padding: 7.5px !important;
+    }
 }
 
 
 
-.btn-active{
-  background-color: #4A4AEF !important;
+/*.filter-heading-button{
+  background-color: transparent;
+  color: #274F7F;
+  border-bottom: 1px solid;
+  padding: 8px 0px;
+  cursor: pointer;
 }
 
-.graph-nav-control:hover{
-  font-size: 1.1em;
-}
-
-
-
+.filter-heading-button:after{
+  margin-left: 10px;
+  content: "\f14c";
+  font-family: FontAwesome;
+}*/

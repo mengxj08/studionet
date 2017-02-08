@@ -498,6 +498,8 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold, supernodeId){
                 var condition = "[onSpiral=\'" + node.id() + "\']";
                 var nodes = node.incomers().nodes(condition); 
 
+
+
                 var position = node.position(); 
 
                 // make a smaller spiral of all the incomers

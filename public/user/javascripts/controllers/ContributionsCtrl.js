@@ -17,7 +17,10 @@ angular.module('studionet')
  *  Main Contribution Graph Page
  * 
  */
-.controller('ContributionsCtrl', ['$scope', '$stateParams', '$rootScope', 'graph', 'users', 'supernode', 'ModalService', 'contribution', function($scope, $stateParams, $rootScope, graph, users, supernode, ModalService, contribution){
+.controller('ContributionsCtrl', ['$scope', '$stateParams', '$rootScope', 'graph', 'users', 'profile', 'supernode', 'ModalService', 'contribution', function($scope, $stateParams, $rootScope, graph, users, profile, supernode, ModalService, contribution){
+
+  $scope.me = profile.user;
+
 
   /*
    * Helper Fn
@@ -65,13 +68,9 @@ angular.module('studionet')
       }
 
       setTimeout(function(){
-        $('#message').hide();
+        $scope.message = "";
+        $scope.$apply();
       }, 7000)
-
-
-      // hack
-      // todo : change later
-      //$('.modal-backdrop').remove();
   
   }
 
