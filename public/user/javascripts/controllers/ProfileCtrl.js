@@ -21,12 +21,24 @@ angular.module('studionet')
 		// compute the rating based on rating of the contributions the user has made
 		var rateCount = 0;
 		var totalRating = 0;
-		for(var i=0; i < $scope.user.contributions.length; i++){
-			var contribution = $scope.user.contributions[i]; 
-			$scope.views += contribution.views; 
-			totalRating += contribution.rateCount*contribution.rating;
-			rateCount += contribution.rateCount;  
+
+		if($scope.user.contributions.length == 1 && $scope.user.contributions[0].title == null){
+			$scope.user.contributions = [];
 		}
+		else{
+			for(var i=0; i < $scope.user.contributions.length; i++){
+				var contribution = $scope.user.contributions[i]; 
+				$scope.views += contribution.views; 
+				totalRating += contribution.rateCount*contribution.rating;
+				rateCount += contribution.rateCount;  
+			}
+		}
+
+		if($scope.user.tags.length == 1 && $scope.user.tags[0].name == null){
+			$scope.user.tags = [];
+		}
+
+
 		$scope.rating = (totalRating / rateCount).toFixed(1);
 		$scope.level = Math.floor($scope.user.level + 1)
 	}

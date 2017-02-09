@@ -39,8 +39,10 @@
                       <uib-accordion-heading> 
                           <h5>Nodes</h5>
                       </uib-accordion-heading>
+
+                      <div class='col-sm-12 text-center' ng-if='user.contributions.length == 0'><br><h6>No Contributions Created</h6><br></div>
                       
-                      <div class='col-sm-12'  ng-repeat="contribution in user.contributions | orderBy : '-views' ">
+                      <div class='col-sm-12' ng-repeat="contribution in user.contributions | orderBy : '-views' ">
                           <div class='profile-item'>
                             <div class='row'>
                               <div class='col-sm-6'>
@@ -59,10 +61,14 @@
                     </div>
 
                     <div uib-accordion-group class='profile-item-container'>
+                        
                         <uib-accordion-heading> 
                           <h5>Tags</h5>
                         </uib-accordion-heading>
-                        <div class='col-sm-12' ng-repeat="tag in tags | filter: {createdBy : user.id}">
+                        
+                        <div class='col-sm-12 text-center' ng-if='user.tags.length == 0'><br><h6>No Tags Created</h6><br></div>
+
+                        <div class='col-sm-12' ng-repeat="tag in tags | filter:{createdBy:user.id}:true">
                             <div class='profile-item'>
                               <div class='row'>
                                 <div class='col-sm-6'>

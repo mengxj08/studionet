@@ -67,7 +67,7 @@ angular.module('studionet')
         $scope.percent = 0;
 
         // gets rating if the user has previously rated the contribution
-        var previouslyRated = true;
+        var previouslyRated = 0;
         var getRating = function(contribution_id){
           var rating = 0;
           for(var i=0; i < profile.activity.length; i++){
@@ -79,6 +79,7 @@ angular.module('studionet')
             }
 
           }
+          previouslyRated = rating;
           return rating;
         }
 
@@ -91,9 +92,18 @@ angular.module('studionet')
 
           contribution.rateContribution(id, rating).success(function(data){
 
-              console.log($scope.contribution.db_data.ratingArray);
+              // check if user had already rated this contribution
+              if(previouslyRated==0){
+                $scope.contribution.db_data.rateCount++;
+                $scope.contribution.db_data.ratingArray[rating-5]++; console.log("here2")
+              }
+              else{
 
-              // check if user had already rated the contribution, if yes, donot change rate count and change only existing array
+                $scope.contribution.db_data.ratingArray[5 - rating] = $scope.contribution.db_data.ratingArray[5 - rating] + 1; 
+                $scope.contribution.db_data.ratingArray[5 - previouslyRated] = $scope.contribution.db_data.ratingArray[5 - previouslyRated] - 1; 
+                previouslyRated = rating;
+
+              }
 
           })
         

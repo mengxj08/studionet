@@ -39,10 +39,14 @@ angular.module('studionet')
   socket.on('contribution_rated', function (data) {
     
     // update the graph colors
-    $scope.graph.getElementById(data.id).data('rating', data.rating);
+    // very messy code - change
+    $scope.graph.getElementById(data.id).data('rating',  data.rating);
+
+    if($scope.graph.getElementById(data.id).data('db_data') !== undefined)
+      $scope.graph.getElementById(data.id).data('db_data').rating = data.rating;
 
     // update the db_data of the node that is displayed in the modal
-    $scope.graph.getElementById(data.id).data('db_data', tagCorrectionFn(data) );
+    // $scope.graph.getElementById(data.id).data('db_data', tagCorrectionFn(data) );
 
   });
 
