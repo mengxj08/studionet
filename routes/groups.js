@@ -15,7 +15,7 @@ router.route('/')
   .get(auth.ensureAuthenticated, function(req, res){
     
     /*
-     *  Returns id, name, restricted, parentId, createdBy, requestingUserStatus
+     *  Returns id, name, restricted, parentId, createdBy, requestingUserStatus (think about this again!)
      *  Contextual to the user who is making the request (requesting user status)
      * 
      */

@@ -26,18 +26,19 @@ module.exports = function(passport){
   passport.serializeUser(function(user, done) {
 
     // serialize with user's openid which should be unique.
-    if(user.nusOpenId)
-      done(null, user.nusOpenId);  // for open id logins
+    if(user.isGuest)
+      done(null, user);  // for google logins
     else
-      done(null, user);     // for google logins
+      done(null, user.nusOpenId);     // for openId logins
 
   });
 
   passport.deserializeUser(function(nusOpenId, done) {
 
-    if(nusOpenId.name == undefined)
+    if(nusOpenId.google != undefined)
         done(null, nusOpenId );
     else{
+
         // cypher query to find user node by openid
         var query = [
           'MATCH (u:user {nusOpenId: {nusOpenIdParam}})',
@@ -186,6 +187,9 @@ module.exports = function(passport){
           newUser.google.token = token;
           newUser.google.name  = profile.displayName;
           newUser.google.email = profile.emails[0].value; // pull the first email
+          newUser.isGuest  = true;
+          newUser.nusOpenId = "GUEST-" + newUser.google.email; 
+          newUser.id = newUser.google.id; 
           return done(null, newUser);
       });
 

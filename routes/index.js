@@ -46,7 +46,9 @@ router.get('/user', auth.ensureAuthenticated, function(req, res){
 });
 
 router.get('/guest', auth.ensureAuthenticated, function(req, res, next){
-  res.render('guest');
+    res.render('guest', {
+       user: req.user
+    });
 });
 
 

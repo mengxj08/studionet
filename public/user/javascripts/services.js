@@ -40,9 +40,9 @@ angular.module('studionet')
 	};
 
 	o.getUser = function(){
+
 		return $http.get('/api/profile/').success(function(data){
 			angular.copy(data, o.user);
-			//console.log("Profile Refreshed");
 			notifyObservers();
 		});
 	};

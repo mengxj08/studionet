@@ -15,7 +15,8 @@
   <div class='graph-controls'>
 
     <!-- Profile -->
-    <img class="graph-nav-control icon" src={{me.avatar}} data-toggle="modal" data-target="#profileModal" data-backdrop="static" data-keyboard="false" uib-tooltip='{{me.nickname ? me.nickname : me.name}}' tooltip-placement='left'></i>
+    <img class="graph-nav-control icon" ng-if='!me.isGuest' src={{me.avatar}} data-toggle="modal" data-target="#profileModal" data-backdrop="static" data-keyboard="false" uib-tooltip='{{me.nickname ? me.nickname : me.name}}' tooltip-placement='left'></i>
+    <img class="graph-nav-control icon" ng-if='me.isGuest' src="../assets/images/avatar.png" uib-tooltip='Guest' tooltip-placement='left'></i>
 
     <br>
 
@@ -23,7 +24,9 @@
     <i class="graph-nav-control icon fa fa-star" data-toggle="modal" data-target="#contributionsActivityBoard" data-backdrop="static" data-keyboard="false"  uib-tooltip='Node Activity' tooltip-placement='left'></i>
     <i class="graph-nav-control icon fa fa-arrows-alt" ng-click='resetGraph(); zoomLevel=100.00' uib-tooltip='Fit Graph' tooltip-placement='left'></i>
     <i class="graph-nav-control icon fa fa-filter" data-toggle="modal" data-target="#filterModal" data-backdrop="static" data-keyboard="false" uib-tooltip='Filter Nodes' tooltip-placement='left'></i>
-    <i class="graph-nav-control icon fa fa-plus" data-toggle="modal" data-target="#createContribution" data-backdrop="static" data-keyboard="false" uib-tooltip='New Node' tooltip-placement='left'></i> 
+    <i class="graph-nav-control icon fa fa-plus" ng-if='!me.isGuest' data-toggle="modal" data-target="#createContribution" data-backdrop="static" data-keyboard="false" uib-tooltip='New Node' tooltip-placement='left'></i> 
+
+    <i class="graph-nav-control icon fa fa-plus" ng-if='me.isGuest' uib-tooltip='New Node (only open to NUS users)' tooltip-placement='left'></i> 
 
   </div>
 

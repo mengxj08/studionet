@@ -51,6 +51,9 @@ angular.module('studionet')
 			
 			$scope.user = profile.user;
 
+			if($scope.user.isGuest== true)
+				return;
+
 			updateProfile = function(){
 			  $scope.user = profile.user;
 			};

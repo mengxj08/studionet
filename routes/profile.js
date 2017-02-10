@@ -10,6 +10,10 @@ var db = require('seraph')({
 // route: /api/profile (profile summary)
 // get information about the current user
 router.get('/', auth.ensureAuthenticated, function(req, res){
+
+  if(req.user.isGuest)
+    res.send(req.user);
+
   var query = [
     'MATCH (u:user) WHERE ID(u)={userIdParam}',
     'WITH u',

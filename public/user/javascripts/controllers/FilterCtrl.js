@@ -69,7 +69,7 @@ angular.module('studionet')
 
             var access = true; 
 
-            if( tag.restricted == true &&  group_hash[tag.group].requestingUserStatus == null )
+            if( tag.restricted == true/* &&  group_hash[tag.group].requestingUserStatus == null */)
               access = false;
 
             // check if tag restricted and if yes, if user has access to tag

@@ -68,13 +68,13 @@
 
                 <div class='row text-right'>
                   <span ng-hide='replyMode || updateMode || authorMode'>
-                      <button type="button" ng-click="showReplyModal(contribution.id)" class="btn btn-default modal-button">Add</button>
+                      <button type="button" ng-click="showReplyModal(contribution.id)" class="btn btn-default modal-button" ng-disabled="user.isGuest">Add</button>
                       
                       <!-- if author -->
-                      <button type="button" ng-click="showUpdateModal(contribution.id)" class="btn btn-default modal-button" ng-if="(user.id == contribution.db_data.createdBy)">Edit</button>
+                      <button type="button" ng-click="showUpdateModal(contribution.id)" class="btn btn-default modal-button" ng-if="(user.id == contribution.db_data.createdBy)" ng-disabled="user.isGuest">Edit</button>
 
                       <button type="button" ng-click="deleteContribution(contribution.db_data.id)" class="btn btn-default modal-button"
-                      ng-if="(user.id == contribution.db_data.createdBy)" data-dismiss='modal'>Delete</button>
+                      ng-if="(user.id == contribution.db_data.createdBy)" data-dismiss='modal' ng-disabled="user.isGuest">Delete</button>
                   </span>
 
                   <button type="button" ng-click="close();" data-dismiss='modal' class="btn btn-default modal-button">Close</button>
