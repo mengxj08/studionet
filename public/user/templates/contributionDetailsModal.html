@@ -23,7 +23,7 @@
                     </div>
 
                     <div class="col-sm-4 text-right statisticsContainer" ng-class="{'hasStars':user.id != contribution.db_data.createdBy}">
-                      <p id='rating' uib-rating ng-model="$parent.rate" max="$parent.max" read-only="false" on-hover="$parent.hoveringOver(value)" on-leave="overStar = null" ng-click='rateContribution($parent.rate, contribution.db_data.id)' ng-if='contribution.db_data.createdBy != user.id'></p>
+                      <p id='rating' uib-rating ng-model="$parent.rate" max="$parent.max" read-only="false" on-hover="$parent.hoveringOver(value)" on-leave="overStar = null" ng-click='rateContribution($parent.rate, contribution.db_data.id)' ng-if='contribution.db_data.createdBy != user.id && user.isGuest != true'></p>
                       <span id='avg_rating' class="pop" 
                           uib-popover-template="'/user/templates/statistics.html'" popover-trigger="'mouseenter'" 
                           popover-placement="bottom-right" popover-class='statsPopover' popover-append-to-body='true'>
