@@ -449,3 +449,11 @@ tbody{
 	border-bottom: 2px solid #b9b9b9;
 	background-color: #3B3B36;
 }
+
+/*
+ * ng-tags-input.css override
+ * to make more tags visible
+*/
+tags-input .autocomplete .suggestion-list{
+  max-height: 350px !important;
+}
