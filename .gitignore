@@ -15,4 +15,4 @@ studionet.sublime-project
 syntheticdb.mdown
 logs/
 views/.gitignore
-config/auth.js
+misc/
