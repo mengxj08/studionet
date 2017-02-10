@@ -22,12 +22,20 @@ angular.module('studionet')
 
 
 
-
-
         ////// ---- Modal related functions
 
-        $scope.setData = function(data, activeContribution){
-            $scope.contribution = data[0];
+        $scope.setData = function(node){
+            
+            $scope.contribution = node.data();
+            $scope.replies = [];
+            for(var i=0; i<node.incomers().edges().length; i++){
+                var reply = node.incomers().edges()[i];
+                if(reply.data('name') == "COMMENT_FOR")
+                  $scope.replies.push( reply.source().id() );
+            }
+            console.log($scope.replies);
+            //$scope.parents = node.outgoers();
+
             $scope.rate = getRating( $scope.contribution.id );   // check if the user has already rated this contribution
             $scope.author = users.getUser( $scope.contribution.db_data.createdBy, false );  // get the author details
             contribution.updateViewCount($scope.contribution.db_data.id);    // update the viewcount of the contribution
@@ -200,17 +208,46 @@ angular.module('studionet')
         ////// -------- Additional components (Read, Update, Delete)
 
         $scope.contributionData = { attachments: [], tags: []}; //store the data of replying information
-        
+        $scope.comment = "";
+      
+        //--------------- Function: - Comment
+        $scope.postComment = function(comment){
+            if(!comment) return;
+
+            var commentData = { attachments: [], tags: [] }
+
+            commentData.title = "Re: " + $scope.contribution.db_data.title;
+            commentData.body = comment;
+
+
+            commentData.ref = $scope.contribution.id;
+
+            commentData.contentType = 'text'; /// default
+            commentData.tags = [];
+
+            // default relationship type for everything
+            commentData.refType = 'COMMENT_FOR';
+
+            console.log(commentData);
+
+            contribution.createContribution( commentData ).then(function(res){
+                  
+                  spinner.stop();
+                  sendMessage( {status: 200, message: "Successfully commented on node" } );
+                  $scope.replies.push("new comment");
+
+            }, function(error){
+
+                  sendMessage( {status: 200, message: "Error commenting on node. Please try again." } );
+                  $scope.close();
+            }); 
+        }
+
 
         //----------------- Function: - Reply 
         $scope.replyMode = false;
         $scope.showReplyModal = function(id){
-            $scope.replyMode = true;
-            
-
-            // call $anchorScroll()
-            /*$location.hash('reply-modal');
-            $anchorScroll();*/
+          $scope.replyMode = true;
         }
 
         $scope.replyToContribution = function(contributionData, parentId){
@@ -254,6 +291,7 @@ angular.module('studionet')
                     $scope.close();
               }); 
         };
+
 
         //----------------- Function: - Update
         $scope.updateMode = false;

@@ -175,6 +175,8 @@ var computeLabel = function(ele){
 
 
 var edgeColorFn = function(ele){
+    if(ele.data('name') == "COMMENT_FOR")
+      return "#3535C9";
     if(ele.data().properties.createdBy != undefined)
       return '#00FF60';
     else
@@ -216,7 +218,7 @@ var graph_style = {
           .selector('edge')
             .css({
               'curve-style': 'haystack',
-              'line-color': '#923F31',
+              'line-color': edgeColorFn, //'#923F31',
               'width': 0.2
             })     
 

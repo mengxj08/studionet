@@ -179,17 +179,12 @@ angular.module('studionet')
 
         $scope.graph.elements().removeClass('highlighted');
         
-        var data = node.data();
-
-        var nodeTree = [];
-        nodeTree.push(data);
-
         // if data is already defined, donot load again - directly show modal
         // db_data stores additional-data from the server
         if(node.data('db_data')){
 
           if($scope.viewMode == false)
-            showDetailsModal( nodeTree, node.id() );
+            showDetailsModal( node );
           else
             console.warn("Modal already showing");
 
@@ -200,7 +195,7 @@ angular.module('studionet')
           // check again after 400ms
           setTimeout(function(){
             if(node.data('db_data') !== undefined)
-              showDetailsModal( nodeTree, node.id() );
+              showDetailsModal( node );
           }, 400);
           
         }
