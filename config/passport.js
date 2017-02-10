@@ -2,6 +2,11 @@ var OpenIDStrategy = require('passport-openid').Strategy;
 var BasicStrategy = require('passport-http').BasicStrategy;
 var LocalStrategy = require('passport-local').Strategy;
 
+// -- Google Authentication
+var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+var configAuth = require('./auth');
+
+
 
 var db = require('seraph')({
   server: process.env.SERVER_URL || 'http://localhost:7474/', // 'http://studionetdb.design-automation.net'
@@ -19,30 +24,37 @@ module.exports = function(passport){
   //   have a database of user records, the OpenID identifier is serialized and
   //   deserialized.
   passport.serializeUser(function(user, done) {
+
     // serialize with user's openid which should be unique.
-    //console.log('serializing user: ', user.nusOpenId);
-    done(null, user.nusOpenId);
+    if(user.nusOpenId)
+      done(null, user.nusOpenId);  // for open id logins
+    else
+      done(null, user);     // for google logins
 
   });
 
   passport.deserializeUser(function(nusOpenId, done) {
-    // deserialize using the user's openid to retrieve user info from neo4j db.
-    //console.log('deserializing user: ', nusOpenId);
 
-    // cypher query to find user node by openid
-    var query = [
-      'MATCH (u:user {nusOpenId: {nusOpenIdParam}})',
-      'RETURN u'
-    ].join('\n');
+    if(nusOpenId.name == undefined)
+        done(null, nusOpenId );
+    else{
+        // cypher query to find user node by openid
+        var query = [
+          'MATCH (u:user {nusOpenId: {nusOpenIdParam}})',
+          'RETURN u'
+        ].join('\n');
 
-    var params = {
-      nusOpenIdParam: nusOpenId
-    };
+        var params = {
+          nusOpenIdParam: nusOpenId
+        };
 
-    db.query(query, params, function(err, res){
-      // queries return an array, so return the first object in the array
-      done(err, res[0]);
-    });
+        db.query(query, params, function(err, res){
+          // queries return an array, so return the first object in the array
+          done(err, res[0]);
+        });      
+    }
+
+
   });
 
   // Use the OpenIDStrategy within Passport.
@@ -151,4 +163,36 @@ module.exports = function(passport){
       });
     }
   ));
+
+  // =========================================================================
+  // GOOGLE ==================================================================
+  // =========================================================================
+  passport.use(new GoogleStrategy({
+
+      clientID        : configAuth.googleAuth.clientID,
+      clientSecret    : configAuth.googleAuth.clientSecret,
+      callbackURL     : configAuth.googleAuth.callbackURL,
+
+  },
+  function(token, refreshToken, profile, done) {
+
+      // make the code asynchronous
+      // User.findOne won't fire until we have all our data back from Google
+      process.nextTick(function() {
+          var newUser          = {google: {}};
+
+          // set all of the relevant information
+          newUser.google.id    = profile.id;
+          newUser.google.token = token;
+          newUser.google.name  = profile.displayName;
+          newUser.google.email = profile.emails[0].value; // pull the first email
+          return done(null, newUser);
+      });
+
+  }));
+
+
+
+
+
 }

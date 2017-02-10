@@ -45,6 +45,11 @@ router.get('/user', auth.ensureAuthenticated, function(req, res){
 	res.render('user');
 });
 
+router.get('/guest', auth.ensureAuthenticated, function(req, res, next){
+  res.render('guest');
+});
+
+
 // for testing - remove for deployment
 //if (process.env.NODE_ENV === 'test'){
   router.post('/auth/local', passport.authenticate('local', {failureRedirect: '/'}),
@@ -106,6 +111,35 @@ router.get('/auth/openid/return',
       // Always redirect to user-page async
       res.redirect('/user'); 
   });
+
+
+
+// =====================================
+// GOOGLE ROUTES =======================
+// =====================================
+// send to google to do the authentication
+// profile gets us their basic information including their name
+// email gets their emails
+router.get('/auth/google', passport.authenticate('google', { scope : ['profile', 'email'] }));
+
+// the callback after google has authenticated the user
+router.get('/auth/google/callback',
+        passport.authenticate('google', {
+                successRedirect : '/guest',
+                failureRedirect : '/'
+        }));
+
+// route middleware to make sure a user is logged in
+function isLoggedIn(req, res, next) {
+
+    // if user is authenticated in the session, carry on
+    if (req.isAuthenticated())
+        return next();
+
+    // if they aren't redirect them to the home page
+    res.redirect('/');
+}
+
 
 // GET logout
 // ends the express session
