@@ -7,9 +7,7 @@ angular.module('studionet')
         $scope.random = Math.random();   // to prevent caching of profile images
 
         $scope.contribution = undefined, $scope.author = undefined, $scope.rate = undefined;
-
-
-
+        $scope.usersHash = users.usersHash;
 
 
 
@@ -29,12 +27,14 @@ angular.module('studionet')
             $scope.contribution = node.data();
             $scope.replies = [];
             for(var i=0; i<node.incomers().edges().length; i++){
-                var reply = node.incomers().edges()[i];
-                if(reply.data('name') == "COMMENT_FOR")
-                  $scope.replies.push( reply.source().id() );
+                var replyLink = node.incomers().edges()[i];
+                if(replyLink.data('name') == "COMMENT_FOR"){
+                  var commentId = replyLink.source().id()
+                  contribution.getContribution(commentId);
+                  $scope.replies.push($scope.graph.getElementById(commentId).data());
+                }
             }
             console.log($scope.replies);
-            //$scope.parents = node.outgoers();
 
             $scope.rate = getRating( $scope.contribution.id );   // check if the user has already rated this contribution
             $scope.author = users.getUser( $scope.contribution.db_data.createdBy, false );  // get the author details
@@ -62,9 +62,6 @@ angular.module('studionet')
             $scope.$emit(BROADCAST_VIEWMODE_OFF, {} );
 
         };
-
-
-
 
 
 
@@ -222,19 +219,26 @@ angular.module('studionet')
 
             commentData.ref = $scope.contribution.id;
 
-            commentData.contentType = 'text'; /// default
+            commentData.contentType = 'comment'; /// default
             commentData.tags = [];
 
             // default relationship type for everything
             commentData.refType = 'COMMENT_FOR';
 
-            console.log(commentData);
-
             contribution.createContribution( commentData ).then(function(res){
                   
                   spinner.stop();
                   sendMessage( {status: 200, message: "Successfully commented on node" } );
-                  $scope.replies.push("new comment");
+                  
+                  // add to comments
+                  $scope.replies.push({db_data: { 'createdBy': $scope.user.id, 'body': commentData.body, 'lastUpdated': Date.now() }});
+
+                  // clear the comment
+                  comment = "";
+
+                  // open the accordian
+                  
+
 
             }, function(error){
 
@@ -299,6 +303,7 @@ angular.module('studionet')
           
               $scope.updateMode = true;
               $scope.contributionData = jQuery.extend({}, $scope.contribution.db_data);
+              $scope.contributionData.contentType = $scope.contribution.type; 
 
               if($scope.contributionData.attachments[0].id == null){
                 $scope.contributionData.attachments = [];
@@ -322,8 +327,6 @@ angular.module('studionet')
 
         $scope.updateContribution = function(updateContribution){
 
-          updateContribution.contentType = 'text'; /// default
-
           if(!updateContribution.title || !updateContribution.body){
             alert("Please input the title or content of the node!");
             return;
@@ -346,7 +349,6 @@ angular.module('studionet')
 
           spinner.spin(target);
           contribution.updateContribution(updateContribution).then(function(res){
-             
 
               spinner.stop();
               sendMessage( {status: 200, message: "Successfully updated node." } );

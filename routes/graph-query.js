@@ -63,9 +63,9 @@ var graphQuery = function (query, callback){
         if (idIndex(nodes, n.id) == null)
             nodes.push({
                 id: n.id,
-                type: n.labels[0],
                 name: setName(n),
                 onSpiral: -1,
+                type: n.properties.contentType,//n.labels[0],
                 rating: n.properties.rating, 
                 createdBy: n.properties.createdBy
             });

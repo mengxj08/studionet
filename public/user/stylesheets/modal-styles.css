@@ -282,3 +282,12 @@ tags-input .tags{
     width: 300px;
     z-index: 1000000;
 }
+
+
+/*
+ * Animations
+ */
+
+.ng-hide-remove      { animation:0.5s fadeInUp ease; }
+.ng-hide-add         { animation:0.5s fadeOutDown ease; }
+

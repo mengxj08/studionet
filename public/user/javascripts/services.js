@@ -222,6 +222,22 @@ angular.module('studionet')
 		contribution: {}
 	};
 
+	o.getContribution = function(id){
+		
+		var node = graph.graph.getElementById(id);
+
+		if(node.data('db_data') == undefined){
+			contributions.getContribution(id).then(function(res){
+
+			  node.data( 'db_data', tagCorrectionFn(res.data) );
+			  console.log('fetched data');
+			});					
+		}
+		else
+			console.log("data already defined");
+
+	}
+
 	o.createContribution = function(new_contribution){
 
 		var formData = new FormData();
@@ -243,23 +259,18 @@ angular.module('studionet')
 	    })
 	    .success(function(res) {
 
-	    	// mark in graph
-	    	//console.log("Selecting in graph", res.id, res.id);
+				// refresh graph
+				graph.getGraph().then(function(){	graph.selectNode(res.id);	});
 
-			// refresh graph
-			graph.getGraph().then(function(){	graph.selectNode(res.id);	});
+				// refresh tags
+				tags.getAll();
+				
+				// refresh profile
+				profile.getUser();
 
-			// refresh tags
-			tags.getAll();
-			
-			// refresh profile
-			profile.getUser();
+				// refresh contributions
+				contributions.getAll();
 
-			// refresh contributions
-			contributions.getAll();
-
-			// send success
-			return;  
 	    })
 	    .error(function(error){
 			throw error;
@@ -646,9 +657,6 @@ angular.module('studionet')
 
 	// make the graph
 	var makeGraph = function( container ){
-
-		console.log("Making graph", new Date());
-
 
 		// takes either data from filters or contribution.graph data
 		o.graph = STUDIONET.GRAPH.makeGraph( o.graph_data, container ); // defaults to cy

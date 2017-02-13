@@ -173,6 +173,13 @@ var computeLabel = function(ele){
    return ele.data().name.substr(0,10) + "..." /*+ " (" +  ele.predecessors().length/2 + ")";*///ele.data().name.substr(0,5)+"...";
 }
 
+var computeShapeFn = function(ele){
+  if(ele.data('type') == "comment")
+    return "star";
+  else
+    return "ellipse";
+}
+
 
 var edgeColorFn = function(ele){
     if(ele.data('name') == "COMMENT_FOR")
@@ -197,6 +204,7 @@ var graph_style = {
           
           .selector('node')
             .css({
+              'shape': computeShapeFn,
               'width': computeSizeFn,
               'height': computeSizeFn,
               'text-valign': 'bottom',
@@ -233,6 +241,13 @@ var graph_style = {
             .css({
               'background-color' : 'yellow',// '#A3BC05',//'#AFAFAF',
               'border-color': '#A3BC05',
+            })
+
+          .selector('node.read')
+            .css({
+              //'background-color' : '#5E5E5E',
+              'width' : 6, 
+              'height' : 6
             })
 
           // selected
@@ -277,6 +292,13 @@ var graph_style = {
               'height' : '2'
             })
 
+          .selector('node.glow.read')
+            .css({
+              //'background-color' : '#5E5E5E',
+              'width' : 7.5, 
+              'height' : 7.5
+            })
+
 
           .selector('edge.highlighted')
             .css({
@@ -289,6 +311,7 @@ var graph_style = {
               'arrow-scale': 0.5,
               'width': 1
             })
+
 
 }
 
@@ -334,15 +357,6 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer, graphLayout, graphFn,
     var nodes = data.nodes.map( function(node){ return createGraphNode(node) } );
     var edges = data.links.map( function(edge){ return createGraphEdge(edge) } );
     
-    //console.log(edges.length, "before sorting");
-    /*edges = edges.filter(function(edge){
-        if(edge.data.properties.createdBy == undefined)
-          return true; 
-        else 
-          return false;
-    });
-*/
-
     graph_style.elements = {
         nodes: nodes,
         edges: edges

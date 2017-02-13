@@ -9,8 +9,6 @@ var BROADCAST_VIEWMODE_OFF = "contribution-viewer-closed";
 var BROADCAST_MESSAGE = "message-sent";
 
 
-
-
 angular.module('studionet')
 
 /*
@@ -183,6 +181,8 @@ angular.module('studionet')
         // db_data stores additional-data from the server
         if(node.data('db_data')){
 
+          node.addClass('read');
+
           if($scope.viewMode == false)
             showDetailsModal( node );
           else
@@ -194,8 +194,10 @@ angular.module('studionet')
 
           // check again after 400ms
           setTimeout(function(){
-            if(node.data('db_data') !== undefined)
+            if(node.data('db_data') !== undefined){
+              node.addClass('read');
               showDetailsModal( node );
+            }
           }, 400);
           
         }
@@ -217,7 +219,18 @@ angular.module('studionet')
 
       // redraw graph
       var threshold = 20; 
+      //myGraphWorker.postMessage([ threshold, supernode.contribution])
       STUDIONET.GRAPH.draw_graph($scope.graph, threshold, supernode.contribution);
+
+
+      // mark the read nodes
+      for(var i=0; i < profile.activity.length; i++ ){
+        if(profile.activity[i].type == "VIEWED" || profile.activity[i].type == "CREATED")
+          $scope.graph.getElementById(profile.activity[i].end).addClass('read');
+
+      }
+      
+
     
       // Display the entire node name
       $scope.graph.on('mouseover', 'node', function(evt){

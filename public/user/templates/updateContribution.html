@@ -3,13 +3,11 @@
   
   <div class="modal-content">
 
-    <div class="modal-header"><h4 class="modal-title">Update Contribution</h4></div>
-
     <div class="modal-body">
         <div class='row editor update'>
             
             <!-- Title -->
-            <div class='modal-section'>
+            <div class='modal-section' ng-if="contributionData.contentType != 'comment'">
               <!-- <label> Title </label> -->
               <input class='wide' value='Title' ng-model="contributionData.title">
             </div>
@@ -17,11 +15,13 @@
             <!-- Content -->
             <div class='modal-section'>
               <!-- <label> Content </label> -->
-              <div text-angular ng-model="contributionData.body" class="textAngular"></div>
+              <div text-angular ng-model="contributionData.body" class="textAngular" ng-if="contributionData.contentType != 'comment'"></div>
+              <textarea ng-if="contributionData.contentType == 'comment'" name="comment" style='min-height: 80px;' ng-model='contributionData.body' maxlength="600"></textarea>
+              <h6 ng-if="contributionData.contentType == 'comment'">{{600 - contributionData.body.length}} characters left</h6>
             </div>
 
             <!-- attachments -->
-            <div class='modal-section'>
+            <div class='modal-section' ng-if="contributionData.contentType != 'comment'">
               <!-- should be different from create / reply editor -->
               <!-- <label> Attachments <small>({{ contributionData.attachments.length }} file(s) uploaded)</small> </label>
               <div class="button btn-sm" ngf-select ng-model="contributionData.attachments" ngf-multiple="true">
@@ -42,7 +42,7 @@
             </div>
             
             <!-- tags -->
-            <div class='modal-section'>
+            <div class='modal-section' ng-if="contributionData.contentType != 'comment'">
               <label> Tags <small>( {{ contributionData._tags.length || 0 }} tag(s) added) </small></label>
               <tags-input class='tags-input' class="bootstrap"
                 type='text'
