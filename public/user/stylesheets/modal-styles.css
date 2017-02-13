@@ -288,6 +288,10 @@ tags-input .tags{
  * Animations
  */
 
-.ng-hide-remove      { animation:0.5s fadeInUp ease; }
-.ng-hide-add         { animation:0.5s fadeOutDown ease; }
+.animate.ng-hide-remove      { animation:0.5s fadeInUp ease; }
+.animate.ng-hide-add         { animation:0.5s fadeOutDown ease; }
+
+.animate-if.ng-enter, .animate-if.ng-leave {
+  animation:0.5s fadeInUp ease; 
+}
 

@@ -175,7 +175,7 @@ var computeLabel = function(ele){
 
 var computeShapeFn = function(ele){
   if(ele.data('type') == "comment")
-    return "star";
+    return "rectangle";
   else
     return "ellipse";
 }

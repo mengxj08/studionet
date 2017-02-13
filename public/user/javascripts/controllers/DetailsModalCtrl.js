@@ -46,6 +46,7 @@ angular.module('studionet')
             $scope.contributionData = { attachments: [], tags: []}; //store the data of replying information
             $scope.replyMode = false;
             $scope.updateMode = false;
+            $scope.commentMode = false;
         }
 
 
@@ -208,6 +209,11 @@ angular.module('studionet')
         $scope.comment = "";
       
         //--------------- Function: - Comment
+        $scope.commentMode = false;
+        $scope.showCommentModal = function(){
+          $scope.commentMode = true;
+        }
+
         $scope.postComment = function(comment){
             if(!comment) return;
 
@@ -236,8 +242,8 @@ angular.module('studionet')
                   // clear the comment
                   comment = "";
 
-                  // open the accordian
-                  
+                  $scope.close();
+
 
 
             }, function(error){
@@ -250,7 +256,7 @@ angular.module('studionet')
 
         //----------------- Function: - Reply 
         $scope.replyMode = false;
-        $scope.showReplyModal = function(id){
+        $scope.showReplyModal = function(id, type){
           $scope.replyMode = true;
         }
 

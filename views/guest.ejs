@@ -7,15 +7,14 @@
         body        { padding-top:80px; word-wrap:break-word; }
     </style>
     <!-- Theme -->
-    <link rel="stylesheet" type="text/css" href="../assets/css/vendor.css">
-    <link rel="stylesheet" type="text/css" href="../assets/css/flat-admin.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
 </head>
 <body>
 <div class="container">
 
     <div class="page-header text-center">
-        <h1><span class="fa fa-anchor"></span> Profile Page</h1>
-        <a href="/logout" class="btn btn-default btn-sm">Logout</a>
+        <h1>Hi <%= user.google.name %>!</h1>
     </div>
 
     <div class="row">
@@ -23,22 +22,34 @@
         <!-- GOOGLE INFORMATION -->
         <div class="col-sm-6">
             <div class="well">
-                <h3 class="text-danger"><span class="fa fa-google-plus"></span> Google</h3>
+                <h3 class="text-danger"><span class="fa fa-google-plus"></span>Google Details</h3>
 
                     <p>
-                        <strong>email</strong>: <%= user.google.email %><br>
-                        <strong>name</strong>: <%= user.google.name %><br>
-                        <strong>isGuest</strong>: <%= user.isGuest %><br>
-                        <strong>nusOpenId (dummy)</strong>: <%= user.nusOpenId %><br>
+                        <strong>Email</strong>: <%= user.google.email %><br>
+                        <strong>Name</strong>: <%= user.google.name %><br>
+                        <strong>Status</strong>: Guest<!-- <%= user.isGuest %> --><br>
+                        <!-- <strong>nusOpenId (dummy)</strong>: <%= user.nusOpenId %><br>
                         <strong>id</strong>: <%= user.google.id %><br>
-                        <strong>token</strong>: <%= user.google.token %><br>
+                        <strong>token</strong>: <%= user.google.token %><br> -->
                     </p>
 
             </div>
         </div>
 
-    </div>
+        <div class="col-sm-6">
+            <div class="well">
+                <h3 class="text-danger"><span class="fa fa-google-plus"></span>Studionet</h3>
 
+                    <p>Studionet is a website for sharing and linking ideas and is currently available to members who have been added to the database.
+                    Please send a mail to <a href='mailto:studionet.nus@gmail.com' target='_blank'>studionet.nus@gmail.com</a> to get access. </p>
+
+            </div>
+        </div>
+
+    </div>
+    <div class="row text-center">
+        <a href="/logout" class="btn btn-default btn-sm">Logout</a>
+    </div>
 </div>
 </body>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>

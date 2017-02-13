@@ -64,32 +64,15 @@
                     </div>
                 </div>
 
-                <br><br><br>
-
-                <div class='modal-section addComment' style='border-top: 1px solid #B9B9B9; padding: 0px 0px 0px 40px;'>
-                  <div class='row pointer' style='margin-top: 15px;'>
-                    <div class='header' ng-click='editing=!editing' >
-                      <div class='profile' style='display: inline-block;'><img src='{{user.avatar}}' style='width: 30px; height: 30px; border-radius: 50%; margin-right: 15px;'></div>
-                      <b><div class='title' style='display: inline-block; '>{{ editing ? user.name : "Write a response..." }}</div></b>
-                    </div>
-                    <div class='comment-editor animate' ng-show='editing==true;' style='margin-top: 15px;'>
-                        <textarea name="comment" style='min-height: 80px;' ng-model='comment' maxlength="600"></textarea>
-                        <h6>{{600 - comment.length}} characters left</h6>
-                        <div class='text-right'>
-                          <button type="button" class="btn btn-default modal-button" ng-click='postComment(comment);editing=false;' ng-disabled="comment.length==0">Post</button>
-                          <button type="button" class="btn btn-default modal-button" ng-click='editing=false;'>Cancel</button>
-                        </div>
-                    </div>
-                  </div>
-                </div>
 
                 <br>
 
-                <div class='modal-section comments' ng-if='replies.length > 0'>
+                <!-- <div class='modal-section comments' ng-if='replies.length > 0'>
                     <h6 class='text-center pointer background-color: white;' ng-click='showComments=!showComments' style='border: 1px solid #B9B9B9; height: 30px;line-height: 30px;'>Other Comments ({{replies.length}})</h6>
 
-                    <div class='modal-section addComment' ng-show='showComments' ng-repeat='reply in replies | orderBy: db_data.lastUpdated' style='padding: 0px 10px 0px 10px;'>
+                    <div class='modal-section addComment animate' ng-show='showComments' ng-repeat='reply in replies | orderBy: db_data.lastUpdated' style='padding: 0px 10px 0px 10px;'>
                       <div class='row' style='margin-top: 15px;'>
+                        <div class='lastUpdated' style='font-size: 11px; color: #b6b6b6;display: inline-block; float: right'>Written on {{reply.db_data.lastUpdated | date: 'mediumDate'}}</div><br>
                         <div class='header'>
                           <div class='profile' style='display: inline-block;'><img src='{{usersHash[reply.db_data.createdBy].avatar}}' style='width: 30px; height: 30px; border-radius: 50%; margin-right: 15px;'></div>
                           <b>
@@ -98,19 +81,17 @@
                         </div>
                         <div class='comment-editor' style='margin-top: 15px;'>
                             <div ng-bind-html="reply.db_data.body"></div>
-                            <br>
-                            <div class='lastUpdated' style='display: inline-block; float: right'>Written on {{reply.db_data.lastUpdated | date: 'mediumDate'}}</div><br>
                         </div>
                       </div>
-                      <hr/>
                     </div>
-                </div>
+                </div> -->
 
-                <br>
+                <br><br>
 
                 <div class='row text-right'>
                   <span ng-hide='replyMode || updateMode || authorMode || editing'>
-                      <button type="button" ng-click="showReplyModal(contribution.id)" class="btn btn-default modal-button" ng-disabled="user.isGuest">Add</button>
+                      <!-- <button type="button" ng-click="showCommentModal(contribution.id)" class="btn btn-default modal-button" ng-disabled="user.isGuest">Comment</button> -->
+                      <button type="button" ng-click="showReplyModal(contribution.id)" class="btn btn-default modal-button" ng-disabled="user.isGuest">Add Post</button>
                       
                       <!-- if author -->
                       <button type="button" ng-click="showUpdateModal(contribution.id)" class="btn btn-default modal-button" ng-if="(user.id == contribution.db_data.createdBy)" ng-disabled="user.isGuest">Edit</button>
@@ -127,13 +108,16 @@
     </div> <!-- modal content ends -->
 
     <!-- reply to contribution -->
-    <ng-include src="'templates/contributionReply.html'" ng-if='replyMode'></ng-include>
+    <ng-include src="'templates/commentModal.html'" ng-if='commentMode'  class="animate-if"></ng-include>
+
+    <!-- reply to contribution -->
+    <ng-include src="'templates/contributionReply.html'" ng-if='replyMode' class="animate-if"></ng-include>
 
     <!-- update contribution -->
-    <ng-include src="'templates/updateContribution.html'" ng-if='updateMode'></ng-include>
+    <ng-include src="'templates/updateContribution.html'" ng-if='updateMode' class="animate-if"></ng-include>
 
     <!-- author profile -->
-    <ng-include src="'templates/profile.html'" ng-if='authorMode' ng-controller='ProfileCtrl' ng-init='setUser(contribution.db_data.createdBy, false)' ng-cloak></ng-include>
+    <ng-include src="'templates/profile.html'" ng-if='authorMode'  class="animate-if" ng-controller='ProfileCtrl' ng-init='setUser(contribution.db_data.createdBy, false)' ng-cloak></ng-include>
 
 </div>
 

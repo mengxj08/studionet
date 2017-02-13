@@ -1,0 +1,26 @@
+<!-- Update Modal -->
+<div id='comment-modal' class="modal-dialog modal-content">
+  
+  <div class="modal-content">
+
+    <div class="modal-body">
+        <div class='row editor update'>
+
+            <!-- Content -->
+            <div class='modal-section'>
+              <textarea name="comment" style='min-height: 80px;' ng-model='comment' maxlength="600"></textarea>
+              <h6>{{600 - contributionData.body.length}} characters left</h6>
+            </div>
+
+            <div class='row text-right modal-section'>
+                <button type="button" ng-click="postComment(comment);" class="btn btn-default modal-button" data-dismiss='modal'>Submit</button>
+                <button type="button" class="btn btn-default modal-button" ng-click='cancel()' >Cancel</button>
+            </div>
+
+        </div>
+    </div>
+
+
+  
+  </div>
+</div>
