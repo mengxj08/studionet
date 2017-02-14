@@ -1,0 +1,104 @@
+<!-- actual graph container -->
+<div class='graph-container' ng-init='graphInit()' ng-show='!me.isGuest'> 
+
+  <!-- Graph -->
+  <div id='cy'></div>
+
+  <!-- sidebar -->
+  <div class='graph-controls'>
+
+    <!-- Profile -->
+    <img class="graph-nav-control icon" ng-if='!me.isGuest' src={{me.avatar}} data-toggle="modal" data-target="#profileModal" data-backdrop="static" data-keyboard="false" uib-tooltip='{{me.nickname ? me.nickname : me.name}}' tooltip-placement='left'></i>
+    <img class="graph-nav-control icon" ng-if='me.isGuest' src="../assets/images/avatar.png" uib-tooltip='Guest' tooltip-placement='left'></i>
+
+    <br>
+
+    <!-- Leaderboards & Graph Controls -->
+    <i class="graph-nav-control icon fa fa-group" data-toggle="modal" data-target="#userActivityBoard" data-backdrop="static" data-keyboard="false"  uib-tooltip='User Activity' tooltip-placement='left'></i>
+    <i class="graph-nav-control icon fa fa-star" data-toggle="modal" data-target="#contributionsActivityBoard" data-backdrop="static" data-keyboard="false"  uib-tooltip='Node Activity' tooltip-placement='left'></i>
+    <i class="graph-nav-control icon fa fa-arrows-alt" ng-click='resetGraph(); zoomLevel=100.00' uib-tooltip='Fit Graph' tooltip-placement='left'></i>
+    <i class="graph-nav-control icon fa fa-filter" data-toggle="modal" data-target="#filterModal" data-backdrop="static" data-keyboard="false" uib-tooltip='Filter Nodes' tooltip-placement='left'></i>
+    <i class="graph-nav-control icon fa fa-plus" ng-if='!me.isGuest' data-toggle="modal" data-target="#newNode" data-backdrop="static" data-keyboard="false" uib-tooltip='New Node' tooltip-placement='left'></i> 
+    <i class="graph-nav-control icon fa fa-plus" ng-if='me.isGuest' uib-tooltip='New Node (only open to NUS users)' tooltip-placement='left'></i> 
+
+  </div>
+
+  <!-- information text pane -->
+  <div class='info-pane'>
+
+      <div id='brand'>Studionet</div>
+
+      <br>
+
+      <div id="message">{{message}}&nbsp;&nbsp;&nbsp;&nbsp;</div>
+      
+      <div id='zoom'><b>Z:</b> {{zoomLevel}} %</div>
+
+      <h6 id='filter-nodes-count' ng-show='filters.length==0' ng-cloak>{{graph.nodes().length || 0}} matching nodes found.</h6> 
+
+      <div id='filter-shortcuts' ng-show='filters.length>0'>
+        
+        <h6 id='filter-nodes-count'>{{matchingNodes.length}} matching node(s) found.</h6>
+        
+        <div class='filter-shortcut-container' ng-repeat="filter in filters">
+            
+            <!-- if filter is an array of values -->
+            <div ng-if='filter.type == "Array"'>
+                <!-- <h6 id='filter-nodes-count'>{{ filter.value.length }} {{filter.name}}(s) selected</h6> -->
+                <h6 class='clear-filter-shortcut' ng-repeat="fval in filter.value track by fval.id" ng-click="clearFilter(filter.code, fval.id)">{{ fval.name }}</h6>
+            </div>
+            
+            <!-- if filter is a range -->
+            <div ng-if='filter.type == "Range"'>
+                <!-- <h6 id='filter-nodes-count' >{{filter.name}} selected</h6> -->
+                <h6 class='clear-filter-shortcut' ng-click="clearFilter(filter.code)">{{filter.value}}</h6>
+            </div>
+            
+        </div>
+      </div>
+
+  </div>
+  
+  
+</div>
+
+<!--- Normal Bootstrap Modals : These modals are faster to load since the same template is being reused again and again -->
+<!-- todo: replace with angular-ui boostrap modals -->
+
+<!--- Filter Modal -->
+<!--- Included here to ensure everything is set up and modal loading is fast -->
+<ng-include src="'components/filters/filter.html'"></ng-include>
+
+<!--- Profile Modal  -->
+<!-- Should be placed here because this page gets loaded after resolving all promises for required data -->
+<ng-include src="'components/profile/profile.html'" ng-controller='ProfileController as profilectrl' ng-init='setUser(undefined, true)'></ng-include>
+
+<!-- Create Contribution Modal -->
+<ng-include src="'components/nodes/newnode.html'"></ng-include>
+
+<!-- Leaderboard Modals -->
+<ng-include src="'components/boards/users.html'" ng-controller='UserBoardController' ></ng-include>
+<ng-include src="'components/boards/nodes.html'" ng-controller='NodeBoardController' ></ng-include>
+
+
+
+<!--- Tags Templates -->
+<!-- Chips Template for Create / Edit / Reply Contributions -->
+<script type="text/ng-template" id="tags-template">
+  <div style="border-bottom: 1px solid #C2BDBD; margin-bottom: 3px;">
+        <i class="data.restricted ? icon fa fa-lock : icon fa fa-unlock" ng-if='data.group'></i> 
+        <i class="icon fa fa-tag" ng-if='!data.group'></i> 
+        <span ng-if='!data.group'>#</span>{{data.name.toLowerCase()}}( <small><i>{{data.contributionCount}} nodes</i></small> )
+  </div>
+</script>
+
+<!-- Chips Template for Create / Edit / Reply Contributions -->
+<script type="text/ng-template" id="tag-item-template">
+  <div style='border-radius: 0px'>
+        <i class="data.restricted ? icon fa fa-lock : icon fa fa-unlock" ng-if='data.group'></i> 
+        <i class="icon fa fa-tag" ng-if='!data.group'></i> 
+        <span ng-if='!data.group'>#</span>{{data.name.toLowerCase()}}
+  </div>
+</script>
+
+

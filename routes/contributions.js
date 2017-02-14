@@ -94,8 +94,13 @@ router.route('/')
 				console.log('[SUCCESS] Success in creating a new contribution for user id: ' + req.user.id);
 				req.contributionId = result[0].id;
 				res.status(200);
+
+        // broadcasting message
+        req.app.get('socket').emit('node_created', result[0]);
+
 				res.send( result[0] );
-				next();
+				
+        next();
 			}
 		}); 
 
@@ -588,7 +593,7 @@ router.route('/:contributionId/view')
       }
       else{
         
-        req.app.get('socket').emit('contribution_viewed',   { id: req.params.contributionId, user: req.user.id } );
+        req.app.get('socket').emit('node_viewed',   { id: req.params.contributionId, user: req.user.id } );
         
         res.send('Successfully viewed contribution id: ' + req.params.contributionId);
       }
@@ -628,9 +633,8 @@ router.route('/:contributionId/rate')
       else {
         console.log('[SUCCESS] Successfully rated contribution id ' + req.params.contributionId + ' with the rating ' + req.body.rating);
         
-        //res.send('Successfully rated contribution id ' + req.params.contributionId + ' with the rating ' + req.body.rating);
         // broadcasting message
-        req.app.get('socket').emit('contribution_rated', result[0]);       
+        req.app.get('socket').emit('node_rated', result[0]);       
         
         // sending the contribution data
         res.send(result[0]);

@@ -1,0 +1,98 @@
+<div id="filterModal" class="modal fade" role="dialog" ng-controller='FilterController' ng-init='init()'>
+  
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+
+        <div class="modal-body filter-container">
+
+            <div class='modal-info'>
+              <h5>Filters</h5>
+              <h6>Find nodes using different filters.</h6>
+            </div>
+
+            <div uib-accordion class="accordion modal-section"> 
+
+                  <!-- By Author Filter -->
+                  <div uib-accordion-group>
+                    <uib-accordion-heading> 
+                      <h5>Authors</h5>
+                    </uib-accordion-heading>
+
+                    <div uib-accordion class="sub-accordion"> 
+
+                       <div uib-accordion-group>
+                          <uib-accordion-heading> 
+                            <h5>Individual Users</h5>
+                          </uib-accordion-heading>
+                          <multiselect-searchtree data-input-model="users" multi-select="true"
+                                      data-output-model="$parent.$parent.$parent.$parent.$parent.$parent.selectedUsers" data-callback="CustomCallback(item, selectedItems)"
+                                      data-select-only-leafs="false" extra-buttons="false"></multiselect-searchtree> 
+                        </div>
+
+                        <div uib-accordion-group>
+                          <uib-accordion-heading> 
+                            <h5>Group Members</h5>
+                          </uib-accordion-heading>
+                          <multiselect-searchtree data-input-model="groups" multi-select="true"
+                                      data-output-model="$parent.$parent.$parent.$parent.$parent.$parent.selectedGroups" data-callback="CustomCallback(item, selectedItems)"
+                                      data-select-only-leafs="false" extra-buttons="false"></multiselect-searchtree> 
+                        </div>
+                    </div>
+                  </div>
+
+                  <!-- By Tags Filter -->
+                  <div uib-accordion-group>
+                    <uib-accordion-heading>
+                      <h5>Tags</h5>
+                    </uib-accordion-heading>
+                    <multiselect-searchtree id='tagFilter' data-input-model="tags" multi-select="true"
+                                  data-output-model="$parent.$parent.$parent.selectedTags" data-callback="CustomCallback(item, selectedItems)"
+                                  data-select-only-leafs="false" extra-buttons="false"></multiselect-searchtree>
+                  </div>
+
+                  <!-- By Ranges-->
+                  <div uib-accordion-group id='range-panel' class='modal-section'>
+
+                      <uib-accordion-heading>  
+                        <h5>Ranges</h5>  
+                      </uib-accordion-heading>
+
+                      <div class='col-sm-12'>
+
+                        <div id='dateFilter'>
+                          <br>
+                          <h6>Date Range</h6>  
+                          <div class='row'>
+                              <div class='col-sm-5'><input type="date" name="firstDate" ng-model='$parent.$parent.$parent.startDate'></div>
+                              <div class='col-sm-2'><h6 class='text-center'>-</h6></div>
+                              <div class='col-sm-5'><input type="date" name="lastDate" ng-model='$parent.$parent.$parent.endDate'></div>
+                          </div>
+                        </div>
+
+                        <div id='rating'>
+                          <br>
+                          <h6>Ratings</h6>  
+                          <angular-ranger id='ratingFilter' min="0" max="5" step="1" min-value=$parent.$parent.$parent.ratingMin max-value=$parent.$parent.$parent.ratingMax></angular-ranger>
+                        </div>
+
+                      </div>
+
+                  </div>
+
+                  <div class='row text-right modal-section'>
+                      <button type="button" ng-click="filterRequest();closeFilter();" class="btn btn-default modal-button" data-dismiss="modal">Filter</button>
+                      <button type="button" ng-click='clearFilter();closeFilter();' class="btn btn-default modal-button" data-dismiss="modal">Clear</button>
+                      <button type="button" ng-click='closeFilter();' class="btn btn-default modal-button" data-dismiss="modal">Close</button>
+                  </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    
+  </div>
+
+</div>

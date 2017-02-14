@@ -1,0 +1,77 @@
+<div id="newNode" class="modal fade createContribution" role="dialog" ng-controller="NewNodeController">
+<div class="modal-dialog">
+
+  <!-- Modal content-->
+  <div class="modal-content">
+
+       <div class="modal-body">
+
+        <div class='editor'>
+
+            <div class='modal-info'>
+              <h5>New Contribution</h5>
+            </div>
+
+            <!-- Title -->
+            <div class='modal-section'>
+              <!-- <label> Title </label> -->
+              <input class='wide' value='Title' ng-model="contributionData.title" placeholder="Enter a title">
+            </div>
+           
+
+            <!-- Content -->
+            <div class='modal-section'>
+              <!-- <label> Content </label> -->
+              <div text-angular ng-model="contributionData.body" class="textAngular"></div>
+            </div>
+
+
+            <!-- attachments -->
+            <div class='modal-section'>
+              <a type="button" ngf-select="uplodateFiles($files, contributionData)" ngf-multiple="true">
+              <i class='fa fa-paperclip'></i><h5 style='display: inline-block;'>&nbsp;&nbsp;&nbsp;&nbsp;Attachments <small>({{contributionData.attachments.length}} file(s) uploaded)</small></h5>
+              </a>
+              
+
+              <!--<input type="file" ngf-select="showUplodatedFiles" ng-model="contributionData.attachments" name="file" ngf-multiple="true">-->
+              <div class="attachments" ng-repeat="attachment in contributionData.attachments">
+                <h5 style="color: blue; width: 70%; display: inline-block;"><u>{{ attachment.name }} ({{ attachment.size/1000 }} KB)</u></h5>
+                <button style='float: right; display: inline-block;' class="btn btn-xs" ng-click="removeFiles(attachment)">X</button>
+              </div>
+            </div>
+
+            <!-- tags -->
+            <div class='modal-section'>
+              <h5> Tags <small>( {{ contributionData._tags.length || 0 }} tag(s) added) </small></h5>
+              <tags-input class='tags-input' class="bootstrap"
+                type='text'
+                ng-model="contributionData._tags"
+                display-property='name'
+                placeholder="Add a tag"
+                replace-spaces-with-dashes="false"
+                template='tag-item-template'>
+              <auto-complete source="loadTags($query)"
+                             min-length="0"
+                             debounce-delay="0"
+                             max-results-to-show="10000"
+                             load-on-down-arrow="true"
+                             load-on-focus="true"
+                             template="tags-template"></auto-complete>
+              </tags-input>
+            </div>
+
+
+            <div class='modal-section text-right'>
+                <button type="button" class="btn btn-default modal-button" ng-click='createContribution()' ng-disabled="!(contributionData.body && contributionData.title)" data-dismiss='modal'>Submit</button>
+                <button type="button" class="btn btn-default modal-button" data-dismiss='modal' ng-click='close()'>Cancel</button>
+            </div>
+
+        </div>
+
+      </div>
+  
+  </div>
+
+</div>
+</div>
+

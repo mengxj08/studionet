@@ -1,0 +1,110 @@
+<!-- Profile Modal -->
+<div id="profileModal" ng-class="own ? 'modal fade' : 'modal-dialog profile-dialog'" role="dialog">
+  
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+
+        <div class="modal-body">
+
+            <div class='profile-container'>
+
+                <div class='tagline'><small class='username no-margin-padding'>{{ tagline }}</small></div>
+
+                <br>
+
+                <!-- Profile Details -->
+                <div class='row profile-header'>
+                  
+                  <div class='col-xs-4 profile-details-container no-margin-padding'>
+                        <h5 class='username no-margin-padding'>{{ user.name }}</h4>
+                        <h5 class='username no-margin-padding'>Known as: <br>{{ user.nickname }}</h4>
+                  </div>
+
+                  <div class='col-xs-3'>
+                        <h6 class='stat-name no-margin-padding'>Total Views:  <b>{{views}}</b> </h6>
+                        <h6 class='stat-name no-margin-padding'>Average Rating:  <b>{{ rating == "NaN" ? "No Rating" : rating }}</b> </h6>
+                        <h6 class='stat-name no-margin-padding' ng-if='level'>Level:  <b>{{ level }}</b> </h6>
+                  </div>
+
+                  <div class='col-xs-3 profile-img-container' style='background: url({{user.avatar}})'></div>
+
+                </div>
+
+
+                <div uib-accordion class="accordion"> 
+                   
+                    <div uib-accordion-group class='profile-item-container'>
+                      <uib-accordion-heading> 
+                          <h5>Nodes</h5>
+                      </uib-accordion-heading>
+
+                      <div class='col-sm-12 text-center' ng-if='user.contributions.length == 0'><br><h6>No Contributions Created</h6><br></div>
+                      
+                      <div class='col-sm-12' ng-repeat="contribution in user.contributions | orderBy : '-views' ">
+                          <div class='profile-item'>
+                            <div class='row'>
+                              <div class='col-sm-6'>
+                                <h6><a href='/user/#/contributions/{{contribution.id}}' target='_blank'> {{ contribution.title }} </a></h6>
+                              </div>
+                              <div class='col-sm-3'>
+                                <h6>{{ contribution.views }} views</h6>
+                              </div>
+                              <div class='col-sm-3'>
+                                <h6>Rating: {{ contribution.rating.toFixed(1) }} from {{ contribution.rateCount }} ratings</h6>
+                              </div>
+                            </div>
+                          </div>
+                      </div>
+
+                    </div>
+
+                    <div uib-accordion-group class='profile-item-container'>
+                        
+                        <uib-accordion-heading> 
+                          <h5>Tags</h5>
+                        </uib-accordion-heading>
+                        
+                        <div class='col-sm-12 text-center' ng-if='user.tags.length == 0'><br><h6>No Tags Created</h6><br></div>
+
+                        <div class='col-sm-12' ng-repeat="tag in tags | filter:{createdBy:user.id}:true">
+                            <div class='profile-item'>
+                              <div class='row'>
+                                <div class='col-sm-6'>
+                                  <h6>{{tag.name }}</h6>
+                                </div>
+                                <div class='col-sm-6'>
+                                  <h6>{{ tag.contributionCount }} nodes with this tag</h6>
+                                </div>
+                              </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class='row text-right modal-section'>
+                  
+                  <span ng-if='own'>
+                    <button type="button" class="btn btn-default modal-button" ng-disabled="true">Edit Groups</button>
+                    <button type="button" class="btn btn-default modal-button" ng-click='profilectrl.profileEdit=true' ng-hide="profilectrl.profileEdit">Edit Profile</button>
+                    <button type="button" class="btn btn-default modal-button"><a href='/logout'>Logout</a></button>
+                  </span>
+                  
+                  <button type="button" class="btn btn-default modal-button" data-dismiss='modal' ng-click='own ? close() : hideAuthorModal();'>Close</button>
+                
+                </div>
+
+            </div> 
+
+        </div>
+
+    </div>
+
+    <ng-include src="'components/profile/editProfile.html'" ng-if='own'></ng-include>
+
+  </div>
+
+</div>
+
+
