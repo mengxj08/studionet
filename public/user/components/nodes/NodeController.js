@@ -1,8 +1,8 @@
 angular.module('studionet')
 
 .controller('NodeController', [ '$scope', '$http', '$anchorScroll', '$location', 
-                                'profile', 'users', 'attachments', 'contribution', 'tags', 
-                                function($scope, $http, $anchorScroll, $location, profile, users, attachments, contribution, tags){
+                                'profile', 'users', 'attachments', 'GraphService', 'tags', 
+                                function($scope, $http, $anchorScroll, $location, profile, users, attachments, GraphService, tags){
 
         
         //////// --------------  general declarations
@@ -22,26 +22,34 @@ angular.module('studionet')
         }
 
 
+        var getReplies = function(){
+          $scope.replies = [];
+          GraphService.comments.nodes("[ref=" + $scope.contribution.id + "]").map(function(commentNode){
+              GraphService.getNode(commentNode.id());
+              $scope.replies.push(commentNode.data());
+          })
+        }
+
 
         ////// ---- Modal related functions
         $scope.setData = function(node){
             
-            $scope.contribution = node.data();
-            $scope.replies = [];
-
-            for(var i=0; i<node.incomers().edges().length; i++){
-                var replyLink = node.incomers().edges()[i];
-                if(replyLink.data('name') == "COMMENT_FOR"){
-                  var commentId = replyLink.source().id()
-                  contribution.getContribution(commentId);
-                  $scope.replies.push($scope.graph.getElementById(commentId).data());
-                }
+            // will be used internally but the reply feature
+            if( !(node instanceof Object )){
+              node = GraphService.comments.getElementById(node).length ? GraphService.comments.getElementById(node) : GraphService.graph.getElementById(node);
+              $scope.showComments = true;
             }
-            console.log($scope.replies);
+
+            GraphService.getNode( node );
+
+            $scope.contribution = node.data();
+
+            getReplies();
 
             $scope.rate = getRating( $scope.contribution.id );   // check if the user has already rated this contribution
-            $scope.author = users.getUser( $scope.contribution.db_data.createdBy, false );  // get the author details
-            contribution.updateViewCount($scope.contribution.db_data.id);    // update the viewcount of the contribution
+            $scope.author = users.getUser( $scope.contribution.createdBy, false );  // get the author details
+            GraphService.updateViewCount($scope.contribution.id);    // update the viewcount of the contribution
+            node.addClass('read');
         }
 
 
@@ -60,7 +68,6 @@ angular.module('studionet')
             $('body').removeClass('modal-open');
             $('.modal-backdrop').remove();
 
-            console.log("View Contribution Modal Closed");
             $('#contributionViewModal').modal('hide');
 
             $scope.$emit(BROADCAST_VIEWMODE_OFF, {} );
@@ -99,17 +106,17 @@ angular.module('studionet')
         
         $scope.rateContribution = function(rating, id){
 
-          contribution.rateContribution(id, rating).success(function(data){
+          GraphService.rateNode(id, rating).success(function(data){
 
               // check if user had already rated this contribution
               if(previouslyRated==0){
-                $scope.contribution.db_data.rateCount++;
-                $scope.contribution.db_data.ratingArray[rating-5]++; console.log("here2")
+                $scope.contribution.rateCount++;
+                $scope.contribution.ratingArray[rating-5]++; console.log("here2")
               }
               else{
 
-                $scope.contribution.db_data.ratingArray[5 - rating] = $scope.contribution.db_data.ratingArray[5 - rating] + 1; 
-                $scope.contribution.db_data.ratingArray[5 - previouslyRated] = $scope.contribution.db_data.ratingArray[5 - previouslyRated] - 1; 
+                $scope.contribution.ratingArray[5 - rating] = $scope.contribution.ratingArray[5 - rating] + 1; 
+                $scope.contribution.ratingArray[5 - previouslyRated] = $scope.contribution.ratingArray[5 - previouslyRated] - 1; 
                 previouslyRated = rating;
 
               }
@@ -222,7 +229,7 @@ angular.module('studionet')
 
             var commentData = { attachments: [], tags: [] }
 
-            commentData.title = "Re: " + $scope.contribution.db_data.title;
+            commentData.title = "Re: " + $scope.contribution.title;
             commentData.body = comment;
 
 
@@ -234,19 +241,12 @@ angular.module('studionet')
             // default relationship type for everything
             commentData.refType = 'COMMENT_FOR';
 
-            contribution.createContribution( commentData ).then(function(res){
+            $scope.commentMode = false;
+            GraphService.createNode( commentData ).then(function(res){
                   
                   sendMessage( {status: 200, message: "Successfully commented on node" } );
-                  
-                  // add to comments
-                  $scope.replies.push({db_data: { 'createdBy': $scope.user.id, 'body': commentData.body, 'lastUpdated': Date.now() }});
-
-                  // clear the comment
-                  comment = "";
-
-                  $scope.close();
-
-
+                  getReplies();
+                  $scope.showComments = true;
 
             }, function(error){
 
@@ -289,7 +289,7 @@ angular.module('studionet')
                       contributionData.tags.push(t.name.toLowerCase().trim());
                   });
 
-              contribution.createContribution( contributionData ).then(function(res){
+              GraphService.createNode( contributionData ).then(function(res){
                     
                     sendMessage( {status: 200, message: "Successfully replied to node" } );
                     $scope.close();
@@ -307,7 +307,7 @@ angular.module('studionet')
         $scope.showUpdateModal = function(id){
           
               $scope.updateMode = true;
-              $scope.contributionData = jQuery.extend({}, $scope.contribution.db_data);
+              $scope.contributionData = jQuery.extend({}, $scope.contribution);
               $scope.contributionData.contentType = $scope.contribution.type; 
 
               if($scope.contributionData.attachments[0].id == null){
@@ -352,13 +352,10 @@ angular.module('studionet')
             }
           }
 
-          contribution.updateContribution(updateContribution).then(function(res){
-
-              sendMessage( {status: 200, message: "Successfully updated node." } );
-              $scope.close();
-
+          $scope.updateMode = false;
+          GraphService.updateNode(updateContribution).then(function(res){
+                sendMessage( {status: 200, message: "Successfully updated node." } );
           }, function(error){
-
                 sendMessage( {status: 500, message: "Error updating node" } );
                 $scope.close();
           });
@@ -368,7 +365,7 @@ angular.module('studionet')
         // ------------------Function: - Delete
         $scope.deleteContribution = function(contributionId){
 
-            contribution.deleteContribution(contributionId).then(function(){
+            GraphService.deleteNode(contributionId).then(function(){
                 sendMessage({status: 200, message: "Successfully deleted node." });
                 $scope.close();
             }, function(error){

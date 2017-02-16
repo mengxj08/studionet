@@ -1,24 +1,24 @@
 <div>
 
 	<div class='row'>
-		<h5>ID: {{contribution.db_data.id}}</h5>
+		<h5>ID: {{contribution.id}}</h5>
 		<hr/>
-		<h6>Created on {{contribution.db_data.dateCreated | date: 'longDate'}}</h6>
-		<h6>{{contribution.db_data.views}} views</h6>
-		<h6 ng-if='contribution.db_data.rateCount==0'>This contribution has no ratings yet.</h6>
+		<h6>Created on {{contribution.dateCreated | date: 'longDate'}}</h6>
+		<h6>{{contribution.views}} views</h6>
+		<h6 ng-if='contribution.rateCount==0'>This contribution has no ratings yet.</h6>
 	</div>
 
 	<br>
 
-	<div class="ratingArray row" ng-if='contribution.db_data.rateCount>0'>
-		<h6 class='text-center'>{{contribution.db_data.rating.toFixed(1)}} out of 5 stars </h6> 
+	<div class="ratingArray row" ng-if='contribution.rateCount>0'>
+		<h6 class='text-center'>{{contribution.rating.toFixed(1)}} out of 5 stars </h6> 
 	
 		<!-- rating array comes in descending order -->
-		<div class='row' ng-repeat="r in contribution.db_data.ratingArray track by $index" style='line-height: 20px; font-size: 10px;'>
+		<div class='row' ng-repeat="r in contribution.ratingArray track by $index" style='line-height: 20px; font-size: 10px;'>
 			<div class='col-sm-3'>{{ 5 - $index }} stars</div>
 			<div class='col-sm-7'>
-				<uib-progressbar max="100" value="100*r/contribution.db_data.rateCount" animate="true">
-					<span style="color:white; white-space:nowrap;">{{r}} / {{contribution.db_data.rateCount}}</span>
+				<uib-progressbar max="100" value="100*r/contribution.rateCount" animate="true">
+					<span style="color:white; white-space:nowrap;">{{r}} / {{contribution.rateCount}}</span>
 				</uib-progressbar>
 			</div>
 			<div class='col-sm-2 text-right'>{{r}}</div>

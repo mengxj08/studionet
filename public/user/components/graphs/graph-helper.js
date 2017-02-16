@@ -43,6 +43,9 @@ var computeBgColorFn = function(node){
     var rating = Math.ceil(node.data().rating);
     var final = "#000623"; 
 
+    if(node.data('type') == "comment")
+      return "red";
+
     switch(rating){
 
         case (1):
@@ -101,18 +104,22 @@ var computeLabel = function(ele){
 }
 
 var computeShapeFn = function(ele){
-  if(ele.data('type') == "comment")
-    return "rectangle";
-  else
+
+  if(ele.successors().length == 0)
+    return "diamond";
+  else if(ele.incomers().length == 0)
     return "ellipse";
+  else 
+    return "hexagon";
+
 }
 
 var edgeColorFn = function(ele){
-    if(ele.data('name') == "COMMENT_FOR")
+    /*if(ele.data('name') == "COMMENT_FOR")
       return "#3535C9";
     if(ele.data().properties.createdBy != undefined)
       return '#00FF60';
-    else
+    else*/
       return '#303030';
 }
 
@@ -286,20 +293,11 @@ STUDIONET.GRAPH.makeGraph = function(data, graphContainer){
 }
 
 
-
-/*
- * Helper Functions
- * Stackoverflow source
- */
-
 // number of incomers above which the node is placed on the spiral
 // always double of number of incoming nodes required
-STUDIONET.GRAPH.draw_graph = function(graph, threshold, supernodeId){
-
-  graph.reset();
+STUDIONET.GRAPH.draw_graph = function(graph, threshold, supernodeId, spinner, max_width, max_height){
 
   var sortFn = function (ele1, ele2) {
-
       if( ele1.incomers().length == ele2.incomers().length )
         return ( ele1.predecessors().length > ele2.predecessors().length ? -1 : 1)
       else
@@ -378,12 +376,13 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold, supernodeId){
   isIsolated(0);
 
   spiralNodes = spiralNodes.sort( sortFn );
+  console.log(spiralNodes.length);
 
   var angle = 2 * Math.PI / spiralNodes.length;
-  var radius = 0.5*window.innerWidth;
+  var radius = 0.5*max_width;
 
-  var initX = $(window).width()/2;
-  var initY = $(window).height()/2;
+  var initX = max_width/2;
+  var initY = max_height/2;
       
   var prevRadius = 1;
   var x = 0;
@@ -391,10 +390,9 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold, supernodeId){
   var radius = 150;
   var angle = 0;
   
+
   // for each node on the spiral, make a spiral of all its predecessors around it
   var nextNode = function(i){
-
-      ////console.log("Node No:", i);
 
       // node on spiral
       var node = spiralNodes[i];
@@ -402,55 +400,60 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold, supernodeId){
       x = radius*Math.cos( angle ) + initX;
       y = radius*Math.sin( angle ) + initY;
 
-      // place the spiral nodes
-      node.animate(
-          { 
-            position : { x: x, y: y } 
-          }, 
-          { 
-            duration: 10, 
-            complete: function(){
-
-                // find the children
-                var condition = "[onSpiral=\'" + node.id() + "\']";
-                var nodes = node.incomers().nodes(condition); 
-
-                var position = node.position(); 
-
-                // make a smaller spiral of all the incomers
-                // get the radius of the smaller spiral
-                prevRadius = makeSubSpiral(nodes, position.x, position.y, 30) ;
-
-
-                // use the radius of the above spiral to place next node
-                //x += initX + prevRadius;
-                minNodes = Math.floor( 2 * Math.PI * radius / prevRadius );
-
-                // for minNodes
-                angleInc = 2*Math.PI / minNodes; 
-                radiusInc = (prevRadius + 30) / minNodes; 
-
-                angle += 2*angleInc;
-                radius += 4*radiusInc;
-
-                x = radius*Math.cos( angle ) + initX;
-                y = radius*Math.sin( angle ) + initY;
-                
-                if( i+1 < spiralNodes.length ){
-                  nextNode(i+1);
-                }
-                else{
-                  // do something after graphing finished
-                }
-
+      if(node.position().x == x && node.position().y == y){
+        placeSubSpirals(node, i);
+      }
+      else{
+        // place the spiral nodes
+        node.animate(
+            { 
+              position : { x: x, y: y } 
+            }, 
+            { 
+              duration: 10, 
+              complete: function() { placeSubSpirals(node, i) }
             }
-          }
-      );
+        );
+      }
+
 
   }
 
-  console.log("Animation started", new Date());
-  nextNode(0);
+  var placeSubSpirals = function(node, i){
+
+    // find the children
+    var condition = "[onSpiral=\'" + node.id() + "\']";
+    var nodes = node.incomers().nodes(condition); 
+
+    var position = node.position(); 
+
+    // make a smaller spiral of all the incomers
+    // get the radius of the smaller spiral
+    prevRadius = makeSubSpiral(nodes, position.x, position.y, 30) ;
+
+
+    // use the radius of the above spiral to place next node
+    //x += initX + prevRadius;
+    minNodes = Math.floor( 2 * Math.PI * radius / prevRadius );
+
+    // for minNodes
+    angleInc = 2*Math.PI / minNodes; 
+    radiusInc = (prevRadius + 30) / minNodes; 
+
+    angle += 2*angleInc;
+    radius += 4*radiusInc;
+
+    x = radius*Math.cos( angle ) + initX;
+    y = radius*Math.sin( angle ) + initY;
+    
+    if( i+1 < spiralNodes.length ){
+      nextNode(i+1);
+    }
+    else{
+      spinner.stop();
+      // do something after graphing finished
+    }
+  }
 
 
   /*
@@ -511,13 +514,21 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold, supernodeId){
         angle += angleInc + Math.PI/30;
         radius += radiusInc;
 
-        node.animate(
-            { position : {x: x, y: y }  
-            }, 
-            { 
-              duration: 400 
-            } 
-        );
+        if(node.position().x == x && node.position().y == y){
+
+        }
+        else{
+          node.animate(
+              { 
+                position : {x: x, y: y }  
+              }, 
+              { 
+                duration: 400 
+              } 
+          );
+        }
+
+
       }
 
       if(nodes.length == 0)
@@ -526,7 +537,8 @@ STUDIONET.GRAPH.draw_graph = function(graph, threshold, supernodeId){
       return radius;
   }
 
+
+  nextNode(0);
+
 }
-
-
 

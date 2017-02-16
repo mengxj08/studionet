@@ -106,7 +106,7 @@
 
                     <tbody> 
                         <tr ng-repeat="contribution in contributions | orderBy:sortType:sortReverse | filter:searchContribution as filtered" 
-                                ng-show='$index < (currentPage)*itemsPerPage && $index >= (currentPage-1)*itemsPerPage'>
+                                ng-show='$index < (currentPage)*itemsPerPage && $index >= (currentPage-1)*itemsPerPage && contribution.type != "comment"'>
                             <td class='col-sm-1'>{{ $index + 1 }}</td>
                             <td class='col-sm-3'>{{ contribution.dateCreated | date : 'short' }}</td>
                             <td class='col-sm-5 pointer' ng-click='goToNode(contribution.id)' data-dismiss='modal'>{{ contribution.title }}</td>

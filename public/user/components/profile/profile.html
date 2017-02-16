@@ -44,15 +44,15 @@
                       
                       <div class='col-sm-12' ng-repeat="contribution in user.contributions | orderBy : '-views' ">
                           <div class='profile-item'>
-                            <div class='row'>
+                            <div class='row pointer' ng-click='goToNode(contribution.id)' data-dismiss='modal'>
                               <div class='col-sm-6'>
-                                <h6><a href='/user/#/contributions/{{contribution.id}}' target='_blank'> {{ contribution.title }} </a></h6>
+                                <h6>{{ contribution.title }}</h6>
                               </div>
-                              <div class='col-sm-3'>
+                              <div class='col-sm-2'>
                                 <h6>{{ contribution.views }} views</h6>
                               </div>
-                              <div class='col-sm-3'>
-                                <h6>Rating: {{ contribution.rating.toFixed(1) }} from {{ contribution.rateCount }} ratings</h6>
+                              <div class='col-sm-4'>
+                                <h6>{{ contribution.rating.toFixed(1) }} from {{ contribution.rateCount }} ratings</h6>
                               </div>
                             </div>
                           </div>
@@ -66,7 +66,7 @@
                           <h5>Tags</h5>
                         </uib-accordion-heading>
                         
-                        <div class='col-sm-12 text-center' ng-if='user.tags.length == 0'><br><h6>No Tags Created</h6><br></div>
+                        <div class='col-sm-12 text-center' ng-if='(tags | filter:{createdBy:user.id}:true).length == 0'><br><h6>No Tags Created</h6><br></div>
 
                         <div class='col-sm-12' ng-repeat="tag in tags | filter:{createdBy:user.id}:true">
                             <div class='profile-item'>

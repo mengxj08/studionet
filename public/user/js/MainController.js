@@ -6,18 +6,36 @@ angular.module('studionet')
 
 
   // --------------- socket connection message handling
-  socket.on('node_created', function (data) {
-      console.log(data);
+  socket.on('node_created', function (node) {
+      node.type = node.contentType;
+      GraphService.addNewNode(node);
+
+      if(node.createdBy == profile.user.id)
+        profile.getActivity();
+
   });
 
-  socket.on('node_rated', function (data) {
-    
-    // update the graph colors
-    // very messy code - change
-    $scope.graph.getElementById(data.id).data('rating',  data.rating);
+  socket.on('node_updated', function (node) {
+     node.type = node.contentType;
+     GraphService.updateNodeInGraph(node);
+     console.log("update node", node);
+  });
 
-    if($scope.graph.getElementById(data.id).data('db_data') !== undefined)
-      $scope.graph.getElementById(data.id).data('db_data').rating = data.rating;
+  socket.on('node_deleted', function (node) {
+     GraphService.removeNode(node);
+  });
+
+
+  socket.on('node_rated', function (data) {
+
+    console.log(data);
+
+    // update the graph colors
+    $scope.graph.getElementById(data.id).data('rating',  data.rating);
+    $scope.graph.getElementById(data.id).data('rateCount',  data.rateCount);
+    $scope.graph.getElementById(data.id).data('totalRatings',  data.totalRatings);
+
+    profile.getActivity();
 
   });
 
@@ -30,6 +48,8 @@ angular.module('studionet')
       }, 1000*i)
     
     }
+
+    profile.getActivity();
 
   });
 
@@ -55,13 +75,43 @@ angular.module('studionet')
   
   }
 
-  
+
 
   // ----------------- Graphs
+  var graph_container = angular.element('#cy')[0];
   // First Initialization of the graph on page-refresh
   $scope.graphInit = function(){  
-    GraphService.getGraph(angular.element('#cy')[0]);  
+
+      var graphObject = {
+        threshold : 20, 
+        onMouseOver: showQTip,
+        onEdgeSingleClick: onEdgeSingleClick, 
+        onCanvasClick: function(){ GraphService.removeAdditionalStyles() },
+        onNodeSingleClick: function(evt){ showQTip(evt); GraphService.selectNode(evt.cyTarget); },
+        onNodeDoubleClick : function(evt){
+                                  var node = evt.cyTarget;
+                                  $scope.graph.elements().removeClass('highlighted');
+                                  showDetailsModal( node );
+                            }
+      }
+
+      GraphService.getGraph( graph_container, graphObject );  
   }
+
+
+  // ------------- Zooming & Nav Controls
+  $scope.zoomLevel = "Calibrating...";
+  var updateZoom = function(){
+    if($scope.graph){
+      $scope.zoomLevel = (100*$scope.graph.zoom()).toPrecision(4);
+      $scope.$apply();
+    }
+  }
+  setTimeout(updateZoom, 1000);
+  graph_container.addEventListener("wheel", updateZoom);
+
+  $scope.resetGraph = function(){  GraphService.graph.fit();  }
+
 
   // Highlight any state params
   var highlightStateParams = function(){
@@ -89,150 +139,28 @@ angular.module('studionet')
       var auth = users.getUser( node.data('createdBy'), false );
       
       qtipFormat.id = "qTip-" +  node.id();
-      qtipFormat.content.text =  node.data('name') + "<br>- " + ( (auth.nickname !=null && auth.nickname.length) ? auth.nickname : auth.name)
+      qtipFormat.content.text =  node.data('title') + "<br>- " + ( (auth.nickname !=null && auth.nickname.length) ? auth.nickname : auth.name)
 
       node.qtip(qtipFormat, evt);  
+
   }
 
   var onEdgeSingleClick = function(evt){
-  }
-
-  // Interaction on Single Click
-  var onNodeSingleClick = function(evt, dbl){
-
-        var node = evt.cyTarget;
-
-        showQTip(evt);
-        
-        // select the node and highlight connections
-        GraphService.selectNode(node);
-
-
-  }
-
-  // Graph Interaction for Double Click
-  var onNodeDoubleClick = function(evt){
-
-        console.log("Double click");
-
-        var node = evt.cyTarget;
-
-        $scope.graph.elements().removeClass('highlighted');
-        
-        // if data is already defined, donot load again - directly show modal
-        // db_data stores additional-data from the server
-        if(node.data('db_data')){
-
-          node.addClass('read');
-
-          if($scope.viewMode == false)
-            showDetailsModal( node );
-          else
-            console.warn("Modal already showing");
-
-        }
-        else{
-          console.warn("Data not defined for selected node;");
-
-          // check again after 400ms
-          setTimeout(function(){
-            if(node.data('db_data') !== undefined){
-              node.addClass('read');
-              showDetailsModal( node );
-            }
-          }, 400);
-          
-        }
-  }
-
-  // Add graph interactions
-  var addGraphInteractions = function(){
-
-      // remove all listeners first 
-      $scope.graph.off("tap");
-      $scope.graph.off("mouseover");
-
-      // ---- Reattach interactions to the graph
-
-      // remove supernode
-      $scope.graph.getElementById(supernode.contribution).remove();
-
-      // redraw graph
-      var threshold = 20; 
-      //myGraphWorker.postMessage([ threshold, supernode.contribution])
-      STUDIONET.GRAPH.draw_graph($scope.graph, threshold, supernode.contribution);
-
-
-      // mark the read nodes
-      for(var i=0; i < profile.activity.length; i++ ){
-        if(profile.activity[i].type == "VIEWED" || profile.activity[i].type == "CREATED")
-          $scope.graph.getElementById(profile.activity[i].end).addClass('read');
-
-      }
-
-      // remove the comments
-      /*$scope.comments = $scope.graph.remove("node[type = 'comment']");
-      for(var n=0; n < $scope.graph.nodes().length; n++){
-        var node = $scope.graph.nodes()[n]
-        node.data('comments', []);
-        for(var i=0; i < node.incomers().edges().length; i++){
-            var replyLink = node.incomers().edges()[i];
-            if(replyLink.data('name') == "COMMENT_FOR"){
-              var commentId = replyLink.source().id();
-              node.data().comments.push(commentId);
-            }
-        }
-      }*/
-      
-
-    
-      // Display the entire node name
-      $scope.graph.on('mouseover', 'node', function(evt){
-          showQTip(evt);
-      });
-
-      $scope.graph.on('tap', function(evt){
-        if( evt.cyTarget.isEdge && evt.cyTarget.isEdge() )
-            onEdgeSingleClick(evt);
-        else if( !( (evt.cyTarget.isNode && evt.cyTarget.isNode()) ) ){
-            GraphService.removeAdditionalStyles();
-        }
-        else if( evt.cyTarget.isNode && evt.cyTarget.id() == GraphService.activeNode ){
-            onNodeDoubleClick(evt);
-        }
-        else if( evt.cyTarget.isNode() ){
-            onNodeSingleClick(evt);
-        }
-        else
-          console.warn("Undefined Interaction");
-      });
   }
 
   // Observe the Graph Service for Changes and register observer
   var updateGraph = function(){
       $scope.graph = GraphService.graph;
       highlightStateParams();
-      addGraphInteractions();
+      for(var i=0; i < profile.activity.length; i++ ){
+        if(profile.activity[i].type == "VIEWED" || profile.activity[i].type == "CREATED")
+          $scope.graph.getElementById(profile.activity[i].end).addClass('read');
+
+      }
   };
   GraphService.registerObserverCallback(updateGraph);
 
 
-
-
-  // ------------- Zooming & Nav Controls
-  $scope.zoomLevel = "Calibrating...";
-  var updateZoom = function(){
-    if($scope.graph){
-      $scope.zoomLevel = (100*$scope.graph.zoom()).toPrecision(4);
-      $scope.$apply();
-    }
-  }
-  setTimeout(updateZoom, 1000);
-  document.getElementById("cy").addEventListener("wheel", updateZoom);
-
-  $scope.resetGraph = function(){
-    $scope.graph.fit();
-  }
 
 
 
@@ -243,9 +171,7 @@ angular.module('studionet')
 
   // when message received
   $scope.$on( BROADCAST_MESSAGE, function(event, args) {
-      console.log("Message received", args.message);
       showMessage(args.message);
-
   });
 
   // when filter is active

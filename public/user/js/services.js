@@ -34,14 +34,14 @@ angular.module('studionet')
 		o.getAll = function(){
 			return $http.get('/api/users').success(function(data){
 
+				angular.copy(data, o.users);
+				o.usersHash = o.users.hash();
+
 				// convert all names to title case
 				for(var i=0; i < o.users.length; i++){
 					var u = o.users[i];
 					u.name = u.name.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 				}
-
-				angular.copy(data, o.users);
-				o.usersHash = o.users.hash();
 
 			});
 		};
@@ -131,56 +131,6 @@ angular.module('studionet')
 				angular.copy(data, o.groups);
 			});
 		};
-
-		return o;
-	}])
-
-
-	// --------------- Contributions List
-	.factory('contributions', ['$http', 'supernode', function($http, supernode){
-
-		var o = {
-			contributions: [],
-			contributionsHash : undefined
-		};
-
-		// Gets an array of all contributions
-		// {"id":77,"totalRatings":0,"dateCreated":1483423740000,"rating":0,"rateCount":0,"views":0,"createdBy":11,"title":"Documentation - StudioNET"}
-		o.getAll = function(){
-			console.warn("get All contributions was called");
-			return $http.get('/api/contributions').success(function(data){
-
-				// Remove supernode contribution
-				// If first element, remove immediately, else use a filter 
-				if(data[0].id == supernode.contribution)
-					data.shift(1);
-				else{
-					data = data.filter(function(c){
-						if(c.id == supernode.contribution){
-							return false;
-						}
-						else
-							return true;
-					})			
-				}
-
-				angular.copy(data, o.contributions);
-				o.contributionsHash = data.hash();
-
-				return data;
-			});
-		};
-
-		// Get additional data about a particular contribution from the database
-		// {"body":"<p>Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas</p>",
-		//  "ratingArray":[0,0,0,0,0], "lastUpdated":1488513780000, "tags":null, "totalRating":0, "ref":5, "id":104, "dateCreated":1488513780000, "contentType":null, 
-		//  "rating":0,"rateCount":0,"views":29,"createdBy":7,"edited":null,"title":"Assignment 6","attachments":[{"attachment":null,"id":null}]}
-		o.getContribution = function(id){
-			return $http.get('/api/contributions/' + id).success(function(data){
-				angular.copy(data, o.contributionsHash[id].db_data);
-			});
-		};
-
 
 		return o;
 	}])
@@ -280,168 +230,6 @@ angular.module('studionet')
 				throw error;
 		    })
 		}
-
-		return o;
-	}])
-
-	
-	// ----------------- Deals with individual contribution functionalities
-	.factory('contribution', ['$http', 'profile', 'contributions', 'tags', 'GraphService', function($http, profile, contributions, tags, GraphService){
-
-		var o = { }
-
-		// ??
-		o.getContribution = function(id){
-			
-			var node = GraphService.graph.getElementById(id);
-
-			if(node.data('db_data') == undefined){
-				contributions.getContribution(id).then(function(res){
-
-				  node.data( 'db_data', tagCorrectionFn(res.data) );
-				  console.log('fetched data');
-				});					
-			}
-			else
-				console.log("data already defined");
-		}
-
-		// ---- Create a contribution
-		// Data needs to be sent in FormData format
-		o.createContribution = function(new_contribution){
-
-			var formData = new FormData();
-			formData.append('title', new_contribution.title);
-			formData.append('body', new_contribution.body);
-			formData.append('tags', new_contribution.tags);
-			formData.append('refType', new_contribution.refType);
-			formData.append('contentType', new_contribution.contentType);
-			formData.append('ref', new_contribution.ref);
-
-			new_contribution.attachments.map(function(file){	formData.append('attachments', file, file.name); 	})
-
-		    return $http({
-					method  : 'POST',
-					url     : '/api/contributions',
-					headers : { 'Content-Type': undefined, 'enctype':'multipart/form-data; charset=utf-8' },
-					processData: false,
-					data: formData
-		    })
-		    .success(function(res) {
-
-					// refresh graph
-					// should come as a socket input
-					GraphService.getGraph().then(function(){	GraphService.selectNode(res.id);	});
-
-					// refresh tags
-					// should be updated by the socket connection
-					tags.getAll();
-					
-					// refresh profile
-					profile.getUser();
-
-					// refresh contributions
-					contributions.getAll();
-
-		    })
-		    .error(function(error){
-				throw error;
-		    }) 
-		}
-
-		// ---- Updates a contribution
-		// Data needs to be sent in FormData format 
-		// Fix me!
-		o.updateContribution = function(update_contribution){
-
-			var formData = new FormData();
-			formData.append('title', update_contribution.title);
-			formData.append('body', update_contribution.body);
-			formData.append('tags', update_contribution.tags);
-			formData.append('contentType', update_contribution.contentType);
-			formData.append('ref', update_contribution.ref);
-
-			update_contribution.attachments.map(function(file){
-				formData.append('attachments', file, file.name);
-			})
-
-			return $http({
-				  method  : 'PUT',
-				  url     : '/api/contributions/'+ update_contribution.id,
-				  headers : { 'Content-Type': undefined, 'enctype':'multipart/form-data; charset=utf-8' },
-	      	      processData: false,
-	              data: formData
-				 })
-				.then(function(res) {
-
-					GraphService.selectNode(update_contribution.id);
-					GraphService.graph.getElementById(update_contribution.id).data('db_data', update_contribution);
-					GraphService.graph.getElementById(update_contribution.id).data('name', update_contribution.title);
-					
-					// refresh graph
-					// graph.getGraph().then(function(){	graph.selectNode(update_contribution.id);	});
-
-					// refresh tags
-					tags.getAll();
-					
-					// refresh profile
-					profile.getUser();
-
-					// refresh contributions
-					contributions.getAll();
-
-					// send success
-					return res;  
-				})	
-		}
-
-		// ---- Deletes a contribution
-		// Confirmation Testing happens here
-		o.deleteContribution = function(contribution_id){
-
-			var r = confirm("Are you sure you want to delete your node? This action cannot be undone.");
-	        if (r == true) {
-		        return $http({
-						method  : 'delete',
-						url     : '/api/contributions/' + contribution_id,
-						data    : {},  // pass in data as strings
-						headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
-						})
-			    .success(function(res) {
-
-					// remove node from graph
-					GraphService.removeNode(contribution_id)
-
-					// refresh tags
-					tags.getAll();
-					
-					// refresh profile
-					profile.getUser();
-
-					// refresh contributions
-					contributions.getAll();
-
-			    })
-			    .error(function(error){
-					throw error;
-			    })	
-			}
-			else
-				console.log("Error Deleting");
-		}
-
-		// ---- Updates view count of a contribution in the ContributionsHash
-		o.updateViewCount = function(id){
-			return $http.post('/api/contributions/' + id + '/view').success(function(data){
-				contributions.contributionsHash[id].views++;
-			});
-		};
-
-		o.rateContribution = function(id, rating){
-			return $http.post('/api/contributions/' + id + '/rate', {'rating': rating} ).success(function(data){
-				profile.getActivity();
-			});
-		};
 
 		return o;
 	}])

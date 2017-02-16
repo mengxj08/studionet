@@ -57,7 +57,7 @@ router.route('/')
 						+ 'MERGE (t:tag {name: tagName}) '
 						+ 'ON CREATE SET t.createdBy = {createdByParam}'
 						+ 'CREATE UNIQUE (c)-[r2:TAGGED]->(t) ',
-			'RETURN id(c) as id'
+			'RETURN c'
 		].join('\n');
 
 		var currentDate = Date.now();
@@ -277,18 +277,13 @@ router.route('/:contributionId')
                   SIZE((:user)-[:RATED{rating: 3}]->(c)), SIZE((:user)-[:RATED{rating: 2}]->(c)), \
                   SIZE((:user)-[:RATED{rating: 1}]->(c))], \
                 id: ID(c),\
-                edited: c.edited, \
-                rating: c.rating, \
-                totalRating: c.totalRating, \
                 title: c.title, \
+                edited: c.edited, \
                 body: c.body, \
                 tags: c.tags, \
                 lastUpdated: c.lastUpdated, \
                 ref: c.ref, \
-                dateCreated: c.dateCreated, \
-                rateCount: c.rateCount, \
                 createdBy: c.createdBy, \
-                contentType: c.contentType, \
                 views: c.views, \
                 attachments: collect({ \
                   attachment: a, \
@@ -429,8 +424,11 @@ router.route('/:contributionId')
             else{
               console.log('[SUCCESS] Success in editing the contribution with id: ' + req.params.contributionId);
               //req.contributionId = result[0].id;
+              req.app.get('socket').emit('node_updated', req.params.contributionId); 
+
               res.status(200);
               res.send( "Contribution updated" );
+
 
               //next();
             }
@@ -537,6 +535,7 @@ router.route('/:contributionId')
           res.send('Cannot delete this leaf');
         }
         else {
+          req.app.get('socket').emit('node_deleted', req.params.contributionId);
           res.send('Successfully deleted contribution with id: ' + req.params.contributionId);
         }
       })

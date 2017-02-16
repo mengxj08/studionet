@@ -20,16 +20,6 @@
           </div>
           
           <!-- attachments -->
-          <!-- <div class='modal-section'>
-            <label> Attachments <small>({{contributionData.attachments.length}} file(s) uploaded)</small> </label>
-            <button type="button" class="btn btn-default modal-button" ngf-select="uplodateFiles($files, contributionData)" ngf-multiple="true">Choose File</button>
-            <div class="attachments" ng-repeat="attachment in contributionData.attachments">
-              <h5 style="color: blue; width: 70%; display: inline-block;"><u>{{ attachment.name }} ({{ attachment.size/1000 }} KB)</u></h5>
-              <button style='float: right; display: inline-block;' class="btn btn-xs" ng-click="removeFiles(attachment)">X</button>
-            </div>
-          </div> -->
-
-          <!-- attachments -->
           <div class='modal-section'>
             <a type="button" ngf-select="uplodateFiles($files, contributionData)" ngf-multiple="true">
             <i class='fa fa-paperclip'></i><h5 style='display: inline-block;'>&nbsp;&nbsp;&nbsp;&nbsp;Attachments <small>({{contributionData.attachments.length}} file(s) uploaded)</small></h5>
@@ -66,7 +56,7 @@
           <br>
 
           <div class='row text-right modal-section'>
-              <button type="button" ng-click="replyToContribution(contributionData, contribution.db_data.id);" class="btn btn-default modal-button" data-dismiss='modal'>Submit</button>
+              <button type="button" ng-click="replyToContribution(contributionData, contribution.id);" class="btn btn-default modal-button" data-dismiss='modal'>Submit</button>
               <button type="button" ng-click='cancel()' class="btn btn-default modal-button">Cancel</button>
           </div>
 

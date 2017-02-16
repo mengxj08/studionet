@@ -1,6 +1,6 @@
 angular.module('studionet')
 
-.controller('ProfileController', ['$scope', 'profile', 'tags', 'groups', 'users', function($scope, profile, tags, groups, users){
+.controller('ProfileController', ['$scope', 'profile', 'tags', 'groups', 'users', 'GraphService', function($scope, profile, tags, groups, users, GraphService){
 
 
 	/*
@@ -42,6 +42,12 @@ angular.module('studionet')
 		$scope.rating = (totalRating / rateCount).toFixed(1);
 		$scope.level = Math.floor($scope.user.level + 1)
 	}
+
+	$scope.goToNode = function(node_id){
+		GraphService.selectNode(node_id);
+		$scope.close();
+	}
+
 
 	$scope.setUser = function(user_id, own){
 

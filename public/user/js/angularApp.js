@@ -30,10 +30,7 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 				}],
 				userProfile: ['profile', function(profile){
 					return profile.getUser() && profile.getActivity();
-				}],
-				GraphPromise: ['GraphService', function(GraphService){
-					return GraphService.getGraph();
-				}],
+				}]
 			}
 		})
 		.state('contribution', {
@@ -55,10 +52,7 @@ app.config(['$stateProvider', '$urlRouterProvider', 'tagsInputConfigProvider', f
 				}],
 				userProfile: ['profile', function(profile){
 					return profile.getUser() && profile.getActivity();
-				}],
-				GraphPromise: ['GraphService', function(GraphService){
-					return GraphService.getGraph();
-				}],
+				}]
 			}
 		})
 

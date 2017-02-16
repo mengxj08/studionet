@@ -1,6 +1,6 @@
 angular.module('studionet')
 
-.controller('NewNodeController', ['$scope', 'supernode', 'contribution', 'tags', function($scope, supernode, contribution, tags){
+.controller('NewNodeController', ['$scope', 'supernode', 'GraphService', 'tags', function($scope, supernode, GraphService, tags){
 
       // for the new contribution
       $scope.contributionData = { _tags: [], attachments: [], tags: [], refType: "RELATED_TO", contentType: "text", ref: supernode.contribution};
@@ -50,7 +50,7 @@ angular.module('studionet')
             });
           delete $scope.contributionData._tags;
 
-          contribution.createContribution( $scope.contributionData ).then(function(res){
+          GraphService.createNode( $scope.contributionData ).then(function(res){
                 $scope.$emit( BROADCAST_MESSAGE, { status: 200, message: "Node was created successfully." } );
                 $scope.contributionData = { _tags: [], attachments: [], tags: [], refType: "RELATED_TO", contentType: "text", ref: supernode.contribution};
           }, function(error){
