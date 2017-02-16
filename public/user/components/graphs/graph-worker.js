@@ -1,43 +1,48 @@
 onmessage = function(e) {
-  console.log('Message received from main script');
-  var workerResult = 'Result: ' + (e[0]);
-  console.log('Posting message back to main script');
-  postMessage(workerResult);
+  console.log('Message received from main script', e);
+
+  var parameters = e.data; console.log(e.data);
+  draw_graph(JSON.parse(parameters[0]), parameters[1], parameters[2], parameters[3], parameters[4]);
+
 }
 
 
 // number of incomers above which the node is placed on the spiral
 // always double of number of incoming nodes required
-var draw_graph = function(graph, threshold, supernodeId, spinner, max_width, max_height){
+var draw_graph = function(graph, threshold, supernodeId, max_width, max_height){
+
+  console.log("worker working", max_height, max_width);
+  var nodeHash = graph.nodes.hash();
 
   var sortFn = function (ele1, ele2) {
-      if( ele1.incomers().length == ele2.incomers().length )
-        return ( ele1.predecessors().length > ele2.predecessors().length ? -1 : 1)
+      if( ele1.incomers.length == ele2.incomers.length )
+        return ( ele1.predecessors.length > ele2.predecessors.length ? -1 : 1)
       else
-        return ( ele1.incomers().length > ele2.incomers().length ? -1 : 1);
+        return ( ele1.incomers.length > ele2.incomers.length ? -1 : 1);
   }
 
 
   // Sort the nodes first
-  var sortedNodes = graph.nodes().sort( sortFn );
-
+  var sortedNodes = graph.nodes.sort( sortFn );
 
   // Extract nodes which will be on the spiral, including all children
-  var spiralNodes = sortedNodes.filter(function(i, node){
+  var spiralNodes = sortedNodes.filter(function(node){
 
       // this node will go on the spiral
       // hence all its parents should be marked
-      if(node.incomers().length >= threshold && node.id() != supernodeId){
+      if(node.incomers.length >= threshold && node.id != supernodeId){
         
             // mark the node to be on the spiral
-            node.data('onSpiral', node.id() );
+            node.onSpiral =  node.id ;
 
             var inc = 0;
             // mark all the parents to be on the spiral with this node
-            node.incomers().nodes().map(function(child){
+            node.incomers.map(function(childId){
 
-              if( child.data('onSpiral') == -1 ){
-                child.data('onSpiral', node.id() );
+              var child = nodeHash[childId];
+
+              if( child.onSpiral == -1 ){
+                child.onSpiral = node.id;
               }
 
             });
@@ -50,7 +55,7 @@ var draw_graph = function(graph, threshold, supernodeId, spinner, max_width, max
             // node is not on the spiral due to less number of predecessors
             // check if it is part of another node already on the spiral
             // 
-            if( node.data('onSpiral') !== -1 ){
+            if( node.onSpiral !== -1 ){
               //console.log("Node already part of the spiral");
             }
             
@@ -64,32 +69,31 @@ var draw_graph = function(graph, threshold, supernodeId, spinner, max_width, max
 
       var node = sortedNodes[nodeIndex];
 
-      if(node.data('onSpiral') == -1){
+      if(node.onSpiral == -1){
 
           // add node to spiral
-          spiralNodes = spiralNodes.add(node);
-          node.data('onSpiral', node.id());
+          spiralNodes.push(node);
+          node.onSpiral = node.id
    
           // mark nodes predessors
-          for(var i=0; i < node.incomers().length; i++){
+          for(var i=0; i < node.incomers.length; i++){
 
-              var child = node.incomers()[i];
-              if( child.data('onSpiral') == -1 ){
-                child.data('onSpiral', node.id() );
+              var child = nodeHash[node.incomers[i]];
+              if( child.onSpiral == -1 ){
+                child.onSpiral = node.id;
               }
 
           } 
           
       }
 
-      if(nodeIndex+1 < graph.nodes().length)
+      if(nodeIndex+1 < graph.nodes.length)
         isIsolated(nodeIndex+1);
 
   }
   isIsolated(0);
 
   spiralNodes = spiralNodes.sort( sortFn );
-  console.log(spiralNodes.length);
 
   var angle = 2 * Math.PI / spiralNodes.length;
   var radius = 0.5*max_width;
@@ -113,21 +117,8 @@ var draw_graph = function(graph, threshold, supernodeId, spinner, max_width, max
       x = radius*Math.cos( angle ) + initX;
       y = radius*Math.sin( angle ) + initY;
 
-      if(node.position().x == x && node.position().y == y){
-        placeSubSpirals(node, i);
-      }
-      else{
-        // place the spiral nodes
-        node.animate(
-            { 
-              position : { x: x, y: y } 
-            }, 
-            { 
-              duration: 10, 
-              complete: function() { placeSubSpirals(node, i) }
-            }
-        );
-      }
+      node.position = { x: x, y: y}; 
+      placeSubSpirals(node, i);
 
 
   }
@@ -135,10 +126,15 @@ var draw_graph = function(graph, threshold, supernodeId, spinner, max_width, max
   var placeSubSpirals = function(node, i){
 
     // find the children
-    var condition = "[onSpiral=\'" + node.id() + "\']";
-    var nodes = node.incomers().nodes(condition); 
+    var nodes = node.incomers.filter(function(nodeId){
+      var subNode = nodeHash[nodeId];
+      if(subNode.onSpiral == node.id)
+        return true;
+      else 
+        return false;
+    }); 
 
-    var position = node.position(); 
+    var position = node.position; 
 
     // make a smaller spiral of all the incomers
     // get the radius of the smaller spiral
@@ -163,7 +159,7 @@ var draw_graph = function(graph, threshold, supernodeId, spinner, max_width, max
       nextNode(i+1);
     }
     else{
-      spinner.stop();
+      postMessage(JSON.stringify(graph));
       // do something after graphing finished
     }
   }
@@ -212,7 +208,7 @@ var draw_graph = function(graph, threshold, supernodeId, spinner, max_width, max
 
       for(var i=0; i < nodes.length; i++){
 
-        var node = nodes[i];
+        var node = nodeHash[nodes[i]];
 
         minNodes = Math.floor( 2 * Math.PI * radius / radius_SubNode );
 
@@ -227,20 +223,7 @@ var draw_graph = function(graph, threshold, supernodeId, spinner, max_width, max
         angle += angleInc + Math.PI/30;
         radius += radiusInc;
 
-        if(node.position().x == x && node.position().y == y){
-
-        }
-        else{
-          node.animate(
-              { 
-                position : {x: x, y: y }  
-              }, 
-              { 
-                duration: 400 
-              } 
-          );
-        }
-
+        node.position = { x: x, y: y};
 
       }
 
@@ -255,3 +238,15 @@ var draw_graph = function(graph, threshold, supernodeId, spinner, max_width, max
 
 }
 
+// -------------- Helper Functions
+Array.prototype.hash = function(){
+  
+  var hash = [];
+
+  this.map(function(a){
+    hash[a.id] = a;
+  })
+  
+  return hash;
+
+}

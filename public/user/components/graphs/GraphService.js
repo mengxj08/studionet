@@ -139,17 +139,62 @@ angular.module('studionet')
   		}
 	}
 
+	flattenGraph = function(cy){
+		var graph = {};
+		graph.nodes = cy.nodes().map(function(node){
+			return { 	
+						id: node.id(),
+						onSpiral: -1, 
+						incomers: node.incomers().nodes().map(function(n){
+							return n.id();
+						}),
+						predecessors: node.predecessors().nodes().map(function(n){
+							return n.id();
+						}),
+						position: node.position()
+					}
+		})
+
+		return JSON.stringify(graph);
+	}
+
 	o.draw_graph = function(node){
-		if (false/*window.Worker*/) {
+		if (window.Worker) {
 
   			console.log("Worker exists");
 			var myWorker = new Worker('/user/components/graphs/graph-worker.js');
-			myWorker.postMessage([ JSON.stringify(o.graph), o.threshold, supernode.contribution, window.innerWidth, window.innerHeight]);
+			myWorker.postMessage([ flattenGraph(o.graph), o.threshold, supernode.contribution, window.innerWidth, window.innerHeight]);
 	  		console.log('Message posted to worker');
 
 	  		myWorker.onmessage = function(e) {
-			  console.log('Message received from worker', e.data);
+			  console.log("graph positions received");
+			  
+			  var graphPos = JSON.parse(e.data);
 			  o.spinner.stop();
+			  graphPos.nodes.map(function(n){
+
+			  	var node = o.graph.getElementById(n.id);
+
+			  	if(node.position().x == n.position.x && node.position().y == n.position.y){
+			  		// do nothing
+			  	}
+			  	else
+			  		var time = 4000;
+			  		if(n.onSpiral == n.id){
+			  			console.log("on spiral")
+			  			time = 800;
+			  		}
+			        node.animate(
+			            { 
+			              position : { x: n.position.x, y: n.position.y } 
+			            }, 
+			            { 
+			              duration: time, 
+			            }
+			        );
+
+			  });
+
 			}
 		}
 		else{
@@ -311,7 +356,6 @@ angular.module('studionet')
 			o.graph.add({group: "edges", 		data: { source: node.id, target: node.ref, properties: {} } });
 		
 		repositionNodes(node);
-		notifyObservers();
 	}
 
 	o.updateNodeInGraph = function(id){
@@ -343,7 +387,6 @@ angular.module('studionet')
 
 	o.removeNode = function(node_id){
 
-		comments = o.comments;
 		var result = o.graph.getElementById(node_id).length ? function(){ 
 																o.graph.getElementById(node_id).remove(); 
 																repositionNodes();
