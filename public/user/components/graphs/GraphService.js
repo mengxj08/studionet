@@ -124,19 +124,23 @@ angular.module('studionet')
 		// remove the comments
 		o.comments = o.comments.add( o.graph.nodes("[type='comment']").remove() );
 
-  		// redraw graph
-  		if(node != undefined && node.type == "comment"){
-  			o.spinner.stop();
-  			return; 
-  		}
-  		else{
-  			o.graph.reset();
-  			o.spinner.spin(document.getElementById('cy'));
-			o.graph.nodes().map(function(node){
-				node.data('onSpiral', -1);
-			})
-			o.draw_graph();
-  		}
+		setTimeout(function(){
+		  		// redraw graph
+		  		if(node != undefined && node.type == "comment"){
+		  			o.spinner.stop();
+		  			return; 
+		  		}
+		  		else{
+		  			o.graph.reset();
+		  			o.spinner.spin(document.getElementById('cy'));
+					o.graph.nodes().map(function(node){
+						node.data('onSpiral', -1);
+					})
+					o.draw_graph();
+		  		}
+			
+		}, 0);
+
 	}
 
 	flattenGraph = function(cy){
@@ -179,19 +183,14 @@ angular.module('studionet')
 			  		// do nothing
 			  	}
 			  	else
-			  		var time = 4000;
+			  		var time = 400;
 			  		if(n.onSpiral == n.id){
 			  			console.log("on spiral")
 			  			time = 800;
 			  		}
-			        node.animate(
-			            { 
-			              position : { x: n.position.x, y: n.position.y } 
-			            }, 
-			            { 
-			              duration: time, 
-			            }
-			        );
+			        setTimeout( function(){
+			        	node.animate(	{ 	position : { x: n.position.x, y: n.position.y }  },   { duration: time }
+			        ), 4000 });
 
 			  });
 

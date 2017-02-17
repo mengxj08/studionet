@@ -13,6 +13,8 @@ angular.module('studionet')
       if(node.createdBy == profile.user.id)
         profile.getActivity();
 
+      showMessage("A new node was created by " + (users.usersHash[node.createdBy].nickname ? users.usersHash[node.createdBy].nickname : users.usersHash[node.createdBy].name) );
+
   });
 
   socket.on('node_updated', function (node) {
@@ -27,8 +29,6 @@ angular.module('studionet')
 
 
   socket.on('node_rated', function (data) {
-
-    console.log(data);
 
     // update the graph colors
     $scope.graph.getElementById(data.id).data('rating',  data.rating);

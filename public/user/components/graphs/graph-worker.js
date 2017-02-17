@@ -1,7 +1,6 @@
 onmessage = function(e) {
-  console.log('Message received from main script', e);
 
-  var parameters = e.data; console.log(e.data);
+  var parameters = e.data;
   draw_graph(JSON.parse(parameters[0]), parameters[1], parameters[2], parameters[3], parameters[4]);
 
 }
@@ -11,7 +10,6 @@ onmessage = function(e) {
 // always double of number of incoming nodes required
 var draw_graph = function(graph, threshold, supernodeId, max_width, max_height){
 
-  console.log("worker working", max_height, max_width);
   var nodeHash = graph.nodes.hash();
 
   var sortFn = function (ele1, ele2) {
