@@ -6,11 +6,6 @@
 	background-color: white;
 }
 
-.filterModal h4, .filterModal h5{
-	font-weight: normal;
-	font-family: 'Open Sans', sans-serif;
-}
-
 .filterModal i{
 	margin: 0px;
 }
@@ -18,21 +13,6 @@
 .filterModal center{
 	background-color: white;
 }
-
-
-
-/*.panel{
-	border-radius: 40px !important;
-}*/
-
-/*.panel-heading{
-	background-color: #F8F8F8 !important;
-}*/
-
-/*.panel-group .panel{
-	margin:5px;
-    border-radius: 10px !important;
-}*/
 
 
 /* Tree CSS */

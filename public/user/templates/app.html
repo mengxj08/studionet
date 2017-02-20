@@ -34,7 +34,7 @@
       
       <div id='zoom'><b>Z:</b> {{zoomLevel}} %</div>
 
-      <h6 id='filter-nodes-count' ng-show='filters.length==0' ng-cloak>{{graph.nodes().length || 0}} matching nodes found.</h6> 
+      <div ng-show='filters.length==0'>{{graph.nodes().length || 0}} matching nodes found.</div> 
 
       <div id='filter-shortcuts' ng-show='filters.length>0'>
         
@@ -64,6 +64,12 @@
 
 <!--- Normal Bootstrap Modals : These modals are faster to load since the same template is being reused again and again -->
 <!-- todo: replace with angular-ui boostrap modals -->
+
+
+<!--- View Modal -->
+<!--- Included here to ensure everything is set up and modal loading is fast -->
+<ng-include src="'components/nodes/view.html'"></ng-include>
+
 
 <!--- Filter Modal -->
 <!--- Included here to ensure everything is set up and modal loading is fast -->

@@ -221,9 +221,13 @@ angular.module('studionet')
   var showDetailsModal = function(data, clickedContributionId) {
 
       $scope.viewMode = true;
+      $('#contributionViewModal').modal('show');
+
+      $rootScope.$broadcast("VIEWMODE_ACTIVE", {data: data});
+
 
       // show the details modal
-      ModalService.showModal({
+      /*ModalService.showModal({
           templateUrl: "/user/components/nodes/view.html",
           controller: "NodeController",
           scope: $scope
@@ -235,7 +239,7 @@ angular.module('studionet')
             backdrop: 'static'
           });
           
-      });
+      });*/
 
   };
 

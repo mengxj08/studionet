@@ -15,8 +15,8 @@ angular.module('studionet')
             users : [],
             groups: [],
             tags : [],
-            startDate: undefined,//new Date( (new Date()).setDate((new Date().getDate()) - 8) ),
-            endDate : undefined,//new Date( (new Date()).setDate((new Date().getDate()) + 1) ),
+            startDate: new Date( (new Date()).setDate((new Date().getDate()) - 8) ),
+            endDate : new Date( (new Date()).setDate((new Date().getDate()) + 1) ),
             ratingMin : 0, 
             ratingMax : 5, 
             depthVal : 0

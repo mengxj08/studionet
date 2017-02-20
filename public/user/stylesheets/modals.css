@@ -8,13 +8,128 @@
  */
 
 
+
+/*
+ * Modal Styles
+ */
+
+
+.modal-header .close { 
+  float: right;
+  margin-right: 5px;
+}
+
+.modal{
+  height: 100%; 
+  width: 100%;
+  overflow-y: scroll;
+}
+
+.modal-dialog{
+  padding: 0px !important;
+  margin-bottom: 15px;
+}
+
+.modal-content{
+  position: relative;
+  overflow-y: hidden !important;
+  box-shadow: none !important;
+  border: 1px solid #B6B6B6 !important;
+  border-radius: 0px !important;
+}
+
+.modal-sidebar{
+  border: 1px solid white;  
+  height: 120px;
+  width: 40px; 
+  position: fixed; 
+  top: 65px;
+  left: 15%;
+}
+
+/*
+ * Modal Header
+ */
+.modal-header{
+    height: 45px;
+    padding: 10px 0px 10px 0px !important;
+    border-bottom: 1px solid #B6B6B6 !important;
+    overflow: hidden !important; /*important*/
+    display: none;
+}
+
+.close{ 
+    line-height: 25px !important;
+}
+
+h4.modal-title{
+    line-height: 25px;
+    text-align: center !important;
+    font-size: 16px !important; 
+}
+
+
+/*
+ * Modal footer
+ */
+
+.modal-footer{
+  bottom: 0px;
+  width: 100%; 
+  height: 60px;
+  padding: 7.5px 30px !important;
+
+  //border-top: 1px solid #B6B6B6 !important;
+  background-color: white !important;
+
+  display: none;
+}
+
+
+/*
+ * Modal Body
+ */
+.modal-body{
+    height: 100%;
+    max-height: calc(100% - 105px);
+    padding: 15px !important;
+    background-color: white;
+    overflow-y: auto !important;
+}
+
+.modal-button{
+  margin: 15px 10px 0px 10px !important;
+  min-width: 80px;
+  font-size: 15px;
+  font-family: 'Roboto Condensed', sans-serif;
+  padding: 0px; 
+  border-color: #B9B9B9;
+  height: 30px !important;
+  line-height: 30px;
+  margin: 0px !important;
+  border-radius: 0px !important;
+}
+
+.modal-section{
+  margin-top: 15px;
+}
+
+
+
+
+
+.modal-backdrop{
+  opacity: 0.1 !important;
+}
+
+
+
 .authorBar{
   margin-bottom: 10px;
 }
 
 .contribution-content{
-  padding-top: 20px; 
-  border-top: 2px solid #B9B9B9;
+  padding-top: 25px; 
 }
 
 
@@ -208,6 +323,9 @@ tags-input .tags{
 
 }
 
+.modal-content{
+  border: none !important;
+}
 
 
 /*
@@ -289,9 +407,62 @@ tags-input .tags{
  */
 
 .animate.ng-hide-remove      { animation:0.5s fadeInUp ease; }
-.animate.ng-hide-add         { animation:0.5s fadeOutDown ease; }
+.animate.ng-hide-add         { animation:0.5s disappear ease; }
 
 .animate-if.ng-enter, .animate-if.ng-leave {
   animation:0.5s fadeInUp ease; 
 }
 
+@-webkit-keyframes disappear {
+0% {
+height: auto;
+-webkit-transition: height 1s ease;
+}
+
+100% {
+height: 0;
+-webkit-transform: translateY(0);
+}
+}
+
+@-moz-keyframes disappear {
+0% {
+height: auto;
+-moz-transition: height 1s ease;
+}
+
+100% {
+height: 0;
+-moz-transform: translateY(0);
+}
+}
+
+@-o-keyframes disappear {
+0% {
+height: auto;
+-o-transition: height 1s ease;
+}
+
+100% {
+height: 0;
+-o-transform: translateY(0);
+}
+}
+
+@keyframes disappear {
+0% {
+height: auto;
+transition: height 1s ease;
+}
+
+100% {
+height: 0;
+transition: height 1s ease;
+}
+
+.disappear {
+-webkit-animation-name: disappear;
+-moz-animation-name: disappear;
+-o-animation-name: disappear;
+animation-name: disappear;
+}

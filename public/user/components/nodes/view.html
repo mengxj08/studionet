@@ -1,7 +1,14 @@
-<div id='contributionViewModal' class="modal fade" role="dialog">
+<div id='contributionViewModal' class="modal fade" role="dialog" ng-controller="NodeController">
 
     <!-- Modal content-->
     <div id="{{ 'modal' + contribution.id }}"  class="modal-dialog modal-content reply-dialog">
+
+          <!-- <div class='modal-sidebar'>
+            <i class="graph-nav-control icon fa fa-star" uib-tooltip='Rate It!' tooltip-placement='left'></i>
+            <i class="graph-nav-control icon fa fa-comment" uib-tooltip='Comment' tooltip-placement='left'></i>
+            <i class="graph-nav-control icon fa fa-plus" uib-tooltip='Add Post' tooltip-placement='left'></i>
+            <i class="graph-nav-control icon fa fa-close" uib-tooltip='Close' tooltip-placement='left'></i>
+          </div> -->
 
           <!--- ng-if preferable to ng-show -->
           <!--- ng-if removes DOM element -->
@@ -11,7 +18,7 @@
                     
                     <div class="col-sm-8">
                         <div class = "authorInfo pointer" ng-click='showAuthorModal()'>
-                          <h3 class='title'>{{contribution.title}}</h3>
+                          <h1>{{contribution.title}}</h3>
                           <p>
                             <img class='profile-picture' 
                                 style='width: 25px; height: 25px; display: inline-block; border-radius: 50%; margin-right: 10px;' 
@@ -108,13 +115,14 @@
 
                   <button type="button" ng-click="close();" data-dismiss='modal' class="btn btn-default modal-button">Close</button>
                 </div>
-
           </div><!-- modal body ends-->
 
     </div> <!-- modal content ends -->
 
+
+
     <!-- comment on contribution -->
-    <ng-include src="'components/nodes/comment.html'" ng-if='commentMode'  class="animate-if"></ng-include>
+    <ng-include src="'components/nodes/comment.html'" ng-if='commentMode'  class="animate-if" ng-init='alert("hello!")'></ng-include>
 
     <!-- reply to contribution -->
     <ng-include src="'components/nodes/reply.html'" ng-if='replyMode' class="animate-if"></ng-include>

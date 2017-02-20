@@ -1,8 +1,8 @@
 angular.module('studionet')
 
-.controller('NodeController', [ '$scope', '$http', '$anchorScroll', '$location', 
+.controller('NodeController', [ '$scope', '$http',  
                                 'profile', 'users', 'attachments', 'GraphService', 'tags', 
-                                function($scope, $http, $anchorScroll, $location, profile, users, attachments, GraphService, tags){
+                                function($scope, $http, profile, users, attachments, GraphService, tags){
 
         
         //////// --------------  general declarations
@@ -13,6 +13,10 @@ angular.module('studionet')
         $scope.contribution = undefined, $scope.author = undefined, $scope.rate = undefined;
         $scope.usersHash = users.usersHash;
 
+
+        var animate = function(){
+          $('#contributionViewModal').animate({ scrollTop: $('#contributionViewModal').height()*2 }, 1000);
+        }
 
 
         /////// --------------- communication with parent container
@@ -30,6 +34,9 @@ angular.module('studionet')
           })
         }
 
+        $scope.$on( 'VIEWMODE_ACTIVE', function(event, args) {
+            $scope.setData(args.data);
+        });
 
         ////// ---- Modal related functions
         $scope.setData = function(node){
@@ -222,6 +229,7 @@ angular.module('studionet')
         $scope.commentMode = false;
         $scope.showCommentModal = function(){
           $scope.commentMode = true;
+          animate();
         }
 
         $scope.postComment = function(comment){
@@ -260,6 +268,7 @@ angular.module('studionet')
         $scope.replyMode = false;
         $scope.showReplyModal = function(id, type){
           $scope.replyMode = true;
+          animate();
         }
 
         $scope.replyToContribution = function(contributionData, parentId){
@@ -305,6 +314,8 @@ angular.module('studionet')
         //----------------- Function: - Update
         $scope.updateMode = false;
         $scope.showUpdateModal = function(id){
+
+              animate();
           
               $scope.updateMode = true;
               $scope.contributionData = jQuery.extend({}, $scope.contribution);
@@ -383,6 +394,7 @@ angular.module('studionet')
         
         $scope.showAuthorModal = function(){
           $scope.authorMode = true;
+          animate();
         }
 
         $scope.hideAuthorModal = function(){

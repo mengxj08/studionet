@@ -1,5 +1,3 @@
-@import 'https://fonts.googleapis.com/css?family=Roboto:300, 600, 900|Open+Sans:300,900';
-
 .border{ 
 	border: 1px solid black;
 }
@@ -29,20 +27,51 @@ body {
 	positive: relative; 
 	width: 100%;
 	height: 100%; 
-
-	font-family: 'Open Sans', sans-serif;
+	
 	font-size: 12px;
-
 }
 
+
 h1, h2, h3, h4, h5 ,h6{
-	font-family: 'Roboto', sans-serif;
-	font-weight: 400;
+	font-family: 'Open Sans', sans-serif;
+	font-weight: 600;
 
 	padding: 0px !important;
 	margin: 0px;
 	margin-bottom: 4px;
 }
+
+h1{
+	font-size: 26px; 
+}
+
+
+h2{
+	font-size: 22px;
+}
+
+h3{
+	font-size: 18px;
+}
+
+h4{
+	font-size: 16px;
+}
+
+h5{
+	font-size: 14px;
+}
+
+h6{
+	font-size: 12px;
+}
+
+p{
+	font-size: 14px;
+	line-height: 24px;
+	font-family: 'Lora', serif;
+}
+
 
 hr{
 	padding: 0px;
@@ -56,11 +85,6 @@ a {
 
 a:hover, a:visited, a:focus{
 	text-decoration: none;
-}
-
-p{
-	font-size: 12px !important;
-	margin:0px !important;
 }
 
 img{
@@ -102,10 +126,6 @@ input{
 label{
 	font-size: 14px !important;	
 	font-family: 'Open Sans', sans-serif;
-}
-
-.modal-backdrop{
-	opacity: 0.1 !important;
 }
 
 .pointer{
@@ -313,107 +333,6 @@ html {
 ::-webkit-scrollbar-thumb {
     //background: #FF0000;
 }
-
-
-/*
- * Modal Styles
- */
-
-
-.modal-header .close { 
-  float: right;
-  margin-right: 5px;
-}
-
-.modal{
-  height: 100%; 
-  width: 100%;
-  overflow-y: scroll;
-}
-
-.modal-dialog{
-  padding: 0px !important;
-  margin-top: 15px;
-  margin-bottom: 15px;
-}
-
-.modal-content{
-  position: relative;
-  overflow-y: hidden !important;
-  box-shadow: none !important;
-  border: 1px solid #B6B6B6 !important;
-  border-radius: 0px !important;
-}
-
-
-/*
- * Modal Header
- */
-.modal-header{
-    height: 45px;
-    padding: 10px 0px 10px 0px !important;
-    border-bottom: 1px solid #B6B6B6 !important;
-    overflow: hidden !important; /*important*/
-    display: none;
-}
-
-.close{ 
-    line-height: 25px !important;
-}
-
-h4.modal-title{
-    line-height: 25px;
-    text-align: center !important;
-    font-size: 16px !important; 
-}
-
-
-/*
- * Modal footer
- */
-
-.modal-footer{
-  bottom: 0px;
-  width: 100%; 
-  height: 60px;
-  padding: 7.5px 30px !important;
-
-  //border-top: 1px solid #B6B6B6 !important;
-  background-color: #F0F0F0 !important;
-
-  display: none;
-}
-
-
-/*
- * Modal Body
- */
-.modal-body{
-    height: 100%;
-    max-height: calc(100% - 105px);
-    padding: 15px !important;
-    background-color: #F0F0F0;
-    overflow-y: auto !important;
-}
-
-.modal-button{
-	margin: 15px 10px 0px 10px !important;
-	min-width: 80px;
-	font-size: 15px;
-	font-family: 'Roboto Condensed', sans-serif;
-	padding: 0px; 
-	border-color: #B9B9B9;
-	height: 30px !important;
-	line-height: 30px;
-	margin: 0px !important;
-	border-radius: 0px !important;
-}
-
-.modal-section{
-	margin-top: 15px;
-}
-
-
 
 
 /*
