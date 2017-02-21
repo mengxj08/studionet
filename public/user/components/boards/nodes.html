@@ -65,14 +65,14 @@
                         <td class='col-sm-1'>
                             #
                         </td>
-                        <td class='col-sm-3'>
+                        <td class='col-sm-4'>
                           <a href="#" ng-click="sortType = 'dateCreated'; sortReverse = !sortReverse">
                             Date Created 
                             <span ng-show="sortType == 'dateCreated' && !sortReverse" class="fa fa-caret-down"></span>
                             <span ng-show="sortType == 'dateCreated' && sortReverse" class="fa fa-caret-up"></span>
                           </a>
                         </td>
-                        <td class='col-sm-5'>
+                        <td class='col-sm-4'>
                           <a href="#" ng-click="sortType = 'title'; sortReverse = !sortReverse">
                             Title
                             <span ng-show="sortType == 'title' && !sortReverse" class="fa fa-caret-down"></span>
@@ -108,8 +108,8 @@
                         <tr ng-repeat="contribution in contributions | orderBy:sortType:sortReverse | filter:searchContribution as filtered" 
                                 ng-show='$index < (currentPage)*itemsPerPage && $index >= (currentPage-1)*itemsPerPage && contribution.type != "comment"'>
                             <td class='col-sm-1'>{{ $index + 1 }}</td>
-                            <td class='col-sm-3'>{{ contribution.dateCreated | date : 'short' }}</td>
-                            <td class='col-sm-5 pointer' ng-click='goToNode(contribution.id)' data-dismiss='modal'>{{ contribution.title }}</td>
+                            <td class='col-sm-4'><time>{{ contribution.dateCreated | amCalendar }}</time></td>
+                            <td class='col-sm-4 pointer' ng-click='goToNode(contribution.id)' data-dismiss='modal'>{{ contribution.title }}</td>
                             <td class='col-sm-1'>{{ contribution.views }}</td>
                             <td class='col-sm-1'>{{ contribution.rateCount }}</td>
                             <td class='col-sm-1'>{{ contribution.rating.toFixed(2) }}</td>
@@ -125,7 +125,7 @@
 
             <!-- buttons -->
             <div class='row text-right modal-section'>
-                <button type="button" ng-click='close();' class="btn btn-default modal-button" data-dismiss='modal'>Close</button>
+                <button type="button" ng-click='close();' class="btn btn-default modal-button" data-dismiss='modal' uib-tooltip='Close' uib-position='top'><i class='fa fa-close'></i></button>
             </div>
               
 

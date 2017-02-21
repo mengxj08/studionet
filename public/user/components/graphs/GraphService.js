@@ -226,12 +226,22 @@ angular.module('studionet')
 					if(data.hasOwnProperty(prop)){
 						node.data(prop, data[prop]);
 					}
-
 				}
-			
+
+				// ------------- extract the images
+
+
+				// ------------- compute the reading time
+	            var t =  parseInt((data.body.length / 300).toFixed(0));
+	            if(t == 0)
+	             	node.data('readingTime', "Very short read!" ) ;
+	            else if(t == 1)
+	            	node.data('readingTime', "1 minute read" ) ;
+	            else 
+	              	node.data('readingTime', t + " minute read" ) ;
+
 				node.data( 'db_data',  true );
-				//console.log("Fetched data", id);
-			
+
 			});
 		
 		}
@@ -255,6 +265,9 @@ angular.module('studionet')
 		formData.append('refType', new_contribution.refType);
 		formData.append('contentType', new_contribution.contentType);
 		formData.append('ref', new_contribution.ref);
+
+		
+
 
 		new_contribution.attachments.map(function(file){	formData.append('attachments', file, file.name); 	})
 	    return $http({

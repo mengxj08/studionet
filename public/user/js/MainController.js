@@ -221,25 +221,9 @@ angular.module('studionet')
   var showDetailsModal = function(data, clickedContributionId) {
 
       $scope.viewMode = true;
-      $('#contributionViewModal').modal('show');
+      $('#contributionViewModal').modal({backdrop: 'static', keyboard: false});
 
       $rootScope.$broadcast("VIEWMODE_ACTIVE", {data: data});
-
-
-      // show the details modal
-      /*ModalService.showModal({
-          templateUrl: "/user/components/nodes/view.html",
-          controller: "NodeController",
-          scope: $scope
-      }).then(function(modal) {
-
-          modal.scope.setData(data, clickedContributionId);
-
-          modal.element.modal({
-            backdrop: 'static'
-          });
-          
-      });*/
 
   };
 

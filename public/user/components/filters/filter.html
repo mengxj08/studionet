@@ -82,9 +82,9 @@
                   </div>
 
                   <div class='row text-right modal-section'>
-                      <button type="button" ng-click="filterRequest();closeFilter();" class="btn btn-default modal-button" data-dismiss="modal">Filter</button>
-                      <button type="button" ng-click='clearFilter();closeFilter();' class="btn btn-default modal-button" data-dismiss="modal">Clear</button>
-                      <button type="button" ng-click='closeFilter();' class="btn btn-default modal-button" data-dismiss="modal">Close</button>
+                      <button type="button" ng-click="filterRequest();closeFilter();" class="btn btn-default modal-button" data-dismiss="modal" uib-tooltip='Filter' uib-position='top'><i class='fa fa-filter'></i></button>
+                      <button type="button" ng-click='clearFilter();closeFilter();' class="btn btn-default modal-button" data-dismiss="modal" uib-tooltip='Clear' uib-position='top'><i class='fa fa-trash-o'></i></button>
+                      <button type="button" ng-click='closeFilter();' class="btn btn-default modal-button" data-dismiss="modal" uib-tooltip='Close' uib-position='top'><i class='fa fa-close'></i></button>
                   </div>
 
             </div>

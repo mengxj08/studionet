@@ -15,8 +15,8 @@ angular.module('studionet')
             users : [],
             groups: [],
             tags : [],
-            startDate: new Date( (new Date()).setDate((new Date().getDate()) - 8) ),
-            endDate : new Date( (new Date()).setDate((new Date().getDate()) + 1) ),
+            startDate: undefined,//new Date( (new Date()).setDate((new Date().getDate()) - 8) ),
+            endDate : undefined,//new Date( (new Date()).setDate((new Date().getDate()) + 1) ),
             ratingMin : 0, 
             ratingMax : 5, 
             depthVal : 0
@@ -253,6 +253,7 @@ angular.module('studionet')
             case DATE_FILTER_CODE:
               $scope.startDate = DEFAULTS.startDate;
               $scope.endDate = DEFAULTS.endDate;
+              console.log("date filer");
               break;
             case RATING_FILTER_CODE:
               $scope.ratingMin = DEFAULTS.ratingMin 

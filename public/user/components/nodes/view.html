@@ -3,49 +3,44 @@
     <!-- Modal content-->
     <div id="{{ 'modal' + contribution.id }}"  class="modal-dialog modal-content reply-dialog">
 
-          <!-- <div class='modal-sidebar'>
-            <i class="graph-nav-control icon fa fa-star" uib-tooltip='Rate It!' tooltip-placement='left'></i>
-            <i class="graph-nav-control icon fa fa-comment" uib-tooltip='Comment' tooltip-placement='left'></i>
-            <i class="graph-nav-control icon fa fa-plus" uib-tooltip='Add Post' tooltip-placement='left'></i>
-            <i class="graph-nav-control icon fa fa-close" uib-tooltip='Close' tooltip-placement='left'></i>
-          </div> -->
-
           <!--- ng-if preferable to ng-show -->
           <!--- ng-if removes DOM element -->
           <div class="modal-body">
 
                 <div class="authorBar row">
                     
-                    <div class="col-sm-8">
-                        <div class = "authorInfo pointer" ng-click='showAuthorModal()'>
-                          <h1>{{contribution.title}}</h3>
-                          <p>
-                            <img class='profile-picture' 
-                                style='width: 25px; height: 25px; display: inline-block; border-radius: 50%; margin-right: 10px;' 
-                                src='{{author.avatar}}?q={{random}}'
-                                alt='{{author.name[0]}}'/>
-                                {{ author.nickname.length ? author.nickname : author.name }}
-                          </p>
+                    <div class="col-xs-9">
+                        <div class='row'>
+                          <div class='col-xs-2 author-profile' style="background: url({{author.avatar}}?q={{random}});"></div>
+                          <div class='col-xs-10'>
+                              <div class='authorInfo'>
+                                <div class = "row pointer" ng-click='showAuthorModal()' style='font-size: 15px; line-height: 27px; color:#646464;font-weight: 600;'>
+                                {{ author.nickname.length ? author.nickname : author.name }} </div>
+                                <div class='row meta' ng-if='contribution.tags.length>0'>Tagged <div class='tag' ng-repeat='tag in contribution.tags'>&bull; {{tag}} </div> </div>
+                                <div class='row meta'><time>{{ contribution.lastUpdated ? contribution.lastUpdated : contribution.dateCreated | amCalendar }}</time> 
+                                  &bull; {{ contribution.readingTime }}</div><!-- 300 CPM = 300 WPM -->
+                              </div>
+                          </div>
                         </div>
                     </div>
 
-                    <div class="col-sm-4 text-right statisticsContainer" ng-class="{'hasStars':user.id != contribution.createdBy}">
-                      <p id='rating' uib-rating ng-model="$parent.rate" max="$parent.max" read-only="false" on-hover="$parent.hoveringOver(value)" on-leave="overStar = null" ng-click='rateContribution($parent.rate, contribution.id)' ng-if='contribution.createdBy != user.id && user.isGuest != true'></p>
+                    <div class="col-xs-3 text-right statisticsContainer" ng-class="{'hasStars':user.id != contribution.createdBy}">
+                      <span id='rating' uib-rating ng-model="$parent.rate" max="$parent.max" read-only="false" on-hover="$parent.hoveringOver(value)" on-leave="overStar = null" ng-click='rateContribution($parent.rate, contribution.id)' ng-if='contribution.createdBy != user.id && user.isGuest != true'></span>
                       <span id='avg_rating' class="pop" 
                           uib-popover-template="'/user/components/nodes/statistics.html'" popover-trigger="'mouseenter'" 
                           popover-placement="bottom-right" popover-class='statsPopover' popover-append-to-body='true'>
-                      {{ contribution.rating > 0 ? (contribution.rating).toFixed(1) : "No Ratings Yet" }}  
-                      <i class='glyphicon glyphicon-star'></i></span>
+                        {{ contribution.rating > 0 ? (contribution.rating).toFixed(1) : "-" }}  
+                        <i class='glyphicon glyphicon-star'></i></span>
                     </div>
 
                 </div>
 
                 <!-- tags -->
-                <p class='row tags'>
-                  <div class='tag' ng-repeat='tag in contribution.tags'>{{tag}}</div>
-                </p>
+
                 
                 <!-- content -->
+                <h1>{{contribution.title}}</h1>
+                <hr>
                 <p class='row contribution-content text-justify' ng-bind-html="contribution.body"></p>
 
 
@@ -75,14 +70,15 @@
                 <br><br>
 
                 <div class='modal-section comments' ng-if='replies.length > 0'>
-                    <h5 class='pointer background-color: white;' ng-click='showComments=!showComments' style='border-bottom: 1px solid #B9B9B9; height: 30px; line-height: 30px;'>
+                    <h6 class='pointer background-color: white;' ng-click='showComments=!showComments' style='border-bottom: 1px solid #B9B9B9; height: 30px; line-height: 30px;'>
                       {{replies.length}} comment(s) &nbsp;&nbsp;
                       <i ng-class='showComments ? "fa fa-angle-double-up" : "fa fa-angle-double-right"' style='float:right; line-height: 30px;'></i>
-                    </h5>
+                    </h6>
 
                     <div class='modal-section addComment animate' ng-show='showComments' ng-repeat='reply in replies | orderBy: dateCreated' style='padding: 0px 10px 0px 10px;'>
                       <div class='row pointer' style='margin-top: 15px;' ng-click='setData(reply.id);'>
-                        <div class='dateCreated' style='font-size: 11px; color: #444;display: inline-block; float: right'>Written on {{reply.dateCreated | date: 'mediumDate'}}</div><br>
+                        <div class='dateCreated' style='font-size: 11px; color: #444;display: inline-block; float: right'>
+                            Written <time am-time-ago="reply.lastUpdated ? reply.lastUpdated : reply.dateCreated "></time> </div><br>
                         <div class='header'>
                           <div class='profile' style='display: inline-block;'><img src='{{usersHash[reply.createdBy].avatar}}' style='width: 30px; height: 30px; border-radius: 50%; margin-right: 15px;'></div>
                           <b>
@@ -101,19 +97,19 @@
 
                 <div class='row text-right' ng-cloak>
 
-                  <span ng-hide='replyMode || updateMode || authorMode || editing'>
+                  <span ng-hide='commentMode || replyMode || updateMode || authorMode || editing'>
                       <button type="button" ng-click="setData(contribution.ref);" class="btn btn-default modal-button" ng-show='contribution.type=="comment"'>Back</button>
-                      <button type="button" ng-click="showCommentModal(contribution.id)" class="btn btn-default modal-button" ng-disabled="user.isGuest" ng-show='contribution.type!="comment"'>Comment</button>
-                      <button type="button" ng-click="showReplyModal(contribution.id)" class="btn btn-default modal-button" ng-disabled="user.isGuest" ng-show='contribution.type!="comment"'>Add Post</button>
+                      <button type="button" ng-click="showCommentModal(contribution.id)" class="btn btn-default modal-button" ng-disabled="user.isGuest" ng-show='contribution.type!="comment"' uib-tooltip='Add Comment' uib-position='top'><i class='fa fa-comments'></i></button>
+                      <button type="button" ng-click="showReplyModal(contribution.id)" class="btn btn-default modal-button" ng-disabled="user.isGuest" ng-show='contribution.type!="comment"' uib-tooltip='Add Node' uib-position='top'><i class='fa fa-plus'></i></button>
                       
                       <!-- if author -->
-                      <button type="button" ng-click="showUpdateModal(contribution.id)" class="btn btn-default modal-button" ng-if="(user.id == contribution.createdBy)" ng-disabled="user.isGuest">Edit</button>
+                      <button type="button" ng-click="showUpdateModal(contribution.id)" class="btn btn-default modal-button" ng-if="(user.id == contribution.createdBy)" ng-disabled="user.isGuest" uib-tooltip='Edit' uib-position='top'><i class='fa fa-pencil'></i></button>
 
                       <button type="button" ng-click="deleteContribution(contribution.id)" class="btn btn-default modal-button"
-                      ng-if="(user.id == contribution.createdBy)" data-dismiss='modal' ng-disabled="user.isGuest">Delete</button>
+                      ng-if="(user.id == contribution.createdBy)" data-dismiss='modal' ng-disabled="user.isGuest" uib-tooltip='Delete' uib-position='top'><i class='fa fa-trash'></i></button>
                   </span>
 
-                  <button type="button" ng-click="close();" data-dismiss='modal' class="btn btn-default modal-button">Close</button>
+                  <button type="button" ng-click="close();" data-dismiss='modal' class="btn btn-default modal-button" uib-tooltip='Close' uib-position='top'><i class='fa fa-close'></i></button>
                 </div>
           </div><!-- modal body ends-->
 
@@ -122,16 +118,16 @@
 
 
     <!-- comment on contribution -->
-    <ng-include src="'components/nodes/comment.html'" ng-if='commentMode'  class="animate-if" ng-init='alert("hello!")'></ng-include>
+    <ng-include class='animate' src="'components/nodes/comment.html'" ng-if='commentMode' ></ng-include>
 
     <!-- reply to contribution -->
-    <ng-include src="'components/nodes/reply.html'" ng-if='replyMode' class="animate-if"></ng-include>
+    <ng-include class='animate' src="'components/nodes/reply.html'" ng-if='replyMode'></ng-include>
 
     <!-- update contribution -->
-    <ng-include src="'components/nodes/update.html'" ng-if='updateMode' class="animate-if"></ng-include>
+    <ng-include class='animate' src="'components/nodes/update.html'" ng-if='updateMode'></ng-include>
 
     <!-- author profile -->
-    <ng-include src="'components/profile/profile.html'" ng-if='authorMode'  class="animate-if" ng-controller='ProfileController' ng-init='setUser(contribution.createdBy, false)' ng-cloak></ng-include>
+    <ng-include class='animate' src="'components/profile/profile.html'" ng-if='authorMode'  ng-controller='ProfileController' ng-init='setUser(contribution.createdBy, false)' ng-cloak></ng-include>
 
 </div>
 

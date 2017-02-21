@@ -62,8 +62,8 @@
 
 
             <div class='modal-section text-right'>
-                <button type="button" class="btn btn-default modal-button" ng-click='createContribution()' ng-disabled="!(contributionData.body && contributionData.title)" data-dismiss='modal'>Submit</button>
-                <button type="button" class="btn btn-default modal-button" data-dismiss='modal' ng-click='close()'>Cancel</button>
+                <button type="button" class="btn btn-default modal-button" ng-click='createContribution()' ng-disabled="!(contributionData.body && contributionData.title)" data-dismiss='modal' uib-tooltip='Submit' uib-position='top'><i class='fa fa-send'></i></button>
+                <button type="button" class="btn btn-default modal-button" data-dismiss='modal' ng-click='close()' uib-tooltip='Cancel' uib-position='top'><i class='fa fa-trash'></i></button>
             </div>
 
         </div>

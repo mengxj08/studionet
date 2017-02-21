@@ -15,7 +15,7 @@ angular.module('studionet')
 
 
         var animate = function(){
-          $('#contributionViewModal').animate({ scrollTop: $('#contributionViewModal').height()*2 }, 1000);
+          $('#contributionViewModal').animate({ scrollTop: $('#contributionViewModal').height()*3 }, 1500);
         }
 
 
@@ -33,6 +33,7 @@ angular.module('studionet')
               $scope.replies.push(commentNode.data());
           })
         }
+
 
         $scope.$on( 'VIEWMODE_ACTIVE', function(event, args) {
             $scope.setData(args.data);
@@ -53,10 +54,15 @@ angular.module('studionet')
 
             getReplies();
 
+
             $scope.rate = getRating( $scope.contribution.id );   // check if the user has already rated this contribution
             $scope.author = users.getUser( $scope.contribution.createdBy, false );  // get the author details
             GraphService.updateViewCount($scope.contribution.id);    // update the viewcount of the contribution
+            
             node.addClass('read');
+
+
+
         }
 
 

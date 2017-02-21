@@ -29,6 +29,7 @@ body {
 	height: 100%; 
 	
 	font-size: 12px;
+	font-family: 'Open Sans', sans-serif;
 }
 
 
@@ -66,7 +67,7 @@ h6{
 	font-size: 12px;
 }
 
-p{
+p, ul, ol{
 	font-size: 14px;
 	line-height: 24px;
 	font-family: 'Lora', serif;
@@ -90,6 +91,11 @@ a:hover, a:visited, a:focus{
 img{
 	max-width: 100%;
 }
+
+blockquote{
+	border-left: 5px solid #A6A6A6;
+}
+
 
 .container-fluid{
 	//border: 1px solid black;
@@ -125,7 +131,6 @@ input{
 
 label{
 	font-size: 14px !important;	
-	font-family: 'Open Sans', sans-serif;
 }
 
 .pointer{
