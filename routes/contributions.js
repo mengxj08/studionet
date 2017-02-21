@@ -649,6 +649,7 @@ router.route('/:contributionId/attachments')
   multer({storage: storage.attachmentStorage}).array('attachments'), 
   contributionUtil.updateDatabaseWithAttachmentsAndGenerateThumbnails);
 
+
 //route: /api/contributions/:contributionId/attachments/:attachmentId
 router.route('/:contributionId/attachments/:attachmentId')
   .get(auth.ensureAuthenticated, contributionUtil.getHandlerToSendImage(false))
@@ -755,5 +756,8 @@ router.route('/:contributionId/attachments/:attachmentId')
 //route: /api/contributions/:contributionId/attachments/:attachmentId
 router.route('/:contributionId/attachments/:attachmentId/thumbnail')
   .get(auth.ensureAuthenticated, contributionUtil.getHandlerToSendImage(true))
+
+
+
 
 module.exports = router;

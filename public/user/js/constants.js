@@ -116,15 +116,25 @@ function dataURItoBlob(dataURI) {
 
 function extractImages(data){
   
-  var patt1 = /data:image(\S*)=/g;
+  var patt1 = new RegExp('data:image(\\S*)"', "g");
   var result = data.body.match(patt1);
+
+  if(result == null)
+    return [];
   
   var attachments = [];
   for(var i=0; i < result.length; i++){
-    var blob = dataURItoBlob( result[i] );
-    attachments.push(blob);
+    var src = result[i].substr(0, result[i].length-1);
+    var theBlob = dataURItoBlob( src );
+    theBlob.lastModifiedDate = new Date();
+    theBlob.name = "studionet-inline-img-" + i;
+    data.body = data.body.replace(src, theBlob.name);
+    attachments.push(theBlob);
   }
+
+  str = data.body;
 
   return attachments; 
 
 }
+
