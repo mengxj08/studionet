@@ -229,10 +229,10 @@ angular.module('studionet')
 				}
 
 				// ------------- extract the images
-				var body = node.data('body');
+				/*var body = node.data('body');
 				var inlineImagePattern = new RegExp('img src="studionet-inline-img-', "g");
 				node.data('body', node.data('body').replace(inlineImagePattern, 'img src="api/contributions/' + node.id() + '/attachments/image-'));
-				console.log("replaced body", node.data('body'));
+				console.log("replaced body", node.data('body'));*/
 
 
 				// ------------- compute the reading time
@@ -260,8 +260,8 @@ angular.module('studionet')
 	// Data needs to be sent in FormData format
 	o.createNode = function(new_contribution){
 
-		var inlineImages = extractImages(new_contribution);
-		new_contribution.attachments = new_contribution.attachments.concat(inlineImages);
+		/*var inlineImages = extractImages(new_contribution);
+		new_contribution.attachments = new_contribution.attachments.concat(inlineImages);*/
 
 		o.spinner.spin(document.getElementById('cy'));
 
@@ -274,7 +274,6 @@ angular.module('studionet')
 		formData.append('ref', new_contribution.ref);
 
 		new_contribution.attachments.map(function(file){	formData.append('attachments', file, file.name); 	})
-	    console.log(new_contribution.attachments);
 
 	    return $http({
 				method  : 'POST',
