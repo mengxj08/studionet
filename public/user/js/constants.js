@@ -124,12 +124,13 @@ function extractImages(data){
   
   var attachments = [];
   for(var i=0; i < result.length; i++){
-    var src = result[i].substr(0, result[i].length-1);
-    var theBlob = dataURItoBlob( src );
-    theBlob.lastModifiedDate = new Date();
-    theBlob.name = "studionet-inline-img-" + i;
-    data.body = data.body.replace(src, theBlob.name);
-    attachments.push(theBlob);
+      var src = result[i].substr(0, result[i].length-1);
+      var fileType = src.match("data:image/(.*);")[1];
+      var theBlob = dataURItoBlob( src );
+      theBlob.lastModifiedDate = new Date();
+      theBlob.name = "studionet-inline-img-" + i + (fileType ? "." + fileType : "");
+      data.body = data.body.replace(src, theBlob.name);
+      attachments.push(theBlob);
   }
 
   str = data.body;

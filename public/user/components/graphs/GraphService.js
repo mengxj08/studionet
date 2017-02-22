@@ -258,8 +258,8 @@ angular.module('studionet')
 	// Data needs to be sent in FormData format
 	o.createNode = function(new_contribution){
 
-		/*var inlineImages = extractImages(new_contribution);
-		new_contribution.attachments = new_contribution.attachments.concat(inlineImages);*/
+		var inlineImages = extractImages(new_contribution);
+		new_contribution.attachments = new_contribution.attachments.concat(inlineImages);
 
 		o.spinner.spin(document.getElementById('cy'));
 
