@@ -215,8 +215,8 @@ angular.module('studionet')
 
 
 	// ----------------- Deals with attachments (deleting)
-	// Not yet used
 	.factory('attachments', ['$http', function($http){
+		
 		var o = {
 			attachments: []
 		}

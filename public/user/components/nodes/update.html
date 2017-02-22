@@ -23,21 +23,21 @@
             <!-- attachments -->
             <div class='modal-section' ng-if="contributionData.contentType != 'comment'">
               <!-- should be different from create / reply editor -->
-              <!-- <label> Attachments <small>({{ contributionData.attachments.length }} file(s) uploaded)</small> </label>
+              <label> Attachments <small>({{ contributionData.attachments.length }} file(s) uploaded)</small> </label>
               <div class="button btn-sm" ngf-select ng-model="contributionData.attachments" ngf-multiple="true">
                     <h6>Choose Additional Files</h6>
-              </div> -->
+              </div>
               <!-- new attachments -->
-              <!-- <div class="attachments" ng-repeat="attachment in contributionData.attachments" ng-if='contributionData.attachments.length>0'>
+              <div class="attachments" ng-repeat="attachment in contributionData.attachments" ng-if='contributionData.attachments.length>0'>
                 <h5 style="color: blue; width: 70%; display: inline-block;"><u>{{ attachment.name }} ({{ attachment.size/1000 }} KB)</u></h5>
                 <button style='float: right; display: inline-block;' class="btn btn-xs" ng-click="removeFiles(attachment, contributionData)">X</button>
               </div>
-              <hr> -->
+              <hr>
               <!-- existing attachments -->
               <h6  ng-if='contributionData._attachments[0].id != null'>Existing Attachments</h6>
               <div class="attachments" ng-repeat="attachment in contributionData._attachments" ng-if='contributionData._attachments[0].id != null'>
                 <h5 style="color: blue; width: 70%; display: inline-block;"><u>{{ attachment.attachment.name }} ({{ attachment.attachment.size/1000 }} KB)</u></h5>
-                <!-- <button style='float: right; display: inline-block;' class="btn btn-xs" ng-click="removeFiles(attachment)">X</button> -->
+                <button style='float: right; display: inline-block;' class="btn btn-xs" ng-click="removeFilesAndfromDB(attachment, contributionData)">X</button>
               </div>
             </div>
             

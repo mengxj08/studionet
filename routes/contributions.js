@@ -427,18 +427,15 @@ router.route('/:contributionId')
               req.app.get('socket').emit('node_updated', req.params.contributionId); 
 
               res.status(200);
-              res.send( "Contribution updated" );
+              res.send( result[0] );
 
-
-              //next();
+              next();
             }
-
             
           });
 
         });
-  })
-  //}, contributionUtil.updateDatabaseWithAttachmentsAndGenerateThumbnails)
+  }, contributionUtil.updateDatabaseWithAttachmentsAndGenerateThumbnails)
 
   .delete(auth.ensureAuthenticated, function(req, res){
 

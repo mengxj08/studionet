@@ -173,15 +173,17 @@ angular.module('studionet')
         }
 
         $scope.removeFilesAndfromDB = function (attachment, contributionData){
-              attachments.deleteAttachmentbyId(attachment.id, contributionData.oldData.id)
-                .then(function(res){
-                  var index = contributionData.attachments.indexOf(attachment);
-                  if(index > -1){
-                        contributionData.attachments.splice(index, 1);
-                  }
-                }, function(error){
-                  alert('[WARNING]: Deleting attachment is unsuccessful');
-                })
+            attachments.deleteAttachmentbyId(attachment.id, $scope.contribution.id)
+              .then(function(res){
+                var index = contributionData.attachments.indexOf(attachment);
+                if(index > -1){
+                      contributionData.attachments.splice(index, 1);
+                      alert("[success] File delete");
+                }
+              }, function(error){
+                alert('[WARNING]: Deleting attachment is unsuccessful');
+              })
+        
         }
 
 
