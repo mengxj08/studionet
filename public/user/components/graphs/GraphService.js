@@ -146,9 +146,6 @@ angular.module('studionet')
 	flattenGraph = function(cy){
 		var graph = {};
 
-		// sort nodes by date first
-		
-
 
 		graph.nodes = cy.nodes().map(function(node){
 			return { 	
@@ -161,6 +158,7 @@ angular.module('studionet')
 						predecessors: node.predecessors().nodes().map(function(n){
 							return n.id();
 						}),
+						successors: node.successors().length,
 						position: node.position()
 					}
 		})
