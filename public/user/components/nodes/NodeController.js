@@ -173,17 +173,29 @@ angular.module('studionet')
         }
 
         $scope.removeFilesAndfromDB = function (attachment, contributionData){
-            
-            attachments.deleteAttachmentbyId(attachment.id, $scope.contribution.id)
-              .then(function(res){
-                var index = contributionData._attachments.indexOf(attachment);
-                if(index > -1){
-                      contributionData._attachments.splice(index, 1);
-                      alert("Attachment was successfully deleted");
-                }
-              }, function(error){
-                alert('[WARNING]: Deleting attachment is unsuccessful');
-              })
+
+            // if attachment is an inline image, delete the corresponding img src in the contribution body
+            var result = 0;
+            if(attachment.name.startsWith("studionet-inline-img-")){
+              result = contributionData.body.match('<img(.*)' + attachment.name + '(.*)\/>')
+            }
+
+          
+            if(result != null){
+              attachments.deleteAttachmentbyId(attachment.id, $scope.contribution.id)
+                .then(function(res){
+                  var index = contributionData._attachments.indexOf(attachment);
+                  if(index > -1){
+                        contributionData._attachments.splice(index, 1);
+                        alert("Attachment was successfully deleted");
+                  }
+                }, function(error){
+                  alert('[WARNING]: Deleting attachment is unsuccessful');
+                })
+            }
+            else{
+              alert("Cannot delete inline attachment. Please remove the image in the content first.")
+            }
         
         }
 
