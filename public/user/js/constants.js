@@ -130,10 +130,7 @@ function extractImages(data){
       theBlob.lastModifiedDate = new Date();
       theBlob.name = "studionet-inline-img-" + i + (fileType ? "." + fileType : "");
 
-      if(data.id !== undefined)
-        data.body = data.body.replace(src, "'../api/contributions/" + data.id + "/attachments?name=" + theBlob.name + "'");
-      else
-        data.body = data.body.replace(src, theBlob.name);
+      data.body = data.body.replace(src, theBlob.name);
 
       attachments.push(theBlob);
   }
