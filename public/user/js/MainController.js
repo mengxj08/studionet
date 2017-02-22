@@ -19,7 +19,7 @@ angular.module('studionet')
 
   socket.on('node_updated', function (node) {
     console.log(node);
-     GraphService.getNode(node, true);
+    setTimeout( function(){ GraphService.getNode(node, true) } , 2000 );
   });
 
   socket.on('node_deleted', function (node) {

@@ -175,7 +175,7 @@ angular.module('studionet')
         $scope.removeFilesAndfromDB = function (attachment, contributionData){
 
             // if attachment is an inline image, delete the corresponding img src in the contribution body
-            var result = 0;
+            var result = null;
             if(attachment.attachment.name.startsWith("studionet-inline-img-")){
               result = contributionData.body.match('<img(.*)' + attachment.attachment.name + '(.*)\/>')
             }
