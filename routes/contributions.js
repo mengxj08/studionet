@@ -645,6 +645,29 @@ router.route('/:contributionId/rate')
 
 //route: /api/contributions/:contributionId/attachments
 router.route('/:contributionId/attachments')
+  .get(auth.ensureAuthenticated, function(req, res){
+
+    var query = [
+      'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
+      'MATCH (a:attachment)<-[:ATTACHMENT]-(c) WHERE a.name={attachmentNameParam}',
+      'RETURN ID(a) as id'
+    ].join('\n');
+
+    var params = {
+      contributionIdParam: parseInt(req.params.contributionId),
+      attachmentNameParam: req.query.name
+    };
+
+    db.query(query, params, function(error, result){
+      if (error)
+        console.log('[ERROR] Error find attachment');
+      else{
+        console.log('Redirecting to '  + "/api/contributions/" + req.params.contributionId + "/attachments/" + result[0].id)
+        res.redirect("/api/contributions/" + req.params.contributionId + "/attachments/" + result[0].id);
+      }
+    })
+  })
+
   .post(auth.ensureAuthenticated, contributionUtil.ensureUserOwnsContribution, contributionUtil.initTempFileDest, 
   multer({storage: storage.attachmentStorage}).array('attachments'), 
   contributionUtil.updateDatabaseWithAttachmentsAndGenerateThumbnails);

@@ -185,7 +185,6 @@ angular.module('studionet')
 			  	else
 			  		var time = 400;
 			  		if(n.onSpiral == n.id){
-			  			console.log("on spiral")
 			  			time = 800;
 			  		}
 			        setTimeout( function(){
@@ -229,10 +228,9 @@ angular.module('studionet')
 				}
 
 				// ------------- extract the images
-				/*var body = node.data('body');
+				var body = node.data('body');
 				var inlineImagePattern = new RegExp('img src="studionet-inline-img-', "g");
-				node.data('body', node.data('body').replace(inlineImagePattern, 'img src="api/contributions/' + node.id() + '/attachments/image-'));
-				console.log("replaced body", node.data('body'));*/
+				node.data('body', node.data('body').replace(inlineImagePattern, 'img src="api/contributions/' + node.id() + '/attachments?name=image-'));
 
 
 				// ------------- compute the reading time

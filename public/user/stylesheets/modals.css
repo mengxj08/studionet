@@ -179,9 +179,13 @@
 }
 
 input{
-  width: 300px;
+  width: 100%;
   display: inline-block;
   background-color: white;
+}
+
+input.new-node-title:focus{
+  outline: -webkit-focus-ring-color auto 5px !important;
 }
 
 /*

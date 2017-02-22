@@ -113,7 +113,7 @@ button{
 }
 
 // to remove outlines after focus
-*:focus {
+button:focus {
     outline: 0 !important;
 }
 
