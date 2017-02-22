@@ -86,12 +86,12 @@
                 <div class='row text-right modal-section'>
                   
                   <span ng-if='own'>
-                    <button type="button" class="btn btn-default modal-button" ng-disabled="true">Edit Groups</button>
-                    <button type="button" class="btn btn-default modal-button" ng-click='profilectrl.profileEdit=true' ng-hide="profilectrl.profileEdit">Edit Profile</button>
-                    <button type="button" class="btn btn-default modal-button"><a href='/logout'>Logout</a></button>
+                    <button type="button" class="btn btn-default modal-button" ng-disabled="true" uib-tooltip='User Groups - Coming Soon!' uib-position='top'><i class='fa fa-users'></i></button>
+                    <button type="button" class="btn btn-default modal-button" ng-click='profilectrl.profileEdit=true' ng-hide="profilectrl.profileEdit" uib-tooltip='Edit Profile' uib-position='top'><i class='fa fa-pencil'></i></button>
+                    <button type="button" class="btn btn-default modal-button" uib-tooltip='Logout' uib-position='top'><a href='/logout'><i class='fa fa-power-off'></i></a></button>
                   </span>
                   
-                  <button type="button" class="btn btn-default modal-button" data-dismiss='modal' ng-click='own ? close() : hideAuthorModal();'>Close</button>
+                  <button type="button" class="btn btn-default modal-button" data-dismiss='modal' ng-click='own ? close() : hideAuthorModal();' uib-tooltip='Close' uib-position='top'><i class='fa fa-close'></i></button>
                 
                 </div>
 
