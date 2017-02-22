@@ -176,8 +176,8 @@ angular.module('studionet')
 
             // if attachment is an inline image, delete the corresponding img src in the contribution body
             var result = 0;
-            if(attachment.name.startsWith("studionet-inline-img-")){
-              result = contributionData.body.match('<img(.*)' + attachment.name + '(.*)\/>')
+            if(attachment.attachment.name.startsWith("studionet-inline-img-")){
+              result = contributionData.body.match('<img(.*)' + attachment.attachment.name + '(.*)\/>')
             }
 
           
@@ -198,8 +198,6 @@ angular.module('studionet')
             }
         
         }
-
-
 
 
 
