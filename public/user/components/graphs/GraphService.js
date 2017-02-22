@@ -295,6 +295,9 @@ angular.module('studionet')
 	// Fix me!
 	o.updateNode = function(update_contribution){
 
+		var inlineImages = extractImages(update_contribution);
+		update_contribution.attachments = update_contribution.attachments.concat(inlineImages);
+
 		var formData = new FormData();
 		formData.append('title', update_contribution.title);
 		formData.append('body', update_contribution.body);

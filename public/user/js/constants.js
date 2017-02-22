@@ -129,7 +129,12 @@ function extractImages(data){
       var theBlob = dataURItoBlob( src );
       theBlob.lastModifiedDate = new Date();
       theBlob.name = "studionet-inline-img-" + i + (fileType ? "." + fileType : "");
-      data.body = data.body.replace(src, theBlob.name);
+
+      if(data.id !== undefined)
+        data.body = data.body.replace(src, "'../api/contributions/" + data.id + "/attachments?name=" + theBlob.name + "'");
+      else
+        data.body = data.body.replace(src, theBlob.name);
+
       attachments.push(theBlob);
   }
 

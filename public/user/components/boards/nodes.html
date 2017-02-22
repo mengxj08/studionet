@@ -105,11 +105,12 @@
                     </thead>
 
                     <tbody> 
-                        <tr ng-repeat="contribution in contributions | orderBy:sortType:sortReverse | filter:searchContribution as filtered" 
-                                ng-show='$index < (currentPage)*itemsPerPage && $index >= (currentPage-1)*itemsPerPage && contribution.type != "comment"'>
+                        <tr class='pointer' ng-repeat="contribution in contributions | orderBy:sortType:sortReverse | filter:searchContribution as filtered" 
+                                ng-show='$index < (currentPage)*itemsPerPage && $index >= (currentPage-1)*itemsPerPage && contribution.type != "comment"'
+                                ng-click='goToNode(contribution.id)' data-dismiss='modal'>
                             <td class='col-sm-1'>{{ $index + 1 }}</td>
                             <td class='col-sm-4'><time>{{ contribution.dateCreated | amCalendar }}</time></td>
-                            <td class='col-sm-4 pointer' ng-click='goToNode(contribution.id)' data-dismiss='modal'>{{ contribution.title }}</td>
+                            <td class='col-sm-4 '>{{ contribution.title }}</td>
                             <td class='col-sm-1'>{{ contribution.views }}</td>
                             <td class='col-sm-1'>{{ contribution.rateCount }}</td>
                             <td class='col-sm-1'>{{ contribution.rating.toFixed(2) }}</td>
