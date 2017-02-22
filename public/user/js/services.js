@@ -221,14 +221,15 @@ angular.module('studionet')
 			attachments: []
 		}
 
-		o.deleteAttachmentbyId = function(contributionId, attachmentId){
+		o.deleteAttachmentbyId = function(attachmentId, contributionId){
+			
 			return $http.delete('/api/contributions/'+contributionId+'/attachments/'+attachmentId)
-			.success(function(res) {
-				return;  
-		    })
-		    .error(function(error){
-				throw error;
-		    })
+				.success(function(res) {
+					return;  
+			    })
+			    .error(function(error){
+					throw error;
+			    })
 		}
 
 		return o;

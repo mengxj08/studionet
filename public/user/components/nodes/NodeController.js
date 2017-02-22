@@ -173,12 +173,13 @@ angular.module('studionet')
         }
 
         $scope.removeFilesAndfromDB = function (attachment, contributionData){
+            
             attachments.deleteAttachmentbyId(attachment.id, $scope.contribution.id)
               .then(function(res){
-                var index = contributionData.attachments.indexOf(attachment);
+                var index = contributionData._attachments.indexOf(attachment);
                 if(index > -1){
-                      contributionData.attachments.splice(index, 1);
-                      alert("[success] File delete");
+                      contributionData._attachments.splice(index, 1);
+                      alert("Attachment was successfully deleted");
                 }
               }, function(error){
                 alert('[WARNING]: Deleting attachment is unsuccessful');
