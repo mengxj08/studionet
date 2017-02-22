@@ -78,6 +78,8 @@ angular.module('studionet')
         //  the button has the 'data-dismiss' attribute.
         $scope.close = function() {
 
+            $scope.cancel();
+
             $('body').removeClass('modal-open');
             $('.modal-backdrop').remove();
 

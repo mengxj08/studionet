@@ -145,10 +145,16 @@ angular.module('studionet')
 
 	flattenGraph = function(cy){
 		var graph = {};
+
+		// sort nodes by date first
+		
+
+
 		graph.nodes = cy.nodes().map(function(node){
 			return { 	
 						id: node.id(),
 						onSpiral: -1, 
+						dateCreated: node.data('dateCreated'),
 						incomers: node.incomers().nodes().map(function(n){
 							return n.id();
 						}),
@@ -229,8 +235,8 @@ angular.module('studionet')
 
 				// ------------- extract the images
 				var body = node.data('body');
-				var inlineImagePattern = new RegExp('img src="studionet-inline-img-', "g");
-				node.data('body', node.data('body').replace(inlineImagePattern, 'img src="../api/contributions/' + node.id() + '/attachments?name=studionet-inline-img-'));
+				var inlineImagePattern = new RegExp('src="studionet-inline-img-', "g");
+				node.data('body', node.data('body').replace(inlineImagePattern, 'src="../api/contributions/' + node.id() + '/attachments?name=studionet-inline-img-'));
 
 
 				// ------------- compute the reading time
