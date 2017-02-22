@@ -230,7 +230,7 @@ angular.module('studionet')
 				// ------------- extract the images
 				var body = node.data('body');
 				var inlineImagePattern = new RegExp('img src="studionet-inline-img-', "g");
-				node.data('body', node.data('body').replace(inlineImagePattern, 'img src="api/contributions/' + node.id() + '/attachments?name=image-'));
+				node.data('body', node.data('body').replace(inlineImagePattern, 'img src="../api/contributions/' + node.id() + '/attachments?name=studionet-inline-img-'));
 
 
 				// ------------- compute the reading time
