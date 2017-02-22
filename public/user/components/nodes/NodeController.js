@@ -277,6 +277,7 @@ angular.module('studionet')
         $scope.replyMode = false;
         $scope.showReplyModal = function(id, type){
           $scope.replyMode = true;
+          $scope.contributionData = { attachments: [], tags: []}; //store the data of replying information
           animate();
         }
 
@@ -310,7 +311,7 @@ angular.module('studionet')
               GraphService.createNode( contributionData ).then(function(res){
                     
                     sendMessage( {status: 200, message: "Successfully replied to node" } );
-                    $scope.close();
+                    $scope.replyMode = false;
 
               }, function(error){
 
