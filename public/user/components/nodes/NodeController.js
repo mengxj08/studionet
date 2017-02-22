@@ -374,7 +374,9 @@ angular.module('studionet')
 
           $scope.updateMode = false;
           GraphService.updateNode(updateContribution).then(function(res){
+
                 sendMessage( {status: 200, message: "Successfully updated node." } );
+
           }, function(error){
                 sendMessage( {status: 500, message: "Error updating node" } );
                 $scope.close();

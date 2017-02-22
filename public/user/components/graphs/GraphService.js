@@ -202,7 +202,7 @@ angular.module('studionet')
 	}
 
 	//------ Graph Manipulations
-	o.getNode = function(node){
+	o.getNode = function(node, force){
 
 		var id = undefined;
 		if( node instanceof Object ){
@@ -216,7 +216,7 @@ angular.module('studionet')
 
 		var node = o.graph.getElementById(id).length ? o.graph.getElementById(id) :  o.comments.getElementById(id);
 
-		if(node.data('db_data') == undefined){
+		if(node.data('db_data') == undefined || force){
 			
 			$http.get('/api/contributions/' + id).success(function(res){
 

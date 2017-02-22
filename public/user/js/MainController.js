@@ -18,9 +18,8 @@ angular.module('studionet')
   });
 
   socket.on('node_updated', function (node) {
-     node.type = node.contentType;
-     GraphService.updateNodeInGraph(node);
-     console.log("update node", node);
+    console.log(node);
+     GraphService.getNode(node, true);
   });
 
   socket.on('node_deleted', function (node) {
