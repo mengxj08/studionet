@@ -128,7 +128,7 @@ function extractImages(data){
       var fileType = src.match("data:image/(.*);")[1];
       var theBlob = dataURItoBlob( src );
       theBlob.lastModifiedDate = new Date();
-      theBlob.name = "studionet-inline-img-" + i + (fileType ? "." + fileType : "");
+      theBlob.name = "studionet-inline-img-" + (new Date()).getTime() + (fileType ? "." + fileType : "");
 
       data.body = data.body.replace(src, theBlob.name);
 
