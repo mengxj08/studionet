@@ -180,13 +180,14 @@ angular.module('studionet')
               result = contributionData.body.match('<img(.*)' + attachment.attachment.name + '(.*)\/>')
             }
 
-          
-            if(result != null){
+            if(result == null){
               attachments.deleteAttachmentbyId(attachment.id, $scope.contribution.id)
                 .then(function(res){
                   var index = contributionData._attachments.indexOf(attachment);
                   if(index > -1){
                         contributionData._attachments.splice(index, 1);
+                        $scope.contribution.attachments.splice(index, 1);
+                        $scope.contribution.body = contributionData.body;
                         alert("Attachment was successfully deleted");
                   }
                 }, function(error){
