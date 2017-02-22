@@ -1,0 +1,92 @@
+<!-- Profile Modal -->
+<div id='commentActivityBoard' class="modal fade" role="dialog">
+  
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+
+        <div class="modal-body">
+
+        	<h3>Comment Activity Board</h3>
+        	<h6>Chit-Chat</h6>
+
+            <!--  lists -->
+            <div class='modal-section'>
+
+
+                    <form>
+                    <div class="form-group">
+                    <div class="input-group">
+                    <div class="input-group-addon"><i class="fa fa-search"></i></div>
+                    <input type="text" class="form-control" placeholder="Search ..." ng-model="searchContribution">
+                    </div>      
+                    </div>
+                    </form>
+
+
+                    <table class="table table-bordered table-striped">
+
+                    <thead>
+                        <tr>
+                        <td class='col-sm-1'>
+                            #
+                        </td>
+                        <td class='col-sm-3'>
+                          <a href="#" ng-click="sortType = 'dateCreated'; sortReverse = !sortReverse">
+                            Date Created 
+                            <span ng-show="sortType == 'dateCreated' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'dateCreated' && sortReverse" class="fa fa-caret-up"></span>
+                          </a>
+                        </td>
+                         <td class='col-sm-3'>
+                          <a href="#" ng-click="sortType = 'createdBy'; sortReverse = !sortReverse">
+                            By
+                            <span ng-show="sortType == 'createdBy' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'createdBy' && sortReverse" class="fa fa-caret-up"></span>
+                          </a>
+                        </td>
+                        <td class='col-sm-5'>
+                          <a href="#" ng-click="sortType = 'source'; sortReverse = !sortReverse">
+                            For
+                            <span ng-show="sortType == 'source' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'source' && sortReverse" class="fa fa-caret-up"></span>
+                          </a>
+                        </td>
+
+                        </tr>
+                    </thead>
+
+                    <tbody> 
+                        <tr class='pointer' ng-repeat="contribution in contributions | orderBy:sortType:sortReverse | filter:searchContribution as filtered" 
+                                ng-show='$index < (currentPage)*itemsPerPage && $index >= (currentPage-1)*itemsPerPage'
+                                ng-click='goToNode(contribution.ref)' data-dismiss='modal'>
+                            <td class='col-sm-1'>{{ $index + 1 }}</td>
+                            <td class='col-sm-3'><time>{{ contribution.dateCreated | amCalendar }}</time></td>
+                            <td class='col-sm-3'>{{ (users[contribution.createdBy].nickname ? users[contribution.createdBy].nickname : users[contribution.createdBy].name) }}</td>
+                            <td class='col-sm-5'>{{ getContributionTitle( contribution.ref ) }}</td>
+                        </tr>
+                    
+                    </tbody>
+
+                    </table>
+
+                    <!-- pagination -->
+                    <ul uib-pagination total-items="filtered.length" ng-model="currentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" force-ellipses="true" items-per-page='itemsPerPage'></ul>
+            </div>
+
+            <!-- buttons -->
+            <div class='row text-right modal-section'>
+                <button type="button" ng-click='close();' class="btn btn-default modal-button" data-dismiss='modal' uib-tooltip='Close' uib-position='top'><i class='fa fa-close'></i></button>
+            </div>
+              
+
+        </div>
+
+    </div>
+
+
+  </div>
+
+</div>
+

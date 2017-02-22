@@ -414,32 +414,3 @@ tags-input .tags{
     z-index: 1000000;
 }
 
-
-/*
- * Animations
- */
-
-.animate.ng-enter,
-.animate.ng-leave {
-    transition: all 1s linear ;
-}
-
-.animate.ng-enter {
-    height: 0% ;
-    background-color: red;
-}
-
-.animate.ng-enter-active {
-    height: 100% ;
-    background-color: green;
-}
-
-.animate.ng-leave {
-    height: 100% ;
-    background-color: blue;
-}
-
-.animate.ng-leave-active {
-    height: 0% ;
-    background-color: yellow;
-}

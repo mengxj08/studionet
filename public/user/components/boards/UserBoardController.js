@@ -57,6 +57,10 @@ angular.module('studionet')
 				return name;
 		}
 
+		$scope.goToUser = function(user_id){
+			
+		}
+
 
 		//  This close function doesn't need to use jQuery or bootstrap, because
 		//  the button has the 'data-dismiss' attribute.
