@@ -19,7 +19,7 @@
                 <div class='row text-center'>
                     
                     <!-- maximum creations -->
-                    <div class='col-sm-4 award-box'>
+                    <div class='col-sm-4 award-box pointer' ng-click='goToUser(topCreator.id)'>
                         <div class='award-name'>Node Maker</div>
                         <div class='awardee-name'>{{ processName(topCreator.nickname ? topCreator.nickname : topCreator.name)  }}</div>
                         <div class='awardee-details'><img src='{{topCreator.avatar}}' style='width: 50px; height: 50px; border-radius: 50%;'></div>
@@ -27,7 +27,7 @@
 
 
                     <!-- maximum ratings -->
-                    <div class='col-sm-4 award-box'>
+                    <div class='col-sm-4 award-box pointer' ng-click='goToUser(topRater.id)'>
                         <div class='award-name'>Node Rater</div>
                         <div class='awardee-name'>{{ processName(topRater.nickname ? topRater.nickname : topRater.name) }}</div>
                         <div class='awardee-details'><img src='{{topRater.avatar}}' style='width: 50px; height: 50px; border-radius: 50%;'></div>
@@ -35,7 +35,7 @@
 
 
                     <!-- maximum views -->
-                    <div class='col-sm-4 award-box'>
+                    <div class='col-sm-4 award-box pointer' ng-click='goToUser(topViewer.id)'>
                         <div class='award-name'>Node Gazer</div>
                         <div class='awardee-name'>{{ processName(topViewer.nickname ? topViewer.nickname : topViewer.name)  }}</div>
                         <div class='awardee-details'><img src='{{topViewer.avatar}}' style='width: 50px; height: 50px; border-radius: 50%;'></div>
@@ -106,8 +106,9 @@
 
                     <tbody>
                     <tbody>
-                        <tr ng-repeat="user in users | orderBy: [ sortType, 'lastLoggedIn' ]:sortReverse | filter:searchUser as filtered" 
-                                ng-show='$index < (currentPage)*itemsPerPage && $index >= (currentPage-1)*itemsPerPage'>
+                        <tr class='pointer' ng-repeat="user in users | orderBy: [ sortType, 'lastLoggedIn' ]:sortReverse | filter:searchUser as filtered" 
+                                ng-show='$index < (currentPage)*itemsPerPage && $index >= (currentPage-1)*itemsPerPage'
+                                ng-click='goToUser(user.id)'>
                             <td class='col-sm-1'>{{ $index + 1 }}</td>
                             <td class='col-sm-4' ng-if='user.lastLoggedIn > -1'><time>{{ user.lastLoggedIn | amCalendar }}</time></td>
                             <td class='col-sm-4' ng-if='!(user.lastLoggedIn > -1)'>--</td>
@@ -138,5 +139,3 @@
   </div>
 
 </div>
-
-

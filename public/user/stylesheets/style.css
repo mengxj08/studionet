@@ -96,6 +96,13 @@ blockquote{
 	border-left: 5px solid #A6A6A6;
 }
 
+.btn:hover{
+	-webkit-transform: none !important;
+	   -moz-transform: none !important;
+	    -ms-transform: none !important;
+	     -o-transform: none !important;
+	        transform: none !important;
+}
 
 .container-fluid{
 	//border: 1px solid black;

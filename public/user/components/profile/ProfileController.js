@@ -48,8 +48,9 @@ angular.module('studionet')
 		$scope.close();
 	}
 
-
 	$scope.setUser = function(user_id, own){
+
+		console.log("setting user", user_id, own);
 
 		$scope.own = own;
 
@@ -69,7 +70,6 @@ angular.module('studionet')
 		}
 		else{
 
-			var promise = {};
 			$scope.user = users.getUser(user_id, false);
 			users.getUser(user_id, true).then(function(res){
 

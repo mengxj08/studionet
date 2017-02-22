@@ -1,6 +1,6 @@
 angular.module('studionet')
 
-.controller('UserBoardController', ['$scope', 'users', function($scope, users){
+.controller('UserBoardController', ['$scope', '$rootScope', 'users', function($scope, $rootScope, users){
 
 		$scope.sortType     = 'lastLoggedIn'; // set the default sort type
 		$scope.sortReverse  = true;  // set the default sort order
@@ -58,7 +58,6 @@ angular.module('studionet')
 		}
 
 		$scope.goToUser = function(user_id){
-			
 		}
 
 
