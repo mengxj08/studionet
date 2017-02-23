@@ -215,7 +215,11 @@ angular.module('studionet')
   $scope.$on( BROADCAST_VIEWMODE_OFF, function(event, args) {
     $scope.viewMode = false;
   });
-  var showDetailsModal = function(data, clickedContributionId) {
+/*  $scope.$on('OPEN_NODE', function(event, args) {
+    console.log("open node");
+    showDetailsModal( GraphService.graph.getElementById( args.id ) );
+  });*/
+  var showDetailsModal = function(data) {
 
       $scope.viewMode = true;
       $('#contributionViewModal').modal({backdrop: 'static', keyboard: false});

@@ -43,11 +43,11 @@
 
                       <div class='col-sm-12 text-center' ng-if='user.bookmarks.length == 1 && user.bookmarks[0].title == null'><br><h6>No Nodes Bookmarked</h6><br></div>
                       
-                      <div class='col-sm-12' ng-repeat="bookmark in user.bookmarks | orderBy : '-createdOn' ">
+                      <div class='col-sm-12' ng-if='user.bookmarks.length > 0 && user.bookmarks[0].title != null' ng-repeat="bookmark in user.bookmarks | orderBy : '-createdOn' ">
                           <div class='profile-item'>
                             <div class='row pointer' ng-click='goToNode(bookmark.id)' data-dismiss='modal'>
                               <div class='col-sm-12'>
-                                <h6>Bookmaked <u>{{ bookmark.title }}</u> on {{ bookmark.createdOn | date : 'mediumDate' }}</h6>
+                                <h6>Bookmarked <u>{{ bookmark.title }}</u> on {{ bookmark.createdOn | date : 'mediumDate' }}</h6>
                               </div>
                             </div>
                           </div>

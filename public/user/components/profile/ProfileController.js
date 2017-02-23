@@ -1,6 +1,6 @@
 angular.module('studionet')
 
-.controller('ProfileController', ['$scope', 'profile', 'tags', 'groups', 'users', 'GraphService', function($scope, profile, tags, groups, users, GraphService){
+.controller('ProfileController', ['$scope', 'profile', 'tags', 'groups', 'users', 'GraphService', '$rootScope', function($scope, profile, tags, groups, users, GraphService, $rootScope){
 
 	/*
 	 *	Functionality for User Profile Page
@@ -16,8 +16,6 @@ angular.module('studionet')
 	var updateProfile;
 
 	var computeStats = function(){
-
-		console.log($scope.user.bookmarks)
 
 		$scope.views = 0; 
 		$scope.rating = 0;
@@ -46,7 +44,14 @@ angular.module('studionet')
 	}
 
 	$scope.goToNode = function(node_id){
+
+		// select the node
 		GraphService.selectNode(node_id);
+
+		// open details
+		/*var args = {id: node_id};
+  		$rootScope.$broadcast('OPEN_NODE', args);*/
+
 		$scope.close();
 	}
 

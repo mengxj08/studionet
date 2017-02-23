@@ -491,6 +491,8 @@ angular.module('studionet')
 		  node.successors().removeClass('faded')  
 		                  .addClass('highlighted');
 		});
+
+
 	};
 
 	o.selectNodePermanent = function(node){
