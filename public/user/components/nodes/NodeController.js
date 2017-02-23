@@ -435,14 +435,14 @@ angular.module('studionet')
         $scope.authorMode = false; 
         
         $scope.showAuthorModal = function(){
-          $scope.authorMode = true;
+          //$scope.authorMode = true;
           //animate();
           $rootScope.$broadcast( "PROFILE_MODE",  {id: $scope.contribution.createdBy, standalone: false});
           $('#profileModal').modal({backdrop: 'static', keyboard: false});
         }
 
         $scope.hideAuthorModal = function(){
-          $scope.authorMode = false;
+          //$scope.authorMode = false;
         }
 
 

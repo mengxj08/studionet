@@ -99,7 +99,7 @@
 
                 <div class='row text-right' ng-cloak>
 
-                  <span ng-hide='commentMode || replyMode || updateMode || authorMode || editing'>
+                  <span ng-hide='commentMode || replyMode || updateMode || editing'>
                       <button type="button" ng-click="setData(contribution.ref);" class="btn btn-default modal-button" ng-show='contribution.type=="comment"' uib-tooltip='Back to node' uib-position='top'><i class='fa fa-mail-reply'></i></button>
                       <button type="button" ng-click="showCommentModal(contribution.id)" class="btn btn-default modal-button" ng-disabled="user.isGuest" ng-show='contribution.type!="comment"' uib-tooltip='Add Comment' uib-position='top'><i class='fa fa-comments'></i></button>
                       <button type="button" ng-click="showReplyModal(contribution.id)" class="btn btn-default modal-button" ng-disabled="user.isGuest" ng-show='contribution.type!="comment"' uib-tooltip='Add Node' uib-position='top'><i class='fa fa-plus'></i></button>
