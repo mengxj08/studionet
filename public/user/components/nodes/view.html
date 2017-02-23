@@ -40,7 +40,7 @@
                 
                 <!-- content -->
                 <h1>
-                  <i ng-click='toggleBookmark(contribution.id)' ng-class="bookmarked || hover ? 'bookmark fa fa-bookmark': 'bookmark fa fa-bookmark-o'" ng-mouseenter="hover = true" ng-mouseleave="hover = false"></i>&nbsp;&nbsp;{{contribution.title}}
+                  <i ng-click='toggleBookmark(contribution.id)' ng-class="bookmarked || hover ? 'bookmark fa fa-bookmark': 'bookmark fa fa-bookmark-o'" ng-mouseenter="hover = true" ng-mouseleave="hover = false" uib-tooltip='Bookmark'></i>&nbsp;&nbsp;{{contribution.title}}
                 </h1>
                 <hr>
                 <p class='row contribution-content text-justify' ng-bind-html="contribution.body"></p>
@@ -120,13 +120,13 @@
 
 
     <!-- comment on contribution -->
-    <ng-include class='animate' src="'components/nodes/comment.html'" ng-if='commentMode' ></ng-include>
+    <ng-include src="'components/nodes/comment.html'" ng-if='commentMode' ></ng-include>
 
     <!-- reply to contribution -->
-    <ng-include class='animate' src="'components/nodes/reply.html'" ng-if='replyMode'></ng-include>
+    <ng-include src="'components/nodes/reply.html'" ng-if='replyMode'></ng-include>
 
     <!-- update contribution -->
-    <ng-include class='animate' src="'components/nodes/update.html'" ng-if='updateMode'></ng-include>
+    <ng-include src="'components/nodes/update.html'" ng-if='updateMode'></ng-include>
 
     <!-- author profile -->
     <!-- <ng-include class='animate' src="'components/profile/profile.html'" ng-if='authorMode'  ng-controller='ProfileController' ng-init='setUser(contribution.createdBy, false)' ng-cloak></ng-include> -->

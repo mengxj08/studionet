@@ -1,15 +1,53 @@
-.border{ 
-	border: 1px solid black;
-}
+// ------------------------------- Constants
+// Background-color : #000623
+// Light background-color: #DDDDDD
+// Borders: #B6B6B6
+// Headings : Opens Sans
+// General: Lora
+// General font color: #333
 
 
-/*
- *		General CSS
- */
+
+
+
+// ----------------- General CSS
 *{
 	margin: 0px; 
 }
 
+*:focus{
+	outline: none !important;
+}
+
+.pointer{
+	cursor: pointer;
+}
+
+html {
+    overflow: scroll;
+    overflow-x: hidden;
+}
+::-webkit-scrollbar {
+    width: 0px;  /* remove scrollbar space */
+    background: transparent;  /* optional: just make scrollbar invisible */
+}
+/* optional: show position indicator in red */
+::-webkit-scrollbar-thumb {
+    //background: #FF0000;
+}
+
+body {
+	position: relative; 
+	width: 100%;
+	height: 100%; 
+
+	font-family: 'Open Sans', sans-serif;
+	font-size: 12px;
+	color: #333;
+}
+
+
+/* Bootstrap overrides */
 .row{
 	margin-right: 0px !important;
 	margin-left: 0px !important;
@@ -19,19 +57,14 @@
 	padding: 0px !important; 
 }
 
-html{
-	
+.container-fluid{
+	//border: 1px solid black;
+	width: 100% !important;
+	padding: 0px !important;
 }
 
-body {
-	positive: relative; 
-	width: 100%;
-	height: 100%; 
-	
-	font-size: 12px;
-	font-family: 'Open Sans', sans-serif;
-}
 
+/* General HTML  */
 
 h1, h2, h3, h4, h5 ,h6{
 	font-family: 'Open Sans', sans-serif;
@@ -73,19 +106,10 @@ p, ul, ol{
 	font-family: 'Lora', serif;
 }
 
-
 hr{
 	padding: 0px;
 	margin: 2px 0px;
-	border-bottom: 1px solid #B6B6b6;
-}
-
-a {
-  color: #000000;
-}
-
-a:hover, a:visited, a:focus{
-	text-decoration: none;
+	border-bottom: 1px solid #B6B6B6;
 }
 
 img{
@@ -96,24 +120,21 @@ blockquote{
 	border-left: 5px solid #A6A6A6;
 }
 
-.btn:hover{
-	-webkit-transform: none !important;
-	   -moz-transform: none !important;
-	    -ms-transform: none !important;
-	     -o-transform: none !important;
-	        transform: none !important;
+
+
+/* Links */
+
+a {
+  color: #000000;
 }
 
-.container-fluid{
-	//border: 1px solid black;
-	width: 100% !important;
-	padding: 0px !important;
+a:hover, a:visited, a:focus{
+	text-decoration: none;
 }
 
-input#search{
-	height: 30px;
-}
 
+
+/* Buttons */
 button{
 	height: 30px !important; 
 	width: 30px !important;
@@ -124,11 +145,22 @@ button:focus {
     outline: 0 !important;
 }
 
-textarea{
-	padding: 5px !important;
-	font-size: 12px !important;
-	width: 100% !important; 
-	resize: none;
+.btn:hover{
+	-webkit-transform: none !important;
+	   -moz-transform: none !important;
+	    -ms-transform: none !important;
+	     -o-transform: none !important;
+	        transform: none !important;
+}
+
+.btn:focus, .btn:active:focus, .btn.active:focus, .btn.focus, .btn:active.focus, .btn.active.focus{
+	outline: none !important;
+}
+
+
+/* Inputs */
+label{
+	font-size: 14px !important;	
 }
 
 input{
@@ -136,14 +168,19 @@ input{
 	font-size: 12px !important;	
 }
 
-label{
-	font-size: 14px !important;	
+input#search{
+	height: 30px;
 }
 
-.pointer{
-	cursor: pointer;
+textarea{
+	padding: 5px !important;
+	font-size: 12px !important;
+	width: 100% !important; 
+	resize: none;
 }
 
+
+/* App Body & Theme CSS */
 #brand{
 	font-family: 'Open Sans', sans-serif;
 	font-size: 17px;
@@ -152,97 +189,45 @@ label{
 	color: #4A95EF;
 }
 
-
-/*
- * App Body & Theme CSS
- */
 .app-container{
+
 	position: relative !important; 
-
-	width: 100% !important; 
-	height: calc(100vh - 50px);
-
 	margin: 0px !important; 
 	padding: 0px !important;
+	width: 100% !important; 
+	height: 100vh;
+
 
 	background-color: #000623;
-
 }
 
+/* Button Icons */
 .icon{
 	height: 30px !important; 
 	width: 30px !important; 
 
-	border-radius: 0px;//50%;
+	border-radius: 0px;
 	font-size: 16px !important;
 
 	cursor: pointer;
 }
 
 .icon:hover{
-    transform: none;//scale(1.1) rotate(7deg);
-}
-
-li.notification{
-	margin-left: 10px !important;
-}
-
-.dropdown-toggle{
-	padding: 0px !important;
-}
-
-.btn-link{
-	padding: 0px 0px !important;
-}
-
-.nav-tabs{
-	border: 0px; 
-}
-
-.nav-tabs > li a, .nav-tabs > li a:focus, .nav-tabs > li a:hover{
-	padding: 5px 20px !important; 
+    transform: none;
 }
 
 
-.nav-tabs > li.active a, .nav-tabs > li.active a:focus, .nav-tabs > li.active a:hover{
-	border-bottom: 4px solid #787C80 !important;
-	color: #787C80 !important;
-}
-
-.nav-tabs > li > a{
-	padding: 5px 20px; 
-	margin: 10px;
-	border: 1px solid #787C80 !important;
-	border-radius: 0px !important;
-}
-
-
-.navbar .navbar-collapse .navbar-nav.navbar-mobile .navbar-brand .highlight{
-	background-color: #264E7D;
-}
-
-/*
- * qTip CSS
- */
-
-.qtip-titlebar{
-	max-width: 150px;
-	background-color: #000623 !important; 
-	padding: 0px 10px !important;
-	color: white;
-	//border-bottom: #B6B6B6;
-
-}
-
-.qtip-title{
-	font-weight: 300 !important; 
-}
-
+/* qTip CSS */
 .qtip, .qtip-default{
-	background-color: #000623; 
-	color: #4A95EF;
-	border: 1px solid #4A95EF;
+	
+	z-index: 20 !important;
+	
 	max-width: 150px;
+
+	background-color: #000623; 
+	border: 1px solid #4A95EF;
+	color: #4A95EF;
+
 }
 
 .qtip-content{
@@ -251,53 +236,26 @@ li.notification{
 	text-align: center;
 }
 
-.qtip-btn:focus{
-	outline: 0 !important;
+/* Panel & Accordian CSS */
+.panel-group{
+	margin-bottom: 0px;
 }
 
-
-/*
- * Helper CSS
- */
-.height-400{
-	max-height: 400px;
-	overflow: auto;
-}
-
-.wide{
-  width: 100% !important;
-}
-
-
-/*
- * Cards
- */
-
-.card{
-  padding: 10px 10px;
-  margin-bottom: 15px;
-  z-index: 100;
-}
-
-.card:hover{
-  background-color: #BBBBBB;
-}
-
-
-
-
-/*
- * Panel & Accordian CSS
- */
 .panel-group .panel{
 	border-radius: 0px;
 }
 
-.panel-body{
-	background-color: #F0F0F0 !important;
-	padding: 0px !important;
+.panel{
+	border-color: #B6B6B6;
 }
 
+.panel .panel-heading {
+	background-color: #DDDDDD !important;
+	border-top-left-radius: 0px !important;
+	border-top-right-radius: 0px !important;
+	padding: 5px;
+}
+ 
 .sub-accordion{
 	margin-top: 2px;
 	margin-bottom: 3px;
@@ -305,51 +263,8 @@ li.notification{
 	margin-right: 22px;
 }
 
-.panel{
-	border-color:#c6c6c6;
-}
 
-.panel .panel-heading {
-	background-color: white !important;
-	border-top-left-radius: 0px !important;
-	border-top-right-radius: 0px !important;
-	padding: 5px;
-}
-
-.panel .panel-body {
-	padding-top: 5px;
-	padding-bottom: 8px;
-	//padding-left: 15px;
-	padding-right: 0px;
-	background-color: white;
-	border-bottom-left-radius: 4px !important;
-	border-bottom-right-radius: 4px !important;
-}
-
-.panel-group{
-	
-	margin-bottom: 0px;
-}
-
-
-
-html {
-    overflow: scroll;
-    overflow-x: hidden;
-}
-::-webkit-scrollbar {
-    width: 0px;  /* remove scrollbar space */
-    background: transparent;  /* optional: just make scrollbar invisible */
-}
-/* optional: show position indicator in red */
-::-webkit-scrollbar-thumb {
-    //background: #FF0000;
-}
-
-
-/*
- * Tables CSS
- */
+/* Tables */
 table.table > tbody > tr td, table.table > tbody > tr th, table.table > thead > tr td, table.table > thead > tr th{
     padding: 2px 5px !important;
 }
@@ -368,23 +283,21 @@ tbody{
 	overflow-y: auto;
 }
 
-/*
- * Pagination
- */
-.pagination > li.active > a, .pagination > li.active > span{
-	border-bottom: 2px solid #b9b9b9;
-	background-color: #b6b6b6;
+/* Pagination */
+.pagination>.active>a, .pagination>.active>a:focus, .pagination>.active>a:hover, .pagination>.active>span, .pagination>.active>span:focus, .pagination>.active>span:hover{
+	border-color: #B6B6B6; 
+	background-color: #DDDDDD; 
 }
 
-.pagination > li.active > a:hover, .pagination > li.active > a:focus, .pagination > li.active > span:hover, .pagination > li.active > span:focus{
-	border-bottom: 2px solid #b9b9b9;
-	background-color: #3B3B36;
+.pagination>li>a, .pagination>li>span{
+	color: #333;
 }
+
 
 /*
  * ng-tags-input.css override
  * to make more tags visible
-*/
+ */
 tags-input .autocomplete .suggestion-list{
   max-height: 350px !important;
 }

@@ -8,9 +8,15 @@
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Lora|Open+Sans:400,600" rel="stylesheet">
 
+    <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'  rel="stylesheet">
+    <link href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'  rel="stylesheet">
+
+    <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+    <script type='text/javascript' src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js'></script>
+
     <!-- Theme -->
-    <link rel="stylesheet" type="text/css" href="../assets/css/vendor.css">
-    <link rel="stylesheet" type="text/css" href="../assets/css/flat-admin.css">
+    <!-- <link rel="stylesheet" type="text/css" href="../assets/css/vendor.css">
+    <link rel="stylesheet" type="text/css" href="../assets/css/flat-admin.css"> -->
 
     <!-- CSS for Angular PlugIns & Animations -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ng-tags-input/3.1.1/ng-tags-input.min.css">
@@ -25,8 +31,9 @@
     <!-- Studionet CSS -->
     <link rel='stylesheet' href='/user/stylesheets/style.css' />
     <link rel='stylesheet' href='/user/stylesheets/modals.css' />
-    <link rel='stylesheet' href='/user/components/graphs/graphs.css' />
-    <link rel='stylesheet' href='/user/components/filters/filters.css'/>
+    <link rel='stylesheet' href='/user/stylesheets/graphs.css' />
+    <link rel='stylesheet' href='/user/stylesheets/filters.css'/>
+
 
   </head>
 
@@ -44,13 +51,21 @@
   <script>
     var socket = io();
   </script>
-  
 
-  <!-- Template JS --> 
-  <!-- should be placed here otherwise all the components stick to the side --> 
-  <!-- includes bootstrap, jquery --> 
-  <script type="text/javascript" src="../assets/js/vendor.js"></script>
-  <script type="text/javascript" src="../assets/js/app.js"></script>
+  <!-- Disable text selection -->
+  <!-- <script>
+  $(document).ready(function(){
+    $(function(){
+      $.extend($.fn.disableTextSelect = function() {
+        return this.each(function(){
+            $(this).mousedown(function(){return false;});
+        });
+      });
+      $('.noSelect').disableTextSelect();//No text selection on elements with a class of 'noSelect'
+    });
+  }
+  </script>
+ -->
 
   <!-- Constants -->
   <script type="text/javascript" src="../user/js/constants.js"></script>
@@ -115,6 +130,7 @@
   
   <!-- Controllers -->
   <script type="text/javascript" src="/user/js/MainController.js"></script>
+  <script type="text/javascript" src="/user/js/HelpController.js"></script> 
   <script type="text/javascript" src="/user/components/nodes/NodeController.js"></script>
   <script type="text/javascript" src="/user/components/nodes/NewNodeController.js"></script>
   <script type="text/javascript" src="/user/components/profile/ProfileController.js"></script> 

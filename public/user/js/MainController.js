@@ -1,8 +1,8 @@
 angular.module('studionet')
 
-.controller('MainController', ['$scope', '$stateParams', '$rootScope', 'ModalService',
+.controller('MainController', ['$scope', '$stateParams', '$rootScope', '$uibModal',
                                'GraphService', 'users', 'profile', 'supernode', 
-                               function($scope, $stateParams, $rootScope, ModalService, GraphService, users, profile, supernode){
+                               function($scope, $stateParams, $rootScope, $uibModal, GraphService, users, profile, supernode){
 
 
   // --------------- socket connection message handling
@@ -55,6 +55,16 @@ angular.module('studionet')
 
   // -------------- constants and declarations
   $scope.me = profile.user;
+
+  $scope.showHelp = function(){
+    var modalInstance = $uibModal.open({
+      animation: true,
+      templateUrl: 'templates/help.tpl.html',
+      backdrop: 'static',
+      controller: 'HelpController',
+      controllerAs: '$ctrl'
+    });
+  }
 
 
   // ---- Displays message in the message-container
@@ -215,10 +225,7 @@ angular.module('studionet')
   $scope.$on( BROADCAST_VIEWMODE_OFF, function(event, args) {
     $scope.viewMode = false;
   });
-/*  $scope.$on('OPEN_NODE', function(event, args) {
-    console.log("open node");
-    showDetailsModal( GraphService.graph.getElementById( args.id ) );
-  });*/
+
   var showDetailsModal = function(data) {
 
       $scope.viewMode = true;

@@ -13,18 +13,11 @@ angular.module('studionet')
         $scope.contribution = undefined, $scope.author = undefined, $scope.rate = undefined;
         $scope.usersHash = users.usersHash;
 
-
-        var animate = function(){
-          $('#contributionViewModal').animate({ scrollTop: $('#contributionViewModal').height()*3 }, 1500);
-        }
-
-
         /////// --------------- communication with parent container
         var target = document.getElementById('cy');
         var sendMessage = function(message){
           $scope.$emit(BROADCAST_MESSAGE, message );
         }
-
 
         var getReplies = function(){
           $scope.replies = [];
@@ -38,7 +31,7 @@ angular.module('studionet')
         $scope.$on( 'VIEWMODE_ACTIVE', function(event, args) {
             $scope.setData(args.data);
         });
-
+        
         ////// ---- Modal related functions
         $scope.setData = function(node){
             
@@ -60,8 +53,6 @@ angular.module('studionet')
             GraphService.updateViewCount($scope.contribution.id);    // update the viewcount of the contribution
             
             node.addClass('read');
-
-
 
         }
 
@@ -268,7 +259,6 @@ angular.module('studionet')
         $scope.commentMode = false;
         $scope.showCommentModal = function(){
           $scope.commentMode = true;
-          animate();
         }
 
         $scope.postComment = function(comment){
@@ -308,7 +298,6 @@ angular.module('studionet')
         $scope.showReplyModal = function(id, type){
           $scope.replyMode = true;
           $scope.contributionData = { attachments: [], tags: []}; //store the data of replying information
-          animate();
         }
 
         $scope.replyToContribution = function(contributionData, parentId){
@@ -355,8 +344,6 @@ angular.module('studionet')
         $scope.updateMode = false;
         $scope.showUpdateModal = function(id){
 
-              animate();
-          
               $scope.updateMode = true;
               $scope.contributionData = jQuery.extend({}, $scope.contribution);
               $scope.contributionData.contentType = $scope.contribution.type; 
@@ -432,18 +419,12 @@ angular.module('studionet')
 
 
         // -----------------Function - Author Profile
-        $scope.authorMode = false; 
-        
         $scope.showAuthorModal = function(){
           //$scope.authorMode = true;
-          //animate();
           $rootScope.$broadcast( "PROFILE_MODE",  {id: $scope.contribution.createdBy, standalone: false});
           $('#profileModal').modal({backdrop: 'static', keyboard: false});
         }
 
-        $scope.hideAuthorModal = function(){
-          //$scope.authorMode = false;
-        }
 
 
 

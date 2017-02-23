@@ -9,18 +9,16 @@
 
         <div class="modal-body">
 
-            <div class='profile-container'>
+                <h5>{{ user.name }}</h5>
 
-                <div class='tagline'><small class='username no-margin-padding'>{{ user.name }}</small></div>
-
-                <br>
+                <hr/><br>
 
                 <!-- Profile Details -->
                 <div class='row profile-header'>
                   
                   <div class='col-xs-4 profile-details-container no-margin-padding'>
                         <!-- <h5 class='username no-margin-padding'>{{ user.name }}</h4> -->
-                        <h5 class='username no-margin-padding'>Known as: <br>{{ user.nickname }}</h4>
+                        <h6 class='username no-margin-padding'>Known as: <br>{{ user.nickname ? user.nickname : "--"}}</h6>
                   </div>
 
                   <div class='col-xs-3'>
@@ -33,7 +31,7 @@
 
                 </div>
 
-
+                <!-- Lists -->
                 <div uib-accordion class="accordion"> 
 
                     <div uib-accordion-group class='profile-item-container'>
@@ -101,6 +99,7 @@
 
                 </div>
 
+                <!-- Buttons -->
                 <div class='row text-right modal-section'>
                   
                   <span ng-if='own'>
@@ -113,9 +112,7 @@
                 
                 </div>
 
-            </div> 
-
-        </div>
+        </div> 
 
     </div>
 

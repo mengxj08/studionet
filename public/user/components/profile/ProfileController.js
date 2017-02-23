@@ -48,10 +48,6 @@ angular.module('studionet')
 		// select the node
 		GraphService.selectNode(node_id);
 
-		// open details
-		/*var args = {id: node_id};
-  		$rootScope.$broadcast('OPEN_NODE', args);*/
-
 		$scope.close();
 	}
 
