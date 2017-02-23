@@ -74,8 +74,6 @@ angular.module('studionet')
   
   }
 
-
-
   // ----------------- Graphs
   var graph_container = angular.element('#cy')[0];
   // First Initialization of the graph on page-refresh
@@ -225,6 +223,13 @@ angular.module('studionet')
       $rootScope.$broadcast("VIEWMODE_ACTIVE", {data: data});
 
   };
+
+
+  // profile modal
+  $scope.showProfile = function(){
+      $('#profileModal').modal({backdrop: 'static', keyboard: false});
+      $rootScope.$broadcast( "PROFILE_MODE",  {id: $scope.me.id});
+  }
 
 
 }])

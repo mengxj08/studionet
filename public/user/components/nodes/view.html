@@ -14,7 +14,7 @@
                           <div class='col-xs-2 author-profile' style="background: url({{author.avatar}}?q={{random}});"></div>
                           <div class='col-xs-10'>
                               <div class='authorInfo'>
-                                <div class = "row pointer" ng-click='showAuthorModal()' style='font-size: 15px; line-height: 27px; color:#646464;font-weight: 600;'>
+                                <div class = "row pointer" data-dismiss='modal' ng-click='showAuthorModal()' style='font-size: 15px; line-height: 27px; color:#646464;font-weight: 600;'>
                                 {{ author.nickname.length ? author.nickname : author.name }} </div>
                                 <div class='row meta' ng-if='contribution.tags.length>0'>Tagged <div class='tag' ng-repeat='tag in contribution.tags'>&bull; {{tag}} </div> </div>
                                 <div class='row meta'><time>{{ contribution.lastUpdated ? contribution.lastUpdated : contribution.dateCreated | amCalendar }}</time> 
@@ -127,7 +127,7 @@
     <ng-include class='animate' src="'components/nodes/update.html'" ng-if='updateMode'></ng-include>
 
     <!-- author profile -->
-    <ng-include class='animate' src="'components/profile/profile.html'" ng-if='authorMode'  ng-controller='ProfileController' ng-init='setUser(contribution.createdBy, false)' ng-cloak></ng-include>
+    <!-- <ng-include class='animate' src="'components/profile/profile.html'" ng-if='authorMode'  ng-controller='ProfileController' ng-init='setUser(contribution.createdBy, false)' ng-cloak></ng-include> -->
 
 </div>
 

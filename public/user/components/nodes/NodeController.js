@@ -1,8 +1,8 @@
 angular.module('studionet')
 
 .controller('NodeController', [ '$scope', '$http',  
-                                'profile', 'users', 'attachments', 'GraphService', 'tags', 
-                                function($scope, $http, profile, users, attachments, GraphService, tags){
+                                'profile', 'users', 'attachments', 'GraphService', 'tags', '$rootScope',
+                                function($scope, $http, profile, users, attachments, GraphService, tags, $rootScope){
 
         
         //////// --------------  general declarations
@@ -418,7 +418,9 @@ angular.module('studionet')
         
         $scope.showAuthorModal = function(){
           $scope.authorMode = true;
-          animate();
+          //animate();
+          $rootScope.$broadcast( "PROFILE_MODE",  {id: $scope.contribution.createdBy, standalone: false});
+          $('#profileModal').modal({backdrop: 'static', keyboard: false});
         }
 
         $scope.hideAuthorModal = function(){

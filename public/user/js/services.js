@@ -96,6 +96,10 @@ angular.module('studionet')
 			});
 		}
 
+		o.showProfile = function(user_id){
+
+		}
+
 		return o;
 	}])
 
@@ -209,6 +213,11 @@ angular.module('studionet')
 		o.changePicture = function(){
 			
 		};
+
+
+		o.showProfile = function(){
+
+		}
 
 		return o;
 	}])

@@ -2,10 +2,11 @@ angular.module('studionet')
 
 .controller('ProfileController', ['$scope', 'profile', 'tags', 'groups', 'users', 'GraphService', function($scope, profile, tags, groups, users, GraphService){
 
-
 	/*
 	 *	Functionality for User Profile Page
 	 */
+	$scope.standalone = false;
+
 	$scope.tags = tags.tags;
 	$scope.groups = groups.groups;
 
@@ -38,7 +39,6 @@ angular.module('studionet')
 			$scope.user.tags = [];
 		}
 
-
 		$scope.rating = (totalRating / rateCount).toFixed(1);
 		$scope.level = Math.floor($scope.user.level + 1)
 	}
@@ -48,13 +48,16 @@ angular.module('studionet')
 		$scope.close();
 	}
 
-	$scope.setUser = function(user_id, own){
+	$scope.$on( "PROFILE_MODE", function(event, args) {
+		$scope.setUser(args.id);
+  	});
 
-		console.log("setting user", user_id, own);
 
-		$scope.own = own;
+	$scope.setUser = function(user_id){
 
-		if($scope.own){
+		console.log("setting user", user_id);
+
+		if(user_id == profile.user.id || user_id == undefined){
 			
 			$scope.user = profile.user;
 

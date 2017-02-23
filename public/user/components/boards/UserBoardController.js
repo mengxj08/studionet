@@ -1,6 +1,6 @@
 angular.module('studionet')
 
-.controller('UserBoardController', ['$scope', '$rootScope', 'users', function($scope, $rootScope, users){
+.controller('UserBoardController', ['$scope', '$rootScope', 'users', '$uibModal', function($scope, $rootScope, users, $uibModal){
 
 		$scope.sortType     = 'lastLoggedIn'; // set the default sort type
 		$scope.sortReverse  = true;  // set the default sort order
@@ -58,6 +58,8 @@ angular.module('studionet')
 		}
 
 		$scope.goToUser = function(user_id){
+			$('#profileModal').modal({backdrop: 'static', keyboard: false});
+			$rootScope.$broadcast( "PROFILE_MODE",  {id: user_id});
 		}
 
 

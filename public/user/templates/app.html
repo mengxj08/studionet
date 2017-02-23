@@ -8,13 +8,13 @@
   <div class='graph-controls'>
 
     <!-- Profile -->
-    <img class="graph-nav-control icon" ng-if='!me.isGuest' src={{me.avatar}} data-toggle="modal" data-target="#profileModal" data-backdrop="static" data-keyboard="false" uib-tooltip='{{me.nickname ? me.nickname : me.name}}' tooltip-placement='left'></i>
+    <img class="graph-nav-control icon" ng-if='!me.isGuest' src={{me.avatar}} uib-tooltip='{{me.nickname ? me.nickname : me.name}}' tooltip-placement='left' ng-click='showProfile()'></i>
     <img class="graph-nav-control icon" ng-if='me.isGuest' src="../assets/images/avatar.png" uib-tooltip='Guest' tooltip-placement='left'></i>
 
     <br>
 
     <!-- Leaderboards & Graph Controls -->
-    <i class="graph-nav-control icon fa fa-group" data-toggle="modal" data-target="#userActivityBoard" data-backdrop="static" data-keyboard="false"  uib-tooltip='User Activity' tooltip-placement='left'></i>
+    <i class="graph-nav-control icon fa fa-group" data-toggle="modal" data-target="#userActivityBoard" data-backdrop="static" data-keyboard="false" uib-tooltip='User Activity' tooltip-placement='left'></i>
     <i class="graph-nav-control icon fa fa-star" data-toggle="modal" data-target="#contributionsActivityBoard" data-backdrop="static" data-keyboard="false"  uib-tooltip='Node Activity' tooltip-placement='left'></i>
     <i class="graph-nav-control icon fa fa-comment" data-toggle="modal" data-target="#commentActivityBoard" data-backdrop="static" data-keyboard="false"  uib-tooltip='Comment Activity' tooltip-placement='left'></i>
     <i class="graph-nav-control icon fa fa-arrows-alt" ng-click='resetGraph(); zoomLevel=100.00' uib-tooltip='Fit Graph' tooltip-placement='left'></i>
@@ -78,7 +78,7 @@
 
 <!--- Profile Modal  -->
 <!-- Should be placed here because this page gets loaded after resolving all promises for required data -->
-<ng-include src="'components/profile/profile.html'"  ng-controller='ProfileController as profilectrl' ng-init='setUser(undefined, true)'></ng-include>
+<ng-include src="'components/profile/profile.html'"></ng-include>
 
 <!-- Create Contribution Modal -->
 <ng-include src="'components/nodes/newnode.html'"></ng-include>
