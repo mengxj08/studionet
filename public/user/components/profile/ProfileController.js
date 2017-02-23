@@ -17,6 +17,8 @@ angular.module('studionet')
 
 	var computeStats = function(){
 
+		console.log($scope.user.bookmarks)
+
 		$scope.views = 0; 
 		$scope.rating = 0;
 		// compute the rating based on rating of the contributions the user has made
@@ -49,17 +51,16 @@ angular.module('studionet')
 	}
 
 	$scope.$on( "PROFILE_MODE", function(event, args) {
-		$scope.setUser(args.id);
+		setUser(args.id);
   	});
 
 
-	$scope.setUser = function(user_id){
-
-		console.log("setting user", user_id);
+	var setUser = function(user_id){
 
 		if(user_id == profile.user.id || user_id == undefined){
 			
 			$scope.user = profile.user;
+			$scope.own = true;
 
 			if($scope.user.isGuest== true)
 				return;
@@ -73,7 +74,9 @@ angular.module('studionet')
 		}
 		else{
 
-			$scope.user = users.getUser(user_id, false);
+			$scope.user = users.getUser(user_id);
+			$scope.own = false;
+
 			users.getUser(user_id, true).then(function(res){
 
 				if(res.status == 200){

@@ -24,6 +24,8 @@ router.get('/', auth.ensureAuthenticated, function(req, res){
     'WITH groups, collect({id: id(c), title: c.title, rating: c.rating, rateCount: c.rateCount, views: c.views}) as contributions, u',
     'OPTIONAL MATCH p3=(t:tag)<-[r1:CREATED]-(u)',
     'WITH groups, collect({id: id(t)}) as tags, contributions, u',
+    'OPTIONAL MATCH p4=(c1:contribution)<-[b:BOOKMARKED]-(u)',
+    'WITH groups, collect({id: id(c1), title: c1.title, createdOn: b.createdOn}) as bookmarks, tags, contributions, u',
     'RETURN {\
               nusOpenId: u.nusOpenId,\
               canEdit: u.canEdit,\
@@ -38,7 +40,8 @@ router.get('/', auth.ensureAuthenticated, function(req, res){
               id: id(u),\
               groups: groups,\
               contributions: contributions,\
-              tags: tags\
+              tags: tags,\
+              bookmarks: bookmarks\
     }'
   ].join('\n');
 

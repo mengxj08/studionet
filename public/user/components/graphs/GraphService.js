@@ -436,6 +436,20 @@ angular.module('studionet')
 		});
 	};
 
+	o.bookmarkNode = function(contribution_id){
+		return $http.post('/api/contributions/' + contribution_id + '/bookmark').success(function(data){
+			profile.getActivity();
+			profile.getUser();
+		});
+	};
+
+	o.removeBookmark = function(contribution_id){
+		return $http.delete('/api/contributions/' + contribution_id + '/bookmark').success(function(data){
+			profile.getActivity();
+			profile.getUser();
+		});
+	};
+
 
 
 	// ----------- Styling Options

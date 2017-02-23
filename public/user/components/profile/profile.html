@@ -1,5 +1,6 @@
 <!-- Profile Modal -->
-<div id="profileModal" class="modal fade" role="dialog" ng-controller='ProfileController'>
+<div id="profileModal" class="modal fade" role="dialog" ng-controller='ProfileController as profilectrl
+'>
   
   <div class="modal-dialog">
 
@@ -10,7 +11,7 @@
 
             <div class='profile-container'>
 
-                <div class='tagline'><small class='username no-margin-padding'>{{ tagline }}</small></div>
+                <div class='tagline'><small class='username no-margin-padding'>{{ user.name }}</small></div>
 
                 <br>
 
@@ -18,7 +19,7 @@
                 <div class='row profile-header'>
                   
                   <div class='col-xs-4 profile-details-container no-margin-padding'>
-                        <h5 class='username no-margin-padding'>{{ user.name }}</h4>
+                        <!-- <h5 class='username no-margin-padding'>{{ user.name }}</h4> -->
                         <h5 class='username no-margin-padding'>Known as: <br>{{ user.nickname }}</h4>
                   </div>
 
@@ -34,13 +35,31 @@
 
 
                 <div uib-accordion class="accordion"> 
+
+                    <div uib-accordion-group class='profile-item-container'>
+                      <uib-accordion-heading> 
+                          <h5>Bookmarks</h5>
+                      </uib-accordion-heading>
+
+                      <div class='col-sm-12 text-center' ng-if='user.bookmarks.length == 1 && user.bookmarks[0].title == null'><br><h6>No Nodes Bookmarked</h6><br></div>
+                      
+                      <div class='col-sm-12' ng-repeat="bookmark in user.bookmarks | orderBy : '-createdOn' ">
+                          <div class='profile-item'>
+                            <div class='row pointer' ng-click='goToNode(bookmark.id)' data-dismiss='modal'>
+                              <div class='col-sm-12'>
+                                <h6>Bookmaked <u>{{ bookmark.title }}</u> on {{ bookmark.createdOn | date : 'mediumDate' }}</h6>
+                              </div>
+                            </div>
+                          </div>
+                      </div>
+                    </div>
                    
                     <div uib-accordion-group class='profile-item-container'>
                       <uib-accordion-heading> 
                           <h5>Nodes</h5>
                       </uib-accordion-heading>
 
-                      <div class='col-sm-12 text-center' ng-if='user.contributions.length == 0'><br><h6>No Contributions Created</h6><br></div>
+                      <div class='col-sm-12 text-center' ng-if='user.contributions.length == 0'><br><h6>No Nodes Created</h6><br></div>
                       
                       <div class='col-sm-12' ng-repeat="contribution in user.contributions | orderBy : '-views' ">
                           <div class='profile-item'>
@@ -57,11 +76,9 @@
                             </div>
                           </div>
                       </div>
-
-                    </div>
+                    </div>        
 
                     <div uib-accordion-group class='profile-item-container'>
-                        
                         <uib-accordion-heading> 
                           <h5>Tags</h5>
                         </uib-accordion-heading>
@@ -81,6 +98,7 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
 
                 <div class='row text-right modal-section'>

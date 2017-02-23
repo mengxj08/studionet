@@ -54,7 +54,7 @@ angular.module('studionet')
 
             getReplies();
 
-
+            $scope.bookmarked = false;
             $scope.rate = getRating( $scope.contribution.id );   // check if the user has already rated this contribution
             $scope.author = users.getUser( $scope.contribution.createdBy, false );  // get the author details
             GraphService.updateViewCount($scope.contribution.id);    // update the viewcount of the contribution
@@ -106,8 +106,12 @@ angular.module('studionet')
             var user_contribution = profile.activity[i];
             if( user_contribution.type == "RATED" && user_contribution.end == contribution_id ){
               rating = user_contribution.properties.rating;
-              break;
             }
+
+            // check for bookmark
+            if( user_contribution.type == "BOOKMARKED" && user_contribution.end == contribution_id ){
+              $scope.bookmarked = true;
+            }          
 
           }
           previouslyRated = rating;
@@ -120,7 +124,6 @@ angular.module('studionet')
         };
         
         $scope.rateContribution = function(rating, id){
-
           GraphService.rateNode(id, rating).success(function(data){
 
               // check if user had already rated this contribution
@@ -137,8 +140,23 @@ angular.module('studionet')
               }
 
           })
-        
-        
+        }
+
+        $scope.toggleBookmark = function(contribution_id){
+            
+            if($scope.bookmarked){
+              GraphService.removeBookmark(contribution_id).success(function(data){
+                $scope.bookmarked = false;
+                alert("Bookmark was removed");
+              })        
+            }
+            else{
+              GraphService.bookmarkNode(contribution_id).success(function(data){
+                $scope.bookmarked = true;
+                alert("Node added to bookmarks");
+              })                  
+            }
+
         }
 
         ////////-------------- Dealing with attachments

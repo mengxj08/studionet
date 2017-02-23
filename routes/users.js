@@ -108,13 +108,16 @@ router.route('/:userId')
           'WITH groups, collect({id: id(c), title: c.title, rating: c.rating, views: c.views, rateCount: c.rateCount }) as contributions, u',
           'OPTIONAL MATCH p3=(t:tag)<-[r1:CREATED]-(u)',
           'WITH groups, collect({id: id(t), name: t.name}) as tags, contributions, u',
+          'OPTIONAL MATCH p4=(c1:contribution)<-[b:BOOKMARKED]-(u)',
+          'WITH groups, collect({id: id(c1), title: c1.title, createdOn: c1.createdOn}) as bookmarks, tags, contributions, u',
           'RETURN {\
                     joinedOn: u.joinedOn,\
                     lastLoggedIn: u.lastLoggedIn,\
                     id: id(u),\
                     groups: groups,\
                     contributions: contributions,\
-                    tags: tags\
+                    tags: tags,\
+                    bookmarks: bookmarks\
           }'
         ].join('\n');
 

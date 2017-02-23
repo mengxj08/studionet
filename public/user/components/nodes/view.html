@@ -39,7 +39,9 @@
 
                 
                 <!-- content -->
-                <h1>{{contribution.title}}</h1>
+                <h1>
+                  <i ng-click='toggleBookmark(contribution.id)' ng-class="bookmarked || hover ? 'bookmark fa fa-bookmark': 'bookmark fa fa-bookmark-o'" ng-mouseenter="hover = true" ng-mouseleave="hover = false"></i>&nbsp;&nbsp;{{contribution.title}}
+                </h1>
                 <hr>
                 <p class='row contribution-content text-justify' ng-bind-html="contribution.body"></p>
 

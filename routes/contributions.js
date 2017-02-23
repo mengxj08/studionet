@@ -639,6 +639,73 @@ router.route('/:contributionId/rate')
     })
   });
 
+// route: /api/contributions/:contributionId/bookmark
+router.route('/:contributionId/bookmark')
+  .post(auth.ensureAuthenticated, function(req, res) {
+
+    var query = [
+      'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
+      'MATCH (u:user) WHERE ID(u)={userIdParam}',
+      'CREATE p=(u)-[r:BOOKMARKED]->(c)',
+      'SET r.createdOn={createdOnParam}',
+      'RETURN c'
+    ].join('\n');
+
+    var params = {
+      userIdParam: req.user.id,
+      contributionIdParam: parseInt(req.params.contributionId),
+      createdOnParam: Date.now()
+    };
+
+    db.query(query, params, function(error,result){
+      if (error) {
+        console.log(error);
+      }
+      else {
+        console.log('[SUCCESS] Successfully bookmarked contribution id ' + req.params.contributionId);
+        
+        // broadcasting message
+        req.app.get('socket').emit('node_bookmarked', result[0]);       
+        
+        // sending the contribution data
+        res.send(result[0]);
+      
+      }
+    })
+  })
+  
+  .delete(auth.ensureAuthenticated, function(req, res) {
+
+    var query = [
+      'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
+      'MATCH (u:user) WHERE ID(u)={userIdParam}',
+      'MATCH p=(u)-[r:BOOKMARKED]->(c)',
+      'DELETE r',
+    ].join('\n');
+
+    var params = {
+      userIdParam: req.user.id,
+      contributionIdParam: parseInt(req.params.contributionId),
+    };
+
+    db.query(query, params, function(error,result){
+      if (error) {
+        console.log(error);
+      }
+      else {
+        console.log('[SUCCESS] Successfully deleted bookmark for contribution id ' + req.params.contributionId);
+        
+        // broadcasting message
+        
+        // sending the contribution data
+        res.send(result[0]);
+      
+      }
+    })
+
+  });
+
+
 
 //route: /api/contributions/:contributionId/attachments
 router.route('/:contributionId/attachments')
