@@ -82,7 +82,7 @@ Array.prototype.hash = function(){
 }
 
 // remove from ContributionCtrl
-var tagCorrectionFn = function(data){
+/*var tagCorrectionFn = function(data){
   if( data.tags == null )
     data.tags = [];
   
@@ -91,7 +91,7 @@ var tagCorrectionFn = function(data){
 
   return data;
 }
-
+*/
 // --- extraction of images 
 function dataURItoBlob(dataURI) {
   

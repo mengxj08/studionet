@@ -16,7 +16,7 @@
                               <div class='authorInfo'>
                                 <div class = "row pointer" data-dismiss='modal' ng-click='showAuthorModal()' style='font-size: 15px; line-height: 27px; color:#646464;font-weight: 600;'>
                                 {{ author.nickname.length ? author.nickname : author.name }} </div>
-                                <div class='row meta' ng-if='contribution.tags.length>0'>Tagged <div class='tag' ng-repeat='tag in contribution.tags'>&bull; {{tag}} </div> </div>
+                                <div class='row meta' ng-if='contribution.tags.length>0'>Tagged <div class='tag' ng-repeat='tag in contribution.tags'>&bull; {{tag.name}} </div> </div>
                                 <div class='row meta'><time>{{ contribution.lastUpdated ? contribution.lastUpdated : contribution.dateCreated | amCalendar }}</time> 
                                   &bull; {{ contribution.readingTime }}</div><!-- 300 CPM = 300 WPM -->
                               </div>
@@ -51,7 +51,7 @@
                 <div class='row' ng-if='contribution.attachments[0].id!=null'>
                     <br/>
                     <br>
-                    <b>Attachments</b>
+                    <b>Attachments ({{contribution.attachments.length}} files)</b>
                     <br/>
                     <div ng-repeat="attachment in contribution.attachments">
                       <a href="/api/contributions/{{contribution.id}}/attachments/{{attachment.id}}" target=_blank>

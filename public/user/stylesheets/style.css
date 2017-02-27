@@ -293,11 +293,3 @@ tbody{
 	color: #333;
 }
 
-
-/*
- * ng-tags-input.css override
- * to make more tags visible
- */
-tags-input .autocomplete .suggestion-list{
-  max-height: 350px !important;
-}

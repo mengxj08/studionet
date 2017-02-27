@@ -360,13 +360,20 @@ angular.module('studionet')
       /*
        *  Init function that refreshes all lists in the filters
        */
-      $scope.init = function(reset){
+      var init = function(){
 
           // populate filters 
           $scope.tags = $filter('orderBy')(populateTags(), [ "name", "-contributionCount" ]) ;
           $scope.users = $filter('orderBy')(populateUsers(), 'name') ;
           $scope.groups = $filter('orderBy')(populateGroups(), [ "children.length" , "name" ]) ;
       }
+      $scope.init = init;
+
+      // update on tags refresh
+      var tagsRefresh = function(){
+        $scope.tags = $filter('orderBy')(populateTags(), [ "name", "-contributionCount" ]) ;
+      }
+      tags.registerObserverCallback(tagsRefresh);
 
       $scope.closeFilter = function() {
 

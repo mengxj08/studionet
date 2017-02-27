@@ -4,7 +4,7 @@ angular.module('multiselect-searchtree').run(['$templateCache', function ($templ
     $templateCache.put('src/multiselect-searchtree.tpl.html',
       "<div class=\"tree-control\">\n" +
       "\n" +
-/*      "        <div class=\"helper-container\">\n" +
+      "        <div class=\"helper-container\">\n" +
       "            <div class=\"line\">\n" +
       "                 <div class=\"input-group\">" +
       "                      <input placeholder=\"Search...\" type=\"text\" ng-model=\"filterKeyword\" ng-click=\"onFilterClicked($event)\"\n" +
@@ -21,7 +21,7 @@ angular.module('multiselect-searchtree').run(['$templateCache', function ($templ
       "                      </span>" +
       "                  </div>" +           
       "            </div>\n" +
-      "        </div>\n" +*/
+      "        </div>\n" +
       "    <div class=\"tree-view\">\n" +
       "        <ul class=\"tree-container\">\n" +
       "            <tree-item class=\"top-level\" ng-repeat=\"item in inputModel\" item=\"item\" ng-show=\"!item.isFiltered\"\n" +

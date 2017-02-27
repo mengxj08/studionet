@@ -224,29 +224,35 @@ angular.module('studionet')
 			
 			$http.get('/api/contributions/' + id).success(function(res){
 
-				var data = tagCorrectionFn(res)
-				for(prop in data){
-					if(data.hasOwnProperty(prop)){
-						node.data(prop, data[prop]);
-					}
-				}
-
+				// ------------- replace tag IDs with the actual tag
+				res.tags = res.tags.map(function(t){
+					return tags.tagsHash[t];
+				});
+				
 				// ------------- extract the images
-				var body = node.data('body');
 				var inlineImagePattern = new RegExp('src="studionet-inline-img-', "g");
-				node.data('body', node.data('body').replace(inlineImagePattern, 'src="../api/contributions/' + node.id() + '/attachments?name=studionet-inline-img-'));
-
+				res.body = res.body.replace(inlineImagePattern, 'src="../api/contributions/' + node.id() + '/attachments?name=studionet-inline-img-');
 
 				// ------------- compute the reading time
-	            var t =  parseInt((data.body.length / 300).toFixed(0));
+	            var t =  parseInt((res.body.length / 300).toFixed(0));
 	            if(t == 0)
-	             	node.data('readingTime', "Very short read!" ) ;
+	            	res.readingTime = "Very short read!";
 	            else if(t == 1)
-	            	node.data('readingTime', "1 minute read" ) ;
+	            	res.readingTime = "1 minute read";
 	            else 
-	              	node.data('readingTime', t + " minute read" ) ;
+	            	res.readingTime =  t + " minute read";
 
-				node.data( 'db_data',  true );
+
+	            // mark db_data as true for caching
+				res.db_data = true;
+
+
+				// transfer properites to node
+				for(prop in res){
+					if(res.hasOwnProperty(prop)){
+						node.data(prop, res[prop]);
+					}
+				}
 
 			});
 		
@@ -295,8 +301,6 @@ angular.module('studionet')
 
 
 	// ---- Updates a contribution
-	// Data needs to be sent in FormData format 
-	// Fix me!
 	o.updateNode = function(update_contribution){
 
 		var inlineImages = extractImages(update_contribution);
@@ -350,9 +354,6 @@ angular.module('studionet')
 
 				// remove node from graph
 				o.removeNode(contribution_id);
-
-				// refresh tags
-				tags.getAll();
 				
 				// refresh profile
 				profile.getUser();
@@ -376,6 +377,7 @@ angular.module('studionet')
 			o.graph.add({group: "edges", 		data: { source: node.id, target: node.ref, properties: {} } });
 		
 		repositionNodes(node);
+		tags.getAll();
 	}
 
 	o.updateNodeInGraph = function(id){
@@ -394,14 +396,14 @@ angular.module('studionet')
 		
 			node.data( 'db_data',  true );
 			//console.log("Fetched data", id);
-		
+			
+			// refresh tags
+			tags.getAll();
+			
+			// refresh profile
+			profile.getUser();		
 		});
 
-		// refresh tags
-		tags.getAll();
-		
-		// refresh profile
-		profile.getUser();
 	}
 
 
@@ -421,6 +423,9 @@ angular.module('studionet')
 																	})
 																	o.spinner.stop();
 																}();
+
+		// refresh tags
+		tags.getAll();
 	};
 
 	// ---- Updates view count of a contribution in the ContributionsHash

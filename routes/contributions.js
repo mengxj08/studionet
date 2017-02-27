@@ -271,7 +271,10 @@ router.route('/:contributionId')
 
     var query = [
       'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
+      'OPTIONAL MATCH (t:tag)<-[:TAGGED]-(c)',
+      'WITH c, collect( id(t) ) as tags',
       'OPTIONAL MATCH (a:attachment)<-[:ATTACHMENT]-(c)',
+      'WITH c, tags, collect( { attachment: a, id: id(a) } ) as attachments',
       'RETURN { \
                 ratingArray: [ SIZE((:user)-[:RATED{rating: 5}]->(c)), SIZE((:user)-[:RATED{rating: 4}]->(c)), \
                   SIZE((:user)-[:RATED{rating: 3}]->(c)), SIZE((:user)-[:RATED{rating: 2}]->(c)), \
@@ -280,16 +283,12 @@ router.route('/:contributionId')
                 title: c.title, \
                 edited: c.edited, \
                 body: c.body, \
-                tags: c.tags, \
                 lastUpdated: c.lastUpdated, \
                 ref: c.ref, \
                 createdBy: c.createdBy, \
                 views: c.views, \
-                attachments: collect({ \
-                  attachment: a, \
-                  id: id(a) \
-                }) \
-              }'
+                tags: tags, \
+                attachments: attachments }'
     ].join('\n');
 
     var params = {

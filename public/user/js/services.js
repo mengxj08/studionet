@@ -112,11 +112,27 @@ angular.module('studionet')
 			tagsHash: undefined
 		};
 
+		// --------- Observers
+		var observerCallbacks = [];
+
+		// register an observer
+		o.registerObserverCallback = function(callback){
+		   observerCallbacks.push(callback);
+		};
+
+		// call this when you know graph has been changed
+		var notifyObservers = function(){
+			angular.forEach(observerCallbacks, function(callback){
+		    	 callback();
+		    });
+		};
+
 		// {"name":"@newgroup","id":4401,"contributionCount":0,"createdBy":8,"restricted":"true","group":4400}
 		o.getAll = function(){
 			return $http.get('/api/tags').success(function(data){
 				angular.copy($filter('orderBy')(data, 'contributionCount', true) , o.tags);
-				tagsHash = data.hash();
+				o.tagsHash = data.hash();
+				notifyObservers();
 			});
 		};
 

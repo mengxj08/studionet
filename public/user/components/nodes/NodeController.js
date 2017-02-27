@@ -35,12 +35,13 @@ angular.module('studionet')
         ////// ---- Modal related functions
         $scope.setData = function(node){
             
-            // will be used internally but the reply feature
+            // will be used internally by the reply feature
             if( !(node instanceof Object )){
               node = GraphService.comments.getElementById(node).length ? GraphService.comments.getElementById(node) : GraphService.graph.getElementById(node);
-              $scope.showComments = true;
             }
 
+            $scope.showComments = true;
+            
             GraphService.getNode( node );
 
             $scope.contribution = node.data();
@@ -50,6 +51,7 @@ angular.module('studionet')
             $scope.bookmarked = false;
             $scope.rate = getRating( $scope.contribution.id );   // check if the user has already rated this contribution
             $scope.author = users.getUser( $scope.contribution.createdBy, false );  // get the author details
+
             GraphService.updateViewCount($scope.contribution.id);    // update the viewcount of the contribution
             
             node.addClass('read');
@@ -214,40 +216,13 @@ angular.module('studionet')
 
 
         /////// ------------------------ Dealing with tags
-        var all_tags = [];
-        for(var i=0; i<$scope.tags.length; i++){
-          all_tags[$scope.tags[i].name] = $scope.tags[i];
-        }
+
         // Tags
         $scope.loadTags =  function($query){
                 return tags.tags.filter(function(tag){
                   return tag.name.toLowerCase().search($query.toLowerCase()) != -1;
                 });
         }
-
-
-        $scope.getFormattedTags = function(contribution_tags){
-
-          var all_tags = [];
-          tags.tags.map(function(t){
-            all_tags[t.name] = t;
-          });
-
-          if(contribution_tags instanceof Array){
-            return contribution_tags.map(function(t){
-
-                if(all_tags[t] !== undefined)
-                  return all_tags[t];
-                else
-                  console.warn("Node tag not available in database. Something is wrong.")
-            })
-          }
-          else{
-            return [ all_tags[contribution_tags] ]; 
-          }
-
-        }
-
 
 
         ////// -------- Additional components (Read, Update, Delete)
@@ -352,18 +327,10 @@ angular.module('studionet')
                 $scope.contributionData.attachments = [];
               }
 
-              if($scope.contributionData.tags instanceof Array){
-                  $scope.contributionData._tags = $scope.contributionData.tags.map(function(t){
-                      return all_tags[t];
-                  })
-              }  
-              else if($scope.contributionData.tags == null){
-                $scope.contributionData._tags = [];
-              }
-              else{
-                $scope.contributionData._tags = [ all_tags[$scope.contributionData.tags] ]
-              }
-
+              $scope.contributionData._tags = $scope.contribution.tags.map(function(t){
+                  return t;
+              });
+              
               $scope.contributionData._attachments = $scope.contributionData.attachments;
               $scope.contributionData.attachments = [];
         }
