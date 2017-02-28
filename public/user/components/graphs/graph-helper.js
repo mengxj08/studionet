@@ -153,8 +153,15 @@ var graph_style = {
             .css({
               'curve-style': 'haystack',
               'line-color': edgeColorFn, //'#923F31',
-              'width': 0.2
+              'width': 0.3
             })     
+
+          .selector('edge.secondary-link')
+            .css({
+              'curve-style': 'haystack',
+              'line-color': 'blue', //'#923F31',
+              'width': 0.3
+            }) 
 
           .selector('.selected')
             .css({

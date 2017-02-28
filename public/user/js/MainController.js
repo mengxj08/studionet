@@ -1,8 +1,8 @@
 angular.module('studionet')
 
 .controller('MainController', ['$scope', '$stateParams', '$rootScope', '$uibModal',
-                               'GraphService', 'users', 'profile', 'supernode', 
-                               function($scope, $stateParams, $rootScope, $uibModal, GraphService, users, profile, supernode){
+                               'GraphService', 'users', 'profile', 'supernode', 'links', 
+                               function($scope, $stateParams, $rootScope, $uibModal, GraphService, users, profile, supernode, links){
 
 
   // --------------- socket connection message handling
@@ -22,6 +22,10 @@ angular.module('studionet')
      GraphService.addNewEdge(edge);
   });
 
+  socket.on('edge_deleted', function (edge_id) {
+     showMessage("edge deleted");
+     GraphService.removeEdge(edge_id);
+  });
 
   socket.on('node_updated', function (node) {
     setTimeout( function(){ GraphService.getNode(node, true) } , 2000 );
@@ -106,7 +110,12 @@ angular.module('studionet')
                       showQTip(evt);
 
                   },
-        onEdgeSingleClick: onEdgeSingleClick, 
+        onEdgeSingleClick: function(evt){
+              //console.log("Edge clicked", evt.cyTarget.data());
+        }, 
+        onEdgeDoubleClick: function(evt){
+              $rootScope.$broadcast("VIEW_EDGE_MODAL", { edge: evt.cyTarget });
+        }, 
         onCanvasClick: function(){ 
                   GraphService.removeAdditionalStyles();
         },
@@ -120,7 +129,7 @@ angular.module('studionet')
 
                               if($scope.linkMode != undefined){
                                   if( node.id() != $scope.linkMode.id() ){
-                                    $rootScope.$broadcast("SHOW_EDGE_MODAL", { src: $scope.linkMode.data(), target: node.data() });
+                                    $rootScope.$broadcast("CREATE_EDGE_MODAL", { src: $scope.linkMode.data(), target: node.data() });
                                     $scope.linkMode = undefined; 
                                     $scope.graph.remove('#ghost');
 
@@ -244,8 +253,6 @@ angular.module('studionet')
 
   }
 
-  var onEdgeSingleClick = function(evt){
-  }
 
   // Observe the Graph Service for Changes and register observer
   var updateGraph = function(){

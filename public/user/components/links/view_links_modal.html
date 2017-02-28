@@ -1,0 +1,43 @@
+<!-- Update Modal -->
+<div id='view_links_modal' class="modal fade" role="dialog" ng-controller="LinksController">
+  <div class="modal-dialog">  
+    <div class="modal-content">
+
+      <div class="modal-body">
+
+              <div class='modal-info'>
+                <h5>About this link</h5>
+                <h6>Create a new link between the two nodes</h6>
+              </div>
+
+              <hr><br><br>
+
+              <div class='row'>
+                  {{edge}}
+              </div>
+
+              <br><br><br>
+
+              <div class='row'>
+                  Lorem ipsum Veniam ut reprehenderit pariatur dolore ea exercitation cillum reprehenderit sit consequat in in Excepteur minim amet sed sit minim labore consectetur quis aliquip ut consectetur esse velit do non proident in sed ea ad adipisicing reprehenderit reprehenderit ullamco dolor Excepteur ad qui aliqua ut adipisicing labore aute in est exercitation exercitation dolor dolore consequat et deserunt adipisicing mollit laboris magna sint ea consectetur eu reprehenderit est ad aliquip dolor eiusmod esse ullamco dolore nulla pariatur pariatur ullamco mollit est voluptate fugiat cupidatat est deserunt laborum dolore irure magna cupidatat laborum officia in sint incididunt ut deserunt aliquip ea aliquip aliqua sit sit culpa cupidatat mollit veniam reprehenderit adipisicing laboris in in eu sunt esse exercitation velit deserunt consequat laboris dolore id ut incididunt aliqua anim id tempor id incididunt id eiusmod laborum ea elit culpa ad do ea officia aute amet dolore cupidatat adipisicing sunt commodo tempor aliquip labore sint et ea sit in voluptate in Ut sed nostrud enim sit in eiusmod sunt proident amet fugiat incididunt commodo dolore do deserunt sunt sunt nostrud laboris amet aute ut reprehenderit anim irure dolor deserunt consectetur consectetur ad eiusmod anim in qui velit occaecat qui do cupidatat ullamco dolore laboris eiusmod fugiat velit amet ex minim dolor minim non tempor Duis et in eu nostrud nostrud ullamco pariatur nostrud consectetur aliqua commodo commodo Ut elit.
+              </div>
+
+
+              <div class='row text-right modal-section'>
+                  <div ng-if='!createMode'>
+                    <button type="button" class="btn btn-default modal-button" ng-click="deleteLink()" class="btn btn-default modal-button" uib-tooltip='Delete' uib-position='top' data-dismiss='modal'><i class='fa fa-trash'></i></button>
+                    <button type="button" class="btn btn-default modal-button" uib-tooltip='Close' uib-position='top' data-dismiss='modal'><i class='fa fa-close'></i></button>
+                  </div>
+                  <div ng-if='createMode'>
+                    <button type="button" class="btn btn-default modal-button" ng-click="switch()" class="btn btn-default modal-button" uib-tooltip='Switch Nodes' uib-position='top'><i class='fa fa-exchange'></i></button>
+                    <button type="button" class="btn btn-default modal-button" ng-click="addLink()" class="btn btn-default modal-button" uib-tooltip='Submit' uib-position='top' data-dismiss='modal'><i class='fa fa-send'></i></button>
+                    <button type="button" class="btn btn-default modal-button" ng-click='cancel()' uib-tooltip='Cancel' uib-position='top' data-dismiss='modal'><i class='fa fa-trash'></i></button>
+                  </div>
+              </div>
+
+
+          </div>
+      </div>
+    </div>
+  </div>
+</div>

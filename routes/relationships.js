@@ -22,7 +22,17 @@ router.route('/')
 	 * Returns a list of all legal relationships
 	 */
 	.get(auth.ensureAuthenticated, function(req, res){
-		res.send(relationships);
+		var query = [
+			'MATCH (l:link) RETURN l'
+		].join('\n');
+
+		db.query(query, function(error, result){
+			if (error)
+				res.send(error);
+			else{
+				res.send(result);
+			}
+		})
 	})
 
 	.post(auth.ensureAuthenticated, function(req, res){
@@ -64,9 +74,8 @@ router.route('/')
 router.route('/:relationshipId')
 	.get(auth.ensureAuthenticated, function(req, res){
 		var query = [
-			'MATCH (:contribution)-[r]->(:contribution)',
-			'WHERE ID(r)={relationshipIdParam}',
-			'RETURN r'
+			'MATCH (l:link) WHERE l.ref={relationshipIdParam}',
+			'RETURN l'
 		].join('\n');
 
 		var params = {
@@ -79,8 +88,10 @@ router.route('/:relationshipId')
 				res.status(500);
 				return res.send('error');
 			}
-			res.status(200);
-			return res.send(result[0]);
+			else{
+				res.status(200);
+				res.send(result[0]);
+			}
 		});
 
 	})
@@ -88,9 +99,8 @@ router.route('/:relationshipId')
 	.delete(auth.ensureAuthenticated, function(req, res, next){
 		// check if the relationship was created by the user
 		var query = [
-			'MATCH (:contribution)-[r]->(:contribution)',
-			'WHERE ID(r)={relationshipIdParam}',
-			'RETURN {createdBy: r.createdBy}'
+			'MATCH (l:link) WHERE l.ref={relationshipIdParam}',
+			'RETURN l.createdBy as createdBy'
 		].join('\n');
 
 		var params = {
@@ -103,7 +113,9 @@ router.route('/:relationshipId')
 				res.status(500);
 				return res.send('error');
 			}
-			if (parseInt(result[0].createdBy) !== parseInt(req.user.id)) {
+
+			console.log(result);
+			if (parseInt(result.createdBy) !== parseInt(req.user.id)) {
 				res.status(500);
 				return res.send('relationship not created by you');
 			}
@@ -115,7 +127,9 @@ router.route('/:relationshipId')
 		var query = [
 			'MATCH (:contribution)-[r]->(:contribution)',
 			'WHERE ID(r)={relationshipIdParam}',
-			'DELETE r'
+			'WITH r', 
+			'MATCH (l:link) WHERE l.ref={relationshipIdParam}',
+			'DETACH DELETE r, l'
 		].join('\n');
 
 		var params = {
@@ -129,6 +143,7 @@ router.route('/:relationshipId')
 				return res.send('error');
 			}
 			res.status(200);
+			req.app.get('socket').emit('edge_delete', req.params.relationshipId );
 			return res.send('success in deleting relationship id: ' + req.params.relationshipId);
 		});
 	});

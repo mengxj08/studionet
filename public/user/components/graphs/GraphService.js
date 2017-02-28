@@ -1,7 +1,7 @@
 // ---------------- Graph Functionality 
 angular.module('studionet')
 
-.factory('GraphService', ['$http', 'supernode', 'profile', 'tags', function($http, supernode, profile, tags){
+.factory('GraphService', ['$http', 'supernode', 'profile', 'tags', 'links', function($http, supernode, profile, tags, links){
 
 
 	var opts = {
@@ -93,12 +93,16 @@ angular.module('studionet')
 					dblClick = true;
 				lastTapped = tapped;
 
-				if( evt.cyTarget.isEdge && evt.cyTarget.isEdge() )
-				    graphObject.onEdgeSingleClick(evt);
+				if( evt.cyTarget.isEdge && evt.cyTarget.isEdge() ){
+					if(dblClick)
+						graphObject.onEdgeDoubleClick(evt);
+					else
+				    	graphObject.onEdgeSingleClick(evt);
+				}
 				else if( !( (evt.cyTarget.isNode && evt.cyTarget.isNode()) ) ){
 				    graphObject.onCanvasClick(evt)
 				}
-				else if( evt.cyTarget.isNode /*&& evt.cyTarget.id() == o.activeNode*/ ){
+				else if( evt.cyTarget.isNode() ){
 					if(dblClick)
 				    	graphObject.onNodeDoubleClick(evt);
 				    else
@@ -113,6 +117,8 @@ angular.module('studionet')
 			repositionNodes();
 
 
+
+
 			// notify any controller watching the graph
 			notifyObservers();
 
@@ -125,8 +131,20 @@ angular.module('studionet')
 		// remove the supernode
 		o.graph.getElementById(supernode.contribution).remove();
 
+
+		// get the edges and add class
+		links.getAll().success(function(data){
+
+			data.map(function(l){
+				o.graph.getElementById(l.ref).addClass('secondary-link');
+			})
+
+		});
+
+
 		// remove the comments
 		o.comments = o.comments.add( o.graph.nodes("[type='comment']").remove() );
+
 
 		setTimeout(function(){
 		  		// redraw graph
@@ -439,6 +457,15 @@ angular.module('studionet')
 		// refresh tags
 		tags.getAll();
 	};
+
+	o.removeEdge = function(edge_id){
+
+		if( o.graph.getElementById(edge_id).length ){
+			o.graph.getElementById(edge_id).remove(); 
+			repositionNodes();
+		} 
+	
+	}
 
 	// ---- Updates view count of a contribution in the ContributionsHash
 	o.updateViewCount = function(id){

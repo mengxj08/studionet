@@ -6,16 +6,23 @@ angular.module('studionet')
 
 .controller('LinksController', ['$scope', '$rootScope', 'GraphService', 'links', function($scope, $rootScope, GraphService, links){
 
+	$scope.createMode = undefined;
+
     $scope.target = undefined;
     $scope.source = undefined;
     $scope.linkNode; 
 
-    $rootScope.$on("SHOW_EDGE_MODAL", function(event, args){
+
+    // ----------------- For Link creation
+
+    $rootScope.$on("CREATE_EDGE_MODAL", function(event, args){
 
     	console.log(args);
 
     	$scope.source = args.src; // getNode(args.src, false);
     	$scope.target = args.target;
+
+    	$scope.createMode = true;
 
     	$scope.$apply();
 
@@ -26,11 +33,9 @@ angular.module('studionet')
     $scope.addLink = function(){
 
     	var linkData = {
-
     		source : $scope.source.id, 
     		target: $scope.target.id, 
     		note: $scope.linkNote
-
     	}
 
     	links.createLink(linkData).success(function(){
@@ -38,6 +43,34 @@ angular.module('studionet')
     	})
     }
 
+    // --------------  For Link Viewing
+
+    $rootScope.$on("VIEW_EDGE_MODAL", function(event, args){
+
+
+    	$scope.edge = args.edge.data(); // getNode(args.src, false);
+
+    	$scope.createMode = false;
+
+    	// get information about the link
+    	links.getLink( args.edge.id() ).success(function(data){
+			
+			if(	data == ""	){
+				//alert("primary-link");
+			}
+			else{
+				$scope.edge = data;
+			}
+
+        });
+
+    	$('#view_links_modal').modal({backdrop: 'static', keyboard: false});
+
+    });
+
+    $scope.deleteLink = function(){
+    	links.deleteLink($scope.edge.id);
+    };
 
 
 }]);

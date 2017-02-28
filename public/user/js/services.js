@@ -242,7 +242,29 @@ angular.module('studionet')
 	.factory('links', ['$http', function($http){
 
 		var o = {
+			links : undefined
+		}
 
+		o.getAll = function(){
+			return $http({
+					  method  : 'GET',
+					  url     : '/api/relationships/',
+					  headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
+					 })
+					.success(function(data) {
+						angular.copy(data, o.links);
+					});		
+		}
+
+		o.getLink = function(relationshipId){
+			return $http({
+					  method  : 'GET',
+					  url     : '/api/relationships/' + relationshipId,
+					  headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
+					 })
+					.success(function(data) {
+						//console.log("data", data);
+					});		
 		}
 
 		o.createLink = function(linkData){
@@ -256,10 +278,20 @@ angular.module('studionet')
 						  headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
 						 })
 						.success(function(data) {
-
-							console.log("Link created!");
-						    
+							//console.log("Link created!");
 						});
+		}
+
+		o.deleteLink = function(id){
+			return $http.delete('/api/relationships/' + id)
+				.success(function(res) {
+					alert(res);
+					return;  
+			    })
+			    .error(function(error){
+			    	alert(error);
+					throw error;
+			    })
 		}
 
 		return o;
