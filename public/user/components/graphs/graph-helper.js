@@ -71,14 +71,8 @@ var computeBgColorFn = function(node){
 var computeFontFn = function(node){
 
     var incomers = node.predecessors().length;
-    var basic = 0.3;
+    var basic = 0.6;
     var final = basic; 
-
-    return 0.5 + 'em';
-
-    if(node.data('marked') == true)
-      return basic + 1;
-
 
     switch(true){
 
@@ -115,12 +109,7 @@ var computeShapeFn = function(ele){
 }
 
 var edgeColorFn = function(ele){
-    /*if(ele.data('name') == "COMMENT_FOR")
-      return "#3535C9";
-    if(ele.data().properties.createdBy != undefined)
-      return '#00FF60';
-    else*/
-      return '#303030';
+    return '#E0E0E0';
 }
 
 // Data conversion
@@ -149,14 +138,15 @@ var graph_style = {
               'font-weight': '400',  
               'font-size': '3px',
               'text-wrap': 'wrap',
-              'text-max-width': '10px',
+              'text-max-width': '100px',
               'font-family': 'Roboto, sans serif',
-              'min-zoomed-font-size': '1em',
+              'min-zoomed-font-size': computeFontFn,
               'margin': '300px',
               'source-arrow-shape': 'triangle',
               'border-width': 1,
+              'z-index': 2,
               'background-color' : computeBgColorFn,//'#000623',
-              'border-color': '#FFF'//'#AFAFAF'
+              'border-color': '#FFF',//'#AFAFAF'
             })
 
           .selector('edge')
@@ -170,12 +160,14 @@ var graph_style = {
             .css({
               'background-color' : 'yellow',// '#A3BC05',//'#AFAFAF',
               'border-color': '#A3BC05',
+              'label': 'data(title)'
             })
 
           .selector('.permanent-selected')
             .css({
               'background-color' : 'yellow',// '#A3BC05',//'#AFAFAF',
               'border-color': '#A3BC05',
+              'label': 'data(title)'
             })
 
           .selector('node.read')
@@ -216,7 +208,8 @@ var graph_style = {
             .css({
               //'background-color' : '#5E5E5E',
               'width' : '12', 
-              'height' : '12'
+              'height' : '12',
+              'label': 'data(title)'
             })
 
           .selector('node.glow.faded')

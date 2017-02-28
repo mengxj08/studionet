@@ -27,24 +27,35 @@ router.route('/')
 
 	.post(auth.ensureAuthenticated, function(req, res){
 
-		/*
-		 * 	Overrides - only for testing; remove later
-		 */
-		var createdByParam = parseInt(req.body.createdBy || req.user.id);
-
 		// Create the relationship
 		var query = [
-			'MATCH (c:contribution) WHERE ID(c)=' + parseInt(req.body.source),
-			'MATCH (c1:contribution) WHERE ID(c1)=' + parseInt(req.body.target),
-			'MERGE (c)-[r:' + req.body.relationshipName + ']->(c1)',
-			'SET r.createdBy=' + createdByParam + ', r.lastUpdated = ' + Date.now() + ', r.likes = 0, r.note=' + "\'" + req.body.note + "\'" 
+			'MATCH (u:user) WHERE ID(u)={userIdParam}',
+			'CREATE (l:link)<-[:CREATED]-(u)',
+			'WITH l',
+			'MATCH (c:contribution) WHERE ID(c)={sourceIdParam}',
+			'WITH l, c',
+			'MATCH (c1:contribution) WHERE ID(c1)={targetIdParam}',
+			'WITH l, c, c1',
+			'MERGE (c)-[r:RELATED_TO]->(c1)',
+			'SET l.ref=ID(r), l.createdBy=8, l.createdAt={dateParam}, l.likes = 0, l.note={noteParam}',
+			'RETURN ID(r) as id'
 		].join('\n');
 
-		db.query(query, function(error, result){
+		var params = {
+			userIdParam: parseInt(req.user.id), 
+			sourceIdParam : parseInt(req.body.source), 
+			targetIdParam : parseInt(req.body.target),
+			noteParam : req.body.note,
+			dateParam : Date.now()
+		};
+
+		db.query(query, params, function(error, result){
 			if (error)
 				console.log(error);
-			else
+			else{
+				req.app.get('socket').emit('edge_created', { source: req.body.source , target: req.body.target, id: result[0].id } );
 				res.send("success creating the new relationship between " + req.body.source + " and " + req.body.target);
+			}
 		})
 
 	});

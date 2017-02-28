@@ -81,6 +81,10 @@ angular.module('studionet')
 			  	graphObject.onMouseOver(evt);
 			});
 
+			o.graph.on('taphold', function(evt){
+				graphObject.onTapHold(evt);
+			});
+
 			o.graph.on('tap', function(evt){
 
 				var dblClick = false;
@@ -378,6 +382,14 @@ angular.module('studionet')
 		
 		repositionNodes(node);
 		tags.getAll();
+	}
+
+	o.addNewEdge = function(edge){
+
+		o.graph.add( {group: "edges", data: edge });
+
+		repositionNodes();
+
 	}
 
 	o.updateNodeInGraph = function(id){

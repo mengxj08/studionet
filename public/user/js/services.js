@@ -238,6 +238,34 @@ angular.module('studionet')
 		return o;
 	}])
 
+	// ------------------- Links
+	.factory('links', ['$http', function($http){
+
+		var o = {
+
+		}
+
+		o.createLink = function(linkData){
+
+			linkData.relationshipName = "RELATED_TO";
+
+			return $http({
+						  method  : 'POST',
+						  url     : '/api/relationships/',
+						  data    : linkData,  
+						  headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
+						 })
+						.success(function(data) {
+
+							console.log("Link created!");
+						    
+						});
+		}
+
+		return o;
+
+	}])
+
 
 	// ----------------- Deals with attachments (deleting)
 	.factory('attachments', ['$http', function($http){

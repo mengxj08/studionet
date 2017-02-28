@@ -17,8 +17,13 @@ angular.module('studionet')
 
   });
 
+  socket.on('edge_created', function (edge) {
+      showMessage("New edge created");
+     GraphService.addNewEdge(edge);
+  });
+
+
   socket.on('node_updated', function (node) {
-    console.log(node);
     setTimeout( function(){ GraphService.getNode(node, true) } , 2000 );
   });
 
@@ -86,24 +91,111 @@ angular.module('studionet')
 
   // ----------------- Graphs
   var graph_container = angular.element('#cy')[0];
+  $scope.linkMode = undefined;
   // First Initialization of the graph on page-refresh
+  
   $scope.graphInit = function(){  
 
       var graphObject = {
         threshold : 20, 
-        onMouseOver: showQTip,
+        onMouseOver: function(evt){
+
+                    if(evt.cyTarget.id() =='ghost')
+                      console.log(evt.cyTarget.id());
+                    else
+                      showQTip(evt);
+
+                  },
         onEdgeSingleClick: onEdgeSingleClick, 
-        onCanvasClick: function(){ GraphService.removeAdditionalStyles() },
-        onNodeSingleClick: function(evt){ showQTip(evt); GraphService.selectNode(evt.cyTarget); },
+        onCanvasClick: function(){ 
+                  GraphService.removeAdditionalStyles();
+        },
+        onTapHold : function(evt){ 
+
+                          var node = evt.cyTarget;
+
+                          if(node.isNode && node.isNode() && node.id() != 'ghost'){
+
+                              node.ungrabify(); 
+
+                              if($scope.linkMode != undefined){
+                                  if( node.id() != $scope.linkMode.id() ){
+                                    $rootScope.$broadcast("SHOW_EDGE_MODAL", { src: $scope.linkMode.data(), target: node.data() });
+                                    $scope.linkMode = undefined; 
+                                    $scope.graph.remove('#ghost');
+
+                                    $('#cy').unbind('mousemove')
+                                  }
+                                  else
+                                    alert("Cannot connect the same node");
+                              }
+                              else{
+                                  
+                                  $scope.linkMode = node;
+
+                                  node.ungrabify(); 
+                                  
+                                  $scope.graph.add({group: "nodes",    data: {'id': 'ghost'},   position: { x: window.innerWidth/2, y : window.innerHeight/2 }});
+            
+                                  if(node.ref != supernode.contribution)
+                                    $scope.graph.add({group: "edges",    data: { source: 'ghost', target: node.id(), style: {'border-style': 'dashed'} } });
+
+                                  $scope.graph.getElementById('ghost').css({ 'border-style': 'dashed', 'z-index' : 1, 'width': 15, 'height':15, 'shape': 'ellipse' })
+
+                                  $( "#cy" ).mousemove(function( event ) {
+                                      $scope.graph.getElementById('ghost').renderedPosition({ x: event.pageX, y: event.pageY });
+                                  });
+
+                                  alert("LINKING MODE"); 
+
+                                
+                              }
+                          }
+                          else{
+
+                            if($scope.linkMode !== undefined){
+                              $scope.linkMode = undefined; 
+                              $scope.graph.remove('#ghost');
+
+                              $('#cy').unbind('mousemove')
+
+                              alert("LINKING MODE ENDED");                      
+                            }
+                          }
+
+
+
+                        },
+        onNodeSingleClick: function(evt){ 
+                                if(evt.cyTarget.id() == 'ghost'){
+                                  graphObject.onCanvasClick();
+                                  return;
+                                }
+                                showQTip(evt); 
+                                GraphService.selectNode(evt.cyTarget); 
+                          },
         onNodeDoubleClick : function(evt){
                                   var node = evt.cyTarget;
-                                  $scope.graph.elements().removeClass('highlighted');
-                                  showDetailsModal( node );
+
+                                  if(node.id() !='ghost'){
+                                      $scope.graph.elements().removeClass('highlighted');
+                                      showDetailsModal( node );
+                                  }
+                                  else{
+                                    console.log("ghost double clicked");
+                                  }
+
+
                             }
       }
 
       GraphService.getGraph( graph_container, graphObject );  
   }
+
+  // remove ghosted mode on right click
+  $(document).mousedown(function(e){ 
+
+  });
 
 
   // ------------- Zooming & Nav Controls
@@ -200,26 +292,6 @@ angular.module('studionet')
 
 
   // ------- Modals
-  // Edges Modal
-  var showEdgesModal = function(link_data){
-
-      ModalService.showModal({
-          templateUrl: "/user/templates/linksModal.html",
-          controller: "LinksCtrl",
-          scope: $scope
-      }).then(function(modal) {
-
-          modal.scope.setData(link_data);
-
-          modal.element.modal({
-            backdrop: 'static'
-          });
-          
-      });
-
-  }
-
-
   // View Modal
   $scope.viewMode = false;
   $scope.$on( BROADCAST_VIEWMODE_OFF, function(event, args) {

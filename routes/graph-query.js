@@ -70,6 +70,7 @@ var graphQuery = function (query, callback){
           return {
               source: idIndex(nodes, r.startNode).id,   // should not be a case where start or end is null.
               target: idIndex(nodes, r.endNode).id,
+              id: r.id,
               name: r.type,
               properties: r.properties
           };

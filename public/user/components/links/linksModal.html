@@ -1,42 +1,48 @@
-<div id="linksModal" class="modal fade createContribution" role="dialog" ng-controller="LinksCtrl">
-  
-  <div class="modal-dialog">
-
-    <!-- Modal content-->
+<!-- Update Modal -->
+<div id='linksModal' class="modal fade" role="dialog"  ng-controller='LinksController' >
+  <div class="modal-dialog">  
     <div class="modal-content">
 
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal" ng-click='close()'>&times;</button>
-          <h4 class="modal-title">Link Details</h4>
-        </div>
+      <div class="modal-body">
 
-        <div class="modal-body">
+              <div class='modal-info'>
+                <h5>New Link</h5>
+                <h6>Create a new link between the two nodes</h6>
+              </div>
 
-          <!-- alert -->
-          <div class="alert alert-danger" role="alert" id='errorMsg' ng-show='alert.error'>
-                  <strong>Oh snap! </strong>{{ alert.errorMsg }}
+              <hr><br><br>
+
+              <div class='row'>
+                  <div class='col-sm-6'>
+                      <h2>Connecting :</h3>
+                      <h3>{{source.title}}</h3>
+                      <h6>By {{source.createdBy}}</h6>
+                  </div>
+                  <div class='col-sm-6'>
+                      <h2>To :</h2>
+                      <h3>{{target.title}}</h3>
+                      <h6>By {{target.createdBy}}</h6>
+                  </div>
+              </div>
+
+              <br><br><br>
+
+              <div class='row'>
+                  <h5>Note</h5>
+                  <hr><br>
+                  <textarea name="linkNote" style='min-height: 80px;' ng-model='linkNote' maxlength="600"></textarea>
+                  <h6>{{600 - linkNote.length}} characters left</h6>
+              </div>
+
+
+              <div class='row text-right modal-section'>
+                  <button type="button" class="btn btn-default modal-button" ng-click="switch()" class="btn btn-default modal-button" uib-tooltip='Switch Nodes' uib-position='top'><i class='fa fa-exchange'></i></button>
+                  <button type="button" class="btn btn-default modal-button" ng-click="addLink()" class="btn btn-default modal-button" uib-tooltip='Submit' uib-position='top' data-dismiss='modal'><i class='fa fa-send'></i></button>
+                  <button type="button" class="btn btn-default modal-button" ng-click='cancel()' uib-tooltip='Cancel' uib-position='top' data-dismiss='modal'><i class='fa fa-trash'></i></button>
+              </div>
+
           </div>
-
-          <div class="alert alert-success" role="alert" id='successMsg' ng-show='alert.success'>
-                  <strong>Awesome! </strong>{{ alert.successMsg }}
-          </div>   
-
-          <div class='editor' ng-hide='alert.success'>
-                {{ linkData }}
-          </div>
-
-        </div>
-
-        <div class="modal-footer">
-          <center>
-          <button type="button" class="btn btn-default modal-button" ng-if='!alert.success'>Submit</button>
-          <button type="button" class="btn btn-default modal-button" data-dismiss='modal' ng-click='close()'>{{ alert.success ? "Close" : "Cancel" }}</button>
-          </center>
-        </div>
-    
+      </div>
     </div>
-
   </div>
-
 </div>
-
