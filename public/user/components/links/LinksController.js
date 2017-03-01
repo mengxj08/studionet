@@ -60,6 +60,15 @@ angular.module('studionet')
     	})
     }
 
+    $scope.switch = function(){
+
+        var toggle = $scope.target;
+        $scope.target = $scope.source; 
+        $scope.source = toggle;
+
+
+    }
+
     // --------------  For Link Viewing
 
     $rootScope.$on("VIEW_EDGE_MODAL", function(event, args){
@@ -67,25 +76,21 @@ angular.module('studionet')
     	$scope.edge = args.edge.data(); // getNode(args.src, false);
     	$scope.linkNode = {};
 
-        $scope.manualLink = false;
-
         $scope.sourceNode = GraphService.graph.getElementById( $scope.edge.source ).data();
         $scope.targetNode = GraphService.graph.getElementById( $scope.edge.target ).data();
+        
+        $scope.manualLink = false;
+
 
         if(links.linksHash[$scope.edge.id] != undefined){
-
             $scope.manualLink = true;
-
             $scope.linkNode = links.linksHash[$scope.edge.id];
-
-            if($scope.linkNode.createdBy == profile.user.id)
-                $scope.linkOwner = true;
-
+            $scope.author = {id: $scope.linkNode.createdBy, name: getName( $scope.linkNode.createdBy )};
         }
 
         if($scope.author == undefined)
             $scope.author = {id: $scope.sourceNode.createdBy, name: getName( $scope.sourceNode.createdBy )};
-        
+
         if($scope.author.id == profile.user.id){
             $scope.linkOwner = true;
         }

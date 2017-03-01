@@ -18,12 +18,12 @@ angular.module('studionet')
   });
 
   socket.on('edge_created', function (edge) {
-      showMessage("New edge created");
+      showMessage("A new link was created");
      GraphService.addNewEdge(edge);
   });
 
   socket.on('edge_deleted', function (edge_id) {
-     showMessage("edge deleted");
+     showMessage("A link was deleted");
      GraphService.removeEdge(edge_id);
   });
 
@@ -136,7 +136,7 @@ angular.module('studionet')
                                     $('#cy').unbind('mousemove')
                                   }
                                   else
-                                    alert("Cannot connect the same node");
+                                    showMessage("Cannot connect to the same node!");
                               }
                               else{
                                   
@@ -156,7 +156,7 @@ angular.module('studionet')
                                       $scope.graph.getElementById('ghost').renderedPosition({ x: event.pageX, y: event.pageY });
                                   });
 
-                                  alert("LINKING MODE"); 
+                                  showMessage("Entered linking mode");
 
                                 
                               }
@@ -169,7 +169,7 @@ angular.module('studionet')
 
                               $('#cy').unbind('mousemove')
 
-                              alert("LINKING MODE ENDED");                      
+                              showMessage("Escaped linking mode");   
                             }
                           }
 
