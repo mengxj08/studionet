@@ -145,11 +145,12 @@ angular.module('studionet')
                                   node.ungrabify(); 
                                   
                                   $scope.graph.add({group: "nodes",    data: {'id': 'ghost'},   position: { x: window.innerWidth/2, y : window.innerHeight/2 }});
-            
-                                  if(node.ref != supernode.contribution)
-                                    $scope.graph.add({group: "edges",    data: { source: 'ghost', target: node.id(), style: {'border-style': 'dashed'} } });
+                                  $scope.graph.add({group: "edges",    data: { id: 'ghost-edge', source: 'ghost', target: node.id() } });
+
+
 
                                   $scope.graph.getElementById('ghost').css({ 'border-style': 'dashed', 'z-index' : 1, 'width': 15, 'height':15, 'shape': 'ellipse' })
+                                  $scope.graph.getElementById('ghost-edge').addClass('secondary-link');
 
                                   $( "#cy" ).mousemove(function( event ) {
                                       $scope.graph.getElementById('ghost').renderedPosition({ x: event.pageX, y: event.pageY });
@@ -200,11 +201,6 @@ angular.module('studionet')
 
       GraphService.getGraph( graph_container, graphObject );  
   }
-
-  // remove ghosted mode on right click
-  $(document).mousedown(function(e){ 
-
-  });
 
 
   // ------------- Zooming & Nav Controls

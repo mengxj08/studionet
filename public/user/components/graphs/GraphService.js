@@ -133,7 +133,11 @@ angular.module('studionet')
 
 
 		// get the edges and add class
-		links.getAll();
+		links.getAll().success(function(data){
+			data.map(function(l){
+				o.graph.getElementById(l.ref).addClass('secondary-link');
+			})
+		});
 
 
 		// remove the comments
