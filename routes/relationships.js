@@ -97,10 +97,12 @@ router.route('/:relationshipId')
 	})
 
 	.delete(auth.ensureAuthenticated, function(req, res, next){
+		
 		// check if the relationship was created by the user
 		var query = [
-			'MATCH (l:link) WHERE l.ref={relationshipIdParam}',
-			'RETURN l.createdBy as createdBy'
+			'MATCH (c:contribution)-[r]->(c1:contribution) WHERE ID(r)={relationshipIdParam}',
+			'OPTIONAL MATCH (l:link) WHERE l.ref={relationshipIdParam}',
+			'RETURN l.createdBy as linkAuthor, c.createdBy as nodeAuthor'
 		].join('\n');
 
 		var params = {
@@ -108,6 +110,76 @@ router.route('/:relationshipId')
 		};
 
 		db.query(query, params, function(error, result){
+			if (error) {
+				console.log(error);
+				res.status(500);
+				return res.send('error');
+			}
+
+			var user = parseInt(req.user.id);
+			if (parseInt(result[0].linkAuthor) == user || parseInt(result[0].nodeAuthor) == user) {
+				next();
+			}
+			else{
+				res.status(500);
+				return res.send('Unauthorized Transaction');				
+			}
+
+		});
+
+	}, function(req, res, next){
+
+		// delete the relationship here
+		var query = [
+			'MATCH (c:contribution)-[r]->(c1:contribution) WHERE ID(r)={relationshipIdParam}',
+			'WITH r, c',
+			'MATCH (c)-[t]->(:contribution) ',
+			'WITH r, c, t',
+			'OPTIONAL MATCH (l:link) WHERE l.ref={relationshipIdParam}',
+			'DETACH DELETE r, l',
+			'RETURN COUNT(t) as count, ID(c) as id'
+		].join('\n');
+
+		var params = {
+			relationshipIdParam: parseInt(req.params.relationshipId)
+		};
+
+		db.query(query, params, function(error, result){
+			
+			if (error) {
+				console.log(error);
+				res.status(500);
+				return res.send('error');
+			}
+
+			if(result[0].count == 1){
+				req.c_node = result[0].id;
+				next();
+			}
+			else{
+				res.status(200);
+				req.app.get('socket').emit('edge_deleted', req.params.relationshipId );
+				return res.send('success in deleting relationship id: ' + req.params.relationshipId);
+			}
+		
+		});
+
+	}, function(req, res){
+
+		// add relationship to supernode
+		var query = [
+			'MATCH (c:contribution) WHERE ID(c)={contributionIdParam}',
+			'MATCH (s:contribution) WHERE s.superNode=true',
+			'CREATE (c)-[:RELATED_TO]->(s)',
+			'RETURN ID(c)'
+		].join('\n');
+
+		var params = {
+			contributionIdParam: parseInt(req.c_node),
+		};
+
+		db.query(query, params, function(error, result){
+			
 			if (error) {
 				console.log(error);
 				res.status(500);
@@ -115,36 +187,13 @@ router.route('/:relationshipId')
 			}
 
 			console.log(result);
-			if (parseInt(result.createdBy) !== parseInt(req.user.id)) {
-				res.status(500);
-				return res.send('relationship not created by you');
-			}
-			next();
-		});
-	}, function(req, res){
 
-		// delete the relationship here
-		var query = [
-			'MATCH (:contribution)-[r]->(:contribution)',
-			'WHERE ID(r)={relationshipIdParam}',
-			'WITH r', 
-			'MATCH (l:link) WHERE l.ref={relationshipIdParam}',
-			'DETACH DELETE r, l'
-		].join('\n');
-
-		var params = {
-			relationshipIdParam: parseInt(req.params.relationshipId)
-		};
-
-		db.query(query, params, function(error, result){
-			if (error) {
-				console.log(error);
-				res.status(500);
-				return res.send('error');
-			}
 			res.status(200);
-			req.app.get('socket').emit('edge_delete', req.params.relationshipId );
+			req.app.get('socket').emit('edge_deleted', req.params.relationshipId );
 			return res.send('success in deleting relationship id: ' + req.params.relationshipId);
+		
 		});
+
 	});
+
 module.exports = router;

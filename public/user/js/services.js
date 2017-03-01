@@ -242,7 +242,8 @@ angular.module('studionet')
 	.factory('links', ['$http', function($http){
 
 		var o = {
-			links : undefined
+			links : [],
+			linksHash : []
 		}
 
 		o.getAll = function(){
@@ -253,6 +254,12 @@ angular.module('studionet')
 					 })
 					.success(function(data) {
 						angular.copy(data, o.links);
+						data.map(function(l){
+							if( o.linksHash[l.ref] == undefined)
+								o.linksHash[l.ref] = l;
+							else
+								console.error("Multiple link nodes found for same edge");
+						})
 					});		
 		}
 

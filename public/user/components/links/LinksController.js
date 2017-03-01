@@ -47,22 +47,17 @@ angular.module('studionet')
 
     $rootScope.$on("VIEW_EDGE_MODAL", function(event, args){
 
-
     	$scope.edge = args.edge.data(); // getNode(args.src, false);
+    	$scope.linkNode = undefined
+
+    	if(links.linksHash[$scope.edge.id] != undefined){
+    		$scope.linkNode = links.linksHash[$scope.edge.id];
+    	}
 
     	$scope.createMode = false;
+    	
+    	$scope.$apply();
 
-    	// get information about the link
-    	links.getLink( args.edge.id() ).success(function(data){
-			
-			if(	data == ""	){
-				//alert("primary-link");
-			}
-			else{
-				$scope.edge = data;
-			}
-
-        });
 
     	$('#view_links_modal').modal({backdrop: 'static', keyboard: false});
 
