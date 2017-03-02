@@ -158,9 +158,12 @@ var graph_style = {
 
           .selector('edge.secondary-link')
             .css({
-              'line-color': 'golden rod', //'#923F31',
+              /*'line-color': 'blue', //'#923F31',
               'line-style': 'dashed',
-              'width': 0.1
+              'width': 0.3*/
+              'curve-style': 'haystack',
+              'line-color': edgeColorFn, //'#923F31',
+              'width': 0.3
             }) 
 
           .selector('.selected')

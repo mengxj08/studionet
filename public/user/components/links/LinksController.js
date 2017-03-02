@@ -15,6 +15,10 @@ angular.module('studionet')
     var usersHash = users.usersHash;
 
     var getName = function(user_id){
+
+        if(user_id == undefined)
+            return;          
+
         return usersHash[user_id].nickname ? usersHash[user_id].nickname : usersHash[user_id].name
     }
     $scope.getName = getName;
@@ -34,12 +38,10 @@ angular.module('studionet')
 
     $rootScope.$on("CREATE_EDGE_MODAL", function(event, args){
 
-    	console.log(args);
-
-    	$scope.source = args.src; // getNode(args.src, false);
-    	$scope.target = args.target;
-
     	$scope.createMode = true;
+
+        $scope.sourceNode = args.src;
+        $scope.targetNode = args.target;
 
     	$scope.$apply();
 
@@ -50,22 +52,29 @@ angular.module('studionet')
     $scope.addLink = function(){
 
     	var linkData = {
-    		source : $scope.source.id, 
-    		target: $scope.target.id, 
+    		source : $scope.sourceNode.id, 
+    		target: $scope.targetNode.id, 
     		note: $scope.linkNote
     	}
 
     	links.createLink(linkData).success(function(){
-    		// alert("Link created in database!");
+                
+                GraphService.selectNode(linkData.target);
+                
+                $scope.target = undefined;
+                $scope.source = undefined;
+                $scope.linkNode= undefined; 
+                $scope.linkNote = undefined;
+                $scope.linkData = undefined;
+
     	})
     }
 
     $scope.switch = function(){
 
-        var toggle = $scope.target;
-        $scope.target = $scope.source; 
-        $scope.source = toggle;
-
+        var toggle = $scope.targetNode;
+        $scope.targetNode = $scope.sourceNode; 
+        $scope.sourceNode = toggle;
 
     }
 

@@ -285,14 +285,14 @@ angular.module('studionet')
 						  headers : { 'Content-Type': 'application/json' }  // set the headers so angular passing info as form data (not request payload)
 						 })
 						.success(function(data) {
-							//console.log("Link created!");
+
 						});
 		}
 
 		o.deleteLink = function(id){
 			return $http.delete('/api/relationships/' + id)
 				.success(function(res) {
-					alert(res);
+					//alert(res);
 					return;  
 			    })
 			    .error(function(error){

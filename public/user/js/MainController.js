@@ -145,7 +145,7 @@ angular.module('studionet')
                                   node.ungrabify(); 
                                   
                                   $scope.graph.add({group: "nodes",    data: {'id': 'ghost'},   position: { x: window.innerWidth/2, y : window.innerHeight/2 }});
-                                  $scope.graph.add({group: "edges",    data: { id: 'ghost-edge', source: 'ghost', target: node.id() } });
+                                  $scope.graph.add({group: "edges",    data: { id: 'ghost-edge', source: node.id(), target: 'ghost'  } });
 
 
 
