@@ -47,7 +47,7 @@ router.route('/')
 			'MATCH (c1:contribution) WHERE ID(c1)={targetIdParam}',
 			'WITH l, c, c1',
 			'MERGE (c)-[r:RELATED_TO]->(c1)',
-			'SET l.ref=ID(r), l.createdBy=8, l.createdAt={dateParam}, l.likes = 0, l.note={noteParam}',
+			'SET l.ref=ID(r), l.createdBy={userIdParam}, l.createdAt={dateParam}, l.likes = 0, l.note={noteParam}',
 			'RETURN ID(r) as id'
 		].join('\n');
 

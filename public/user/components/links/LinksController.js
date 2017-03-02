@@ -19,6 +19,9 @@ angular.module('studionet')
         if(user_id == undefined)
             return;          
 
+        console.log(usersHash[user_id]);
+        console.log(usersHash);
+
         return usersHash[user_id].nickname ? usersHash[user_id].nickname : usersHash[user_id].name
     }
     $scope.getName = getName;
@@ -63,7 +66,6 @@ angular.module('studionet')
                 
                 $scope.target = undefined;
                 $scope.source = undefined;
-                $scope.linkNode= undefined; 
                 $scope.linkNote = undefined;
                 $scope.linkData = undefined;
 
