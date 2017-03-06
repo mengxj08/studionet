@@ -43,7 +43,7 @@ var draw_graph = function(graph, threshold, supernodeId, max_width, max_height){
 
             var inc = 0;
             // mark all the parents to be on the spiral with this node
-            node.incomers.map(function(childId){
+            node.all.map(function(childId){
 
               var child = nodeHash[childId];
 
@@ -82,9 +82,9 @@ var draw_graph = function(graph, threshold, supernodeId, max_width, max_height){
           node.onSpiral = node.id
    
           // mark nodes predessors
-          for(var i=0; i < node.incomers.length; i++){
+          for(var i=0; i < node.all.length; i++){
 
-              var child = nodeHash[node.incomers[i]];
+              var child = nodeHash[node.all[i]];
               if( child.onSpiral == -1 ){
                 child.onSpiral = node.id;
               }
@@ -115,6 +115,7 @@ var draw_graph = function(graph, threshold, supernodeId, max_width, max_height){
   
 
   // for each node on the spiral, make a spiral of all its predecessors around it
+  var num_of_cols = 5*max_width / 250; 
   var nextNode = function(i){
 
       // node on spiral
@@ -122,17 +123,16 @@ var draw_graph = function(graph, threshold, supernodeId, max_width, max_height){
 
       x = radius*Math.cos( angle ) + initX;
       y = radius*Math.sin( angle ) + initY;
-
+      
       node.position = { x: x, y: y}; 
-      placeSubSpirals(node, i);
-
+      node.radius = placeSubSpirals(node, i);
 
   }
 
   var placeSubSpirals = function(node, i){
 
     // find the children
-    var nodes = node.incomers.filter(function(nodeId){
+    var nodes = node.all.filter(function(nodeId){
       var subNode = nodeHash[nodeId];
       if(subNode.onSpiral == node.id)
         return true;

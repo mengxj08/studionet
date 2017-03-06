@@ -179,6 +179,11 @@ angular.module('studionet')
 							return n.id();
 						}),
 						successors: node.successors().length,
+						all : node.predecessors().nodes().map(function(n){
+							return n.id();
+						}).concat(node.successors().nodes().map(function(n){
+							return n.id();
+						})),
 						position: node.position()
 					}
 		})
@@ -212,7 +217,7 @@ angular.module('studionet')
 			  			time = 800;
 			  		}
 			        setTimeout( function(){
-			        	node.animate(	{ 	position : { x: n.position.x, y: n.position.y }  },   { duration: time }
+			        	node.animate(	{ 	position : { x: n.position.x, y: n.position.y } }, { duration: time }
 			        ), 4000 });
 
 			  });

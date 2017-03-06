@@ -4,6 +4,7 @@ angular.module('studionet')
                                'GraphService', 'users', 'profile', 'supernode', 'links', 
                                function($scope, $stateParams, $rootScope, $uibModal, GraphService, users, profile, supernode, links){
 
+  $scope.dockmode = true;
 
   // --------------- socket connection message handling
   socket.on('node_created', function (node) {
@@ -101,7 +102,7 @@ angular.module('studionet')
   $scope.graphInit = function(){  
 
       var graphObject = {
-        threshold : 20, 
+        threshold : 40, 
         onMouseOver: function(evt){
 
                     if(evt.cyTarget.id() =='ghost')
@@ -153,7 +154,7 @@ angular.module('studionet')
                                   $scope.graph.getElementById('ghost-edge').addClass('secondary-link');
 
                                   $( "#cy" ).mousemove(function( event ) {
-                                      $scope.graph.getElementById('ghost').renderedPosition({ x: event.pageX, y: event.pageY });
+                                      $scope.graph.getElementById('ghost').renderedPosition({ x: event.pageX + 15, y: event.pageY + 15 });
                                   });
 
                                   showMessage("Entered linking mode");

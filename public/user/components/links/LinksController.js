@@ -84,6 +84,8 @@ angular.module('studionet')
 
     $rootScope.$on("VIEW_EDGE_MODAL", function(event, args){
 
+        $scope.author = undefined;
+
     	$scope.edge = args.edge.data(); // getNode(args.src, false);
     	$scope.linkNode = {};
 

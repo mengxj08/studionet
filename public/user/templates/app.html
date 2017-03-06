@@ -1,5 +1,5 @@
 <!-- actual graph container -->
-<div class='graph-container' ng-init='graphInit()' ng-show='!me.isGuest'> 
+<div class='graph-container' ng-init='graphInit();' ng-show='!me.isGuest'> 
 
   <!-- Graph -->
   <div id='cy'></div>
@@ -22,6 +22,8 @@
     <i class="graph-nav-control icon fa fa-plus" ng-if='!me.isGuest' data-toggle="modal" data-target="#newNode" data-backdrop="static" data-keyboard="false" uib-tooltip='New Node' tooltip-placement='left'></i> 
     <i class="graph-nav-control icon fa fa-plus" ng-if='me.isGuest' uib-tooltip='New Node (only open to NUS users)' tooltip-placement='left'></i> 
     <i class="graph-nav-control icon fa fa-question" uib-tooltip='Help' tooltip-placement='left' ng-click='showHelp()' ng-hide=true></i> 
+
+    <i class="graph-nav-control icon fa fa-question" uib-tooltip='Dock' tooltip-placement='left' ng-click='dockmode =!dockmode'></i> 
 
   </div>
 
@@ -64,6 +66,10 @@
   
 </div>
 
+<div class='dock'></div>
+
+
+
 <!--- Normal Bootstrap Modals : These modals are faster to load since the same template is being reused again and again -->
 <!-- todo: replace with angular-ui boostrap modals -->
 
@@ -94,6 +100,7 @@
 <ng-include src="'components/boards/users.html'" ng-controller='UserBoardController' ></ng-include>
 <ng-include src="'components/boards/nodes.html'" ng-controller='NodeBoardController' ></ng-include>
 <ng-include src="'components/boards/comments.html'" ng-controller='CommentBoardController' ></ng-include>
+
 
 
 

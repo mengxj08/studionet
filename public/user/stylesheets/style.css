@@ -198,7 +198,7 @@ textarea{
 	height: 100vh;
 
 
-	background-color: #000623;
+	background-color: white;
 }
 
 /* Button Icons */
@@ -293,3 +293,15 @@ tbody{
 	color: #333;
 }
 
+
+.dock{
+	padding: 20px; 
+	margin-left: 50%;
+	height: 100%;
+}
+
+
+.docked{
+  width: 50% !important;
+  float: left;
+}
