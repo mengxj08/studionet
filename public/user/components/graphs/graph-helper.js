@@ -184,7 +184,8 @@ var graph_style = {
             .css({
               //'background-color' : '#5E5E5E',
               'width' : 6, 
-              'height' : 6
+              'height' : 6,
+              'border-width': 0.5
             })
 
           .selector('.marked.highlighted')
