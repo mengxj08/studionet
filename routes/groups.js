@@ -22,10 +22,11 @@ router.route('/')
     
     var query = [
       'MATCH (g:group)',
-      'MATCH (u:user) WHERE ID(u)={userIdParam}',
       'OPTIONAL MATCH (g)<-[:SUBGROUP]-(p:group)',
-      'OPTIONAL MATCH (u)<-[m:MEMBER]-(g)',
-      'RETURN {supernode: g.superNode, id: id(g), restricted: g.restricted, parentId: id(p), createdBy: g.createdBy, name: g.name, requestingUserStatus: m.role, description: g.description}'
+      'WITH g, p',
+      'OPTIONAL MATCH (u:user)<-[m:MEMBER]-(g)',
+      'WITH g, p, collect({id: id(u), role: m.role}) as members',
+      'RETURN {supernode: g.superNode, id: id(g), restricted: g.restricted, parentId: id(p), createdBy: g.createdBy, name: g.name, description: g.description,  members: members}'
     ].join('\n'); 
 
     var params = {
@@ -117,18 +118,6 @@ router.route('/')
       var query = mainQuery.concat(parentQuery, finalQuery).join('\n');
 
       /*
-       *
-       *  For testing and creating synthetic data 
-       *  Remove in production
-       * 
-       */
-      if(auth.ensureSuperAdmin && req.body.author && req.body.createdAt){
-
-        params.userIdParam = parseInt(req.body.author);   // remove in production
-        params.dateCreatedParam = new Date(req.body.createdAt).getTime();
-      }
-
-      /*
        *  Actual creating of group using above query
        */ 
       db.query(query, params, function(error, result){
@@ -140,6 +129,7 @@ router.route('/')
         else {
           // return the first item because query always returns an array but REST API expects a single object
           res.status(200);
+          req.app.get('socket').emit('group_created', result[0]);
           res.send(result[0]);
         }
 

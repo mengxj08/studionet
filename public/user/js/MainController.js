@@ -1,8 +1,8 @@
 angular.module('studionet')
 
 .controller('MainController', ['$scope', '$stateParams', '$rootScope', '$uibModal',
-                               'GraphService', 'users', 'profile', 'supernode', 'links', 
-                               function($scope, $stateParams, $rootScope, $uibModal, GraphService, users, profile, supernode, links){
+                               'GraphService', 'users', 'profile', 'supernode', 'links', 'groups',
+                               function($scope, $stateParams, $rootScope, $uibModal, GraphService, users, profile, supernode, links, groups){
 
   $scope.dockmode = true;
 
@@ -18,9 +18,14 @@ angular.module('studionet')
 
   });
 
+  socket.on('group_created', function (group) {
+    showMessage("A new group was created");
+    groups.groups.push(group);
+  });
+
   socket.on('edge_created', function (edge) {
-      showMessage("A new link was created");
-     GraphService.addNewEdge(edge);
+    showMessage("A new link was created");
+    GraphService.addNewEdge(edge);
   });
 
   socket.on('edge_deleted', function (edge_id) {

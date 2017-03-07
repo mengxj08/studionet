@@ -1,0 +1,108 @@
+<!-- Profile Modal -->
+<div id='groupActivityBoard' class="modal fade" role="dialog" ng-controller='GroupBoardController' >
+  
+    <!-- First pane with group overview -->
+    <div class="modal-dialog" ng-show='!groupDetails'>
+
+        <!-- Modal content-->
+        <div class="modal-content">
+
+            <div class="modal-body">
+
+            	<h3>Group Activity Board</h3>
+            	<h6>Team-mates!</h6>
+
+                <!--  lists -->
+                <div class='modal-section'>
+
+
+                        <form>
+                        <div class="form-group">
+                        <div class="input-group">
+                        <div class="input-group-addon"><i class="fa fa-search"></i></div>
+                        <input type="text" class="form-control" placeholder="Search ..." ng-model="searchGroup">
+                        </div>      
+                        </div>
+                        </form>
+
+
+                        <table class="table table-bordered table-striped">
+
+                        <thead>
+                            <tr>
+                            <td class='col-sm-1'>
+                                #
+                            </td>
+                            <td class='col-sm-3'>
+                              <a href="#" ng-click="sortType = 'name'; sortReverse = !sortReverse">
+                                Name
+                                <span ng-show="sortType == 'name' && !sortReverse" class="fa fa-caret-down"></span>
+                                <span ng-show="sortType == 'name' && sortReverse" class="fa fa-caret-up"></span>
+                              </a>
+                            </td>
+                            <td class='col-sm-1'>
+                              <a href="#" ng-click="sortType = 'members.length'; sortReverse = !sortReverse">
+                                Members
+                                <span ng-show="sortType == 'members.length' && !sortReverse" class="fa fa-caret-down"></span>
+                                <span ng-show="sortType == 'members.length' && sortReverse" class="fa fa-caret-up"></span>
+                              </a>
+                            </td>
+                            <td class='col-sm-1'>
+                              <a href="#" ng-click="sortType = 'avg_level'; sortReverse = !sortReverse">
+                                Avg. Level
+                                <span ng-show="sortType == 'avg_level' && !sortReverse" class="fa fa-caret-down"></span>
+                                <span ng-show="sortType == 'avg_level' && sortReverse" class="fa fa-caret-up"></span>
+                              </a>
+                            </td>
+                            <td class='col-sm-6'>
+                              <a href="#" ng-click="sortType = 'description'; sortReverse = !sortReverse">
+                                Description
+                                <span ng-show="sortType == 'description' && !sortReverse" class="fa fa-caret-down"></span>
+                                <span ng-show="sortType == 'description' && sortReverse" class="fa fa-caret-up"></span>
+                              </a>
+                            </td>
+
+                            </tr>
+                        </thead>
+
+                        <tbody> 
+                            <tr class='pointer' ng-repeat="group in groups | orderBy:sortType:sortReverse | filter:searchGroup as filtered" 
+                                    ng-show='$index < (currentPage)*itemsPerPage && $index >= (currentPage-1)*itemsPerPage'
+                                    ng-click='showGroupDetails(group)' ng-if='!group.supernode'>
+                                <td class='col-sm-1'>{{ $index + 1 }}</td>
+                                <td class='col-sm-3'><time>{{ group.name }}</time></td>
+                                <td class='col-sm-2'><time>{{ group.members.length }}</time></td>
+                                <td class='col-sm-2'><time>{{ group.avg_level }}</time></td>
+                                <td class='col-sm-5'>{{ group.description }}</td>
+                            </tr>
+                        
+                        </tbody>
+
+                        </table>
+
+                        <!-- pagination -->
+                        <ul uib-pagination total-items="filtered.length" ng-model="currentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" force-ellipses="true" items-per-page='itemsPerPage'></ul>
+                </div>
+
+                <!-- buttons -->
+                <div class='row text-right modal-section'>
+                    <button type="button" ng-click='createGroup=true' class="btn btn-default modal-button" uib-tooltip='Add Group' uib-position='top' ng-show="user.isAdmin && createGroup==false"><i class='fa fa-plus'></i></button>
+                    <button type="button" ng-click='close();' class="btn btn-default modal-button" data-dismiss='modal' uib-tooltip='Close' uib-position='top'><i class='fa fa-close'></i></button>
+                </div>
+                  
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- Second pane with group details -->
+    <ng-include src="'components/groups/groupDetails.html'" ng-show='groupDetails'></ng-include>
+
+
+    <!-- comment on contribution -->
+    <ng-include src="'components/groups/new_group.html'" ng-if='createGroup'></ng-include>
+
+</div>
+

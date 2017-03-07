@@ -1,0 +1,91 @@
+
+<!-- Update Modal -->
+<div id='new-group-modal' class="modal-dialog modal-content" ng-controller="NewGroupController">
+  
+  <div class="modal-content">
+
+    <div class="modal-body">
+        
+        <div class='editor'>
+
+            <div class='modal-info'>
+              <h5>New Group</h5>
+            </div>
+
+            <!-- Name -->
+            <div class='modal-section'>
+              <input ng-model='groupData.name' placeholder="Enter group name"></input>
+            </div>
+           
+            <!-- Description -->
+            <div class='modal-section'>
+              <textarea name="description" style='min-height: 40px;' ng-model='groupData.description' maxlength="150"  placeholder="Short description of the group"></textarea>
+              <h6>{{150 - groupData.description.length}} characters left</h6>
+            </div>
+
+            <!-- Members -->
+            <div class='modal-section'>
+
+                    <form>
+                    <div class="form-group">
+                    <div class="input-group">
+                    <div class="input-group-addon"><i class="fa fa-search"></i></div>
+                    <input type="text" class="form-control" placeholder="Search for a user" ng-model="searchUser">
+                    </div>      
+                    </div>
+                    </form>
+
+
+                    <table class="table table-bordered table-striped">
+
+                      <thead>
+                          <tr>
+                            <td class='col-sm-2'>
+                              <a href="#">
+                                #
+                              </a>
+                            </td>
+                            <td class='col-sm-5'>
+                              <a href="#" ng-click="sortType = 'name'; sortReverse = !sortReverse">Name
+                                <span ng-show="sortType == 'name' && !sortReverse" class="fa fa-caret-down"></span>
+                                <span ng-show="sortType == 'name' && sortReverse" class="fa fa-caret-up"></span>
+                              </a>
+                            </td>
+                            <td class='col-sm-5'>
+                              <a href="#" ng-click="sortType = 'member'; sortReverse = !sortReverse">Member
+                                <span ng-show="sortType == 'member' && !sortReverse" class="fa fa-caret-down"></span>
+                                <span ng-show="sortType == 'member' && sortReverse" class="fa fa-caret-up"></span>
+                              </a>
+                            </td>
+                          </tr>
+                      </thead>
+
+                      <tbody>
+                          <tr class='pointer' ng-repeat="user in users | orderBy: [ sortType ]:sortReverse | filter:searchUser as filtered" 
+                                  ng-show='$index < (currentPage)*itemsPerPage && $index >= (currentPage-1)*itemsPerPage'
+                                  ng-click='user.member = !user.member'>
+                              <td class='col-sm-2'>{{ $index + 1 }}</td>
+                              <td class='col-sm-5'>{{ user.nickname ? user.nickname : user.name }}</td>
+                              <td class='col-sm-5'>{{ user.member }}</td>
+                          </tr>
+                      </tbody>
+
+                    </table>
+
+                    <!-- pagination -->
+                    <ul uib-pagination total-items="filtered.length" ng-model="currentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" force-ellipses="true" items-per-page='itemsPerPage'></ul>
+            </div>
+
+            <div class='modal-section text-right'>
+                <button type="button" class="btn btn-default modal-button" ng-click='createGroup()' ng-disabled="(groupData.name.length == 0) || (groupData.description.length == 0)" data-dismiss='modal' uib-tooltip='Create Group' uib-position='top'><i class='fa fa-send'></i></button>
+                <button type="button" class="btn btn-default modal-button" data-dismiss='modal' ng-click='close();' uib-tooltip='Cancel' uib-position='top'><i class='fa fa-trash'></i></button>
+            </div>
+
+        </div>
+    
+    </div>
+
+
+  
+  </div>
+</div>

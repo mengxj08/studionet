@@ -1,0 +1,113 @@
+<div class="modal-dialog" ng-show='groupDetails' ng-controller="GroupDetailsController">
+    <!-- Modal content-->
+    <div class="modal-content">
+
+        <div class="modal-body">
+
+            <h3>Group Details</h3>
+            <h6>Team-mates!</h6>
+
+            <!--  lists -->
+            <div class='modal-section'>
+
+                <h6>{{group.name}}</h6>
+
+                <h4>Time Range</h4>
+                <div class="row">
+                  <div class="col-md-6">
+                    <p class="input-group">
+                      <input type="text" class="form-control" uib-datepicker-popup="{{format}}" ng-model="dt" is-open="popup1.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" alt-input-formats="altInputFormats" />
+                      <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="open1()"><i class="glyphicon glyphicon-calendar"></i></button>
+                      </span>
+                    </p>
+                  </div>
+
+                  <div class="col-md-6">
+                    <p class="input-group">
+                      <input type="text" class="form-control" uib-datepicker-popup ng-model="dt" is-open="popup2.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+                      <span class="input-group-btn">
+                        <button type="button" class="btn btn-default" ng-click="open2()"><i class="glyphicon glyphicon-calendar"></i></button>
+                      </span>
+                    </p>
+                  </div>
+                </div>
+
+<!-- 
+                    <form>
+                    <div class="form-group">
+                    <div class="input-group">
+                    <div class="input-group-addon"><i class="fa fa-search"></i></div>
+                    <input type="text" class="form-control" placeholder="Search ..." ng-model="searchGroup">
+                    </div>      
+                    </div>
+                    </form>
+
+
+                    <table class="table table-bordered table-striped">
+
+                    <thead>
+                        <tr>
+                        <td class='col-sm-1'>
+                            #
+                        </td>
+                        <td class='col-sm-3'>
+                          <a href="#" ng-click="sortType = 'name'; sortReverse = !sortReverse">
+                            Name
+                            <span ng-show="sortType == 'name' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'name' && sortReverse" class="fa fa-caret-up"></span>
+                          </a>
+                        </td>
+                        <td class='col-sm-1'>
+                          <a href="#" ng-click="sortType = 'members.length'; sortReverse = !sortReverse">
+                            Members
+                            <span ng-show="sortType == 'members.length' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'members.length' && sortReverse" class="fa fa-caret-up"></span>
+                          </a>
+                        </td>
+                        <td class='col-sm-1'>
+                          <a href="#" ng-click="sortType = 'avg_level'; sortReverse = !sortReverse">
+                            Avg. Level
+                            <span ng-show="sortType == 'avg_level' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'avg_level' && sortReverse" class="fa fa-caret-up"></span>
+                          </a>
+                        </td>
+                        <td class='col-sm-6'>
+                          <a href="#" ng-click="sortType = 'description'; sortReverse = !sortReverse">
+                            Description
+                            <span ng-show="sortType == 'description' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'description' && sortReverse" class="fa fa-caret-up"></span>
+                          </a>
+                        </td>
+
+                        </tr>
+                    </thead>
+
+                    <tbody> 
+                        <tr class='pointer' ng-repeat="group in groups | orderBy:sortType:sortReverse | filter:searchGroup as filtered" 
+                                ng-show='$index < (currentPage)*itemsPerPage && $index >= (currentPage-1)*itemsPerPage'
+                                ng-click='showGroupDetails(group.id)' ng-if='!group.supernode'>
+                            <td class='col-sm-1'>{{ $index + 1 }}</td>
+                            <td class='col-sm-3'><time>{{ group.name }}</time></td>
+                            <td class='col-sm-2'><time>{{ group.members.length }}</time></td>
+                            <td class='col-sm-2'><time>{{ group.avg_level }}</time></td>
+                            <td class='col-sm-5'>{{ group.description }}</td>
+                        </tr>
+                    
+                    </tbody>
+
+                    </table>
+ -->
+                    <!-- pagination -->
+                    <!-- <ul uib-pagination total-items="filtered.length" ng-model="currentPage" max-size="maxSize" class="pagination-sm" boundary-links="true" force-ellipses="true" items-per-page='itemsPerPage'></ul> -->
+            </div>
+
+            <!-- buttons -->
+            <div class='row text-right modal-section'>
+                <button type="button" class="btn btn-default modal-button" ng-click='back()' uib-tooltip='Back' uib-position='top'><i class='fa fa-reply'></i></button>
+            </div>
+
+        </div>
+
+    </div>
+</div>

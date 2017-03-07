@@ -28,6 +28,7 @@ router.get('/', auth.ensureAuthenticated, function(req, res){
     'WITH groups, collect({id: id(c1), title: c1.title, createdOn: b.createdOn}) as bookmarks, tags, contributions, u',
     'RETURN {\
               nusOpenId: u.nusOpenId,\
+              isAdmin: u.isAdmin, \
               canEdit: u.canEdit,\
               name: u.name,\
               nickname: u.nickname,\

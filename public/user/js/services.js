@@ -141,7 +141,8 @@ angular.module('studionet')
 
 
 	//----------------  Groups List
-	.factory('groups', ['$http', function($http){
+	.factory('groups', ['$http', 'supernode', 'profile', function($http, supernode, profile){
+		
 		var o = {
 			groups: [],
 		};
@@ -152,7 +153,32 @@ angular.module('studionet')
 			});
 		};
 
+		o.createGroup = function(groupData){
+			
+			var params = {
+			      name: groupData.name,
+			      description: groupData.description,
+			      restricted: false,
+			      groupParentId: supernode.group
+			};
+
+			return $http.post('/api/groups', params).success(function(data){
+
+				return $http.post('/api/groups/' + data.id + '/users', {users: groupData.users}).success(function(data){
+
+				}).error(function(err){
+					console.log(err);
+				});
+
+				
+			}).error(function(err) {
+				console.log(err);
+			});;
+
+		};
+
 		return o;
+
 	}])
 
 
@@ -326,3 +352,4 @@ angular.module('studionet')
 
 		return o;
 	}])
+

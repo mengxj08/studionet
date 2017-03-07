@@ -6,10 +6,6 @@ angular.module('studionet')
 		$scope.sortReverse  = true;  // set the default sort order
 		$scope.searchUser   = '';     // set the default search/filter term
 
-		/*$scope.users = users.users.filter(function(u){
-				return !u.isAdmin;
-		});*/
-
 		$scope.users = users.users;
 
 		var topViews = 0, topRating = 0, topCreations = 0, topViewer, topRater, topCreator;
