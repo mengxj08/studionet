@@ -1,6 +1,6 @@
 angular.module('studionet')
 
-.controller('GroupDetailsController', ['$scope',  '$filter', 'groups', 'profile', 'users', function($scope, $filter, groups, profile, users){
+.controller('GroupDetailsController', ['$scope',  '$filter', 'groups', 'profile', 'users', '$rootScope', function($scope, $filter, groups, profile, users, $rootScope){
 
 	$scope.me = profile.user;
 
@@ -10,6 +10,11 @@ angular.module('studionet')
 	$scope.sortType     = 'total'; // set the default sort type
 	$scope.sortReverse  = true;  // set the default sort order
 	$scope.searchUser   = '';     // set the default search/filter term
+
+	$scope.goToProfile = function(user_id){
+		$('#profileModal').modal({backdrop: 'static', keyboard: false});
+		$rootScope.$broadcast( "PROFILE_MODE",  {id: user_id});
+	}
 
 	// todo - not sure if bad practice - using jquery with angular
 	$scope.init = function() {
@@ -35,7 +40,8 @@ angular.module('studionet')
 	           'Last 7 Days': [moment().subtract(6, 'days'), moment()],
 	           'Last 30 Days': [moment().subtract(29, 'days'), moment()],
 	           'This Month': [moment().startOf('month'), moment().endOf('month')],
-	           'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+	           'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+	           'All': [moment().subtract(150, 'days'), moment()]
 	        },
 	    }, cb);
 
@@ -162,7 +168,7 @@ angular.module('studionet')
 
 			u.name = $scope.users[u.id].nickname ? $scope.users[u.id].nickname : $scope.users[u.id].name; 
 			u.lastLoggedIn = $scope.users[u.id].lastLoggedIn;
-			u.total = arr[0] + arr[1] + arr[2];
+			u.total = arr[0]*0.01 + arr[1]*0.1 + arr[2]*0.5;
 			u.created = arr[2];
 			u.rated = arr[1];
 			u.viewed = arr[0];
@@ -181,6 +187,13 @@ angular.module('studionet')
 	$scope.$on('group_details', function(event, args){
 
 		$scope.group = args.group;
+
+		$scope.group.members = $scope.group.members.filter(function(m){
+			if(m.role=="Admin")
+				return false;
+			else 
+				return true;
+		});
 	
 		// get user activity for the group
 		groups.getGroupActivity($scope.group.id).success(function(data){

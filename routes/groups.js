@@ -147,7 +147,7 @@ router.route('/:groupId')
    
     var query = [
       'MATCH (g:group) WHERE ID(g)={groupIdParam}',
-      'OPTIONAL MATCH (g)-[:MEMBER]->(u:user)-[r:CREATED|:RATED|:VIEWED]->(n:contribution)',
+      'OPTIONAL MATCH (g)-[:MEMBER]->(u:user)-[r:CREATED|:RATED|:VIEWED]->(n:contribution {contentType:"text"})',
       'RETURN',
       'CASE type(r)',
       'WHEN "VIEWED"',

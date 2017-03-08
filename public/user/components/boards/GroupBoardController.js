@@ -2,15 +2,19 @@ angular.module('studionet')
 
 .controller('GroupBoardController', ['$scope',  '$filter', 'groups', 'profile', 'users', function($scope, $filter, groups, profile, users){
 
-	$scope.sortType     = 'members.length'; // set the default sort type
+	$scope.sortType     = 'avg_level'; // set the default sort type
 	$scope.sortReverse  = true;  // set the default sort order
 	$scope.searchGroup   = '';     // set the default search/filter term
 
-	$scope.groups = groups.groups;
 
 	$scope.user = profile.user;
 
 	$scope.createGroup = false;
+
+	$scope.groups = groups.groups.filter(function(g){
+		return !g.supernode;			
+	});
+	
 
 	var computeGroupRanks = function(){
 
@@ -35,7 +39,10 @@ angular.module('studionet')
 	// Observe the Graph Service for Changes and register observer
 	var updateBoard = function(){
 		$scope.groups = []; 
-		$scope.groups = groups.groups;
+		$scope.groups = groups.groups.filter(function(g){
+			return !g.supernode;			
+		});
+
 		computeGroupRanks();
 	};
 

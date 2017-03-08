@@ -22,7 +22,7 @@ router.route('/')
       'MATCH (u:user)',
       'RETURN { id: id(u), nickname: u.nickname, name: u.name, avatar: u.avatar, isAdmin: u.isAdmin,\
                 lastLoggedIn: u.lastLoggedIn, \
-                activityArr: [ SIZE((u)-[:VIEWED]->(:contribution)), SIZE((u)-[:RATED]->(:contribution)), SIZE((u)-[:CREATED]->(:contribution)) ],  \
+                activityArr: [ SIZE((u)-[:VIEWED]->(:contribution)), SIZE((u)-[:RATED]->(:contribution)), SIZE((u)-[:CREATED]->(:contribution {contentType: "text"})), SIZE((u)-[:CREATED]->(:contribution {contentType: "comment"})), SIZE((u)-[:CREATED]->(:link)) ],  \
                 level: SIZE((u)-[:VIEWED]->(:contribution))*' + weights[0] + ' +  SIZE((u)-[:RATED]->(:contribution))*' + weights[1] + ' + SIZE((u)-[:CREATED]->(:contribution))* ' + weights[2] + '}'
     ].join('\n');
 

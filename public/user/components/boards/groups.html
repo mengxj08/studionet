@@ -68,10 +68,10 @@
                         <tbody> 
                             <tr class='pointer' ng-repeat="group in groups | orderBy:sortType:sortReverse | filter:searchGroup as filtered" 
                                     ng-show='$index < (currentPage)*itemsPerPage && $index >= (currentPage-1)*itemsPerPage'
-                                    ng-click='showGroupDetails(group)' ng-if='!group.supernode'>
+                                    ng-click='showGroupDetails(group)'>
                                 <td class='col-sm-1'>{{ $index + 1 }}</td>
                                 <td class='col-sm-3'><time>{{ group.name }}</time></td>
-                                <td class='col-sm-2'><time>{{ group.members.length }}</time></td>
+                                <td class='col-sm-2'><time>{{ group.members.length - 1 }}</time></td>
                                 <td class='col-sm-2'><time>{{ group.avg_level }}</time></td>
                                 <td class='col-sm-5'>{{ group.description }}</td>
                             </tr>
