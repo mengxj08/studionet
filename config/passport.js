@@ -26,7 +26,7 @@ module.exports = function(passport){
   passport.serializeUser(function(user, done) {
 
     // serialize with user's openid which should be unique.
-    if(user.isGuest)
+    if(user.google !== undefined)
       done(null, user);  // for google logins
     else
       done(null, user.nusOpenId);     // for openId logins
@@ -35,8 +35,32 @@ module.exports = function(passport){
 
   passport.deserializeUser(function(nusOpenId, done) {
 
-    if(nusOpenId.google != undefined)
-        done(null, nusOpenId );
+    if(nusOpenId.google != undefined){
+        
+        // cypher query to find user node by openid
+        var query = [
+          'MATCH (u:user {email: {emailIdParam}})',
+          'RETURN u'
+        ].join('\n');
+
+        var params = {
+          emailIdParam: nusOpenId.google.email
+        };
+
+        db.query(query, params, function(err, res){
+            // queries return an array, so return the first object in the array
+            if(res.length > 0){
+              nusOpenId.authenticated = true;
+              done(null, nusOpenId);
+            }
+            else{
+              nusOpenId.authenticated = false;
+              done(null, nusOpenId);
+            }
+              
+        });   
+
+    }
     else{
 
         // cypher query to find user node by openid
@@ -187,9 +211,9 @@ module.exports = function(passport){
           newUser.google.token = token;
           newUser.google.name  = profile.displayName;
           newUser.google.email = profile.emails[0].value; // pull the first email
-          newUser.isGuest  = true;
           newUser.nusOpenId = "GUEST-" + newUser.google.email; 
-          newUser.id = newUser.google.id; 
+          newUser.isGuest = true;
+          newUser.id = -1; 
           return done(null, newUser);
       });
 

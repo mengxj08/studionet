@@ -1,5 +1,5 @@
 <!-- actual graph container -->
-<div class='graph-container' ng-init='graphInit();' ng-show='!me.isGuest'> 
+<div class='graph-container' ng-init='graphInit();' ng-show='!me.isGuest || (me.isGuest && me.authenticated)'> 
 
   <!-- Graph -->
   <div id='cy'></div>

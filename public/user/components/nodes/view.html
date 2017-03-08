@@ -101,8 +101,11 @@
 
                   <span ng-hide='commentMode || replyMode || updateMode || editing'>
                       <button type="button" ng-click="setData(contribution.ref);" class="btn btn-default modal-button" ng-show='contribution.type=="comment"' uib-tooltip='Back to node' uib-position='top'><i class='fa fa-mail-reply'></i></button>
-                      <button type="button" ng-click="showCommentModal(contribution.id)" class="btn btn-default modal-button" ng-disabled="user.isGuest" ng-show='contribution.type!="comment"' uib-tooltip='Add Comment' uib-position='top'><i class='fa fa-comments'></i></button>
-                      <button type="button" ng-click="showReplyModal(contribution.id)" class="btn btn-default modal-button" ng-disabled="user.isGuest" ng-show='contribution.type!="comment"' uib-tooltip='Add Node' uib-position='top'><i class='fa fa-plus'></i></button>
+                      <button type="button" ng-click="showCommentModal(contribution.id)" class="btn btn-default modal-button" ng-if="!user.isGuest" ng-show='contribution.type!="comment"' uib-tooltip='Add Comment' uib-position='top'><i class='fa fa-comments'></i></button>
+                      <button type="button" ng-click="showReplyModal(contribution.id)" class="btn btn-default modal-button" ng-if="!user.isGuest" ng-show='contribution.type!="comment"' uib-tooltip='Add Node' uib-position='top'><i class='fa fa-plus'></i></button>
+
+                      <button type="button" class="btn btn-default modal-button" ng-show='contribution.type!="comment" && user.isGuest' uib-tooltip='Add Comment - Only open to NUS' uib-position='top'><i class='fa fa-comments'></i></button>
+                      <button type="button" class="btn btn-default modal-button" ng-show='contribution.type!="comment" && user.isGuest' uib-tooltip='Add Node - Only open to NUS' uib-position='top'><i class='fa fa-plus'></i></button>
                       
                       <!-- if author -->
                       <button type="button" ng-click="showUpdateModal(contribution.id)" class="btn btn-default modal-button" ng-if="(user.id == contribution.createdBy)" ng-disabled="user.isGuest" uib-tooltip='Edit' uib-position='top'><i class='fa fa-pencil'></i></button>

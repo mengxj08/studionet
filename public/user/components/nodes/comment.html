@@ -13,7 +13,7 @@
             </div>
 
             <div class='row text-right modal-section'>
-                <button type="button" class="btn btn-default modal-button" ng-click="postComment(comment);" class="btn btn-default modal-button" uib-tooltip='Submit' uib-position='top'><i class='fa fa-send'></i></button>
+                <button type="button"  ng-if='!me.isGuest' class="btn btn-default modal-button" ng-click="postComment(comment);" class="btn btn-default modal-button" uib-tooltip='Submit' uib-position='top'><i class='fa fa-send'></i></button>
                 <button type="button" class="btn btn-default modal-button" ng-click='cancel()' uib-tooltip='Cancel' uib-position='top'><i class='fa fa-trash'></i></button>
             </div>
 

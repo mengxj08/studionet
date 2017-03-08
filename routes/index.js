@@ -72,7 +72,7 @@ router.get('/guest', auth.ensureAuthenticated, function(req, res, next){
 //   provider will redirect the user back to this application at
 //   /auth/openid/return
 router.post('/auth/openid', 
-  passport.authenticate('openid', { failureRedirect: '/' }),
+  passport.authenticate('openid', { failureRedirect: '/guest' }),
   function(req, res) {
     res.redirect('/');
   });
@@ -83,7 +83,7 @@ router.post('/auth/openid',
 //   login page.  Otherwise, the primary route function function will be called,
 //   which, in this example, will redirect the user to the home page.
 router.get('/auth/openid/return', 
-  passport.authenticate('openid', { failureRedirect: '/' }),
+  passport.authenticate('openid', { failureRedirect: '/guest' }),
   function(req, res) {
     // res.redirect('/');
     //if (req.user.superAdmin)
