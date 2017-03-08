@@ -1,6 +1,6 @@
 angular.module('studionet')
 
-.controller('NewGroupController', ['$scope', 'supernode', 'GraphService', 'users', 'groups', function($scope, supernode, GraphService, users, groups){
+.controller('NewGroupController', ['$scope', 'supernode', 'GraphService', 'users', 'groups', 'profile', function($scope, supernode, GraphService, users, groups, profile){
 
       // for the new contribution
 
@@ -9,6 +9,8 @@ angular.module('studionet')
       };
 
       refresh();
+
+      $scope.me = profile.user;
 
 
       //  This close function doesn't need to use jQuery or bootstrap, because

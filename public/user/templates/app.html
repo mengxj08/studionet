@@ -14,16 +14,16 @@
     <br>
 
     <!-- Leaderboards & Graph Controls -->
-    <i class="graph-nav-control icon fa fa-user-secret" data-toggle="modal" data-target="#userActivityBoard" data-backdrop="static" data-keyboard="false" uib-tooltip='User Activity' tooltip-placement='left'></i>
+    <i class="graph-nav-control icon fa fa-user" data-toggle="modal" data-target="#userActivityBoard" data-backdrop="static" data-keyboard="false" uib-tooltip='User Activity' tooltip-placement='left'></i>
+    <i class="graph-nav-control icon fa fa-group" data-toggle="modal" data-target="#groupActivityBoard" data-backdrop="static" data-keyboard="false"  uib-tooltip='Group Activity' tooltip-placement='left'></i>
     <i class="graph-nav-control icon fa fa-star" data-toggle="modal" data-target="#contributionsActivityBoard" data-backdrop="static" data-keyboard="false"  uib-tooltip='Node Activity' tooltip-placement='left'></i>
     <i class="graph-nav-control icon fa fa-comment" data-toggle="modal" data-target="#commentActivityBoard" data-backdrop="static" data-keyboard="false"  uib-tooltip='Comment Activity' tooltip-placement='left'></i>
-    <i class="graph-nav-control icon fa fa-group" data-toggle="modal" data-target="#groupActivityBoard" data-backdrop="static" data-keyboard="false"  uib-tooltip='Group Activity' tooltip-placement='left'></i>
-    <i class="graph-nav-control icon fa fa-arrows-alt" ng-click='resetGraph(); zoomLevel=100.00' uib-tooltip='Fit Graph' tooltip-placement='left'></i>
     <i class="graph-nav-control icon fa fa-filter" data-toggle="modal" data-target="#filterModal" data-backdrop="static" data-keyboard="false" uib-tooltip='Filter Nodes' tooltip-placement='left'></i>
     <i class="graph-nav-control icon fa fa-plus" ng-if='!me.isGuest' data-toggle="modal" data-target="#newNode" data-backdrop="static" data-keyboard="false" uib-tooltip='New Node' tooltip-placement='left'></i> 
+    <i class="graph-nav-control icon fa fa-arrows-alt" ng-click='resetGraph(); zoomLevel=100.00' uib-tooltip='Fit Graph' tooltip-placement='left'></i>
+    
     <i class="graph-nav-control icon fa fa-plus" ng-if='me.isGuest' uib-tooltip='New Node (only open to NUS users)' tooltip-placement='left'></i> 
     <i class="graph-nav-control icon fa fa-question" uib-tooltip='Help' tooltip-placement='left' ng-click='showHelp()' ng-hide=true></i> 
-
     <i class="graph-nav-control icon fa fa-question" uib-tooltip='Dock' tooltip-placement='left' ng-hide=true></i> 
 
   </div>

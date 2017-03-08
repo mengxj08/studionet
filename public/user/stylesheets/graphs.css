@@ -112,19 +112,3 @@ h6.clear-filter-shortcut:after{
       padding: 7.5px !important;
     }
 }
-
-
-
-/*.filter-heading-button{
-  background-color: transparent;
-  color: #274F7F;
-  border-bottom: 1px solid;
-  padding: 8px 0px;
-  cursor: pointer;
-}
-
-.filter-heading-button:after{
-  margin-left: 10px;
-  content: "\f14c";
-  font-family: FontAwesome;
-}*/

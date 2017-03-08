@@ -19,8 +19,8 @@ angular.module('studionet')
         if(user_id == undefined)
             return;          
 
-        console.log(usersHash[user_id]);
-        console.log(usersHash);
+        //console.log(usersHash[user_id]);
+        //console.log(usersHash);
 
         return usersHash[user_id].nickname ? usersHash[user_id].nickname : usersHash[user_id].name
     }

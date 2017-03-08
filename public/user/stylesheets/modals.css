@@ -177,7 +177,7 @@
 
 #avg_rating{
   //border-color: #343333;
-  padding: 0px 0px 0px 2px;
+  padding: 0px 0px 0px 1px;
   color: goldenrod;
   border: 1px solid goldenrod; //#BAB2B2;
   border-radius: 2px;
@@ -374,6 +374,7 @@ tags-input .tags{
   height: 30px !important;
   line-height: 30px;
   border-radius: 0px !important;
+  margin-left: 3px;
 }
 
 

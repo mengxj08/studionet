@@ -50,7 +50,7 @@ router.route('/')
 			+ ' dateCreated: {dateCreatedParam}, edited: {editedParam}, contentType: {contentTypeParam},'
 			+ ' rating: {ratingParam}, totalRating: {totalRatingParam}, rateCount: {rateCountParam}, tags: {tagsParam}, views: {viewsParam}}) WITH c',
 			'MATCH (u:user) WHERE id(u)={createdByParam}',
-			'CREATE (u)-[r:CREATED]->(c) WITH c',
+			'CREATE (u)-[r:CREATED { dateCreated: {dateCreatedParam} }]->(c) WITH c',
 			'MATCH (c1:contribution) where id(c1)={contributionRefParam}',
 			'CREATE (c)-[r1:' + (req.body.refType || "RELATED_TO") +']->(c1) WITH c',
 			'UNWIND {tagsParam} as tagName '

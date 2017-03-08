@@ -187,7 +187,5 @@ router.route('/:userId')
     })
   });
 
-// route: /api/users/activity
-
 
 module.exports = router;

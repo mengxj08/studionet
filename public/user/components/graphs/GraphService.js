@@ -403,6 +403,8 @@ angular.module('studionet')
 		
 		repositionNodes(node);
 		tags.getAll();
+
+		notifyObservers();
 	}
 
 	o.addNewEdge = function(edge){
@@ -429,12 +431,15 @@ angular.module('studionet')
 		
 			node.data( 'db_data',  true );
 			//console.log("Fetched data", id);
+			//
 			
 			// refresh tags
 			tags.getAll();
 			
 			// refresh profile
 			profile.getUser();		
+			
+			notifyObservers();
 		});
 
 	}
@@ -459,6 +464,8 @@ angular.module('studionet')
 
 		// refresh tags
 		tags.getAll();
+
+		notifyObservers();
 	};
 
 	o.removeEdge = function(edge_id){

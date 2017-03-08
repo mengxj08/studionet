@@ -15,6 +15,10 @@ angular.module('studionet')
 
 	$scope.graph = {};
 
+	groups.registerObserverCallback(function(){
+		$scope.groups = groups.groups;
+	});
+
 	/*
 	 * Graph Creation and Interactions
 	 */

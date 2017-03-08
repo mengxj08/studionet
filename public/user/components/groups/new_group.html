@@ -63,7 +63,7 @@
                       <tbody>
                           <tr class='pointer' ng-repeat="user in users | orderBy: [ sortType ]:sortReverse | filter:searchUser as filtered" 
                                   ng-show='$index < (currentPage)*itemsPerPage && $index >= (currentPage-1)*itemsPerPage'
-                                  ng-click='user.member = !user.member'>
+                                  ng-click='user.member = !user.member' ng-if='user.id != me.id'>
                               <td class='col-sm-2'>{{ $index + 1 }}</td>
                               <td class='col-sm-5'>{{ user.nickname ? user.nickname : user.name }}</td>
                               <td class='col-sm-5'>{{ user.member }}</td>

@@ -140,7 +140,7 @@ var graph_style = {
               'text-wrap': 'wrap',
               'text-max-width': '100px',
               'font-family': 'Roboto, sans serif',
-              'min-zoomed-font-size': computeFontFn,
+              //'min-zoomed-font-size': computeFontFn,
               'margin': '300px',
               'source-arrow-shape': 'triangle',
               'border-width': 1,
@@ -170,14 +170,12 @@ var graph_style = {
             .css({
               'background-color' : 'yellow',// '#A3BC05',//'#AFAFAF',
               'border-color': '#A3BC05',
-              'label': 'data(title)'
             })
 
           .selector('.permanent-selected')
             .css({
               'background-color' : 'yellow',// '#A3BC05',//'#AFAFAF',
               'border-color': '#A3BC05',
-              'label': 'data(title)'
             })
 
           .selector('node.read')
@@ -220,7 +218,6 @@ var graph_style = {
               //'background-color' : '#5E5E5E',
               'width' : '12', 
               'height' : '12',
-              'label': 'data(title)'
             })
 
           .selector('node.glow.faded')

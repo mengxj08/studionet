@@ -129,7 +129,6 @@ router.route('/')
         else {
           // return the first item because query always returns an array but REST API expects a single object
           res.status(200);
-          req.app.get('socket').emit('group_created', result[0]);
           res.send(result[0]);
         }
 
@@ -145,15 +144,19 @@ router.route('/:groupId')
 
   // returns a particular group
   .get(auth.ensureAuthenticated, function(req, res){
-
+   
     var query = [
-      'MATCH (g:group) WHERE ID(g) = {groupIdParam}',
-      'OPTIONAL MATCH (u:user)<-[r:MEMBER]-(g)',
-      'WITH count(u) as numUsers, collect({id: id(u), role: r.role, name: u.name}) as users, g',
-      'OPTIONAL MATCH (g:group)<-[:SUBGROUP]-(g1)',
-      'WITH numUsers, g, id(g1) as parentId, users',
-      'RETURN {name: g.name, id: id(g), description: g.description, restricted: g.restricted, createdBy: g.createdBy, users: users, numUsers: numUsers, parentId: parentId}'
+      'MATCH (g:group) WHERE ID(g)={groupIdParam}',
+      'OPTIONAL MATCH (g)-[:MEMBER]->(u:user)-[r:CREATED|:RATED|:VIEWED]->(n:contribution)',
+      'RETURN',
+      'CASE type(r)',
+      'WHEN "VIEWED"',
+      'THEN {user: ID(u), type:"VIEWED", time: r.lastViewed}',
+      'WHEN "RATED"',
+      'THEN {user: ID(u), type:"RATED", time: r.lastRated}',
+      'ELSE {user: ID(u), type:"CREATED", time: n.dateCreated} END AS activity'
     ].join('\n');
+
 
     var params = {
       groupIdParam : parseInt(req.params.groupId)
@@ -162,9 +165,9 @@ router.route('/:groupId')
     db.query(query, params, function(error, result){
 
       if (error)
-        console.log('Error retreiving group ' + req.params.groupId + ':', error);
+        console.log('Error retrieving group ' + req.params.groupId + ':', error);
       else
-        res.send(result[0]);
+        res.send(result);
 
     });
 

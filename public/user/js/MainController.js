@@ -19,7 +19,7 @@ angular.module('studionet')
   });
 
   socket.on('group_created', function (group) {
-    showMessage("A new group was created");
+    showMessage("A new group was created", group);
     groups.groups.push(group);
   });
 
@@ -131,7 +131,7 @@ angular.module('studionet')
 
                           if(node.isNode && node.isNode() && node.id() != 'ghost'){
 
-                              node.ungrabify(); 
+                              //node.ungrabify(); 
 
                               if($scope.linkMode != undefined){
                                   if( node.id() != $scope.linkMode.id() ){
@@ -148,18 +148,18 @@ angular.module('studionet')
                                   
                                   $scope.linkMode = node;
 
-                                  node.ungrabify(); 
+                                  //node.ungrabify(); 
                                   
-                                  $scope.graph.add({group: "nodes",    data: {'id': 'ghost'},   position: { x: window.innerWidth/2, y : window.innerHeight/2 }});
+                                  $scope.graph.add({group: "nodes",    data: {'id': 'ghost'},   position: { x: window.innerWidth/2,  y : window.innerHeight/2 }});
                                   $scope.graph.add({group: "edges",    data: { id: 'ghost-edge', source: node.id(), target: 'ghost'  } });
 
 
 
-                                  $scope.graph.getElementById('ghost').css({ 'border-style': 'dashed', 'z-index' : 1, 'width': 15, 'height':15, 'shape': 'ellipse' })
+                                  $scope.graph.getElementById('ghost').css({ 'border-style': 'dashed', 'z-index' : 0, 'width': 1, 'height':1, 'shape': 'ellipse' })
                                   $scope.graph.getElementById('ghost-edge').addClass('secondary-link');
 
                                   $( "#cy" ).mousemove(function( event ) {
-                                      $scope.graph.getElementById('ghost').renderedPosition({ x: event.pageX + 15, y: event.pageY + 15 });
+                                      $scope.graph.getElementById('ghost').renderedPosition({ x: event.pageX+10, y: event.pageY+10 });
                                   });
 
                                   showMessage("Entered linking mode");
@@ -173,7 +173,7 @@ angular.module('studionet')
                               $scope.linkMode = undefined; 
                               $scope.graph.remove('#ghost');
 
-                              $('#cy').unbind('mousemove')
+                              $('#cy').unbind('mousemove');
 
                               showMessage("Escaped linking mode");   
                             }

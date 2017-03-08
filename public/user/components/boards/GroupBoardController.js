@@ -2,7 +2,7 @@ angular.module('studionet')
 
 .controller('GroupBoardController', ['$scope',  '$filter', 'groups', 'profile', 'users', function($scope, $filter, groups, profile, users){
 
-	$scope.sortType     = 'avg_level'; // set the default sort type
+	$scope.sortType     = 'members.length'; // set the default sort type
 	$scope.sortReverse  = true;  // set the default sort order
 	$scope.searchGroup   = '';     // set the default search/filter term
 
@@ -54,8 +54,10 @@ angular.module('studionet')
 	}
 
 
+
+
 	//----- Pagination
-	$scope.itemsPerPage = 5;
+	$scope.itemsPerPage = 15;
 	$scope.maxSize = 5; 
 	$scope.currentPage = 1; 
 

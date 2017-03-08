@@ -1,4 +1,4 @@
-var app = angular.module('studionet', ['ngAnimate', 'ngSanitize','ui.router','ui.bootstrap', 
+var app = angular.module('studionet', ['ngAnimate', 'ngSanitize','ui.router','ui.bootstrap', 'nvd3',
 										'ngTagsInput', 'ngFileUpload', 'angularModalService', 'multiselect-searchtree', 
 										'angular-ranger','textAngular', 'angularMoment']);
 

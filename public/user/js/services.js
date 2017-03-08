@@ -147,9 +147,31 @@ angular.module('studionet')
 			groups: [],
 		};
 
+		// --------- Observers
+		var observerCallbacks = [];
+
+		// register an observer
+		o.registerObserverCallback = function(callback){
+		   observerCallbacks.push(callback);
+		};
+
+		// call this when you know graph has been changed
+		var notifyObservers = function(){
+			angular.forEach(observerCallbacks, function(callback){
+		    	 callback();
+		    });
+		};
+
 		o.getAll = function(){
 			return $http.get('/api/groups').success(function(data){
 				angular.copy(data, o.groups);
+				notifyObservers();
+			});
+		};
+
+		o.getGroupActivity = function(group_id){
+			return $http.get('/api/groups/' + group_id ).success(function(data){
+				return data;
 			});
 		};
 
@@ -166,6 +188,9 @@ angular.module('studionet')
 
 				return $http.post('/api/groups/' + data.id + '/users', {users: groupData.users}).success(function(data){
 
+					// todo : fix this to a socket connection
+					o.getAll();
+
 				}).error(function(err){
 					console.log(err);
 				});
@@ -176,6 +201,21 @@ angular.module('studionet')
 			});;
 
 		};
+
+		o.deleteGroup = function(group_id){
+
+			return $http.delete('/api/groups/' + group_id)
+				.success(function(res) {
+					console.log(res);
+					o.getAll();
+					return;  
+			    })
+			    .error(function(error){
+			    	//alert(error);
+					throw error;
+			    })
+		
+		}
 
 		return o;
 
