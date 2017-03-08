@@ -18,6 +18,9 @@ angular.module('studionet')
 				
 			var group = $scope.groups[i];
 
+			if(group.supernode)
+				continue;
+
 			var sum = 0;
 			for( var j=0; j < group.members.length; j++ ){
 				sum += users.usersHash[group.members[j].id].level;
