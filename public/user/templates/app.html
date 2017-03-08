@@ -9,7 +9,7 @@
 
     <!-- Profile -->
     <img class="graph-nav-control icon" ng-if='!me.isGuest' src={{me.avatar}} uib-tooltip='{{me.nickname ? me.nickname : me.name}}' tooltip-placement='left' ng-click='showProfile()'></i>
-    <img class="graph-nav-control icon" ng-if='me.isGuest' src="../assets/images/avatar.png" uib-tooltip='Guest' tooltip-placement='left'></i>
+    <a href='/guest'><img class="graph-nav-control icon" ng-if='me.isGuest' src="../assets/images/avatar.png" uib-tooltip='Guest' tooltip-placement='left'></i></a>
 
     <br>
 
