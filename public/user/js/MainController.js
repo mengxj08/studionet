@@ -72,13 +72,7 @@ angular.module('studionet')
   $scope.me = profile.user;
 
   $scope.showHelp = function(){
-    var modalInstance = $uibModal.open({
-      animation: true,
-      templateUrl: 'templates/help.tpl.html',
-      backdrop: 'static',
-      controller: 'HelpController',
-      controllerAs: '$ctrl'
-    });
+    showDetailsModal( GraphService.graph.getElementById("560") ); // fix later
   }
 
 
