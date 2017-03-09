@@ -75,6 +75,11 @@ angular.module('studionet')
     showDetailsModal( GraphService.graph.getElementById("560") ); // fix later
   }
 
+  $scope.switchLayout = function(){
+    var opt = ($scope.layout ? undefined : 1) ;
+    GraphService.draw_graph(null, opt);
+    $scope.layout = !$scope.layout;
+  }
 
   // ---- Displays message in the message-container
   // todo: remove message id reference

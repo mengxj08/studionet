@@ -1,7 +1,46 @@
 onmessage = function(e) {
 
   var parameters = e.data;
-  draw_graph(JSON.parse(parameters[0]), parameters[1], parameters[2], parameters[3], parameters[4]);
+  if(parameters[5] == undefined)
+    draw_graph(JSON.parse(parameters[0]), parameters[1], parameters[2], parameters[3], parameters[4]);
+  else
+    draw_linear(JSON.parse(parameters[0]), parameters[1], parameters[2], parameters[3], parameters[4]);
+
+}
+
+var draw_linear = function(graph, threshold, supernodeId, max_width, max_height){
+
+  var sortFn = function (ele1, ele2) {
+    return ( ele1.dateCreated < ele2.dateCreated ? -1 : 1)
+  }
+
+  // Sort the nodes first
+  var sortedNodes = graph.nodes.sort( sortFn );
+
+  var init = sortedNodes[0].dateCreated;
+
+  var dateMap = [];
+  sortedNodes.map(function(node, index){
+
+    var x = Math.round( ( (node.dateCreated - init) / 86400 ) / 1000 ); 
+    var y = node.dateCreated % 86400000 ;
+
+    console.log(x, y);
+
+    var size =  10 + (node.incomers.length + node.successors/5 + node.predecessors.length/2);
+
+    if(dateMap[x] !== undefined){
+      dateMap[x]+=size;
+    }
+    else
+      dateMap[x] = size;
+
+    node.position = { x: x*30 , y: dateMap[x] }; 
+    node.radius = size;
+    
+  })
+
+  postMessage(JSON.stringify(graph));
 
 }
 

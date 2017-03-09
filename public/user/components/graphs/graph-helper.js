@@ -152,8 +152,10 @@ var graph_style = {
           .selector('edge')
             .css({
               'curve-style': 'haystack',
+              'control-point-step-size': 10,
               'line-color': edgeColorFn, //'#923F31',
-              'width': 0.3
+              'width': 0,
+              'opacity': 0.5
             })     
 
           .selector('edge.secondary-link')
@@ -166,11 +168,7 @@ var graph_style = {
               'width': 0.3
             }) 
 
-          .selector('.selected')
-            .css({
-              'background-color' : 'yellow',// '#A3BC05',//'#AFAFAF',
-              'border-color': '#A3BC05',
-            })
+
 
           .selector('.permanent-selected')
             .css({
@@ -183,7 +181,8 @@ var graph_style = {
               //'background-color' : '#5E5E5E',
               'width' : 6, 
               'height' : 6,
-              'border-width': 0.5
+              'border-width': 0.5,
+              'opacity': 0.2
             })
 
           .selector('.marked.highlighted')
@@ -205,7 +204,9 @@ var graph_style = {
           .selector('.marked')
             .css({
               'border-color': '#00FF00',//'#AFAFAF',
-              'border-width': 2
+              'border-width': 2,
+              'width': 15, 
+              'height': 15             
             })
 
           .selector('.unmarked')
@@ -234,6 +235,26 @@ var graph_style = {
               'height' : 7.5
             })
 
+          .selector('node.selected')
+            .css({
+              'width': 20,
+              'height': 20,
+              'background-color' : 'yellow',// '#A3BC05',//'#AFAFAF',
+              'border-color': '#A3BC05',
+            })
+
+          .selector('node.highlighted')
+            .css({
+              'width': 16,
+              'height': 16,
+            })
+
+          .selector('edge.faded')
+            .css({
+              'width': 0
+            })
+
+
           .selector('edge.highlighted')
             .css({
               //'opacity': 0.6,
@@ -241,9 +262,9 @@ var graph_style = {
               'target-arrow-shape': 'triangle',
               'target-arrow-fill': 'hollow',
               'target-arrow-color': '#923F31',
-              'haystack-radius': 0,
+              'line-color': '#923F31', 
               'arrow-scale': 0.5,
-              'width': 1
+              'width': 3
             })
 
 }

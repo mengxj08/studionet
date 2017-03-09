@@ -191,12 +191,12 @@ angular.module('studionet')
 		return JSON.stringify(graph);
 	}
 
-	o.draw_graph = function(node){
+	o.draw_graph = function(node, opt){
 		if (window.Worker) {
 
   			console.log("Worker exists");
 			var myWorker = new Worker('/user/components/graphs/graph-worker.js');
-			myWorker.postMessage([ flattenGraph(o.graph), o.threshold, supernode.contribution, window.innerWidth, window.innerHeight]);
+			myWorker.postMessage([ flattenGraph(o.graph), o.threshold, supernode.contribution, window.innerWidth, window.innerHeight, opt]);
 	  		console.log('Message posted to worker');
 
 	  		myWorker.onmessage = function(e) {
@@ -211,16 +211,18 @@ angular.module('studionet')
 			  	if(node.position().x == n.position.x && node.position().y == n.position.y){
 			  		// do nothing
 			  	}
-			  	else
+			  	else{
 			  		var time = 400;
 			  		if(n.onSpiral == n.id){
 			  			time = 800;
 			  		}
 			        setTimeout( function(){
-			        	node.animate(	{ 	position : { x: n.position.x, y: n.position.y } }, { duration: time }
-			        ), 4000 });
+			        	node.animate({ 	position : { x: n.position.x, y: n.position.y } }, { duration: time } );
+			        }, 4000);
+			  	}
 
 			  });
+
 
 			}
 		}
@@ -393,7 +395,6 @@ angular.module('studionet')
 		else
 			console.log("Error Deleting");
 	}
-
 
 	o.addNewNode = function(node){
 		o.graph.add({group: "nodes",	 	data: node, 	position: { x: window.innerWidth/2, y : window.innerHeight/2 }});
