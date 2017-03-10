@@ -1,10 +1,49 @@
 onmessage = function(e) {
 
   var parameters = e.data;
-  if(parameters[5] == undefined)
+  if(parameters[5] == undefined || parameters[5] == 0)
     draw_graph(JSON.parse(parameters[0]), parameters[1], parameters[2], parameters[3], parameters[4]);
-  else
+  else if(parameters[5] == 1)
     draw_linear(JSON.parse(parameters[0]), parameters[1], parameters[2], parameters[3], parameters[4]);
+  else 
+    draw_author(JSON.parse(parameters[0]), parameters[1], parameters[2], parameters[3], parameters[4]);
+
+}
+
+var draw_author =  function(graph, threshold, supernodeId, max_width, max_height){
+
+  var sortFn = function (ele1, ele2) {
+    return ( ele1.dateCreated < ele2.dateCreated ? -1 : 1)
+  }
+
+  // Sort the nodes first
+  var sortedNodes = graph.nodes.sort( sortFn );
+
+  var radii = [];
+  var count = 0;
+  var angleInc = 2*Math.PI/120; 
+  sortedNodes.map(function(node, index){
+
+    var author = node.createdBy; 
+    var size =  15//10 + (node.incomers.length + node.successors/5 + node.predecessors.length/2);
+
+    if(radii[author] == undefined){
+      var angle = count*(angleInc);
+      radii[author] = [ angle, 2*size ];
+      count ++;
+      node.position = { x: max_width/2 + (200+radii[author][1])*Math.cos(radii[author][0]), y: max_height/2 + (200+radii[author][1])*Math.sin(radii[author][0]) }; 
+      node.radius = size;
+    }
+    else{
+      node.position = { x: max_width/2 + (200+radii[author][1])*Math.cos(radii[author][0]), y: max_height/2  + (200+radii[author][1])*Math.sin(radii[author][0]) }; 
+      node.radius = size;  
+      radii[author][1] += 2*size;
+    }
+
+    
+  })
+
+  postMessage(JSON.stringify(graph));
 
 }
 
@@ -24,8 +63,6 @@ var draw_linear = function(graph, threshold, supernodeId, max_width, max_height)
 
     var x = Math.round( ( (node.dateCreated - init) / 86400 ) / 1000 ); 
     var y = node.dateCreated % 86400000 ;
-
-    console.log(x, y);
 
     var size =  10 + (node.incomers.length + node.successors/5 + node.predecessors.length/2);
 

@@ -154,7 +154,7 @@ var graph_style = {
               'curve-style': 'haystack',
               'control-point-step-size': 10,
               'line-color': edgeColorFn, //'#923F31',
-              'width': 0,
+              'width': 0.1,
               'opacity': 0.5
             })     
 

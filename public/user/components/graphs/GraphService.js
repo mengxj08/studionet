@@ -171,6 +171,7 @@ angular.module('studionet')
 			return { 	
 						id: node.id(),
 						onSpiral: -1, 
+						createdBy: node.data('createdBy'),
 						dateCreated: node.data('dateCreated'),
 						incomers: node.incomers().nodes().map(function(n){
 							return n.id();
@@ -192,6 +193,7 @@ angular.module('studionet')
 	}
 
 	o.draw_graph = function(node, opt){
+		console.log("opt", opt);
 		if (window.Worker) {
 
   			console.log("Worker exists");
