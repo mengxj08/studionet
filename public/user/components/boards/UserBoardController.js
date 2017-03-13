@@ -2,7 +2,7 @@ angular.module('studionet')
 
 .controller('UserBoardController', ['$scope', '$rootScope', 'users', '$uibModal', function($scope, $rootScope, users, $uibModal){
 
-		$scope.sortType     = 'lastLoggedIn'; // set the default sort type
+		$scope.sortType     = 'level'; // set the default sort type
 		$scope.sortReverse  = true;  // set the default sort order
 		$scope.searchUser   = '';     // set the default search/filter term
 

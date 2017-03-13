@@ -1,6 +1,12 @@
 <!-- actual graph container -->
 <div class='graph-container' ng-init='graphInit();' ng-show='!me.isGuest || (me.isGuest && me.authenticated)'> 
 
+  <div id='level-up' uib-position='bottom'>
+        <uib-progressbar class="progress active" max="100" value="value" type="success"><i></i></uib-progressbar>
+        <b>Level {{level}}</b>
+        <!-- <span style='float:right; max-width: 200px; word-wrap: break-word;'><small>Create a node to reach Level {{level + 1}}!</small></span> -->
+  </div>
+
   <!-- Graph -->
   <div id='cy'></div>
 

@@ -23,10 +23,17 @@ router.route('/')
       'RETURN { id: id(u), nickname: u.nickname, name: u.name, avatar: u.avatar, isAdmin: u.isAdmin,\
                 lastLoggedIn: u.lastLoggedIn, \
                 activityArr: [ SIZE((u)-[:VIEWED]->(:contribution)), SIZE((u)-[:RATED]->(:contribution)), SIZE((u)-[:CREATED]->(:contribution {contentType: "text"})), SIZE((u)-[:CREATED]->(:contribution {contentType: "comment"})), SIZE((u)-[:CREATED]->(:link)) ],  \
-                level: SIZE((u)-[:VIEWED]->(:contribution))*' + weights[0] + ' +  SIZE((u)-[:RATED]->(:contribution))*' + weights[1] + ' + SIZE((u)-[:CREATED]->(:contribution))* ' + weights[2] + '}'
+                level: {viewWeightParam}*(SIZE((u)-[:VIEWED]->(:contribution))) + {rateWeightParam}*(SIZE((u)-[:RATED]->(:contribution))) + {createWeightParam}*(SIZE((u)-[:CREATED]->(:contribution {contentType: "text"}))) }'
     ].join('\n');
 
-    db.query(query, function(error, result){
+    console.log(weights);
+    var params = {
+      viewWeightParam : weights[0],
+      rateWeightParam : weights[1],
+      createWeightParam : weights[2]
+    }
+
+    db.query(query, params, function(error, result){
       if (error) {
         console.log('Error retrieving all users: ', error);
       }

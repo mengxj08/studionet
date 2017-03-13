@@ -7,6 +7,9 @@ var db = require('seraph')({
   pass: process.env.DB_PASS
 });
 
+var constants = require('../datastructure/constants.js');
+var weights = constants.activityWeights;
+
 // route: /api/profile (profile summary)
 // get information about the current user
 router.get('/', auth.ensureAuthenticated, function(req, res){
@@ -42,12 +45,16 @@ router.get('/', auth.ensureAuthenticated, function(req, res){
               groups: groups,\
               contributions: contributions,\
               tags: tags,\
-              bookmarks: bookmarks\
+              bookmarks: bookmarks,\
+              level: {viewWeightParam}*(SIZE((u)-[:VIEWED]->(:contribution))) + {rateWeightParam}*(SIZE((u)-[:RATED]->(:contribution))) + {createWeightParam}*(SIZE((u)-[:CREATED]->(:contribution {contentType: "text"}))) \
     }'
   ].join('\n');
 
   var params = {
-    userIdParam: req.user.id
+    userIdParam: req.user.id,
+    viewWeightParam : weights[0],
+    rateWeightParam : weights[1],
+    createWeightParam : weights[2]
   };
 
   db.query(query, params, function(error, result){

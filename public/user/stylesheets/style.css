@@ -28,7 +28,7 @@ html {
     overflow-x: hidden;
 }
 ::-webkit-scrollbar {
-    width: 2px;  /* remove scrollbar space */
+    width: 0px;  /* remove scrollbar space */
     background: transparent;  /* optional: just make scrollbar invisible */
 }
 /* optional: show position indicator in red */
@@ -312,43 +312,26 @@ tr:hover{
 }
 
 
-.node-arrow{
+#level-up{
 	position: absolute;
-	font-size: 56px;
-	color: #b9b9b9;
-	top:15%;
+	left: 50%;
+	margin-left: -100px;
+	width: 200px;
+	z-index: 5;
+	color: #B9b9b9;
+	background-color: #000623;
+	text-align: center;
+	padding: 10px;
 }
 
-.node-arrow:hover{
-	color: white;
+#level-up > .progress{
+	margin-top: 10px; 
+	margin-bottom: 0px;
+	border-radius: 1px;
+	border-color: #252730;
+	height: 10px;
 }
 
-.left-side-arrow{
-	left: 15%;
-	text-align: left;
-}
-
-.right-side-arrow{
-	right: 15%;
-	text-align: right;
-}
-
-.links-holder{
-	font-size: 12px;
-	max-width: 200px;
-	max-height: 60%; 
-	overflow: scroll;
-}
-
-.links-holder > a{
-	color: #8e8b8b;
-	display: block;
-	max-width: 150px;
-	word-wrap: break-word;
-	margin-bottom: 10px;
-}
-
-.links-holder > a:hover{
-	color: #7A7575;
-	text-decoration: underline;
+#level-up > .progress > .progress-bar-success{
+	background-color: #3a79b8;
 }

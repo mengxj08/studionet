@@ -113,7 +113,7 @@ var edgeColorFn = function(ele){
 }
 
 // Data conversion
-var createGraphNode = function(node){    return  { data: node, position: {x:  $(window).width()/2, y:  $(window).height()/2 } };   }
+var createGraphNode = function(node){    return  { data: node, position: {x:  Math.random()*($(window).width()), y:  Math.random()*$(window).height() } };   }
 
 var createGraphEdge = function(edge){  return { data: edge };   }
 
@@ -237,8 +237,8 @@ var graph_style = {
 
           .selector('node.selected')
             .css({
-              'width': 20,
-              'height': 20,
+              'width': 15,
+              'height': 15,
               'background-color' : 'yellow',// '#A3BC05',//'#AFAFAF',
               'border-color': '#A3BC05',
             })

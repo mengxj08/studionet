@@ -10,12 +10,7 @@ angular.module('studionet')
   socket.on('node_created', function (node) {
       node.type = node.contentType;
       GraphService.addNewNode(node);
-
-      if(node.createdBy == profile.user.id)
-        profile.getActivity();
-
       showMessage("A new node was created by " + (users.usersHash[node.createdBy].nickname ? users.usersHash[node.createdBy].nickname : users.usersHash[node.createdBy].name) );
-
   });
 
   socket.on('group_created', function (group) {
@@ -69,7 +64,14 @@ angular.module('studionet')
 
 
   // -------------- constants and declarations
-  $scope.me = profile.user;
+  var updateUserProfile = function(){
+    $scope.me = profile.user;
+    $scope.level = Math.floor(profile.user.level);
+    $scope.value = (profile.user.level -  $scope.level)*100;
+  };
+  profile.registerObserverCallback(updateUserProfile);
+  updateUserProfile();
+
 
   $scope.showHelp = function(){
     showDetailsModal( GraphService.graph.getElementById("560") ); // fix later

@@ -76,10 +76,16 @@
                             <span ng-show="sortType == 'lastLoggedIn' && sortReverse" class="fa fa-caret-up"></span>
                           </a>
                         </td>
-                        <td class='col-sm-4'>
+                        <td class='col-sm-3'>
                           <a href="#" ng-click="sortType = 'name'; sortReverse = !sortReverse">Name
                             <span ng-show="sortType == 'name' && !sortReverse" class="fa fa-caret-down"></span>
                             <span ng-show="sortType == 'name' && sortReverse" class="fa fa-caret-up"></span>
+                          </a>
+                        </td>
+                        <td class='col-sm-1'>
+                          <a href="#" ng-click="sortType = 'level'; sortReverse = !sortReverse">Level
+                            <span ng-show="sortType == 'level' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'level' && sortReverse" class="fa fa-caret-up"></span>
                           </a>
                         </td>
                         <td class='col-sm-1'>
@@ -121,9 +127,10 @@
                                 ng-show='$index < (currentPage)*itemsPerPage && $index >= (currentPage-1)*itemsPerPage'
                                 ng-click='goToUser(user.id)' data-dismiss='modal'>
                             <td class='col-sm-1'>{{ $index + 1 }}</td>
-                            <td class='col-sm-4' ng-if='user.lastLoggedIn > -1'><time>{{ user.lastLoggedIn | amCalendar }}</time></td>
-                            <td class='col-sm-4' ng-if='!(user.lastLoggedIn > -1)'>--</td>
-                            <td class='col-sm-5'>{{ user.nickname ? user.nickname : user.name }}</td>
+                            <td class='col-sm-2' ng-if='user.lastLoggedIn > -1'><time>{{ user.lastLoggedIn | amCalendar }}</time></td>
+                            <td class='col-sm-2' ng-if='!(user.lastLoggedIn > -1)'>--</td>
+                            <td class='col-sm-3'>{{ user.nickname ? user.nickname : user.name }}</td>
+                            <td class='col-sm-1'>{{ user.level | number: 0 }}</td>
                             <td class='col-sm-1'>{{ user.activityArr[2] }}</td>
                             <td class='col-sm-1'>{{ user.activityArr[1] }}</td>
                             <td class='col-sm-1'>{{ user.activityArr[0] }}</td>

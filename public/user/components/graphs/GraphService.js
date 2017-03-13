@@ -321,6 +321,7 @@ angular.module('studionet')
 	    })
 	    .success(function(res) {
 	    	o.selectNode(res.id);
+	    	profile.getUser();
 	    })
 	    .error(function(error){
 	    	o.spinner.stop();
@@ -484,12 +485,14 @@ angular.module('studionet')
 	o.updateViewCount = function(id){
 		return $http.post('/api/contributions/' + id + '/view').success(function(data){
 			o.graph.getElementById(id).views++;
+			profile.getUser();
 		});
 	};
 
 	o.rateNode = function(id, rating){
 		return $http.post('/api/contributions/' + id + '/rate', {'rating': rating} ).success(function(data){
 			profile.getActivity();
+			profile.getUser();
 		});
 	};
 

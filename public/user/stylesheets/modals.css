@@ -12,6 +12,15 @@
   height: 100%; 
   width: 100%;
   overflow-y: scroll;
+  top: 20px !important;
+}
+
+.modal.in .modal-dialog{
+  -webkit-transform: translate(0, 20px);
+     -moz-transform: translate(0, 20px);
+      -ms-transform: translate(0, 20px);
+       -o-transform: translate(0, 20px);
+          transform: translate(0, 20px);
 }
 
 .modal-dialog{
@@ -44,10 +53,10 @@
 /* Modal Body */
 .modal-body{
     height: 100%;
-    max-height: 90vh;
+    //max-height: 90vh;
     padding: 25px 30px !important;
     background-color: white;
-    overflow-y: scroll !important;
+    //overflow-y: scroll !important;
 }
 
 .modal-section{
@@ -379,3 +388,43 @@ tags-input .tags{
 
 
 
+.node-arrow{
+  position: fixed;
+  font-size: 56px;
+  color: #b9b9b9;
+  top:15%;
+}
+
+.node-arrow:hover{
+  color: white;
+}
+
+.left-side-arrow{
+  left: 13%;
+  text-align: left;
+}
+
+.right-side-arrow{
+  right: 13%;
+  text-align: right;
+}
+
+.links-holder{
+  font-size: 12px;
+  max-width: 200px;
+  max-height: 50vh; 
+  overflow: scroll;
+}
+
+.links-holder > a{
+  color: #8e8b8b;
+  display: block;
+  max-width: 150px;
+  word-wrap: break-word;
+  margin-bottom: 10px;
+}
+
+.links-holder > a:hover{
+  color: #7A7575;
+  text-decoration: underline;
+}
