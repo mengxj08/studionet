@@ -46,6 +46,10 @@ angular.module('studionet')
 
             $scope.contribution = node.data();
 
+            $scope.parents = node.outgoers().nodes();
+            $scope.children = node.incomers().nodes();
+
+
             getReplies();
 
             $scope.bookmarked = false;

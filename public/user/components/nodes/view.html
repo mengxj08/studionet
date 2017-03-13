@@ -1,5 +1,20 @@
 <div id='contributionViewModal' class="modal fade" role="dialog" ng-controller="NodeController">
 
+    <div class='node-arrow left-side-arrow hidden-xs' ng-hide="parents.length == 0">
+        <i class='fa fa-angle-left'></i>
+        <hr>
+        <div class='links-holder'>
+            <a class='pointer'  ng-repeat='parent in parents' ng-click='setData(parent)'>{{ parent.data().title }}<small><br> ( {{ usersHash[ parent.data().createdBy ].name }} )</small></a>
+        </div>
+    </div>
+    <div class='node-arrow right-side-arrow hidden-xs' ng-hide="children.length == 0">
+      <i class='fa fa-angle-right'></i>
+      <hr>
+      <div class='links-holder' >
+          <a class='pointer' ng-repeat='child in children' ng-click='setData(child)'>{{ child.data().title }}<small><br> ( {{ usersHash[ child.data().createdBy ].name }} )</small> </a>
+      </div>
+    </div>
+
     <!-- Modal content-->
     <div id="{{ 'modal' + contribution.id }}"  class="modal-dialog modal-content reply-dialog">
 

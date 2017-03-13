@@ -28,7 +28,7 @@ html {
     overflow-x: hidden;
 }
 ::-webkit-scrollbar {
-    width: 0px;  /* remove scrollbar space */
+    width: 2px;  /* remove scrollbar space */
     background: transparent;  /* optional: just make scrollbar invisible */
 }
 /* optional: show position indicator in red */
@@ -309,4 +309,46 @@ tr:hover{
 .docked{
   width: 50% !important;
   float: left;
+}
+
+
+.node-arrow{
+	position: absolute;
+	font-size: 56px;
+	color: #b9b9b9;
+	top:15%;
+}
+
+.node-arrow:hover{
+	color: white;
+}
+
+.left-side-arrow{
+	left: 15%;
+	text-align: left;
+}
+
+.right-side-arrow{
+	right: 15%;
+	text-align: right;
+}
+
+.links-holder{
+	font-size: 12px;
+	max-width: 200px;
+	max-height: 60%; 
+	overflow: scroll;
+}
+
+.links-holder > a{
+	color: #8e8b8b;
+	display: block;
+	max-width: 150px;
+	word-wrap: break-word;
+	margin-bottom: 10px;
+}
+
+.links-holder > a:hover{
+	color: #7A7575;
+	text-decoration: underline;
 }
