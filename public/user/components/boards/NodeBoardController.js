@@ -15,7 +15,11 @@ angular.module('studionet')
 		$scope.contributions = []; 
 
 		GraphService.graph.nodes().map(function(node){
-			$scope.contributions.push(node.data());
+
+			var d = node.data();
+			d.auth = $scope.users[d.createdBy].name;
+
+			$scope.contributions.push(d);
 		})
 
 	  	$scope.latest = $filter('orderBy')($scope.contributions, '-dateCreated')[0];

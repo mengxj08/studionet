@@ -35,9 +35,9 @@ var draw_author =  function(graph, threshold, supernodeId, max_width, max_height
       node.radius = size;
     }
     else{
-      node.position = { x: max_width/2 + (200+radii[author][1])*Math.cos(radii[author][0]), y: max_height/2  + (200+radii[author][1])*Math.sin(radii[author][0]) }; 
-      node.radius = size;  
       radii[author][1] += 2*size;
+      node.radius = size;  
+      node.position = { x: max_width/2 + (200+radii[author][1])*Math.cos(radii[author][0]), y: max_height/2  + (200+radii[author][1])*Math.sin(radii[author][0]) }; 
     }
 
     

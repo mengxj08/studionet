@@ -65,11 +65,18 @@
                         <td class='col-sm-1'>
                             #
                         </td>
-                        <td class='col-sm-4'>
+                        <td class='col-sm-2'>
                           <a href="#" ng-click="sortType = 'dateCreated'; sortReverse = !sortReverse">
                             Date Created 
                             <span ng-show="sortType == 'dateCreated' && !sortReverse" class="fa fa-caret-down"></span>
                             <span ng-show="sortType == 'dateCreated' && sortReverse" class="fa fa-caret-up"></span>
+                          </a>
+                        </td>
+                        <td class='col-sm-2'>
+                          <a href="#" ng-click="sortType = 'auth'; sortReverse = !sortReverse">
+                            Author
+                            <span ng-show="sortType == 'auth' && !sortReverse" class="fa fa-caret-down"></span>
+                            <span ng-show="sortType == 'auth' && sortReverse" class="fa fa-caret-up"></span>
                           </a>
                         </td>
                         <td class='col-sm-4'>
@@ -109,7 +116,8 @@
                                 ng-show='$index < (currentPage)*itemsPerPage && $index >= (currentPage-1)*itemsPerPage && contribution.type != "comment"'
                                 ng-click='goToNode(contribution.id)' data-dismiss='modal'>
                             <td class='col-sm-1'>{{ $index + 1 }}</td>
-                            <td class='col-sm-4'><time>{{ contribution.dateCreated | amCalendar }}</time></td>
+                            <td class='col-sm-2'><time>{{ contribution.dateCreated | amCalendar }}</time></td>
+                            <td class='col-sm-2'><time>{{ contribution.auth }}</time></td>
                             <td class='col-sm-4 '>{{ contribution.title }}</td>
                             <td class='col-sm-1'>{{ contribution.views }}</td>
                             <td class='col-sm-1'>{{ contribution.rateCount }}</td>

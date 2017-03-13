@@ -182,7 +182,7 @@ var graph_style = {
               'width' : 6, 
               'height' : 6,
               'border-width': 0.5,
-              'opacity': 0.2
+              'opacity': 0.6
             })
 
           .selector('.marked.highlighted')
