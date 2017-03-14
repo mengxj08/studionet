@@ -533,8 +533,9 @@ angular.module('studionet')
 		else
 			o.activeNode = node;
 
-		if( node.isNode == undefined )
+		if( node.isNode == undefined ){
 			node = o.graph.getElementById(node);
+		}
 
 		o.graph.batch(function(){
 		o.graph.elements()
@@ -552,7 +553,7 @@ angular.module('studionet')
 		                  .addClass('highlighted');
 		});
 
-		if(openDialog){
+		if(openDialog && node.data('type')=="text"){
 			$rootScope.$broadcast( "SHOW_DETAILS_MODAL",  {data: node});
 		}
 

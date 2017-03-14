@@ -59,7 +59,7 @@
 
                       <div class='col-sm-12 text-center' ng-if='user.contributions.length == 0'><br><h6>No Nodes Created</h6><br></div>
                       
-                      <div class='col-sm-12' ng-repeat="contribution in user.contributions | orderBy : '-views' ">
+                      <div class='col-sm-12' ng-repeat="contribution in user.contributions | orderBy : '-views'">
                           <div class='profile-item'>
                             <div class='row pointer' ng-click='goToNode(contribution.id)' data-dismiss='modal'>
                               <div class='col-sm-6'>

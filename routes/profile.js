@@ -22,7 +22,7 @@ router.get('/', auth.ensureAuthenticated, function(req, res){
     'WITH u',
     'OPTIONAL MATCH p1=(g:group)-[r:MEMBER]->(u)',
     'WITH collect({id: id(g), role: r.role, joinedOn: r.joinedOn}) as groups, u',
-    'OPTIONAL MATCH p2=(c:contribution)<-[r1:CREATED]-(u)',
+    'OPTIONAL MATCH p2=(c:contribution {contentType: "text"})<-[r1:CREATED]-(u)',
     //'WITH groups, collect({id: id(c), title: c.title, lastUpdated: c.lastUpdated, contentType: c.contentType, rating: c.rating, rateCount: c.rateCount, views: c.views, tags: c.tags}) as contributions, u',
     'WITH groups, collect({id: id(c), title: c.title, rating: c.rating, rateCount: c.rateCount, views: c.views}) as contributions, u',
     'OPTIONAL MATCH p3=(t:tag)<-[r1:CREATED]-(u)',
