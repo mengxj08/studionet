@@ -46,9 +46,9 @@ angular.module('studionet')
 	$scope.goToNode = function(node_id){
 
 		// select the node
-		GraphService.selectNode(node_id);
+		GraphService.selectNode(node_id, true);
 
-		$scope.close();
+		//$scope.close();
 	}
 
 	$scope.$on( "PROFILE_MODE", function(event, args) {

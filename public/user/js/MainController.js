@@ -275,10 +275,6 @@ angular.module('studionet')
   GraphService.registerObserverCallback(updateGraph);
 
 
-
-
-
-
   // ---------------- Filters
   $scope.filters = [];
   $scope.matchingNodes = [];
@@ -314,13 +310,14 @@ angular.module('studionet')
   });
 
   var showDetailsModal = function(data) {
-
-      $scope.viewMode = true;
       $('#contributionViewModal').modal({backdrop: 'static', keyboard: false});
-
       $rootScope.$broadcast("VIEWMODE_ACTIVE", {data: data});
-
+      $scope.viewMode = true;
   };
+
+  $scope.$on( "SHOW_DETAILS_MODAL", function(event, args) {
+      showDetailsModal(args.data);
+  });
 
 
   // profile modal
@@ -328,6 +325,8 @@ angular.module('studionet')
       $('#profileModal').modal({backdrop: 'static', keyboard: false});
       $rootScope.$broadcast( "PROFILE_MODE",  {id: $scope.me.id});
   }
+
+
 
 
 }])

@@ -1,7 +1,7 @@
 // ---------------- Graph Functionality 
 angular.module('studionet')
 
-.factory('GraphService', ['$http', 'supernode', 'profile', 'tags', 'links', function($http, supernode, profile, tags, links){
+.factory('GraphService', ['$http', '$rootScope', 'supernode', 'profile', 'tags', 'links', 'users',  function($http, $rootScope, supernode, profile, tags, links, users){
 
 
 	var opts = {
@@ -525,7 +525,7 @@ angular.module('studionet')
 	  	o.activeNode = {};
 	};
 
-	o.selectNode = function( node ){
+	o.selectNode = function( node, openDialog ){
 
 		// node is either a cytoscape node or an id 
 		if(node.id)
@@ -551,6 +551,10 @@ angular.module('studionet')
 		  node.successors().removeClass('faded')  
 		                  .addClass('highlighted');
 		});
+
+		if(openDialog){
+			$rootScope.$broadcast( "SHOW_DETAILS_MODAL",  {data: node});
+		}
 
 
 	};

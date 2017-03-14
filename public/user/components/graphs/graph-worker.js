@@ -89,18 +89,7 @@ var draw_graph = function(graph, threshold, supernodeId, max_width, max_height){
   var nodeHash = graph.nodes.hash();
 
   var sortFn = function (ele1, ele2) {
-      if( ele1.incomers.length == ele2.incomers.length ){
-        if(ele1.successors == ele2.successors){
-          if(ele1.predecessors.length == ele2.predecessors.length)
-            return ( ele1.dateCreated < ele2.dateCreated ? -1 : 1)
-          else
-            return ( ele1.predecessors.length > ele2.predecessors.length ? -1 : 1)
-        }
-        else return (  ele1.successors > ele2.successors ? -1 : 1 )
-
-      }
-      else
-        return ( ele1.incomers.length > ele2.incomers.length ? -1 : 1);
+    return ( ele1.incomers.length > ele2.incomers.length ? -1 : 1);
   }
 
 
@@ -255,7 +244,7 @@ var draw_graph = function(graph, threshold, supernodeId, max_width, max_height){
   var makeSubSpiral = function(nodes, centerX, centerY, minimumRadius){
 
       var radius_SubNode = 10;
-      var safety_gap = 10;
+      var safety_gap = 20;
 
       var deltaX = (centerX - initX);
       var deltaY = (centerY - initY);

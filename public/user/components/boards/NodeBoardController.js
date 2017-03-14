@@ -17,7 +17,7 @@ angular.module('studionet')
 		GraphService.graph.nodes().map(function(node){
 
 			var d = node.data();
-			d.auth = $scope.users[d.createdBy].name;
+			d.auth = $scope.users[d.createdBy].nickname ? $scope.users[d.createdBy].nickname  : $scope.users[d.createdBy].name;
 
 			$scope.contributions.push(d);
 		})
@@ -38,7 +38,6 @@ angular.module('studionet')
 	// ---- graph selections
 	$scope.goToNode = function(node_id){
 		GraphService.selectNode(node_id, true);
-		$scope.close();
 	}
 
 	$scope.processName = function(name){

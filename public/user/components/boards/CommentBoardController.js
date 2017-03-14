@@ -31,8 +31,8 @@ angular.module('studionet')
 
 	// ---- graph selections
 	$scope.goToNode = function(node_id){
-		GraphService.selectNode(node_id);
-		$scope.close();
+		//$scope.close();
+		GraphService.selectNode(node_id, true);
 	}
 
 	$scope.processName = function(name){

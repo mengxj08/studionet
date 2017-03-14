@@ -75,7 +75,7 @@
                           <div class='col-xs-10'>
                               <div class='attachment-details'>
                                 <h6>{{attachment.attachment.name}}</h6>
-                                <div> Size: {{ (attachment.attachment.size/1000).toFixed(2) }} KB </div>
+                                <div> Size: {{ (attachment.attachment.size/1000000).toFixed(2) }} MB </div>
                               </div>
                           </div>
                         </div>
@@ -83,34 +83,34 @@
                     </div>
                 </div>
 
-
                 <br><br>
 
                 <div class='modal-section comments' ng-if='replies.length > 0'>
-                    <h6 class='pointer background-color: white;' ng-click='showComments=!showComments' style='border-bottom: 1px solid #B9B9B9; height: 30px; line-height: 30px;'>
-                      {{replies.length}} comment(s) &nbsp;&nbsp;
-                      <i ng-class='showComments ? "fa fa-angle-double-up" : "fa fa-angle-double-right"' style='float:right; line-height: 30px;'></i>
-                    </h6>
 
-                    <div class='modal-section addComment animate' ng-show='showComments' ng-repeat='reply in replies | orderBy: dateCreated' style='padding: 0px 10px 0px 10px;'>
-                      <div class='row pointer' style='margin-top: 15px;' ng-click='setData(reply.id);'>
-                        <div class='dateCreated' style='font-size: 11px; color: #444;display: inline-block; float: right'>
-                            Written <time am-time-ago="reply.lastUpdated ? reply.lastUpdated : reply.dateCreated "></time> </div><br>
-                        <div class='header'>
-                          <div class='profile' style='display: inline-block;'><img src='{{usersHash[reply.createdBy].avatar}}' style='width: 30px; height: 30px; border-radius: 50%; margin-right: 15px;'></div>
-                          <b>
-                            <div class='author-name' style='display: inline-block; height: 20px;'>{{usersHash[reply.createdBy].name}}</div>
-                          </b>
+                    <h3><i class='fa fa-comments'></i>&nbsp;&nbsp;&nbsp;Comments for <b>"{{contribution.title}}"</b></h3>
+
+                    <br>
+
+                    <div class="row comment" ng-repeat='reply in replies | orderBy: dateCreated'>
+                        <div class='row comment-heading'>
+                          <div class='comment-author-name'>
+                              <b>{{usersHash[reply.createdBy].nickname ? usersHash[reply.createdBy].nickname : usersHash[reply.createdBy].name}}</b> says: 
+                          </div>
+                          <div class='dateCreated'><time am-time-ago="reply.lastUpdated ? reply.lastUpdated : reply.dateCreated "></time></div>
                         </div>
-                        <div class='comment-editor' style='margin-top: 15px;'>
-                            <div ng-bind-html="reply.body"></div>
-                            <div ng-if="reply.body == undefined">Loading comment...</div>
+
+                        <div class='row comment-body pointer' ng-click='setData(reply.id)'>
+                          <div ng-bind-html="reply.body"></div>
+                          <div class='comment-actions' ng-if='reply.createdBy == user.id'>
+                            <!-- <a class='action' ng-click='setData(reply.id)'>[Edit]</a>
+                            <a class='action' ng-click='setData(reply.id)'>[Delete]</a> -->
+                          </div>
                         </div>
-                      </div>
                     </div>
+
                 </div>
 
-                <br><br>
+                <br>
 
                 <div class='row text-right' ng-cloak>
 
