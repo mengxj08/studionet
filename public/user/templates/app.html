@@ -13,11 +13,31 @@
   <!-- sidebar -->
   <div class='graph-controls'>
 
+
+
     <!-- Profile -->
     <img class="graph-nav-control icon" ng-if='!me.isGuest' src={{me.avatar}} uib-tooltip='{{me.nickname ? me.nickname : me.name}}' tooltip-placement='left' ng-click='showProfile()'></i>
     <a href='/guest'><img class="graph-nav-control icon" ng-if='me.isGuest' src="../assets/images/avatar.png" uib-tooltip='Guest' tooltip-placement='left'></i></a>
 
     <br>
+
+    <!-- Recent Activity -->
+<!--     <i class="graph-nav-control icon fa fa-telegram" ng-if='!me.isGuest' data-toggle="modal" uib-tooltip='Recent Activity' tooltip-placement='left'>
+      <span style='position: absolute;top:0px; left: 0px; border: 1px solid green;font-size: 10px;width: 15px; height: 15px;margin: 0px;padding: 0px;color: white; font-weight: 600;line-height: 15px;background-color: rgba(0,256,0, 0.4)' ng-if='me.newactivity !== null'>!</span>
+      <span uib-dropdown on-toggle="toggled(open)">
+      <a href id="simple-dropdown" uib-dropdown-toggle>
+        Click me for a dropdown, yo!
+      </a>
+      <ul class="dropdown-menu" uib-dropdown-menu aria-labelledby="simple-dropdown">
+        <li ng-repeat="choice in items">
+          <a href>{{choice}}</a>
+        </li>
+      </ul>
+    </span>
+    </i>
+    <i class="graph-nav-control icon fa fa-telegram" ng-if='me.isGuest' data-toggle="modal" uib-tooltip='Recent Activity' tooltip-placement='left'></i>
+
+    <br> -->
 
     <!-- Leaderboards & Graph Controls -->
     <i class="graph-nav-control icon fa fa-user" data-toggle="modal" data-target="#userActivityBoard" data-backdrop="static" data-keyboard="false" uib-tooltip='User Activity' tooltip-placement='left'></i>
@@ -27,7 +47,7 @@
     <i class="graph-nav-control icon fa fa-filter" data-toggle="modal" data-target="#filterModal" data-backdrop="static" data-keyboard="false" uib-tooltip='Filter Nodes' tooltip-placement='left'></i>
     <i class="graph-nav-control icon fa fa-plus" ng-if='!me.isGuest' data-toggle="modal" data-target="#newNode" data-backdrop="static" data-keyboard="false" uib-tooltip='New Node' tooltip-placement='left'></i> 
     <i class="graph-nav-control icon fa fa-arrows-alt" ng-click='resetGraph(); zoomLevel=100.00' uib-tooltip='Fit Graph' tooltip-placement='left'></i>
-    <!-- <i ng-class="layout ? 'graph-nav-control icon fa fa-spinner' : 'graph-nav-control icon fa fa-sort-amount-desc' " ng-click='switchLayout()' uib-tooltip='Switch Layout' tooltip-placement='left'>{{layout}}</i> -->
+    <i ng-class="layout ? 'graph-nav-control icon fa fa-spinner' : 'graph-nav-control icon fa fa-sort-amount-desc' " ng-click='switchLayout()' uib-tooltip='Switch Layout' tooltip-placement='left'>{{layout}}</i>
     
     <i class="graph-nav-control icon fa fa-plus" ng-if='me.isGuest' uib-tooltip='New Node (only open to NUS users)' tooltip-placement='left'></i> 
     <i class="graph-nav-control icon fa fa-question" uib-tooltip='Help' tooltip-placement='left' ng-click='showHelp()'></i> 

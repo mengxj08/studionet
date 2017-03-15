@@ -29,6 +29,8 @@ router.get('/', auth.ensureAuthenticated, function(req, res){
     'WITH groups, collect({id: id(t)}) as tags, contributions, u',
     'OPTIONAL MATCH p4=(c1:contribution)<-[b:BOOKMARKED]-(u)',
     'WITH groups, collect({id: id(c1), title: c1.title, createdOn: b.createdOn}) as bookmarks, tags, contributions, u',
+    'OPTIONAL MATCH p5=(c5:contribution {createdBy: {userIdParam}})<-[:RELATED_TO]-(:contribution) WHERE c5.dateCreated > {userLastLoggedInParam}',
+    'WITH groups, bookmarks, tags, contributions, u',
     'RETURN {\
               nusOpenId: u.nusOpenId,\
               isAdmin: u.isAdmin, \
@@ -52,6 +54,7 @@ router.get('/', auth.ensureAuthenticated, function(req, res){
 
   var params = {
     userIdParam: req.user.id,
+    userLastLoggedInParam: req.user.lastLoggedIn,
     viewWeightParam : weights[0],
     rateWeightParam : weights[1],
     createWeightParam : weights[2]

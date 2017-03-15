@@ -111,7 +111,7 @@ router.route('/:userId')
           'WITH u',
           'OPTIONAL MATCH p1=(g:group)-[r:MEMBER]->(u)',
           'WITH collect({id: id(g), name: g.name, role: r.role}) as groups, u',
-          'OPTIONAL MATCH p2=(c:contribution)<-[r1:CREATED]-(u)',
+          'OPTIONAL MATCH p2=(c:contribution {contentType: "text"})<-[r1:CREATED]-(u)',
           'WITH groups, collect({id: id(c), title: c.title, rating: c.rating, views: c.views, rateCount: c.rateCount }) as contributions, u',
           'OPTIONAL MATCH p3=(t:tag)<-[r1:CREATED]-(u)',
           'WITH groups, collect({id: id(t), name: t.name}) as tags, contributions, u',

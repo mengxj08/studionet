@@ -258,6 +258,9 @@ angular.module('studionet')
 		o.getUser = function(){
 			return $http.get('/api/profile/').success(function(data){
 				angular.copy(data, o.user);
+
+				o.user.newactivity = "You are all caught up!";
+
 				notifyObservers();
 			});
 		};
